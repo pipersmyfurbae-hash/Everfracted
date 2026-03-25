@@ -1149,6 +1149,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--sans); color: va
   <span id="toast-msg">Done</span>
 </div>
 
+<script src="assets/js/evercrafted-core-engine.js"></script>
 <script>
 // ── Tab switching
 function switchTab(tab) {
@@ -1213,9 +1214,7 @@ function syncColorInput(type, hex) {
 }
 
 function getEngineEndpoint(){
-  const host=window.location.hostname;
-  const isLocal=host==="localhost"||host==="127.0.0.1";
-  return isLocal ? "http://127.0.0.1:8787/engine-proxy" : "https://evercrafted-engine-production.up.railway.app/run-engine";
+  return window.EvercraftedCoreEngine.resolveEndpoint();
 }
 
 async function generateEngineOutput(){
@@ -1227,12 +1226,7 @@ async function generateEngineOutput(){
   statusEl.textContent='Generating options...';
   resultsEl.innerHTML='';
   try{
-    const response=await fetch(getEngineEndpoint(),{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({input_type:'emotion',input_data:{feeling}})
-    });
-    const data=await response.json();
+    const data=await window.EvercraftedCoreEngine.runEmotion(feeling, getEngineEndpoint());
     const outputs=Array.isArray(data.outputs)?data.outputs:[];
     if(outputs.length===0){statusEl.textContent='No results returned.';return;}
     statusEl.textContent=`${outputs.length} option(s) generated.`;
