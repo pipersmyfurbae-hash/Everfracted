@@ -1,0 +1,295 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+
+  .phase { margin-bottom: 2rem; }
+  .phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .phase-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+  .p1 { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .p2 { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .p3 { background: var(--color-background-info); color: var(--color-text-info); }
+  .p4 { background: var(--color-background-success); color: var(--color-text-success); }
+  .phase-title { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+  .phase-sub { font-size: 12px; color: var(--color-text-secondary); margin-left: auto; }
+
+  .tasks { display: flex; flex-direction: column; gap: 6px; }
+  .task { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-primary); }
+  .task-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .task-body { flex: 1; }
+  .task-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .task-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .task-tag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 5px; }
+  .tag-dev { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .tag-content { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .tag-design { background: var(--color-background-info); color: var(--color-text-info); }
+  .tag-biz { background: var(--color-background-success); color: var(--color-text-success); }
+  .tag-done { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+
+  .divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); margin: 1.5rem 0; }
+
+  /* REALITY CHECK */
+  .reality-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .reality-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; background: var(--color-background-primary); }
+  .reality-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
+  .reality-items { display: flex; flex-direction: column; gap: 5px; }
+  .reality-item { font-size: 12px; color: var(--color-text-secondary); display: flex; align-items: flex-start; gap: 6px; line-height: 1.5; }
+  .ri-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--color-border-secondary); flex-shrink: 0; margin-top: 6px; }
+
+  .done-box { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .done-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
+  .done-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .done-pill { font-size: 11px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 20px; padding: 4px 10px; color: var(--color-text-secondary); }
+
+  .cta-box { background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 1.1rem 1.25rem; }
+  .cta-title { font-size: 14px; font-weight: 500; color: var(--color-text-info); margin-bottom: 0.4rem; }
+  .cta-desc { font-size: 13px; color: var(--color-text-info); line-height: 1.6; opacity: 0.85; }
+
+  @media (max-width: 560px) { .reality-grid { grid-template-columns: 1fr; } }
+</style>
+
+<!-- WHAT WE HAVE -->
+<div class="done-box">
+  <div class="done-title">What already exists from our sessions</div>
+  <div class="done-list">
+    <span class="done-pill">Marketing site (HTML)</span>
+    <span class="done-pill">App ecosystem cards (8 apps)</span>
+    <span class="done-pill">Pricing tiers</span>
+    <span class="done-pill">Blueprint marketplace UI</span>
+    <span class="done-pill">33 blueprint specs</span>
+    <span class="done-pill">25 prompt packs (JSON)</span>
+    <span class="done-pill">Blueprint JSON schema</span>
+    <span class="done-pill">Inventory schema</span>
+    <span class="done-pill">Formula library (12 formulas)</span>
+    <span class="done-pill">Revenue model</span>
+    <span class="done-pill">MRR calculator</span>
+  </div>
+</div>
+
+<!-- PHASE 1 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num p1">1</div>
+    <div class="phase-title">The foundation — without this nothing works</div>
+    <div class="phase-sub">Weeks 1–4</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-icon">👤</div>
+      <div class="task-body">
+        <div class="task-title">User auth and accounts</div>
+        <div class="task-desc">Register, login, password reset. Every feature lives behind a user account. Nothing else can be built without this.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">💳</div>
+      <div class="task-body">
+        <div class="task-title">Stripe subscriptions</div>
+        <div class="task-desc">Seedling (free), Maker ($19), Studio Pro ($49) plans. Stripe handles billing, upgrades, cancellations. No subscription = no revenue.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🗄️</div>
+      <div class="task-body">
+        <div class="task-title">Database — users, blueprints, inventory</div>
+        <div class="task-desc">PostgreSQL tables for users, inventory_items, blueprints, projects. The blueprint JSON schema is already designed — a developer just needs to implement it.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🎨</div>
+      <div class="task-body">
+        <div class="task-title">Deploy the marketing site</div>
+        <div class="task-desc">The site we built in this session is HTML — it needs to go live on a real domain. Vercel or Netlify, 30 minutes of work. This is your storefront and needs to exist before anything else.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- PHASE 2 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num p2">2</div>
+    <div class="phase-title">The core product — what makes the first $19/mo make sense</div>
+    <div class="phase-sub">Weeks 5–10</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-icon">📐</div>
+      <div class="task-body">
+        <div class="task-title">Geometry engine (Python backend)</div>
+        <div class="task-desc">The heart of the platform. Takes a blueprint JSON and places elements using polar coordinates. Outputs an SVG. Without this, blueprints are just JSON files — nothing renders.</div>
+        <span class="task-tag tag-dev">Developer — hardest piece</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🌸</div>
+      <div class="task-body">
+        <div class="task-title">Floral SVG asset library</div>
+        <div class="task-desc">Simple SVG icons for each flower and greenery type — rose, daisy, eucalyptus, fern etc. Doesn't need to be photorealistic. Think clean botanical illustration style, keyed by SKU.</div>
+        <span class="task-tag tag-design">Designer or illustrator</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">📦</div>
+      <div class="task-body">
+        <div class="task-title">Inventory manager UI</div>
+        <div class="task-desc">The table interface for adding stems, tracking quantities, and importing CSV. The schema is already designed. A developer needs to build the CRUD interface.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🧠</div>
+      <div class="task-body">
+        <div class="task-title">Memory Weaver — AI emotion analysis</div>
+        <div class="task-desc">POST to OpenAI GPT-4 with a memory text input. Returns emotion scores. Maps those to color palettes and formula selection. The logic is fully designed — needs a developer to wire it up.</div>
+        <span class="task-tag tag-dev">Developer + OpenAI API key</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">📄</div>
+      <div class="task-body">
+        <div class="task-title">Blueprint export — SVG and PDF</div>
+        <div class="task-desc">Takes a rendered blueprint and exports a clean SVG + a printable PDF build guide with step-by-step clock position instructions. This is what makers actually use at the workbench.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🏪</div>
+      <div class="task-body">
+        <div class="task-title">Seed the marketplace with the 33 blueprints</div>
+        <div class="task-desc">The 33 blueprint specs and 25 prompt packs from these sessions need to be converted into real database records and uploaded. The JSON schemas are done — this is data entry plus build guide generation.</div>
+        <span class="task-tag tag-content">Content + Developer</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- PHASE 3 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num p3">3</div>
+    <div class="phase-title">The ecosystem apps — each one is a separate feature</div>
+    <div class="phase-sub">Months 3–6</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-icon">📦</div>
+      <div class="task-body">
+        <div class="task-title">Inventory Weaver app</div>
+        <div class="task-desc">The constrained blueprint generator — takes inventory quantities and generates designs using only available materials. Formula selection logic is designed. Needs backend implementation.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🎨</div>
+      <div class="task-body">
+        <div class="task-title">Design Studio app</div>
+        <div class="task-desc">Drag-and-drop canvas for editing blueprints. Zone locking, element repositioning, cluster management. This is the most complex UI in the platform — needs a frontend developer comfortable with SVG interaction (Konva.js or Fabric.js).</div>
+        <span class="task-tag tag-dev">Developer — most complex UI</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🎨</div>
+      <div class="task-body">
+        <div class="task-title">Visual Companion app</div>
+        <div class="task-desc">Prompt pack display, variation matrix UI, overlay PNG generator, MJ feedback ingestor. The prompt packs are already written in JSON — this is the UI layer on top of them.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🖌️</div>
+      <div class="task-body">
+        <div class="task-title">Layout Studio app</div>
+        <div class="task-desc">Interactive canvas for sketching wreath layouts before AI completes them. Anchor points, zone painting, harmony meter. Needs a developer comfortable with canvas interaction.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">🧠</div>
+      <div class="task-body">
+        <div class="task-title">Blueprint Intelligence Pro app</div>
+        <div class="task-desc">Design DNA profile, emotion sliders, blueprint versioning. Requires a user_profile_weights table, embedding model integration, and version control logic.</div>
+        <span class="task-tag tag-dev">Developer + AI/ML</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- PHASE 4 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num p4">4</div>
+    <div class="phase-title">Growth features — once you have paying users</div>
+    <div class="phase-sub">Month 6+</div>
+  </div>
+  <div class="tasks">
+    <div class="task">
+      <div class="task-icon">🔬</div>
+      <div class="task-body">
+        <div class="task-title">Adaptive Blueprint Composer</div>
+        <div class="task-desc">The self-learning design engine. Requires real user behavioral data to be useful — build this after you have 100+ active users generating real interaction events.</div>
+        <span class="task-tag tag-dev">Developer + AI/ML — needs user data first</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">👩‍🎨</div>
+      <div class="task-body">
+        <div class="task-title">Designer marketplace submissions</div>
+        <div class="task-desc">Allow external designers to submit blueprints, set prices, receive 70% payouts via Stripe Connect. The marketplace UI is designed — this adds the seller-side flow.</div>
+        <span class="task-tag tag-dev">Developer + Stripe Connect</span>
+      </div>
+    </div>
+    <div class="task">
+      <div class="task-icon">📱</div>
+      <div class="task-body">
+        <div class="task-title">Mobile optimization</div>
+        <div class="task-desc">The canvas and studio tools need touch-friendly interactions. Not a separate app — just ensuring the web app works well on tablets and phones where many crafters actually work.</div>
+        <span class="task-tag tag-dev">Developer</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- REALITY CHECK -->
+<div style="margin-bottom:1.5rem">
+  <div class="section-label" style="font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem">The honest reality check</div>
+  <div class="reality-grid">
+    <div class="reality-card">
+      <div class="reality-title">What you can do right now — today</div>
+      <div class="reality-items">
+        <div class="reality-item"><div class="ri-dot"></div>Deploy the marketing site to a real domain</div>
+        <div class="reality-item"><div class="ri-dot"></div>Set up a waitlist email capture (Mailchimp or ConvertKit)</div>
+        <div class="reality-item"><div class="ri-dot"></div>Share the site and start collecting real user feedback</div>
+        <div class="reality-item"><div class="ri-dot"></div>Use the 33 blueprints and prompt packs with real clients manually — before the app exists</div>
+        <div class="reality-item"><div class="ri-dot"></div>Post Memory Weaver concepts on social to test the emotional hook</div>
+      </div>
+    </div>
+    <div class="reality-card">
+      <div class="reality-title">What you need a developer for</div>
+      <div class="reality-items">
+        <div class="reality-item"><div class="ri-dot"></div>Everything in Phase 1 and 2 — none of it exists as running code yet</div>
+        <div class="reality-item"><div class="ri-dot"></div>The geometry engine is the hardest and most important piece</div>
+        <div class="reality-item"><div class="ri-dot"></div>Full-stack developer comfortable with Python backend + React frontend</div>
+        <div class="reality-item"><div class="ri-dot"></div>Estimated Phase 1+2 build: 2–3 months solo developer, or 6–8 weeks with two developers</div>
+        <div class="reality-item"><div class="ri-dot"></div>Everything designed in these sessions goes straight into their hands as a spec</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-box">
+  <div class="cta-title">The single most important next step</div>
+  <div class="cta-desc">Deploy the marketing site today and add a waitlist. Every person who signs up before the product exists is validation that the idea works and a potential beta user. The entire platform spec, schemas, app designs, marketplace, and blueprint library from these sessions is your developer handoff document — it's more complete than most funded startups have before they hire their first engineer.</div>
+</div>

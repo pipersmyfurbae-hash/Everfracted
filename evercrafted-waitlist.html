@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — Join the Waitlist</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F8F5EF;--cream2:#F0EBE2;--cream3:#E6DFCF;
+  --white:#FDFCF9;
+  --ink:#1B1916;--ink2:#332F28;
+  --muted:#8A8278;--muted2:#B4AFA8;
+  --sage:#506347;--sage-l:#C4D4BF;--sage-ll:#EBF1E8;--sage-d:#324030;
+  --bark:#8A6E52;--bark-l:#C2A98E;--bark-ll:#EDE5D8;
+  --rule:rgba(27,25,22,.07);--rule2:rgba(27,25,22,.13);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--ink);
+  color:var(--cream);
+  font-size:14px;line-height:1.6;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── BACKGROUND ── */
+.bg{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(80,99,71,.18) 0, transparent 55%),
+    radial-gradient(ellipse at 80% 20%, rgba(138,110,82,.12) 0, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(80,99,71,.08) 0, transparent 45%),
+    var(--ink);
+}
+/* Wreath rings in bg */
+.bg-ring{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(248,245,239,.04);
+  animation:slowpulse 8s ease-in-out infinite;
+}
+@keyframes slowpulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.7;transform:scale(1.01)}}
+
+/* ── LAYOUT ── */
+.page{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+/* ── LEFT ── */
+.left{
+  padding:52px 56px 52px 72px;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  border-right:1px solid rgba(248,245,239,.07);
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px;font-weight:500;
+  letter-spacing:.06em;color:rgba(248,245,239,.8);
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:64px;
+}
+.logo-mark{width:18px;height:18px;flex-shrink:0}
+
+.eyebrow{
+  font-size:9px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--sage-l);
+  margin-bottom:18px;display:flex;align-items:center;gap:10px;
+}
+.eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--sage-l)}
+
+h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(38px,4.5vw,62px);
+  font-weight:300;line-height:1.07;
+  letter-spacing:-.025em;
+  color:rgba(248,245,239,.94);
+  margin-bottom:18px;
+}
+h1 em{font-style:italic;color:var(--bark-l)}
+
+.sub{
+  font-size:15px;font-weight:300;line-height:1.8;
+  color:rgba(248,245,239,.45);
+  max-width:400px;margin-bottom:44px;
+}
+
+/* ── FOUNDING OFFER ── */
+.founding{
+  background:rgba(80,99,71,.15);
+  border:1px solid rgba(196,212,191,.2);
+  border-radius:6px;
+  padding:18px 22px;
+  margin-bottom:36px;
+  max-width:440px;
+}
+.founding-label{
+  font-size:9px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--sage-l);
+  margin-bottom:6px;
+}
+.founding-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:400;
+  color:rgba(248,245,239,.88);margin-bottom:4px;
+}
+.founding-desc{
+  font-size:12px;font-weight:300;
+  color:rgba(248,245,239,.45);line-height:1.6;
+}
+.founding-spots{
+  margin-top:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.spots-bar{
+  flex:1;height:3px;
+  background:rgba(248,245,239,.1);border-radius:2px;
+}
+.spots-fill{
+  width:68%;height:100%;
+  background:var(--sage-l);border-radius:2px;
+}
+.spots-label{
+  font-size:10px;color:rgba(248,245,239,.35);white-space:nowrap;
+}
+
+/* ── PROOF ── */
+.proof{
+  display:flex;gap:32px;margin-bottom:48px;
+}
+.proof-stat .pn{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:300;
+  color:rgba(248,245,239,.8);line-height:1;
+}
+.proof-stat .pl{
+  font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(248,245,239,.28);margin-top:2px;
+}
+
+/* ── TESTIMONIALS ── */
+.testi-row{display:flex;flex-direction:column;gap:12px;max-width:440px}
+.testi{
+  background:rgba(248,245,239,.04);
+  border:1px solid rgba(248,245,239,.07);
+  border-radius:6px;padding:16px 18px;
+}
+.testi-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px;font-weight:300;font-style:italic;
+  color:rgba(248,245,239,.7);line-height:1.65;
+  margin-bottom:10px;
+}
+.testi-author{
+  display:flex;align-items:center;gap:8px;
+}
+.tav{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--sage);display:flex;align-items:center;
+  justify-content:center;font-size:10px;font-weight:500;
+  color:var(--ink);flex-shrink:0;
+}
+.tav-name{font-size:11px;color:rgba(248,245,239,.55)}
+.tav-handle{font-size:10px;color:rgba(248,245,239,.28)}
+
+/* ── RIGHT ── */
+.right{
+  padding:52px 72px 52px 56px;
+  display:flex;flex-direction:column;
+  justify-content:center;
+}
+.form-block{max-width:420px;width:100%}
+.form-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:300;
+  color:rgba(248,245,239,.9);
+  margin-bottom:6px;letter-spacing:-.01em;
+}
+.form-sub{
+  font-size:13px;font-weight:300;
+  color:rgba(248,245,239,.38);
+  margin-bottom:28px;line-height:1.65;
+}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+label{
+  font-size:10px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:rgba(248,245,239,.35);
+}
+input,select{
+  padding:11px 14px;
+  background:rgba(248,245,239,.06);
+  border:1px solid rgba(248,245,239,.12);
+  border-radius:3px;
+  color:rgba(248,245,239,.88);
+  font-size:13px;font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:border-color .15s,background .15s;
+  width:100%;
+  -webkit-appearance:none;
+}
+input::placeholder{color:rgba(248,245,239,.22)}
+input:focus,select:focus{
+  border-color:rgba(196,212,191,.4);
+  background:rgba(248,245,239,.08);
+}
+select{
+  background-image:url("assets/inline/evercrafted-waitlist-01-71c9dfb6.svg'http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(248,245,239,0.3)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:36px;cursor:pointer;
+}
+select option{background:var(--ink);color:rgba(248,245,239,.88)}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.btn-submit{
+  width:100%;padding:14px;
+  background:var(--sage);color:var(--white);
+  border:none;border-radius:3px;
+  font-size:13px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all .18s;margin-top:6px;
+}
+.btn-submit:hover{background:var(--sage-d)}
+
+.form-note{
+  font-size:11px;font-weight:300;
+  color:rgba(248,245,239,.25);
+  text-align:center;margin-top:12px;line-height:1.6;
+}
+
+/* ── WHAT YOU GET ── */
+.what-you-get{
+  margin-top:36px;
+  border-top:1px solid rgba(248,245,239,.07);
+  padding-top:28px;
+}
+.wyg-label{
+  font-size:9px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(248,245,239,.28);
+  margin-bottom:16px;
+}
+.wyg-items{display:flex;flex-direction:column;gap:9px}
+.wyg-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:12px;font-weight:300;
+  color:rgba(248,245,239,.5);line-height:1.55;
+}
+.wyg-check{
+  color:var(--sage-l);font-size:12px;
+  flex-shrink:0;margin-top:1px;
+}
+
+/* ── SUCCESS STATE ── */
+.success{
+  display:none;flex-direction:column;
+  align-items:center;text-align:center;
+  padding:40px 20px;
+}
+.success.show{display:flex}
+.success-icon{
+  width:60px;height:60px;border-radius:50%;
+  background:rgba(80,99,71,.2);border:1px solid var(--sage-l);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:20px;
+}
+.success-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:300;font-style:italic;
+  color:rgba(248,245,239,.9);margin-bottom:8px;
+}
+.success-sub{
+  font-size:13px;font-weight:300;
+  color:rgba(248,245,239,.4);line-height:1.75;
+  max-width:360px;margin-bottom:24px;
+}
+.success-email-preview{
+  background:rgba(248,245,239,.05);
+  border:1px solid rgba(248,245,239,.08);
+  border-radius:6px;padding:16px 20px;
+  text-align:left;width:100%;margin-bottom:20px;
+}
+.sep-label{
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(248,245,239,.25);margin-bottom:8px;
+}
+.sep-subject{
+  font-size:13px;color:rgba(248,245,239,.7);
+  font-weight:500;margin-bottom:4px;
+}
+.sep-preview{
+  font-size:12px;font-weight:300;
+  color:rgba(248,245,239,.38);line-height:1.6;
+}
+.success-share{
+  font-size:12px;color:rgba(248,245,239,.35);
+}
+.success-share a{
+  color:var(--sage-l);text-decoration:none;
+}
+
+/* ── WREATH SVG ── */
+.mini-wreaths{
+  display:flex;gap:10px;margin-top:28px;
+  justify-content:flex-start;
+}
+.mini-wreath-wrap{
+  opacity:.5;transition:opacity .2s;
+}
+.mini-wreath-wrap:hover{opacity:.8}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.fade-up{animation:fadeUp .5s ease both}
+.d1{animation-delay:.08s;opacity:0}
+.d2{animation-delay:.16s;opacity:0}
+.d3{animation-delay:.24s;opacity:0}
+.d4{animation-delay:.32s;opacity:0}
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="bg-ring" style="width:500px;height:500px;top:-100px;right:-100px"></div>
+  <div class="bg-ring" style="width:320px;height:320px;bottom:80px;left:40px;animation-delay:3s"></div>
+  <div class="bg-ring" style="width:180px;height:180px;top:40%;left:48%;animation-delay:6s"></div>
+</div>
+
+<div class="page">
+
+  <!-- ── LEFT ── -->
+  <div class="left">
+    <div class="logo fade-up">
+      <svg class="logo-mark" viewBox="0 0 20 20" fill="none">
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(0,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(72,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(144,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(216,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(288,10,10)"/>
+        <circle cx="10" cy="10" r="2.2" fill="var(--bark)"/>
+      </svg>
+      Evercrafted
+    </div>
+
+    <div class="eyebrow fade-up d1">Early access</div>
+    <h1 class="fade-up d1">Design wreaths that<br>say exactly what<br>you <em>mean them to.</em></h1>
+    <p class="sub fade-up d2">Evercrafted is a set of tools that helps wreath designers plan better, create faster, and waste less. Describe a feeling, sketch a layout, check your costs — all in one place.</p>
+
+    <div class="founding fade-up d2">
+      <div class="founding-label">Founding member offer</div>
+      <div class="founding-title">$19/month for life — locked in on signup</div>
+      <div class="founding-desc">The first 200 designers who join get the Maker plan at $19/month permanently. Full price is $29/month. This offer closes when spots fill.</div>
+      <div class="founding-spots">
+        <div class="spots-bar"><div class="spots-fill"></div></div>
+        <div class="spots-label">136 of 200 spots claimed</div>
+      </div>
+    </div>
+
+    <div class="proof fade-up d3">
+      <div class="proof-stat"><div class="pn">2,400+</div><div class="pl">Designers</div></div>
+      <div class="proof-stat"><div class="pn">18,000</div><div class="pl">Wreaths designed</div></div>
+      <div class="proof-stat"><div class="pn">$340</div><div class="pl">Avg saved / month</div></div>
+    </div>
+
+    <div class="testi-row fade-up d4">
+      <div class="testi">
+        <div class="testi-text">"I stopped wasting stems trying things out. I plan everything in Layout Studio first, and by the time I sit down to make the wreath I already know exactly what I'm doing."</div>
+        <div class="testi-author">
+          <div class="tav">SR</div>
+          <div><div class="tav-name">Sarah R.</div><div class="tav-handle">Etsy seller · 4,200 sales</div></div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-text">"The cost tool saved me $340 in the first month just on materials I'd have wasted. My client work is faster, my stock runs tighter."</div>
+        <div class="testi-author">
+          <div class="tav">JT</div>
+          <div><div class="tav-name">Jamie T.</div><div class="tav-handle">Seasonal décor studio</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT ── -->
+  <div class="right">
+    <div class="form-block">
+
+      <!-- Form -->
+      <div id="form-wrap">
+        <div class="form-title fade-up">Join the waitlist</div>
+        <p class="form-sub fade-up d1">Get early access and lock in the founding member price before spots run out. No credit card until you're ready to start.</p>
+
+        <form onsubmit="handleSubmit(event)">
+          <div class="field-row">
+            <div class="field fade-up d1">
+              <label for="fname">First name</label>
+              <input id="fname" type="text" placeholder="Sarah" required>
+            </div>
+            <div class="field fade-up d1">
+              <label for="lname">Last name</label>
+              <input id="lname" type="text" placeholder="Reynolds" required>
+            </div>
+          </div>
+
+          <div class="field fade-up d2">
+            <label for="email">Email address</label>
+            <input id="email" type="email" placeholder="sarah@yourstudio.com" required>
+          </div>
+
+          <div class="field fade-up d2">
+            <label for="type">How do you sell your wreaths?</label>
+            <select id="type" required>
+              <option value="" disabled selected>Choose one...</option>
+              <option>Etsy shop</option>
+              <option>My own website</option>
+              <option>Farmers markets and fairs</option>
+              <option>Wholesale / retail</option>
+              <option>Custom orders only</option>
+              <option>I'm just starting out</option>
+            </select>
+          </div>
+
+          <div class="field fade-up d3">
+            <label for="vol">How many wreaths do you make per month?</label>
+            <select id="vol">
+              <option value="" disabled selected>Roughly...</option>
+              <option>1–5</option>
+              <option>6–15</option>
+              <option>16–40</option>
+              <option>40+</option>
+            </select>
+          </div>
+
+          <button class="btn-submit fade-up d3" type="submit">Claim my spot →</button>
+        </form>
+
+        <p class="form-note fade-up d4">No credit card. No spam. You'll get one confirmation email and then we'll reach out when your access is ready.</p>
+
+        <div class="what-you-get fade-up d4">
+          <div class="wyg-label">What you get on launch day</div>
+          <div class="wyg-items">
+            <div class="wyg-item"><span class="wyg-check">—</span>Design Library included free on every plan</div>
+            <div class="wyg-item"><span class="wyg-check">—</span>14-day free trial of any 4 apps you choose</div>
+            <div class="wyg-item"><span class="wyg-check">—</span>$19/month locked in for life (founding members only)</div>
+            <div class="wyg-item"><span class="wyg-check">—</span>Access to all 33 free designs in the marketplace</div>
+            <div class="wyg-item"><span class="wyg-check">—</span>Priority onboarding from the Evercrafted team</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div class="success" id="success">
+        <div class="success-icon">🌿</div>
+        <div class="success-title">You're on the list.</div>
+        <p class="success-sub">We'll send your access as soon as we're ready. In the meantime, here's what lands in your inbox first.</p>
+        <div class="success-email-preview">
+          <div class="sep-label">First email — arriving shortly</div>
+          <div class="sep-subject">Welcome to Evercrafted — you're in.</div>
+          <div class="sep-preview">Your founding member spot is confirmed. Here's what Evercrafted actually does, and what your first two weeks will look like when access opens...</div>
+        </div>
+        <p class="success-share">Know another wreath maker? <a href="#">Share your referral link</a> — they skip the queue and you get an extra month free.</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API_BASE = "http://localhost:8787";
+
+async function handleSubmit(e){
+  e.preventDefault();
+  const fname = document.getElementById('fname').value;
+  const lname = document.getElementById('lname').value;
+  const email = document.getElementById('email').value;
+  const studioType = document.getElementById('type').value;
+  const volume = document.getElementById('vol').value;
+
+  try {
+    const res = await fetch(`${API_BASE}/waitlist`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: fname,
+        last_name: lname,
+        email,
+        studio_type: studioType,
+        volume
+      })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.ok) throw new Error(json.error || 'Submit failed');
+
+    document.getElementById('form-wrap').style.display = 'none';
+    const s = document.getElementById('success');
+    s.classList.add('show');
+    s.querySelector('.sep-preview').textContent =
+      `Hi ${fname} — your founding member spot is confirmed. Here's what Evercrafted actually does, and what your first two weeks will look like when access opens...`;
+  } catch (err) {
+    alert('Could not submit. Please try again.');
+  }
+}
+</script>
+</body>
+</html>

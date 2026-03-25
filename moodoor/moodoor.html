@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moodoor — Wreaths for the home, chosen by mood</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --warm:#FAF6F0;
+  --warm2:#F2EBE0;
+  --warm3:#E8DDD0;
+  --ink:#2A1F14;
+  --ink2:#4A3828;
+  --muted:#8A7560;
+  --muted2:#C0AE98;
+  --blush:#C4836A;
+  --blush-l:#E8C4B4;
+  --blush-ll:#FAF0EA;
+  --sage:#6A8C6A;
+  --sage-l:#A8C4A0;
+  --sage-ll:#EDF2EA;
+  --bark:#A87850;
+  --bark-l:#D4B090;
+  --bark-ll:#F5EDE4;
+  --rule:rgba(42,31,20,.08);
+  --rule2:rgba(42,31,20,.14);
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--warm);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.6;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background-image:url("../assets/inline/moodoor-moodoor-01-fa012faa.svg'0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;opacity:.4;
+}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:60px;
+  display:flex;align-items:center;
+  padding:0 40px;
+  background:rgba(250,246,240,.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--rule);
+}
+.nav-brand{
+  font-family:'Playfair Display',serif;
+  font-size:22px;font-weight:400;
+  color:var(--ink);letter-spacing:-.01em;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-brand-em{font-style:italic;color:var(--blush)}
+.nav-links{
+  display:flex;gap:28px;margin-left:auto;margin-right:36px;
+}
+.nav-links a{
+  font-size:13px;font-weight:400;color:var(--muted);
+  text-decoration:none;letter-spacing:.02em;
+  transition:color .15s;cursor:pointer;
+}
+.nav-links a:hover{color:var(--ink)}
+.btn-nav{
+  padding:8px 22px;
+  background:var(--ink);color:var(--warm);
+  border:none;border-radius:2px;
+  font-size:12px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'Jost',sans-serif;
+  transition:background .15s;
+}
+.btn-nav:hover{background:var(--ink2)}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  padding-top:60px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  overflow:hidden;
+  position:relative;
+}
+.hero-l{
+  padding:80px 56px 72px 80px;
+  display:flex;flex-direction:column;justify-content:center;
+  background:var(--warm);
+  position:relative;z-index:1;
+}
+.hero-eyebrow{
+  font-size:10px;font-weight:500;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--blush);
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before{
+  content:'';display:block;width:32px;height:1px;background:var(--blush);
+}
+.hero-h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(42px,5vw,68px);
+  font-weight:300;line-height:1.06;
+  letter-spacing:-.02em;color:var(--ink);
+  margin-bottom:20px;
+}
+.hero-h1 em{font-style:italic;color:var(--blush)}
+.hero-sub{
+  font-size:16px;font-weight:300;line-height:1.8;
+  color:var(--muted);max-width:400px;margin-bottom:36px;
+}
+.hero-quiz-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 36px;
+  background:var(--blush);color:white;
+  border:none;border-radius:2px;
+  font-size:14px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'Jost',sans-serif;
+  transition:all .2s;
+  margin-bottom:44px;
+  width:fit-content;
+}
+.hero-quiz-btn:hover{background:var(--ink);transform:translateY(-1px)}
+.hero-quiz-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+.hero-proof{display:flex;gap:36px}
+.hp{display:flex;flex-direction:column}
+.hp-n{
+  font-family:'Playfair Display',serif;
+  font-size:30px;font-weight:300;color:var(--ink);line-height:1;
+}
+.hp-l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-top:3px}
+
+/* Hero right — animated wreath + mood words */
+.hero-r{
+  background:var(--ink);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-r-inner{position:relative;width:400px;height:400px}
+
+/* Wreath SVG animated */
+.wreath-ring{
+  position:absolute;inset:0;
+  animation:floatring 8s ease-in-out infinite;
+}
+@keyframes floatring{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  33%{transform:translateY(-8px) rotate(1.5deg)}
+  66%{transform:translateY(4px) rotate(-1deg)}
+}
+
+/* Mood word floaters */
+.mood-word{
+  position:absolute;
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  color:rgba(250,246,240,.18);
+  pointer-events:none;
+  animation:moodfloat linear infinite;
+}
+@keyframes moodfloat{
+  0%{opacity:0;transform:translateY(20px)}
+  10%,90%{opacity:1}
+  100%{opacity:0;transform:translateY(-20px)}
+}
+
+/* Match result card — appears over wreath */
+.hero-match-card{
+  position:absolute;
+  bottom:28px;left:28px;right:28px;
+  background:rgba(250,246,240,.09);
+  border:1px solid rgba(250,246,240,.14);
+  border-radius:8px;
+  padding:16px 18px;
+  backdrop-filter:blur(12px);
+  z-index:10;
+}
+.hmc-label{
+  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(250,246,240,.38);margin-bottom:6px;
+}
+.hmc-name{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:300;font-style:italic;
+  color:rgba(250,246,240,.88);margin-bottom:4px;
+}
+.hmc-reason{
+  font-size:11px;font-weight:300;
+  color:rgba(250,246,240,.45);line-height:1.6;
+}
+
+/* ── QUIZ SECTION ── */
+.quiz-section{
+  padding:100px 0;
+  background:var(--warm2);
+  position:relative;z-index:1;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 40px}
+
+.section-eyebrow{
+  font-size:10px;font-weight:500;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--blush);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-eyebrow::before{
+  content:'';display:block;width:24px;height:1px;background:var(--blush);
+}
+.section-h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,3.5vw,44px);
+  font-weight:300;line-height:1.12;
+  letter-spacing:-.02em;color:var(--ink);
+  margin-bottom:0;
+}
+.section-h2 em{font-style:italic;color:var(--blush)}
+
+/* Quiz UI */
+.quiz-ui{
+  margin-top:56px;
+  background:var(--warm);
+  border:1px solid var(--rule2);
+  border-radius:12px;
+  overflow:hidden;
+  max-width:760px;
+}
+.quiz-progress{
+  height:3px;background:var(--warm3);
+  position:relative;
+}
+.quiz-progress-bar{
+  height:100%;background:var(--blush);
+  border-radius:0 2px 2px 0;
+  transition:width .4s ease;
+  width:33%;
+}
+.quiz-header{
+  padding:28px 32px 0;
+  display:flex;align-items:center;gap:16px;
+}
+.quiz-step-n{
+  font-size:10px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted2);
+}
+.quiz-step-dots{display:flex;gap:5px}
+.quiz-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--warm3);transition:background .25s;
+}
+.quiz-dot.done{background:var(--blush)}
+.quiz-dot.active{background:var(--blush);box-shadow:0 0 0 2px rgba(196,131,106,.25)}
+
+.quiz-question{
+  padding:20px 32px 28px;
+}
+.quiz-q{
+  font-family:'Playfair Display',serif;
+  font-size:24px;font-weight:300;
+  color:var(--ink);line-height:1.3;
+  margin-bottom:6px;
+}
+.quiz-hint{
+  font-size:13px;font-weight:300;color:var(--muted);margin-bottom:22px;
+}
+.quiz-options{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.quiz-option{
+  padding:14px 16px;
+  background:var(--warm2);
+  border:1px solid var(--rule);
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .18s;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.quiz-option:hover{
+  background:var(--blush-ll);
+  border-color:var(--blush-l);
+}
+.quiz-option.selected{
+  background:var(--blush-ll);
+  border-color:var(--blush);
+}
+.quiz-opt-check{
+  width:18px;height:18px;border-radius:50%;
+  border:1.5px solid var(--muted2);
+  flex-shrink:0;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.quiz-option.selected .quiz-opt-check{
+  background:var(--blush);border-color:var(--blush);
+}
+.quiz-option.selected .quiz-opt-check::after{
+  content:'';display:block;width:6px;height:6px;
+  border-radius:50%;background:white;
+}
+.quiz-opt-text{}
+.quiz-opt-label{
+  font-size:14px;font-weight:400;color:var(--ink);margin-bottom:2px;
+}
+.quiz-opt-desc{
+  font-size:12px;font-weight:300;color:var(--muted);
+}
+.quiz-footer{
+  padding:16px 32px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.quiz-back{
+  font-size:12px;color:var(--muted);cursor:pointer;
+  background:none;border:none;font-family:'Jost',sans-serif;
+  transition:color .15s;padding:0;
+}
+.quiz-back:hover{color:var(--ink)}
+.quiz-next{
+  padding:11px 32px;
+  background:var(--ink);color:var(--warm);
+  border:none;border-radius:2px;
+  font-size:12px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'Jost',sans-serif;
+  transition:all .18s;
+}
+.quiz-next:hover{background:var(--blush)}
+.quiz-next:disabled{opacity:.35;cursor:not-allowed}
+
+/* Match result */
+.quiz-result{
+  padding:32px;display:none;
+  flex-direction:column;align-items:center;text-align:center;
+}
+.quiz-result.show{display:flex}
+.qr-label{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--blush);margin-bottom:16px;
+}
+.qr-wreath-name{
+  font-family:'Playfair Display',serif;
+  font-size:32px;font-weight:300;font-style:italic;
+  color:var(--ink);margin-bottom:12px;
+}
+.qr-reason{
+  font-size:14px;font-weight:300;color:var(--muted);
+  line-height:1.75;max-width:480px;margin-bottom:24px;
+}
+.qr-detail{
+  display:flex;gap:16px;margin-bottom:28px;
+  flex-wrap:wrap;justify-content:center;
+}
+.qr-tag{
+  font-size:11px;font-weight:400;color:var(--bark-d);
+  background:var(--bark-ll);border:1px solid rgba(168,120,80,.18);
+  padding:4px 12px;border-radius:2px;
+}
+.btn-buy{
+  padding:14px 40px;
+  background:var(--blush);color:white;
+  border:none;border-radius:2px;
+  font-size:13px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'Jost',sans-serif;
+  transition:all .18s;margin-bottom:12px;
+}
+.btn-buy:hover{background:var(--ink)}
+.qr-restart{
+  font-size:12px;color:var(--muted);cursor:pointer;
+  background:none;border:none;font-family:'Jost',sans-serif;
+  transition:color .15s;text-decoration:underline;
+}
+.qr-restart:hover{color:var(--ink)}
+
+/* ── HOW IT WORKS ── */
+.how-section{padding:100px 0;background:var(--warm)}
+.how-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:0;margin-top:52px;
+  border:1px solid var(--rule2);border-radius:10px;overflow:hidden;
+  background:var(--rule);
+}
+.how-step{
+  background:var(--warm);
+  padding:32px 26px;
+}
+.how-n{
+  font-family:'Playfair Display',serif;
+  font-size:48px;font-weight:300;
+  color:var(--warm3);line-height:1;margin-bottom:14px;
+}
+.how-title{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:400;
+  color:var(--ink);margin-bottom:8px;
+}
+.how-desc{
+  font-size:13px;font-weight:300;
+  color:var(--muted);line-height:1.75;
+}
+
+/* ── WHY MOODOOR ── */
+.why-section{
+  padding:100px 0;
+  background:var(--ink);
+  position:relative;overflow:hidden;
+}
+.why-section::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 70% 50%, rgba(196,131,106,.08) 0, transparent 60%);
+}
+.why-inner{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:72px;align-items:center;
+  position:relative;z-index:1;
+}
+.why-l .section-eyebrow::before{background:var(--blush-l)}
+.why-l .section-eyebrow{color:var(--blush-l)}
+.why-h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,3.5vw,44px);
+  font-weight:300;line-height:1.12;
+  letter-spacing:-.02em;
+  color:rgba(250,246,240,.9);
+  margin-bottom:20px;
+}
+.why-h2 em{font-style:italic;color:rgba(196,131,106,.9)}
+.why-body{
+  font-size:15px;font-weight:300;
+  color:rgba(250,246,240,.45);
+  line-height:1.85;margin-bottom:32px;
+}
+.why-bullets{list-style:none;display:flex;flex-direction:column;gap:11px}
+.why-bullets li{
+  font-size:13px;font-weight:300;
+  color:rgba(250,246,240,.55);
+  display:flex;align-items:flex-start;gap:10px;
+  line-height:1.6;
+}
+.why-bullets li::before{
+  content:'—';color:var(--blush);
+  font-size:11px;flex-shrink:0;margin-top:2px;
+}
+
+/* Right side — app shell mockup */
+.why-phone{
+  background:rgba(250,246,240,.05);
+  border:1px solid rgba(250,246,240,.1);
+  border-radius:16px;overflow:hidden;
+  max-width:340px;margin:0 auto;
+}
+.wp-bar{
+  background:rgba(250,246,240,.06);
+  border-bottom:1px solid rgba(250,246,240,.07);
+  padding:12px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.wp-brand{
+  font-family:'Playfair Display',serif;
+  font-size:16px;font-weight:300;font-style:italic;
+  color:rgba(250,246,240,.75);
+}
+.wp-step{font-size:10px;color:rgba(250,246,240,.3);letter-spacing:.1em}
+.wp-body{padding:24px 20px}
+.wp-q{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:300;
+  color:rgba(250,246,240,.82);
+  margin-bottom:5px;line-height:1.35;
+}
+.wp-hint{
+  font-size:11px;font-weight:300;
+  color:rgba(250,246,240,.35);margin-bottom:18px;
+}
+.wp-opts{display:flex;flex-direction:column;gap:7px}
+.wp-opt{
+  padding:11px 14px;
+  background:rgba(250,246,240,.05);
+  border:1px solid rgba(250,246,240,.08);
+  border-radius:6px;
+  display:flex;align-items:center;gap:10px;
+}
+.wp-opt.active{
+  background:rgba(196,131,106,.12);
+  border-color:rgba(196,131,106,.3);
+}
+.wp-opt-dot{
+  width:8px;height:8px;border-radius:50%;
+  border:1.5px solid rgba(250,246,240,.2);flex-shrink:0;
+}
+.wp-opt.active .wp-opt-dot{
+  background:var(--blush);border-color:var(--blush);
+}
+.wp-opt-label{
+  font-size:12px;color:rgba(250,246,240,.55);font-weight:300;
+}
+.wp-opt.active .wp-opt-label{color:rgba(250,246,240,.82)}
+.wp-footer{
+  padding:14px 20px 20px;
+  display:flex;justify-content:flex-end;
+}
+.wp-btn{
+  padding:9px 22px;
+  background:var(--blush);color:white;
+  border:none;border-radius:2px;
+  font-size:11px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'Jost',sans-serif;
+}
+
+/* ── WREATHS ── */
+.wreaths-section{padding:100px 0;background:var(--warm2)}
+.wreaths-intro{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:end;margin-bottom:52px;
+}
+.wreaths-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+}
+.wreath-card{
+  background:var(--warm);
+  border:1px solid var(--rule);border-radius:10px;
+  overflow:hidden;cursor:pointer;
+  transition:all .2s;
+}
+.wreath-card:hover{
+  box-shadow:0 8px 32px rgba(42,31,20,.1);
+  transform:translateY(-3px);
+  border-color:var(--rule2);
+}
+.wc-thumb{
+  height:200px;background:var(--warm3);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.wc-mood-tag{
+  position:absolute;top:12px;left:12px;
+  font-size:9px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;
+  background:rgba(250,246,240,.88);color:var(--blush);
+  padding:3px 9px;border-radius:2px;
+  backdrop-filter:blur(8px);
+}
+.wc-info{padding:16px 18px}
+.wc-name{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:400;color:var(--ink);
+  margin-bottom:4px;letter-spacing:-.01em;
+}
+.wc-desc{
+  font-size:12px;font-weight:300;color:var(--muted);
+  line-height:1.6;margin-bottom:12px;
+}
+.wc-footer{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.wc-price{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:300;color:var(--ink);
+}
+.wc-btn{
+  font-size:10px;font-weight:500;letter-spacing:.06em;
+  color:var(--blush);cursor:pointer;
+  background:none;border:none;
+  font-family:'Jost',sans-serif;
+  padding:0;transition:color .15s;
+}
+.wc-btn:hover{color:var(--ink)}
+
+/* ── COMING SOON ── */
+.coming-section{
+  padding:80px 0;background:var(--warm);
+  border-top:1px solid var(--rule);
+}
+.coming-inner{
+  display:flex;gap:16px;flex-wrap:wrap;
+}
+.coming-card{
+  flex:1;min-width:240px;
+  background:var(--warm2);
+  border:1px solid var(--rule);border-radius:8px;
+  padding:24px;
+  opacity:.7;
+}
+.cc-label{
+  font-size:9px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted2);margin-bottom:8px;
+}
+.cc-title{
+  font-family:'Playfair Display',serif;
+  font-size:18px;font-weight:400;color:var(--ink);
+  margin-bottom:5px;
+}
+.cc-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.7}
+
+/* ── CTA ── */
+.cta-section{
+  padding:120px 0;
+  background:var(--blush-ll);
+  text-align:center;
+  border-top:1px solid rgba(196,131,106,.15);
+}
+.cta-h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,4.5vw,56px);
+  font-weight:300;font-style:italic;
+  color:var(--ink);line-height:1.1;
+  margin-bottom:16px;
+}
+.cta-sub{
+  font-size:15px;font-weight:300;color:var(--muted);
+  max-width:440px;margin:0 auto 36px;line-height:1.8;
+}
+.cta-quiz-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 44px;
+  background:var(--blush);color:white;
+  border:none;border-radius:2px;
+  font-size:14px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'Jost',sans-serif;
+  transition:all .2s;
+}
+.cta-quiz-btn:hover{background:var(--ink);transform:translateY(-1px)}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--ink);
+  padding:56px 0 32px;
+}
+.footer-inner{
+  display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;
+  gap:36px;margin-bottom:44px;
+}
+.footer-brand{
+  font-family:'Playfair Display',serif;
+  font-size:20px;font-weight:300;font-style:italic;
+  color:rgba(250,246,240,.75);
+  margin-bottom:8px;
+}
+.footer-tagline{
+  font-size:12px;font-weight:300;
+  color:rgba(250,246,240,.3);line-height:1.65;
+  max-width:200px;
+}
+.footer-ec-link{
+  margin-top:14px;
+  font-size:11px;color:rgba(250,246,240,.25);
+}
+.footer-ec-link a{color:rgba(196,131,106,.5);text-decoration:none}
+.footer-ec-link a:hover{color:rgba(196,131,106,.8)}
+.footer-col h4{
+  font-size:9px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:rgba(250,246,240,.25);margin-bottom:14px;
+}
+.footer-col a{
+  display:block;font-size:12px;font-weight:300;
+  color:rgba(250,246,240,.42);margin-bottom:8px;
+  text-decoration:none;cursor:pointer;transition:color .12s;
+}
+.footer-col a:hover{color:rgba(250,246,240,.72)}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:20px;border-top:1px solid rgba(250,246,240,.07);
+}
+.footer-copy{font-size:11px;color:rgba(250,246,240,.2)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:20px;right:20px;z-index:999;
+  background:var(--ink);color:var(--warm);
+  padding:8px 16px;border-radius:3px;
+  font-size:12px;opacity:0;transform:translateY(6px);
+  transition:all .22s;pointer-events:none;
+}
+.toast.on{opacity:1;transform:none}
+
+/* ── WREATH THUMB SVG STYLES ── */
+.wt-svg{position:absolute;inset:0;width:100%;height:100%}
+
+@keyframes fadein{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadein .6s ease both}
+.d1{animation-delay:.1s;opacity:0}
+.d2{animation-delay:.2s;opacity:0}
+.d3{animation-delay:.32s;opacity:0}
+
+.wc-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.wc-thumb{overflow:hidden;position:relative}
+
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <em>Moodoor</em>
+  </div>
+  <div class="nav-links">
+    <a href="moodoor.html">Home</a>
+    <a href="quiz.html">Mood quiz</a>
+    <a href="result.html">Match result</a>
+  </div>
+  <a class="btn-nav" href="quiz.html">Find my wreath</a>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-l">
+    <div class="hero-eyebrow fade-in">Mood-driven door décor</div>
+    <h1 class="hero-h1 fade-in d1">Find the wreath that fits<br>how your <em>home feels.</em></h1>
+    <p class="hero-sub fade-in d2">Moodoor matches you to a wreath based on the mood you want to create — calm, warm, romantic, festive, and more. No endless scrolling. Just a wreath that feels right.</p>
+    <button class="hero-quiz-btn fade-in d2" onclick="scrollTo({top:document.querySelector('.quiz-section').offsetTop-60,behavior:'smooth'})">
+      Take the mood quiz
+      <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+    <div class="hero-proof fade-in d3">
+      <div class="hp"><div class="hp-n">1,400+</div><div class="hp-l">Homes matched</div></div>
+      <div class="hp"><div class="hp-n">4.9 ★</div><div class="hp-l">Average rating</div></div>
+      <div class="hp"><div class="hp-n">60 sec</div><div class="hp-l">Match time</div></div>
+    </div>
+  </div>
+  <div class="hero-r">
+    <div class="hero-r-inner">
+      <svg class="wreath-ring" viewBox="0 0 400 400">
+        <circle cx="200" cy="200" r="145" stroke="rgba(196,131,106,.25)" stroke-width="18" fill="none"/>
+        <circle cx="200" cy="200" r="120" stroke="rgba(196,131,106,.15)" stroke-width="10" fill="none"/>
+        <circle cx="200" cy="200" r="90" stroke="rgba(196,131,106,.1)" stroke-width="6" fill="none"/>
+      </svg>
+      <div class="mood-word" style="top:30px;left:40px;font-size:32px;animation-duration:9s">calm</div>
+      <div class="mood-word" style="top:80px;right:50px;font-size:28px;animation-duration:11s">romantic</div>
+      <div class="mood-word" style="bottom:60px;left:70px;font-size:30px;animation-duration:10s">warm</div>
+      <div class="mood-word" style="bottom:40px;right:80px;font-size:26px;animation-duration:12s">festive</div>
+      <div class="hero-match-card fade-in d3">
+        <div class="hmc-label">Match preview</div>
+        <div class="hmc-name">Ivory Garden</div>
+        <div class="hmc-reason">A calm, minimal wreath with white hydrangea and sage eucalyptus — designed to feel quiet and elegant on a pale door.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ QUIZ ══ -->
+<section class="quiz-section">
+  <div class="wrap">
+    <div class="section-eyebrow">Mood quiz</div>
+    <h2 class="section-h2">Three questions. One perfect wreath.</h2>
+
+    <div class="quiz-ui">
+      <div class="quiz-progress"><div class="quiz-progress-bar" id="quiz-progress"></div></div>
+
+      <!-- Question 1 -->
+      <div class="quiz-question" id="quiz-q1">
+        <div class="quiz-header">
+          <div class="quiz-step-n">Step 1 of 3</div>
+          <div class="quiz-step-dots">
+            <div class="quiz-dot active"></div>
+            <div class="quiz-dot"></div>
+            <div class="quiz-dot"></div>
+          </div>
+        </div>
+        <div class="quiz-q">How do you want your home to feel?</div>
+        <div class="quiz-hint">Pick the mood you want to create when someone arrives.</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-val="calm" onclick="selectOpt(this,'q1')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Calm & minimal</div><div class="quiz-opt-desc">Soft neutrals, clean lines, quiet presence</div></div></div>
+          <div class="quiz-option" data-val="warm" onclick="selectOpt(this,'q1')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Warm & inviting</div><div class="quiz-opt-desc">Golden tones, welcoming, lived‑in</div></div></div>
+          <div class="quiz-option" data-val="romantic" onclick="selectOpt(this,'q1')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Romantic & soft</div><div class="quiz-opt-desc">Blush tones, gentle, floral</div></div></div>
+          <div class="quiz-option" data-val="fresh" onclick="selectOpt(this,'q1')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Fresh & natural</div><div class="quiz-opt-desc">Greenery, airy, garden‑like</div></div></div>
+          <div class="quiz-option" data-val="bold" onclick="selectOpt(this,'q1')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Bold & dramatic</div><div class="quiz-opt-desc">Deep colours, statement look</div></div></div>
+          <div class="quiz-option" data-val="festive" onclick="selectOpt(this,'q1')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Festive & seasonal</div><div class="quiz-opt-desc">Rich, celebratory, joyful</div></div></div>
+        </div>
+        <div class="quiz-footer">
+          <button class="quiz-back" disabled>Back</button>
+          <button class="quiz-next" id="q1-next" disabled onclick="goQ(2)">Next</button>
+        </div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="quiz-question" id="quiz-q2" style="display:none">
+        <div class="quiz-header">
+          <div class="quiz-step-n">Step 2 of 3</div>
+          <div class="quiz-step-dots">
+            <div class="quiz-dot done"></div>
+            <div class="quiz-dot active"></div>
+            <div class="quiz-dot"></div>
+          </div>
+        </div>
+        <div class="quiz-q">What's the season or occasion?</div>
+        <div class="quiz-hint">We'll match the flowers and colours to it.</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-val="spring" onclick="selectOpt(this,'q2')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Spring</div><div class="quiz-opt-desc">Fresh, light, floral</div></div></div>
+          <div class="quiz-option" data-val="summer" onclick="selectOpt(this,'q2')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Summer</div><div class="quiz-opt-desc">Bright, airy, garden‑like</div></div></div>
+          <div class="quiz-option" data-val="autumn" onclick="selectOpt(this,'q2')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Autumn</div><div class="quiz-opt-desc">Warm, cosy, textured</div></div></div>
+          <div class="quiz-option" data-val="winter" onclick="selectOpt(this,'q2')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Winter</div><div class="quiz-opt-desc">Cool, crisp, festive</div></div></div>
+          <div class="quiz-option" data-val="year" onclick="selectOpt(this,'q2')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Year‑round</div><div class="quiz-opt-desc">Neutral, always in season</div></div></div>
+        </div>
+        <div class="quiz-footer">
+          <button class="quiz-back" onclick="goQ(1)">Back</button>
+          <button class="quiz-next" id="q2-next" disabled onclick="goQ(3)">Next</button>
+        </div>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="quiz-question" id="quiz-q3" style="display:none">
+        <div class="quiz-header">
+          <div class="quiz-step-n">Step 3 of 3</div>
+          <div class="quiz-step-dots">
+            <div class="quiz-dot done"></div>
+            <div class="quiz-dot done"></div>
+            <div class="quiz-dot active"></div>
+          </div>
+        </div>
+        <div class="quiz-q">What kind of doorway do you have?</div>
+        <div class="quiz-hint">We'll match the scale and colours to suit it.</div>
+        <div class="quiz-options">
+          <div class="quiz-option" data-val="light" onclick="selectOpt(this,'q3')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Light or white door</div><div class="quiz-opt-desc">Soft, neutral, bright</div></div></div>
+          <div class="quiz-option" data-val="dark" onclick="selectOpt(this,'q3')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Dark or black door</div><div class="quiz-opt-desc">High contrast, bold</div></div></div>
+          <div class="quiz-option" data-val="wood" onclick="selectOpt(this,'q3')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Natural wood door</div><div class="quiz-opt-desc">Warm, textured, earthy</div></div></div>
+          <div class="quiz-option" data-val="modern" onclick="selectOpt(this,'q3')"><div class="quiz-opt-check"></div><div class="quiz-opt-text"><div class="quiz-opt-label">Modern / matte door</div><div class="quiz-opt-desc">Clean lines, minimal palette</div></div></div>
+        </div>
+        <div class="quiz-footer">
+          <button class="quiz-back" onclick="goQ(2)">Back</button>
+          <button class="quiz-next" id="q3-next" disabled onclick="showResult()">See my match</button>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="quiz-result" id="quiz-result">
+        <div class="qr-label">Your match</div>
+        <div class="qr-wreath-name" id="result-name"></div>
+        <div class="qr-reason" id="result-reason"></div>
+        <div class="qr-detail" id="result-tags"></div>
+        <button class="btn-buy" onclick="toast('Shop coming soon — join the waitlist!')">Shop this wreath</button>
+        <button class="qr-restart" onclick="restartQuiz()">Try again</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="how-section">
+  <div class="wrap">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-h2">From mood to wreath in minutes.</h2>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-n">01</div>
+        <div class="how-title">Pick your mood</div>
+        <div class="how-desc">Tell us how you want your home to feel — calm, warm, romantic, festive, and more.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">02</div>
+        <div class="how-title">We match the style</div>
+        <div class="how-desc">We translate your mood into colour, material, and composition decisions.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">03</div>
+        <div class="how-title">See your match</div>
+        <div class="how-desc">We show you the wreath that best fits your mood and door type.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">04</div>
+        <div class="how-title">Order with confidence</div>
+        <div class="how-desc">Every wreath is checked for balance and quality before it ships.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY MOODOOR ══ -->
+<section class="why-section">
+  <div class="wrap">
+    <div class="why-inner">
+      <div class="why-l">
+        <div class="section-eyebrow">Why it's different</div>
+        <h2 class="why-h2">Most people don't know what<br>wreath they want.<br><em>They know how they want to feel.</em></h2>
+        <p class="why-body">Choosing a wreath from a catalogue is overwhelming. Every one is beautiful. None of them feel obviously right. Moodoor skips the catalogue entirely — instead of showing you options, it asks you how you want your home to feel and works backwards from there.</p>
+        <ul class="why-bullets">
+          <li>No scrolling through hundreds of options that all start to look the same</li>
+          <li>No second-guessing whether "dusty rose" goes with your grey door</li>
+          <li>No returns because the colours were different on your screen</li>
+          <li>Every match checked against live stock — nothing surfaced that isn't available</li>
+          <li>Every wreath quality-checked to hang straight before it's suggested to you</li>
+        </ul>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <div class="why-phone">
+          <div class="wp-bar">
+            <span class="wp-brand">Moodoor</span>
+            <span class="wp-step">2 of 3</span>
+          </div>
+          <div class="wp-body">
+            <div class="wp-q">What's the season<br>or occasion?</div>
+            <div class="wp-hint">We'll match the flowers and colours to it.</div>
+            <div class="wp-opts">
+              <div class="wp-opt"><div class="wp-opt-dot"></div><div class="wp-opt-label">Spring</div></div>
+              <div class="wp-opt"><div class="wp-opt-dot"></div><div class="wp-opt-label">Summer</div></div>
+              <div class="wp-opt active"><div class="wp-opt-dot"></div><div class="wp-opt-label">Autumn</div></div>
+              <div class="wp-opt"><div class="wp-opt-dot"></div><div class="wp-opt-label">Winter</div></div>
+              <div class="wp-opt"><div class="wp-opt-dot"></div><div class="wp-opt-label">Year-round</div></div>
+            </div>
+          </div>
+          <div class="wp-footer">
+            <button class="wp-btn">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BROWSE WREATHS ══ -->
+<section class="wreaths-section">
+  <div class="wrap">
+    <div class="wreaths-intro">
+      <div>
+        <div class="section-eyebrow">The collection</div>
+        <h2 class="section-h2">Or browse if you<br><em>already know what you want.</em></h2>
+      </div>
+      <p style="font-size:14px;font-weight:300;color:var(--muted);line-height:1.8;align-self:end">Every wreath in the Moodoor collection is made by hand by independent wreath designers. Each one is checked for balance and quality before it's listed.</p>
+    </div>
+    <div class="wreaths-grid" id="wreaths-grid">
+      <div class="wreath-card">
+        <div class="wc-thumb" style="background:#2A1F14">
+          <img src="../assets/moodoor/moodoor-02.jpg" alt="Ivory Garden" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <span class="wc-mood-tag">Calm · Minimal</span>
+        </div>
+        <div class="wc-info">
+          <div class="wc-name">Ivory Garden</div>
+          <div class="wc-desc">White hydrangea, white rose, sage eucalyptus. Clean and timeless.</div>
+          <div class="wc-footer">
+            <span class="wc-price">$89</span>
+            <button class="wc-btn" onclick="toast('Shop coming soon — join the waitlist!')">View details →</button>
+          </div>
+        </div>
+      </div>
+      <div class="wreath-card">
+        <div class="wc-thumb" style="background:#2A1F14">
+          <img src="../assets/moodoor/moodoor-03.jpg" alt="Winter White" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <span class="wc-mood-tag">Calm · Pure</span>
+        </div>
+        <div class="wc-info">
+          <div class="wc-name">Winter White</div>
+          <div class="wc-desc">Cream rose focal, white hydrangea, sage eucalyptus. Pure and composed.</div>
+          <div class="wc-footer">
+            <span class="wc-price">$94</span>
+            <button class="wc-btn" onclick="toast('Shop coming soon — join the waitlist!')">View details →</button>
+          </div>
+        </div>
+      </div>
+      <div class="wreath-card">
+        <div class="wc-thumb" style="background:#2A1F14">
+          <img src="../assets/moodoor/moodoor-04.jpg" alt="Garden White" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <span class="wc-mood-tag">Fresh · Minimal</span>
+        </div>
+        <div class="wc-info">
+          <div class="wc-name">Garden White</div>
+          <div class="wc-desc">White peony cluster, eucalyptus. Fresh spring on a white wall.</div>
+          <div class="wc-footer">
+            <span class="wc-price">$98</span>
+            <button class="wc-btn" onclick="toast('Shop coming soon — join the waitlist!')">View details →</button>
+          </div>
+        </div>
+      </div>
+      <div class="wreath-card">
+        <div class="wc-thumb" style="background:#2A1F14">
+          <img src="../assets/moodoor/moodoor-05.jpg" alt="Quiet Morning" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <span class="wc-mood-tag">Calm · Crescent</span>
+        </div>
+        <div class="wc-info">
+          <div class="wc-name">Quiet Morning</div>
+          <div class="wc-desc">White hydrangea, magnolia, eucalyptus. Asymmetric crescent form.</div>
+          <div class="wc-footer">
+            <span class="wc-price">$108</span>
+            <button class="wc-btn" onclick="toast('Shop coming soon — join the waitlist!')">View details →</button>
+          </div>
+        </div>
+      </div>
+      <div class="wreath-card">
+        <div class="wc-thumb" style="background:#2A1F14">
+          <img src="../assets/moodoor/moodoor-06.jpg" alt="Ivory Studio" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <span class="wc-mood-tag">Calm · Classic</span>
+        </div>
+        <div class="wc-info">
+          <div class="wc-name">Ivory Studio</div>
+          <div class="wc-desc">White hydrangea, white rose, eucalyptus, sage. Full and balanced.</div>
+          <div class="wc-footer">
+            <span class="wc-price">$104</span>
+            <button class="wc-btn" onclick="toast('Shop coming soon — join the waitlist!')">View details →</button>
+          </div>
+        </div>
+      </div>
+      <div class="wreath-card">
+        <div class="wc-thumb" style="background:#2A1F14">
+          <img src="../assets/moodoor/moodoor-07.jpg" alt="Spring Garden" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <span class="wc-mood-tag">Fresh · Natural</span>
+        </div>
+        <div class="wc-info">
+          <div class="wc-name">Spring Garden</div>
+          <div class="wc-desc">White hydrangea, white tulip, fern, magnolia leaf. Garden-fresh and green.</div>
+          <div class="wc-footer">
+            <span class="wc-price">$96</span>
+            <button class="wc-btn" onclick="toast('Shop coming soon — join the waitlist!')">View details →</button>
+          </div>
+        </div>
+      </div></div>
+  </div>
+</section>
+
+<!-- ══ COMING SOON ══ -->
+<section class="coming-section">
+  <div class="wrap">
+    <div class="section-eyebrow" style="margin-bottom:24px">Coming soon</div>
+    <div class="coming-inner">
+      <div class="coming-card">
+        <div class="cc-label">Phase 2</div>
+        <div class="cc-title">AI door preview</div>
+        <div class="cc-desc">Upload a photo of your door and see the matched wreath on it before you buy. So you can be certain — not just hopeful.</div>
+      </div>
+      <div class="coming-card">
+        <div class="cc-label">Phase 2</div>
+        <div class="cc-title">Gift mode</div>
+        <div class="cc-desc">Answer the quiz for someone else's home. Include a gift message and a printable card. The wreath arrives knowing it was chosen with care.</div>
+      </div>
+      <div class="coming-card">
+        <div class="cc-label">For designers</div>
+        <div class="cc-title">Moodoor for your shop</div>
+        <div class="cc-desc">Embed the Moodoor mood quiz on your own Etsy or website. Your customers get the same experience — matching their mood to your designs.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section class="cta-section">
+  <div class="wrap">
+    <h2 class="cta-h2">Find the wreath that fits<br>how your home feels.</h2>
+    <p class="cta-sub">It takes 60 seconds. No account needed. If the match isn't right, tell us and we'll find another one.</p>
+    <button class="cta-quiz-btn" onclick="scrollTo({top:document.querySelector('.quiz-section').offsetTop-60,behavior:'smooth'})">
+      Take the quiz
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Moodoor</div>
+        <div class="footer-tagline">Wreaths for the home, chosen by mood.</div>
+        <div class="footer-ec-link">Powered by <a href="https://evercrafted.com" target="_blank">Evercrafted</a></div>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a>All wreaths</a>
+        <a>Seasonal</a>
+        <a>Under $60</a>
+        <a>Gifting</a>
+      </div>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <a>FAQ</a>
+        <a>Sizing guide</a>
+        <a>Returns</a>
+        <a>Contact us</a>
+      </div>
+      <div class="footer-col">
+        <h4>Designers</h4>
+        <a>Sell on Moodoor</a>
+        <a>Moodoor for your shop</a>
+        <a>Evercrafted Studio</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Moodoor. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── QUIZ STATE
+const answers = {q1:null,q2:null,q3:null};
+
+function selectOpt(el, q){
+  el.closest('.quiz-options').querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  answers[q] = el.dataset.val;
+  document.getElementById(q+'-next').disabled = false;
+}
+
+function goQ(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('quiz-q'+i).style.display = i===n?'block':'none';
+  });
+  const pct = {1:33,2:66,3:100}[n];
+  document.getElementById('quiz-progress').style.width = pct+'%';
+  document.getElementById('quiz-result').classList.remove('show');
+}
+
+// ── MATCH ENGINE
+const MATCHES = {
+  calm: {
+    spring: {name:'Morning Garden',reason:'A calm spring wreath for a pale door — white ranunculus and soft eucalyptus on a natural grapevine base. Quiet, fresh, and gentle.',tags:['White ranunculus','Silver eucalyptus','Grapevine base','18 inch','$89']},
+    autumn: {name:'Ivory Studio',reason:'Calm autumn tones for a pale door — white hydrangea and sage eucalyptus. Serene and understated, it lets the season in without shouting about it.',tags:['White hydrangea','Sage eucalyptus','Grapevine base','18 inch','$94']},
+    winter: {name:'Frosted Silence',reason:'Calm winter for a pale door — frosted eucalyptus, white cotton bolls, and dried tallow berry. Quiet as snowfall.',tags:['Frosted eucalyptus','Cotton bolls','White berry','18 inch','$98']},
+    default: {name:'Ivory Garden',reason:'A calm, minimal wreath for your door — white hydrangea and eucalyptus on a natural grapevine base. Quiet, elegant, and easy to live with all year.',tags:['White hydrangea','Eucalyptus','Grapevine base','18 inch','$89']},
+  },
+  warm: {
+    spring: {name:'Blush Welcome',reason:'A warm, welcoming spring wreath — blush peonies, soft whites, and flowering branches on a grapevine base. Like having the garden at your door.',tags:['Blush peony','White bloom','Flowering branch','20 inch','$108']},
+    autumn: {name:'Harvest Hearth',reason:'A warm autumn wreath that makes every visitor feel at home — amber ranunculus, copper leaves, and dried wheat. Inviting and generous.',tags:['Amber ranunculus','Copper leaf','Dried wheat','20 inch','$112']},
+    winter: {name:'Winter Welcome',reason:'A warm winter door wreath — dusty rose, cream, and frosted greenery. The kind of door people slow down to look at.',tags:['Dusty rose','Cream bloom','Frosted pine','20 inch','$115']},
+    default: {name:'Autumn Hearth',reason:'A warm, welcoming wreath that makes every visitor feel at home — amber tones, layered textures, and generous fullness. Generous and inviting.',tags:['Amber ranunculus','Eucalyptus','Grapevine base','20 inch','$108']},
+  },
+  romantic: {
+    spring: {name:'Garden Romance',reason:'A romantic spring wreath — garden roses, blush ranunculus, and lamb\'s ear on a painted door. Soft, layered, and full.',tags:['Garden rose','Blush ranunculus','Lamb\'s ear','18 inch','$116']},
+    autumn: {name:'Rose and Fog',reason:'Romantic autumn — dusty rose, pale blush, and muted sage. Soft enough to feel tender. Rich enough to feel seasonal.',tags:['Dusty rose','Pale blush','Sage','18 inch','$118']},
+    default: {name:'English Garden',reason:'A romantic wreath full of garden roses, blush ranunculus, and eucalyptus trails. Lush and layered — the kind of wreath that makes a door feel like a love letter.',tags:['Garden rose','Blush ranunculus','Eucalyptus','20 inch','$124']},
+  },
+  bold: {
+    default: {name:'Crimson Statement',reason:'A bold wreath that doesn\'t apologise for itself — deep crimson, navy delphinium, and dark eucalyptus. Nobody walks past without looking twice.',tags:['Crimson dahlia','Navy delphinium','Dark eucalyptus','22 inch','$138']},
+  },
+  fresh: {
+    spring: {name:'Garden Morning',reason:'A fresh spring wreath — white peony, eucalyptus, and flowering branch. Like the garden just after rain.',tags:['White peony','Eucalyptus','Flowering branch','18 inch','$96']},
+    summer: {name:'Coastal Fresh',reason:'Fresh and natural for summer — white orchid, pale blue hydrangea, and driftwood accents. Clean, airy, and alive.',tags:['White orchid','Pale hydrangea','Driftwood','18 inch','$102']},
+    default: {name:'Natural Studio',reason:'A fresh, natural wreath that looks like it grew there — mixed eucalyptus, white wax flower, and organic dried textures. Unforced and alive.',tags:['Mixed eucalyptus','White wax flower','Dried textures','18 inch','$89']},
+  },
+  festive: {
+    autumn: {name:'Copper & Sage',reason:'A festive autumn wreath — copper tones, sage green, and warm amber. Rich and celebratory without veering into kitsch.',tags:['Copper leaf','Sage bloom','Amber berry','20 inch','$118']},
+    winter: {name:'Festive Luxe',reason:'A festive winter wreath that feels luxurious, not cheap — frosted pine, white magnolia, and warm gold berry. The kind you keep up through January.',tags:['Frosted pine','White magnolia','Gold berry','22 inch','$138']},
+    default: {name:'Festive Cascade',reason:'A generous, celebratory wreath — rich tones, layered texture, and a full silhouette. Festive without feeling like a shop window.',tags:['Mixed festive bloom','Berry cluster','Frosted greenery','20 inch','$118']},
+  },
+};
+
+function getMatch(){
+  const mood = answers.q1 || 'calm';
+  const season = answers.q2 || 'year';
+  const pool = MATCHES[mood] || MATCHES.calm;
+  return pool[season] || pool.default || Object.values(pool)[0];
+}
+
+function showResult(){
+  const match = getMatch();
+  document.getElementById('quiz-q3').style.display = 'none';
+  document.getElementById('quiz-progress').style.width = '100%';
+  const result = document.getElementById('quiz-result');
+  result.classList.add('show');
+  document.getElementById('result-name').textContent = match.name;
+  document.getElementById('result-reason').textContent = match.reason;
+  document.getElementById('result-tags').innerHTML = match.tags.map(t=>`<span class="qr-tag">${t}</span>`).join('');
+}
+
+function restartQuiz(){
+  answers.q1=null;answers.q2=null;answers.q3=null;
+  ['q1','q2','q3'].forEach(q=>{
+    document.getElementById('quiz-'+q).querySelectorAll('.quiz-option').forEach(o=>o.classList.remove('selected'));
+    const next = document.getElementById(q+'-next');
+    if(next) next.disabled = true;
+  });
+  document.getElementById('quiz-result').classList.remove('show');
+  goQ(1);
+}
+
+// ── WREATHS
+const WREATHS = [
+  {name:"Ivory Garden",mood:"Calm · Minimal",desc:"White hydrangea and eucalyptus on a grapevine base. Quiet and elegant all year.",price:"$89",colors:["rgba(248,244,238,.9)","rgba(196,212,190,.6)","rgba(220,230,216,.5)"]},
+  {name:"English Garden",mood:"Romantic · Full",desc:"Garden roses, blush ranunculus, and eucalyptus trails. Lush and layered.",price:"$124",colors:["rgba(200,156,148,.8)","rgba(232,196,180,.7)","rgba(180,200,170,.5)"]},
+  {name:"Autumn Hearth",mood:"Warm · Festive",desc:"Amber ranunculus, eucalyptus, and dried textures. Warm and generous.",price:"$108",colors:["rgba(196,140,80,.7)","rgba(180,120,60,.6)","rgba(140,160,100,.5)"]},
+  {name:"Frosted Silence",mood:"Calm · Winter",desc:"Frosted eucalyptus and cotton bolls. Quiet as snowfall.",price:"$98",colors:["rgba(210,220,225,.8)","rgba(190,200,195,.7)","rgba(240,240,235,.5)"]},
+  {name:"Crimson Statement",mood:"Bold · Dramatic",desc:"Deep crimson and navy delphinium. Nobody walks past without looking twice.",price:"$138",colors:["rgba(160,60,60,.8)","rgba(60,80,120,.6)","rgba(60,80,60,.5)"]},
+  {name:"Garden Morning",mood:"Fresh · Spring",desc:"White peony, eucalyptus, and flowering branch. Like the garden just after rain.",price:"$96",colors:["rgba(248,244,240,.9)","rgba(200,220,196,.6)","rgba(220,200,180,.4)"]},
+];
+
+function drawWreathThumb(canvas, colors){
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const ro = Math.min(W,H)*0.40, ri = ro*0.52, rm = (ro+ri)/2;
+  ctx.clearRect(0,0,W,H);
+  // Ring fill
+  ctx.beginPath();
+  ctx.arc(cx,cy,ro,0,Math.PI*2);
+  ctx.arc(cx,cy,ri,0,Math.PI*2,true);
+  ctx.fillStyle = 'rgba(106,140,106,0.06)';
+  ctx.fill();
+  // Outer ring
+  ctx.beginPath();ctx.arc(cx,cy,ro,0,Math.PI*2);
+  ctx.strokeStyle='rgba(106,140,106,.18)';ctx.lineWidth=1;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,ri,0,Math.PI*2);
+  ctx.strokeStyle='rgba(106,140,106,.1)';ctx.stroke();
+  // Elements
+  for(let i=0;i<12;i++){
+    const a = (i/12)*Math.PI*2 - Math.PI/2;
+    const jitter = (Math.random()-0.5)*0.15;
+    const r = rm + (Math.random()-0.5)*(ro-ri)*0.4;
+    const x = cx + r*Math.cos(a+jitter);
+    const y = cy + r*Math.sin(a+jitter);
+    const size = 4 + Math.random()*6;
+    const col = colors[i % colors.length];
+    ctx.beginPath();ctx.arc(x,y,size,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.fill();
+  }
+}
+
+function buildWreaths(){
+  const grid = document.getElementById('wreaths-grid');
+  grid.innerHTML = WREATHS.map((w,i)=>`
+    <div class="wreath-card">
+      <div class="wc-thumb">
+        <span class="wc-mood-tag">${w.mood}</span>
+        <canvas id="wc${i}" width="260" height="200" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      </div>
+      <div class="wc-info">
+        <div class="wc-name">${w.name}</div>
+        <div class="wc-desc">${w.desc}</div>
+        <div class="wc-footer">
+          <span class="wc-price">${w.price}</span>
+          <button class="wc-btn" onclick="toast('Shop coming soon — join the waitlist!')">View details →</button>
+        </div>
+      </div>
+    </div>`).join('');
+  WREATHS.forEach((w,i)=>{
+    const c = document.getElementById('wc'+i);
+    if(c) drawWreathThumb(c, w.colors);
+  });
+}
+
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),2800);
+}
+
+// Images loaded statically
+goQ(1);
+</script>
+</body>
+</html>

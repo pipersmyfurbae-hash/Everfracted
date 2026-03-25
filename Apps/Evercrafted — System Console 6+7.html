@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — System Console P6/P7</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0907;--sf:#110f0c;--sf2:#1a1714;--sf3:#221f1b;
+  --bd:#2a2520;--bd2:#3a342d;
+  --gold:#c9a96e;--gd:rgba(201,169,110,.12);--gg:rgba(201,169,110,.06);
+  --sage:#7a9e7e;--saged:rgba(122,158,126,.15);
+  --rose:#c47c6e;--rosed:rgba(196,124,110,.15);
+  --lav:#9b8ec4;--lavd:rgba(155,142,196,.15);
+  --amb:#d4a843;--ambd:rgba(212,168,67,.15);
+  --p6:#8fa86e;--p6d:rgba(143,168,110,.15);
+  --p7:#7a8ec4;--p7d:rgba(122,142,196,.15);
+  --txt:#e8e0d4;--txd:#8a7d6e;--txm:#4a4038;
+  --fd:'Cormorant Garamond',serif;--fm:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:var(--fm);font-size:13px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5;}
+
+body.light{
+  --bg:#f9f7f3;--sf:#ffffff;--sf2:#f5f1ea;--sf3:#efe9df;
+  --bd:rgba(30,28,24,0.08);--bd2:rgba(30,28,24,0.14);
+  --gold:#8c7258;--gd:rgba(140,114,88,.12);--gg:rgba(140,114,88,.06);
+  --sage:#5c7353;--saged:rgba(92,115,83,.16);
+  --rose:#c47c6e;--rosed:rgba(196,124,110,.12);
+  --lav:#8b86b0;--lavd:rgba(139,134,176,.12);
+  --amb:#c9a96e;--ambd:rgba(201,169,110,.14);
+  --p6:#5c7353;--p6d:rgba(92,115,83,.16);
+  --p7:#8b86b0;--p7d:rgba(139,134,176,.12);
+  --txt:#1e1c18;--txd:#5c544b;--txm:#8b8278;
+  --fm:'DM Sans',sans-serif;
+}
+body.light::before{opacity:.25;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+.sb{width:236px;min-width:236px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;}
+.sb-logo{padding:20px 20px 13px;border-bottom:1px solid var(--bd);}
+.logo-name{font-family:var(--fd);font-size:21px;font-weight:300;letter-spacing:.12em;color:var(--gold);display:block;}
+.logo-sub{font-size:9px;letter-spacing:.22em;color:var(--txm);margin-top:4px;text-transform:uppercase;display:block;}
+.sb-sec{padding:11px 0 3px;}
+.ssl{font-size:8px;letter-spacing:.26em;color:var(--txm);text-transform:uppercase;padding:0 20px;margin-bottom:4px;}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 20px;cursor:pointer;color:var(--txd);transition:all .14s;border-left:2px solid transparent;font-size:11px;}
+.ni:hover{color:var(--txt);background:var(--gg);}
+.ni.active{color:var(--gold);border-left-color:var(--gold);background:var(--gd);}
+.ni.dim{opacity:.28;pointer-events:none;}
+.nic{font-size:12px;opacity:.6;width:14px;text-align:center;}
+.pb{font-size:7px;letter-spacing:.1em;padding:1px 5px;border-radius:1px;margin-left:auto;white-space:nowrap;}
+.pb-dim{background:rgba(42,37,32,.8);color:var(--txm);border:1px solid var(--bd);}
+.pb-p6{background:var(--p6d);color:var(--p6);border:1px solid rgba(143,168,110,.3);}
+.pb-p7{background:var(--p7d);color:var(--p7);border:1px solid rgba(122,142,196,.3);}
+.sb-foot{margin-top:auto;padding:11px 20px;border-top:1px solid var(--bd);}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px;}
+.dot-p6{background:var(--p6);animation:pulse 2s infinite;}
+.dot-p7{background:var(--p7);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.2;}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes aidot{0%,80%,100%{transform:scale(.5);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+@keyframes pIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--sf);border-bottom:1px solid var(--bd);padding:11px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-title{font-family:var(--fd);font-size:17px;font-weight:300;letter-spacing:.08em;}
+.tm{display:flex;gap:9px;align-items:center;}
+.mtag{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txm);background:var(--sf2);border:1px solid var(--bd);padding:3px 7px;border-radius:2px;}
+.mtag.hl{color:var(--gold);border-color:rgba(201,169,110,.3);background:var(--gd);}
+.mtag.p6t{color:var(--p6);border-color:rgba(143,168,110,.3);background:var(--p6d);}
+.mtag.p7t{color:var(--p7);border-color:rgba(122,142,196,.3);background:var(--p7d);}
+
+.panel{display:none;padding:24px 26px;animation:pIn .24s ease both;}
+.panel.active{display:block;}
+
+/* shared */
+.sh{font-family:var(--fd);font-size:11.5px;font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sh::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--bd2),transparent);}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gd),transparent);}
+.clbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:5px;}
+.cval{font-family:var(--fd);font-size:28px;font-weight:300;color:var(--gold);line-height:1;}
+.csub{font-size:10.5px;color:var(--txd);margin-top:3px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:16px;}
+.btn{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10px;letter-spacing:.12em;padding:7px 12px;cursor:pointer;text-transform:uppercase;transition:all .14s;border-radius:2px;}
+.btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.btn.p6{border-color:var(--p6);color:var(--p6);background:var(--p6d);}
+.btn.p6:hover:not(:disabled){background:rgba(143,168,110,.25);}
+.btn.p7{border-color:var(--p7);color:var(--p7);background:var(--p7d);}
+.btn.p7:hover:not(:disabled){background:rgba(122,142,196,.25);}
+.btn.sage{border-color:var(--sage);color:var(--sage);background:var(--saged);}
+.sel{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10.5px;padding:6px 9px;border-radius:2px;outline:none;cursor:pointer;transition:border-color .14s;}
+.sel:focus{border-color:var(--gold);}
+.sel option{background:var(--sf2);}
+.inp{background:var(--sf2);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:11px;padding:7px 10px;border-radius:2px;outline:none;transition:border-color .14s;}
+.inp:focus{border-color:var(--gold);}
+.inp::placeholder{color:var(--txm);}
+.row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.lbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:5px;}
+.ai-out{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px 17px;font-size:11.5px;color:var(--txd);line-height:1.9;white-space:pre-wrap;word-break:break-word;}
+.ai-out.sp6::after{content:'▋';color:var(--p6);animation:blink .7s infinite;}
+.ai-out.sp7::after{content:'▋';color:var(--p7);animation:blink .7s infinite;}
+.badge{font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:2px 6px;border-radius:1px;}
+.badge-p6{color:var(--p6);background:var(--p6d);border:1px solid rgba(143,168,110,.3);}
+.badge-p7{color:var(--p7);background:var(--p7d);border:1px solid rgba(122,142,196,.3);}
+.thinking{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:2px;font-size:10.5px;}
+.tp6{background:var(--p6d);border:1px solid rgba(143,168,110,.3);color:var(--p6);}
+.tp7{background:var(--p7d);border:1px solid rgba(122,142,196,.3);color:var(--p7);}
+.tdots{display:flex;gap:4px;}.tdots span{width:5px;height:5px;border-radius:50%;animation:aidot .9s infinite both;}
+.tdots span:nth-child(2){animation-delay:.18s;}.tdots span:nth-child(3){animation-delay:.36s;}
+.dp6 span{background:var(--p6);}.dp7 span{background:var(--p7);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bd2);}
+::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+
+/* ── INVENTORY AI ── */
+.inv-layout{display:flex;gap:14px;min-height:500px;}
+.inv-chat{flex:1;display:flex;flex-direction:column;background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.inv-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:300px;}
+.inv-input-row{border-top:1px solid var(--bd);padding:10px 13px;display:flex;gap:8px;align-items:flex-end;}
+.inv-inp{flex:1;background:var(--sf2);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:11px;padding:7px 10px;border-radius:2px;outline:none;resize:none;min-height:34px;max-height:90px;line-height:1.6;transition:border-color .14s;}
+.inv-inp:focus{border-color:var(--p6);}
+.inv-inp::placeholder{color:var(--txm);}
+.msg{display:flex;gap:8px;align-items:flex-start;animation:fadeUp .2s ease both;}
+.msg.u{flex-direction:row-reverse;}
+.av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:2px;}
+.av-ai6{background:var(--p6d);border:1px solid rgba(143,168,110,.4);color:var(--p6);}
+.av-ai7{background:var(--p7d);border:1px solid rgba(122,142,196,.4);color:var(--p7);}
+.av-u{background:var(--gd);border:1px solid rgba(201,169,110,.3);color:var(--gold);}
+.bub{max-width:82%;padding:9px 13px;border-radius:3px;font-size:11px;line-height:1.75;color:var(--txd);}
+.bub-ai{background:var(--sf2);border:1px solid var(--bd);border-bottom-left-radius:0;}
+.bub-u{background:var(--gd);border:1px solid rgba(201,169,110,.2);color:var(--txt);border-bottom-right-radius:0;}
+.bub-ai.st::after{content:'▋';color:var(--p6);animation:blink .7s infinite;}
+.sys{text-align:center;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--txm);padding:2px 0;}
+.inv-side{width:258px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;}
+.inv-panel{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:12px;}
+.inv-tbl-wrap{border:1px solid var(--bd);border-radius:2px;overflow:hidden;max-height:250px;overflow-y:auto;}
+.inv-th{display:grid;grid-template-columns:1fr 50px 44px 40px;background:var(--sf);border-bottom:1px solid var(--bd);}
+.inv-th div{font-size:7.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--txm);padding:5px 7px;}
+.inv-tr{display:grid;grid-template-columns:1fr 50px 44px 40px;border-bottom:1px solid var(--bd);transition:background .1s;}
+.inv-tr:last-child{border-bottom:none;}
+.inv-tr:hover{background:var(--gg);}
+.inv-tr div{font-size:10px;color:var(--txd);padding:5px 7px;}
+.inv-tr .iname{color:var(--txt);font-size:10px;}
+.rt{font-size:7px;letter-spacing:.09em;text-transform:uppercase;padding:1px 4px;border-radius:1px;}
+.rtf{background:var(--rosed);color:var(--rose);border:1px solid rgba(196,124,110,.3);}
+.rts{background:var(--gd);color:var(--gold);border:1px solid rgba(201,169,110,.3);}
+.rtfi{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.rtg{background:rgba(42,37,32,.8);color:var(--txm);border:1px solid var(--bd);}
+.sbar{display:flex;align-items:center;gap:4px;}
+.str{width:28px;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden;}
+.stf{height:100%;border-radius:1px;}
+.sugg{padding:5px 9px;background:var(--sf2);border:1px solid var(--bd);border-radius:2px;font-size:9.5px;color:var(--txd);cursor:pointer;transition:all .12s;line-height:1.5;}
+.sugg:hover{border-color:var(--p6);color:var(--p6);}
+.sub-result{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;overflow:hidden;}
+.sub-row{display:flex;align-items:center;gap:8px;padding:8px 11px;border-bottom:1px solid var(--bd);font-size:10.5px;animation:fadeUp .2s ease both;}
+.sub-row:last-child{border-bottom:none;}
+.sub-o{color:var(--txm);width:110px;flex-shrink:0;text-decoration:line-through;font-size:10px;}
+.sub-arrow{color:var(--txm);opacity:.4;}
+.sub-n{flex:1;}
+.sub-r{color:var(--txm);font-size:9px;}
+
+/* ── EVALUATOR ── */
+.eval-layout{display:flex;gap:14px;}
+.eval-l{flex:1;display:flex;flex-direction:column;gap:12px;}
+.eval-r{width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+.eval-score-box{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.score-num{font-family:var(--fd);font-size:54px;font-weight:300;line-height:1;}
+.score-grade{font-size:10px;letter-spacing:.2em;text-transform:uppercase;}
+.grade-a{color:var(--sage);}
+.grade-b{color:var(--gold);}
+.grade-c{color:var(--amb);}
+.grade-d{color:var(--rose);}
+.dim-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd);}
+.dim-row:last-child{border-bottom:none;}
+.dim-lbl{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--txm);width:130px;flex-shrink:0;}
+.dim-bar{flex:1;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.dim-fill{height:100%;border-radius:2px;transition:width .7s ease;}
+.dim-val{font-size:10px;width:30px;text-align:right;}
+.issue{display:flex;gap:8px;padding:9px 12px;border-bottom:1px solid var(--bd);animation:fadeUp .18s ease both;}
+.issue:last-child{border-bottom:none;}
+.isev{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.sev-c{background:var(--rose);}
+.sev-w{background:var(--amb);}
+.sev-i{background:var(--sage);}
+.itxt{flex:1;color:var(--txd);font-size:11px;line-height:1.6;}
+.ilvl{font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;margin-left:auto;align-self:flex-start;padding-top:3px;}
+.lc{color:var(--rose);}
+.lw{color:var(--amb);}
+.li{color:var(--sage);}
+
+/* ── BUILD SHEET ── */
+.build-layout{display:flex;gap:14px;}
+.build-l{flex:1;display:flex;flex-direction:column;gap:12px;}
+.build-r{width:268px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.bs-doc{background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.bs-hd{background:var(--sf2);border-bottom:1px solid var(--bd);padding:14px 18px;display:flex;justify-content:space-between;align-items:flex-start;}
+.bs-title{font-family:var(--fd);font-size:19px;font-weight:300;}
+.bs-meta{font-size:9.5px;color:var(--txm);text-align:right;line-height:1.7;}
+.bs-sec{border-bottom:1px solid var(--bd);padding:12px 17px;}
+.bs-sec:last-child{border-bottom:none;}
+.bs-sec-lbl{font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--p7);margin-bottom:9px;}
+.bs-spec{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px;}
+.bs-spec:last-child{border-bottom:none;}
+.bs-sk{color:var(--txm);}
+.bs-sv{color:var(--txt);}
+.bs-item{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:11px;}
+.bs-item:last-child{border-bottom:none;}
+.bs-num{width:20px;height:20px;border-radius:50%;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:8.5px;color:var(--txm);flex-shrink:0;}
+.bs-name{flex:1;color:var(--txt);}
+.bs-qty{color:var(--txd);width:24px;text-align:right;}
+.bs-len{color:var(--p7);width:36px;text-align:right;font-size:10px;}
+.bs-step{display:flex;gap:9px;padding:8px 0;border-bottom:1px solid var(--bd);animation:fadeUp .16s ease both;}
+.bs-step:last-child{border-bottom:none;}
+.bs-sn{width:18px;height:18px;border-radius:50%;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--txm);flex-shrink:0;margin-top:1px;}
+.bs-sn.done{border-color:var(--p7);color:var(--p7);background:var(--p7d);}
+.bs-stxt{flex:1;font-size:11px;color:var(--txd);line-height:1.6;}
+.bs-note{background:var(--p7d);border:1px solid rgba(122,142,196,.3);border-radius:2px;padding:9px 12px;font-size:11px;color:var(--p7);line-height:1.65;}
+.stat-sm{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:11px 12px;}
+.stat-sm-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:3px;}
+.stat-sm-val{font-family:var(--fd);font-size:20px;font-weight:300;color:var(--p7);}
+.stat-sm-sub{font-size:10px;color:var(--txd);margin-top:1px;}
+
+/* ── PRICING ── */
+.price-layout{display:flex;gap:14px;}
+.price-l{flex:1;display:flex;flex-direction:column;gap:12px;}
+.price-r{width:268px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.price-form{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:17px;}
+.pf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:13px;}
+.pf-field{display:flex;flex-direction:column;gap:5px;}
+.pf-lbl{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--txm);}
+.pf-inp{background:var(--sf2);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:12px;padding:7px 9px;border-radius:2px;outline:none;transition:border-color .12s;width:100%;}
+.pf-inp:focus{border-color:var(--p7);}
+.pr-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--bd);}
+.pr-row:last-child{border-bottom:none;}
+.pr-row.total{background:var(--p7d);}
+.pr-k{color:var(--txm);font-size:11px;}
+.pr-v{font-size:12px;color:var(--txt);}
+.pr-v.pos{color:var(--sage);}
+.pr-v.neg{color:var(--rose);}
+.pr-v.warn{color:var(--amb);}
+.pr-v.big{font-family:var(--fd);font-size:26px;font-weight:300;color:var(--p7);}
+.margin-box{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.margin-pct{font-family:var(--fd);font-size:52px;font-weight:300;line-height:1;}
+.margin-lbl{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);}
+.price-box{background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.price-hero{padding:12px 16px;border-bottom:1px solid var(--bd);}
+.price-hero-lbl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:4px;}
+.price-hero-val{font-family:var(--fd);font-size:34px;font-weight:300;}
+.tier-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--bd);}
+.tier-row:last-child{border-bottom:none;}
+.tier-name{font-size:11px;color:var(--txd);flex:1;}
+.tier-price{font-family:var(--fd);font-size:18px;font-weight:300;color:var(--txt);}
+.tier-margin{font-size:10px;margin-left:6px;}
+.health-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:11px;}
+.health-row:last-child{border-bottom:none;}
+.hdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+
+/* ── LAUNCH PLANNER ── */
+.launch-layout{display:flex;gap:14px;}
+.launch-l{flex:1;display:flex;flex-direction:column;gap:12px;}
+.launch-r{width:268px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.tl-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:18px;position:relative;}
+.tl-spine{position:absolute;left:28px;top:26px;bottom:26px;width:1px;background:linear-gradient(to bottom,var(--p7),rgba(122,142,196,.06));}
+.tl-item{display:flex;gap:13px;margin-bottom:16px;animation:fadeUp .2s ease both;}
+.tl-item:last-child{margin-bottom:0;}
+.tl-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--bd2);background:var(--bg);flex-shrink:0;margin-top:4px;position:relative;z-index:1;transition:all .3s;}
+.tl-dot.done{background:var(--p7);border-color:var(--p7);box-shadow:0 0 7px rgba(122,142,196,.4);}
+.tl-dot.live{background:var(--p7d);border-color:var(--p7);animation:pulse 1.3s infinite;}
+.tl-day{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--txm);margin-bottom:2px;}
+.tl-task{font-size:12px;color:var(--txt);font-family:var(--fd);font-weight:300;margin-bottom:2px;}
+.tl-desc{font-size:10px;color:var(--txd);line-height:1.6;}
+.tl-tag{display:inline-block;font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 5px;border-radius:1px;margin-top:3px;}
+.tt-done{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.tt-live{background:var(--p7d);color:var(--p7);border:1px solid rgba(122,142,196,.3);}
+.tt-pend{background:var(--sf3);color:var(--txm);border:1px solid var(--bd);}
+.tt-ai{background:var(--ambd);color:var(--amb);border:1px solid rgba(212,168,67,.3);}
+.check-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);cursor:pointer;transition:all .12s;}
+.check-item:last-child{border-bottom:none;}
+.check-item:hover{opacity:.85;}
+.chk{width:13px;height:13px;border-radius:2px;border:1px solid var(--bd2);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:8px;transition:all .18s;}
+.chk.on{background:var(--p7);border-color:var(--p7);color:#0a0907;}
+.chk-txt{flex:1;font-size:11px;color:var(--txd);line-height:1.5;}
+.chk-txt.done{text-decoration:line-through;color:var(--txm);}
+.ch-row{display:flex;justify-content:space-between;padding:8px 13px;border-bottom:1px solid var(--bd);font-size:11px;}
+.ch-row:last-child{border-bottom:none;}
+.ch-name{color:var(--txd);}
+.ch-day{color:var(--p7);font-size:10px;}
+.launch-stat{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:10px 12px;}
+.ls-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:3px;}
+.ls-val{font-family:var(--fd);font-size:20px;font-weight:300;color:var(--p7);}
+.ls-sub{font-size:10px;color:var(--txd);margin-top:1px;}
+
+@media(max-width:900px){
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .inv-layout,.eval-layout,.build-layout,.price-layout,.launch-layout{flex-direction:column;}
+  .inv-side,.eval-r,.build-r,.price-r,.launch-r{width:100%;}
+  .inv-chat{min-height:400px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside class="sb">
+  <div class="sb-logo">
+    <span class="logo-name">Evercrafted</span>
+    <span class="logo-sub">System Console · P6–P7</span>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phases 1–5</div>
+    <div class="ni dim"><span class="nic">◈</span>P1–P4 Console<span class="pb pb-dim">P1–4</span></div>
+    <div class="ni dim"><span class="nic">✦</span>Memory Weaver<span class="pb pb-dim">P5</span></div>
+    <div class="ni dim"><span class="nic">◈</span>Design Drop<span class="pb pb-dim">P5</span></div>
+    <div class="ni dim"><span class="nic">◉</span>Blueprint Chat<span class="pb pb-dim">P5</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 6 — Intelligence</div>
+    <div class="ni active" onclick="nav('invai',this)"><span class="nic">⬡</span>Inventory AI<span class="pb pb-p6">P6 AI</span></div>
+    <div class="ni" onclick="nav('eval',this)"><span class="nic">◬</span>Blueprint Evaluator<span class="pb pb-p6">P6 AI</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 7 — Production</div>
+    <div class="ni" onclick="nav('build',this)"><span class="nic">⊞</span>Build Sheet Generator<span class="pb pb-p7">P7 AI</span></div>
+    <div class="ni" onclick="nav('pricing',this)"><span class="nic">◧</span>Wholesale Calculator<span class="pb pb-p7">P7</span></div>
+    <div class="ni" onclick="nav('launch',this)"><span class="nic">▦</span>Drop Launch Planner<span class="pb pb-p7">P7 AI</span></div>
+  </div>
+  <div class="sb-foot">
+    <div style="margin-bottom:5px;"><span class="dot dot-p6"></span><span style="font-size:10px;color:var(--p6);">P6 Intelligence</span></div>
+    <div><span class="dot dot-p7"></span><span style="font-size:10px;color:var(--p7);">P7 Production</span></div>
+  </div>
+</aside>
+
+<main class="main">
+<div class="topbar">
+  <div class="tb-title" id="topbarTitle">Inventory AI</div>
+  <div class="tm">
+    <span class="mtag hl">EC_CANON_V1</span>
+    <span class="mtag p6t" id="phaseTag">P6 Intelligence</span>
+    <span class="mtag" id="clk">—</span>
+  </div>
+</div>
+
+<!-- ══════════════════ P6 INVENTORY AI ══════════════════ -->
+<div class="panel active" id="panel-invai">
+  <div class="sh">Inventory AI — Natural Language Query Engine</div>
+  <div class="g4">
+    <div class="card"><div class="clbl">SKUs in Context</div><div class="cval">15</div><div class="csub">Full catalog</div></div>
+    <div class="card"><div class="clbl">Engine</div><div style="font-size:11px;color:var(--p6);margin-top:6px;line-height:1.55;">EC Inventory AI<br>Deterministic</div></div>
+    <div class="card"><div class="clbl">Capabilities</div><div style="font-size:11px;color:var(--txd);margin-top:6px;line-height:1.55;">Query · Substitute<br>Feasibility · Plan</div></div>
+    <div class="card"><div class="clbl">Context Window</div><div style="font-size:11px;color:var(--txd);margin-top:6px;line-height:1.55;">All 15 SKUs<br>always loaded</div></div>
+  </div>
+  <div class="inv-layout">
+    <div class="inv-chat">
+      <div style="padding:10px 13px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;background:var(--sf);">
+        <div class="av av-ai6" style="width:24px;height:24px;font-size:10px;">⬡</div>
+        <div><div style="font-size:11px;color:var(--txt);">Inventory Intelligence</div><div style="font-size:8.5px;color:var(--txm);letter-spacing:.12em;text-transform:uppercase;">15 SKUs in context · EC_CANON_V1</div></div>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center;"><div style="width:6px;height:6px;border-radius:50%;background:var(--p6);animation:pulse 2s infinite;"></div><span style="font-size:9px;color:var(--txm);">Live</span></div>
+      </div>
+      <div class="inv-msgs" id="invMsgs">
+        <div class="sys">Inventory AI · 15 SKUs · EC_CANON_V1</div>
+        <div class="msg"><div class="av av-ai6">⬡</div>
+          <div class="bub bub-ai">I have your full Evercrafted inventory loaded — 15 SKUs with roles, stock levels, formula compatibility, and color metadata.<br><br>Ask me anything: <em>"What focals are critically low?"</em> · <em>"Build a Full Halo from current stock"</em> · <em>"What can substitute if Ivory Rose runs out?"</em> · <em>"Which formulas are fully feasible right now?"</em></div>
+        </div>
+      </div>
+      <div class="inv-input-row">
+        <textarea class="inv-inp" id="invInput" placeholder="Ask about your inventory…" onkeydown="invKey(event)" oninput="aResize(this)" rows="1"></textarea>
+        <button class="btn p6" id="invBtn" onclick="invSend()">Send ↵</button>
+      </div>
+    </div>
+    <div class="inv-side">
+      <div class="inv-panel">
+        <div class="lbl" style="margin-bottom:8px;">Live Inventory</div>
+        <div class="inv-tbl-wrap">
+          <div class="inv-th"><div>Item</div><div>Role</div><div>Stock</div><div>Fit</div></div>
+          <div id="invTbl"></div>
+        </div>
+      </div>
+      <div class="inv-panel">
+        <div class="lbl" style="margin-bottom:7px;">Quick Questions</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div class="sugg" onclick="invAsk(this)">What focals are critically low stock?</div>
+          <div class="sugg" onclick="invAsk(this)">Build a Full Halo with current inventory</div>
+          <div class="sugg" onclick="invAsk(this)">Best substitutes if Ivory Garden Rose runs out</div>
+          <div class="sugg" onclick="invAsk(this)">Which formulas are fully feasible right now?</div>
+          <div class="sugg" onclick="invAsk(this)">What should I reorder first and why?</div>
+          <div class="sugg" onclick="invAsk(this)">Analyze my greenery depth and variety</div>
+        </div>
+      </div>
+      <div class="inv-panel">
+        <div class="lbl" style="margin-bottom:8px;">Substitution Engine</div>
+        <select class="sel" id="subItem" style="width:100%;margin-bottom:8px;">
+          <option value="">— Out-of-stock item —</option>
+          <option>Ivory Garden Rose</option><option>Dusty Mauve Peony</option>
+          <option>Burgundy Ranunculus</option><option>Black Protea</option>
+          <option>Golden Banksia</option><option>Navy Thistle</option>
+        </select>
+        <button class="btn p6" id="subBtn" onclick="runSub()" style="width:100%;margin-bottom:9px;">⟳ Find Substitutes</button>
+        <div id="subOut" style="color:var(--txm);font-size:10.5px;">Select an item to find substitutes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ P6 BLUEPRINT EVALUATOR ══════════════════ -->
+<div class="panel" id="panel-eval">
+  <div class="sh">Blueprint Evaluator — AI Quality & Brand Audit</div>
+  <div class="eval-layout">
+    <div class="eval-l">
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px;">
+          <div style="font-family:var(--fd);font-size:16px;font-weight:300;">Blueprint to Evaluate</div>
+          <div class="badge badge-p6">AI Evaluator</div>
+        </div>
+        <div class="row" style="margin-bottom:11px;">
+          <select class="sel" id="evFormula"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+          <select class="sel" id="evEmotion"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+          <select class="sel" id="evStyle"><option>Organic Drape</option><option>Editorial Restraint</option><option>Lush Garden</option><option>Architectural</option><option>Woodland</option></select>
+          <input class="inp" id="evDensity" type="number" min="0.1" max="1" step="0.05" value="0.72" style="width:76px;" title="Density 0–1">
+        </div>
+        <div class="row" style="margin-bottom:0;gap:16px;">
+          <label style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txm);display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" id="evRibbon" style="accent-color:var(--rose);"> Ribbon/Bows</label>
+          <label style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txm);display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" id="evSymm"> Heavy Symmetry</label>
+          <label style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txm);display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" id="evSilk"> Silk/Plastic</label>
+          <label style="font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txm);display:flex;align-items:center;gap:5px;cursor:pointer;"><input type="checkbox" id="evCrowded"> Overcrowded</label>
+          <button class="btn p6" id="evBtn" onclick="runEval()" style="margin-left:auto;">✦ Evaluate</button>
+        </div>
+      </div>
+      <div class="sh">Evaluation Dimensions</div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px 16px;" id="evDims"><div style="color:var(--txm);font-size:11px;">Run evaluation to see dimension scores.</div></div>
+      <div class="sh">Issues & Recommendations</div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;" id="evIssues"><div style="padding:11px 13px;color:var(--txm);font-size:11px;">Run evaluation to see issues.</div></div>
+      <div class="sh">AI Design Critique</div>
+      <div class="ai-out" id="evNarrative" style="min-height:80px;color:var(--txm);font-style:italic;">Run evaluation to see the AI critique.</div>
+    </div>
+    <div class="eval-r">
+      <div class="eval-score-box">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);">Overall Score</div>
+        <div class="score-num" id="evScoreNum" style="color:var(--txm);">—</div>
+        <div class="score-grade" id="evGrade">Not evaluated</div>
+        <canvas id="evRing" width="110" height="110" style="margin-top:6px;"></canvas>
+      </div>
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:7px;">
+        <div class="lbl" style="align-self:flex-start;margin-bottom:0;">Preview</div>
+        <canvas id="evCanvas" width="230" height="230"></canvas>
+      </div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:12px;">
+        <div class="lbl" style="color:var(--p6);margin-bottom:8px;">Quick Fixes</div>
+        <div id="evFixes" style="color:var(--txm);font-size:10.5px;">Run evaluation to see suggestions.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ P7 BUILD SHEET ══════════════════ -->
+<div class="panel" id="panel-build">
+  <div class="sh">Build Sheet Generator — AI Production Documents</div>
+  <div class="build-layout">
+    <div class="build-l">
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px;">
+          <div style="font-family:var(--fd);font-size:16px;font-weight:300;">Build Configuration</div>
+          <div class="badge badge-p7">AI Steps</div>
+        </div>
+        <div class="row" style="margin-bottom:11px;">
+          <select class="sel" id="bsFormula"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+          <select class="sel" id="bsEmotion"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+          <select class="sel" id="bsSize"><option value="18">18"</option><option value="20" selected>20"</option><option value="24">24"</option></select>
+          <select class="sel" id="bsSkill"><option>Beginner</option><option selected>Intermediate</option><option>Advanced</option></select>
+        </div>
+        <div class="row" style="margin-bottom:0;">
+          <button class="btn p7" id="bsBtn" onclick="runBuild()">⊕ Generate Build Sheet</button>
+          <button class="btn" onclick="exportBuild()">↓ Export TXT</button>
+          <span style="margin-left:auto;font-size:9px;color:var(--txm);" id="bsStatus"></span>
+        </div>
+      </div>
+      <div class="bs-doc" id="bsDoc">
+        <div style="padding:20px;color:var(--txm);font-size:11px;">Generate a build sheet to see the production document.</div>
+      </div>
+    </div>
+    <div class="build-r">
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:7px;">
+        <div class="lbl" style="align-self:flex-start;margin-bottom:0;">Build Preview</div>
+        <canvas id="bsCanvas" width="240" height="240"></canvas>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="stat-sm"><div class="stat-sm-lbl">Est. Time</div><div class="stat-sm-val" id="bsTime">—</div></div>
+        <div class="stat-sm"><div class="stat-sm-lbl">Total Stems</div><div class="stat-sm-val" id="bsStems">—</div></div>
+        <div class="stat-sm"><div class="stat-sm-lbl">Skill</div><div class="stat-sm-val" id="bsSkillStat" style="font-size:14px;">—</div></div>
+        <div class="stat-sm"><div class="stat-sm-lbl">Formula</div><div class="stat-sm-val" id="bsFormulaStat" style="font-size:13px;">—</div></div>
+      </div>
+      <div>
+        <div class="lbl" style="color:var(--p7);margin-bottom:7px;">AI Assembly Notes</div>
+        <div class="ai-out" id="bsNotes" style="min-height:80px;color:var(--txm);font-style:italic;font-size:11px;">Generate a build sheet to see notes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ P7 PRICING ══════════════════ -->
+<div class="panel" id="panel-pricing">
+  <div class="sh">Wholesale Price Calculator — Margin Engine</div>
+  <div class="price-layout">
+    <div class="price-l">
+      <div class="price-form">
+        <div style="font-family:var(--fd);font-size:16px;font-weight:300;margin-bottom:15px;">Cost Inputs</div>
+        <div class="pf-grid">
+          <div class="pf-field"><div class="pf-lbl">Materials ($)</div><input class="pf-inp" id="pcMat" type="number" value="38" min="0" step="0.5" oninput="calcPrice()"></div>
+          <div class="pf-field"><div class="pf-lbl">Labor Hours</div><input class="pf-inp" id="pcHrs" type="number" value="2.5" min="0" step="0.25" oninput="calcPrice()"></div>
+          <div class="pf-field"><div class="pf-lbl">Hourly Rate ($)</div><input class="pf-inp" id="pcRate" type="number" value="22" min="0" step="1" oninput="calcPrice()"></div>
+          <div class="pf-field"><div class="pf-lbl">Overhead ($)</div><input class="pf-inp" id="pcOH" type="number" value="12" min="0" step="0.5" oninput="calcPrice()"></div>
+          <div class="pf-field"><div class="pf-lbl">Packaging ($)</div><input class="pf-inp" id="pcPkg" type="number" value="8" min="0" step="0.5" oninput="calcPrice()"></div>
+          <div class="pf-field"><div class="pf-lbl">Shipping ($)</div><input class="pf-inp" id="pcShip" type="number" value="14" min="0" step="0.5" oninput="calcPrice()"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+          <div class="pf-field"><div class="pf-lbl">Target Margin (%)</div><input class="pf-inp" id="pcMargin" type="number" value="65" min="10" max="95" step="1" oninput="calcPrice()"></div>
+          <div class="pf-field"><div class="pf-lbl">Wholesale Multiplier</div><input class="pf-inp" id="pcWS" type="number" value="0.6" min="0.1" max="1" step="0.05" oninput="calcPrice()"></div>
+        </div>
+      </div>
+      <div class="sh">Cost Breakdown</div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;" id="priceBreakdown">
+        <div style="padding:11px 14px;color:var(--txm);font-size:11px;">Enter costs above.</div>
+      </div>
+      <div class="sh">Pricing Tiers</div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;" id="priceTiers">
+        <div style="padding:11px 14px;color:var(--txm);font-size:11px;">Enter costs above.</div>
+      </div>
+      <div class="sh">Pricing Health</div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:12px 14px;overflow:hidden;" id="priceHealth">
+        <div style="color:var(--txm);font-size:11px;">Enter costs above.</div>
+      </div>
+    </div>
+    <div class="price-r">
+      <div class="margin-box">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);">Margin at Retail</div>
+        <div class="margin-pct" id="marginPct" style="color:var(--txm);">—</div>
+        <div class="margin-lbl" id="marginLbl">Enter costs to calculate</div>
+        <canvas id="marginArc" width="150" height="80" style="margin-top:6px;"></canvas>
+      </div>
+      <div class="price-box">
+        <div class="price-hero"><div class="price-hero-lbl">Retail Price</div><div class="price-hero-val" id="prRetail" style="color:var(--gold);">—</div></div>
+        <div class="price-hero" style="border-top:1px solid var(--bd);"><div class="price-hero-lbl">Wholesale Price</div><div class="price-hero-val" id="prWholesale" style="color:var(--txd);font-size:26px;">—</div></div>
+        <div class="price-hero" style="border-top:1px solid var(--bd);border-bottom:none;"><div class="price-hero-lbl">Total COGS</div><div class="price-hero-val" id="prCOGS" style="color:var(--rose);font-size:22px;">—</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ P7 LAUNCH PLANNER ══════════════════ -->
+<div class="panel" id="panel-launch">
+  <div class="sh">Drop Launch Planner — AI-Powered 14-Day Sequencer</div>
+  <div class="g4">
+    <div class="launch-stat"><div class="ls-lbl">Timeline</div><div class="ls-val">14 Days</div><div class="ls-sub">Standard drop window</div></div>
+    <div class="launch-stat"><div class="ls-lbl">Tasks Complete</div><div class="ls-val" id="lTaskCount">0 / 0</div><div class="ls-sub">Pre-launch items</div></div>
+    <div class="launch-stat"><div class="ls-lbl">AI-Generated</div><div class="ls-val" id="lAICount">0</div><div class="ls-sub">Strategy tasks</div></div>
+    <div class="launch-stat"><div class="ls-lbl">Drop Status</div><div class="ls-val" id="lStatus" style="font-size:14px;">—</div><div class="ls-sub" id="lSubStatus">Generate plan first</div></div>
+  </div>
+  <div class="launch-layout">
+    <div class="launch-l">
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px;">
+          <div style="font-family:var(--fd);font-size:16px;font-weight:300;">Drop Configuration</div>
+          <div class="badge badge-p7">AI Planner</div>
+        </div>
+        <div class="row" style="margin-bottom:11px;">
+          <input class="inp" id="lName" placeholder="Product name (e.g. Autumn Crescent No. 7)" style="flex:2;min-width:180px;">
+          <select class="sel" id="lFormula"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+          <input class="inp" id="lDate" type="date" style="width:148px;">
+        </div>
+        <div class="row" style="margin-bottom:0;">
+          <select class="sel" id="lType"><option>Limited Drop</option><option>Seasonal Release</option><option>Core Collection</option><option>Memorial Edition</option><option>Holiday Drop</option></select>
+          <select class="sel" id="lQty"><option value="12">12 units</option><option value="24" selected>24 units</option><option value="36">36 units</option><option value="50">50 units</option></select>
+          <input class="inp" id="lPrice" type="number" placeholder="Retail $" style="width:110px;">
+          <button class="btn p7" id="lBtn" onclick="runLaunch()">✦ Generate Plan</button>
+        </div>
+      </div>
+      <div class="sh">14-Day Launch Timeline</div>
+      <div class="tl-wrap" id="lTimeline">
+        <div style="color:var(--txm);font-size:11px;">Generate a launch plan to see the timeline.</div>
+      </div>
+    </div>
+    <div class="launch-r">
+      <div>
+        <div class="lbl" style="color:var(--p7);margin-bottom:7px;">AI Launch Strategy</div>
+        <div class="ai-out" id="lStrategy" style="min-height:90px;color:var(--txm);font-style:italic;font-size:11px;">Generate a launch plan to see the AI strategy.</div>
+      </div>
+      <div>
+        <div class="lbl" style="color:var(--p7);margin-bottom:7px;">Pre-Launch Checklist</div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:11px 12px;" id="lChecklist">
+          <div style="color:var(--txm);font-size:11px;">Generate a plan to see checklist.</div>
+        </div>
+      </div>
+      <div>
+        <div class="lbl" style="color:var(--p7);margin-bottom:7px;">Channel Schedule</div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;" id="lChannels">
+          <div style="padding:11px 12px;color:var(--txm);font-size:11px;">Generate a plan to see channel schedule.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// CORE
+// ══════════════════════════════════════
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,10000);
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+
+const TITLES={invai:'Inventory AI',eval:'Blueprint Evaluator',build:'Build Sheet Generator',pricing:'Wholesale Calculator',launch:'Drop Launch Planner'};
+const PTAGS={invai:['P6 Intelligence','p6t'],eval:['P6 Intelligence','p6t'],build:['P7 Production','p7t'],pricing:['P7 Production','p7t'],launch:['P7 Production','p7t']};
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbarTitle').textContent=TITLES[id];
+  const tag=document.getElementById('phaseTag');
+  const[txt,cls]=PTAGS[id]||['P6','p6t'];
+  tag.textContent=txt;tag.className='mtag '+cls;
+}
+
+const API_BASE = "http://localhost:8787";
+async function postJSON(path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(body || {})
+  });
+  const data = await res.json();
+  if (!res.ok || !data.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+
+// Wreath drawing
+const FI={Crescent:0,'Double Echo':1,'Bottom Heavy':2,'Side Sweep':3,'Open Arc':4,'Full Halo':5,'Split Garden':6,'Focal Burst':7,'Laddered Rhythm':8,'Radial Burst':9,'Bow Anchor':10,'Inventory Salvage':11};
+function drawWreath(cid,formula,density=.7,lbl=''){
+  const c=document.getElementById(cid);if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=Math.min(w,h)/2-20;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=Math.max(12,R*.17);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(201,169,110,.14)';ctx.lineWidth=1;ctx.stroke();
+  const g='#c9a96e',sg='#7a9e7e',rs='#c47c6e',dm=.55+density*.75;
+  function s(a,r2,l,col,w2=1.5){const x=cx+r2*Math.cos(a),y=cy+r2*Math.sin(a),ex=cx+(r2+l)*Math.cos(a),ey=cy+(r2+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w2;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w2+.4,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+  function cl(sa,ea,n,l,col){for(let i=0;i<=Math.round(n*dm);i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.1;s(a,R-Math.max(4,R*.07),l+Math.random()*(R*.09),col);}}
+  const L=R*.18,SL=R*.13;
+  [[()=>cl(Math.PI*.3,Math.PI*1.7,13,L,g)],[()=>{cl(-.4,.4,6,L,g);cl(Math.PI-.4,Math.PI+.4,6,L,sg);}],[()=>cl(Math.PI*.12,Math.PI*.88,15,L*1.1,g)],[()=>{cl(-.55,.55,8,L,g);s(0,R,L*1.7,rs,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,10,L,g);cl(Math.PI*.95,Math.PI*1.85,7,SL,sg);}],[()=>cl(0,Math.PI*2,21,SL,g)],[()=>{cl(Math.PI*.1,Math.PI*.85,10,L,g);cl(Math.PI*1.1,Math.PI*1.85,10,L,sg);}],[()=>{for(let i=0;i<Math.round(11*dm);i++){const a=(i/11)*Math.PI*2;s(a,R-R*.08,L*1.25+Math.random()*(R*.14),i%3===0?rs:g,1.7);}}],[()=>{for(let i=0;i<8;i++){const a=-.3+i*.16;s(a,R-R*.05,SL+i*(R*.024),i%2===0?g:sg,1.4);}}],[()=>{for(let i=0;i<11;i++){const a=(i/11)*Math.PI*2;s(a,R-R*.06,L,g,1.6);}}],[()=>cl(Math.PI*.6,Math.PI*1.4,11,L,g)],[()=>{const cs=[g,sg,rs];for(let i=0;i<Math.round(15*dm);i++){const a=Math.random()*Math.PI*2;s(a,R-R*.08,SL+Math.random()*(L*.85),cs[Math.floor(Math.random()*3)],1.3);}}]][(FI[formula]??0)][0]();
+  if(lbl){ctx.font='7.5px "DM Mono"';ctx.fillStyle='rgba(201,169,110,.36)';ctx.textAlign='right';ctx.fillText(lbl,w-6,h-6);}
+}
+
+// ══════════════════════════════════════
+// INVENTORY CATALOG
+// ══════════════════════════════════════
+const DEFAULT_INV=[
+  {n:'Ivory Garden Rose',r:'focal',c:'Ivory',s:12,m:24,f:['Full Halo','Crescent','Focal Burst'],compat:'high'},
+  {n:'Dusty Mauve Peony',r:'focal',c:'Mauve',s:6,m:24,f:['Crescent','Double Echo'],compat:'high'},
+  {n:'Dried Wheat Bundle',r:'supporting',c:'Tan',s:34,m:60,f:['Bottom Heavy','Crescent'],compat:'med'},
+  {n:'Burgundy Ranunculus',r:'focal',c:'Burgundy',s:3,m:24,f:['Focal Burst'],compat:'low'},
+  {n:'Silver Dollar Eucalyptus',r:'greenery',c:'Silver-Green',s:48,m:80,f:['All'],compat:'high'},
+  {n:'Bleached Lunaria',r:'filler',c:'White',s:28,m:50,f:['Open Arc','Crescent'],compat:'high'},
+  {n:'Rust Anemone',r:'supporting',c:'Rust',s:18,m:40,f:['Full Halo','Focal Burst'],compat:'high'},
+  {n:'Navy Thistle',r:'supporting',c:'Navy',s:9,m:40,f:['Split Garden'],compat:'med'},
+  {n:'Sage Bundle',r:'greenery',c:'Green',s:55,m:80,f:['All'],compat:'high'},
+  {n:'Champagne Amaranthus',r:'filler',c:'Champagne',s:22,m:50,f:['Crescent','Full Halo'],compat:'high'},
+  {n:'Terracotta Berry',r:'filler',c:'Terracotta',s:31,m:60,f:['Bottom Heavy'],compat:'med'},
+  {n:'Black Protea',r:'focal',c:'Black',s:2,m:16,f:['Focal Burst'],compat:'low'},
+  {n:'Cotton Stem',r:'filler',c:'White',s:44,m:60,f:['Full Halo'],compat:'high'},
+  {n:'Lavender Bunch',r:'greenery',c:'Lavender',s:38,m:80,f:['Crescent','Full Halo'],compat:'high'},
+  {n:'Golden Banksia',r:'supporting',c:'Gold',s:7,m:30,f:['Focal Burst','Radial Burst'],compat:'med'},
+];
+
+let INV=[];
+function buildInventoryTable(){
+  const rc={focal:'rtf',supporting:'rts',filler:'rtfi',greenery:'rtg'};
+  document.getElementById('invTbl').innerHTML=INV.map(item=>{
+    const pct=Math.min(100,(item.s/item.m)*100);
+    const col=pct<25?'var(--rose)':pct<55?'var(--amb)':'var(--sage)';
+    const cc={high:'var(--sage)',med:'var(--gold)',low:'var(--rose)'}[item.compat];
+    return`<div class="inv-tr">
+      <div class="iname">${item.n.split(' ').slice(0,2).join(' ')}</div>
+      <div><span class="rt ${rc[item.r]}">${item.r.slice(0,4)}</span></div>
+      <div><div class="sbar"><div class="str"><div class="stf" style="width:${pct}%;background:${col};"></div></div><span style="font-size:9px;color:${col};">${item.s}</span></div></div>
+      <div style="color:${cc};font-size:8.5px;letter-spacing:.09em;">${item.compat.toUpperCase()}</div>
+    </div>`;
+  }).join('');
+}
+
+let invHist=[],invRunning=false;
+function invAddMsg(role,txt,streaming=false){
+  const msgs=document.getElementById('invMsgs');
+  const w=document.createElement('div');w.className='msg'+(role==='user'?' u':'');
+  const av=document.createElement('div');av.className='av '+(role==='user'?'av-u':'av-ai6');av.textContent=role==='user'?'B':'⬡';
+  const b=document.createElement('div');b.className='bub '+(role==='user'?'bub-u':'bub-ai')+(streaming?' st':'');b.textContent=txt;
+  w.appendChild(av);w.appendChild(b);msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;return b;
+}
+function invSys(txt){const m=document.getElementById('invMsgs');const d=document.createElement('div');d.className='sys';d.textContent=txt;m.appendChild(d);m.scrollTop=m.scrollHeight;}
+async function invSend(){
+  if(invRunning)return;
+  const inp=document.getElementById('invInput'),text=inp.value.trim();if(!text)return;
+  invRunning=true;inp.value='';inp.style.height='34px';document.getElementById('invBtn').disabled=true;
+  invAddMsg('user',text);invHist.push({role:'user',content:text});
+  const bub=invAddMsg('assistant','',true);
+  try{
+    const resp=await postJSON('/inventory-ai/respond',{message:text});
+    const full=resp.reply||'';
+    bub.textContent=full;
+    bub.classList.remove('st');
+    invHist.push({role:'assistant',content:full});
+  }catch(err){bub.textContent='Error: '+err.message;bub.classList.remove('st');}
+  finally{invRunning=false;document.getElementById('invBtn').disabled=false;}
+}
+function invKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();invSend();}}
+function invAsk(el){document.getElementById('invInput').value=el.textContent;invSend();}
+function aResize(el){el.style.height='34px';el.style.height=Math.min(el.scrollHeight,90)+'px';}
+
+async function runSub(){
+  const item=document.getElementById('subItem').value;if(!item)return;
+  const btn=document.getElementById('subBtn');btn.disabled=true;btn.textContent='⟳ Analyzing…';
+  document.getElementById('subOut').innerHTML=`<div class="thinking tp6"><div class="tdots dp6"><span></span><span></span><span></span></div>Finding substitutes…</div>`;
+  try{
+    const res=await postJSON('/inventory/substitutes',{item});
+    document.getElementById('subOut').innerHTML=`<div class="sub-result">${res.substitutes.map((s,i)=>{
+      const col={high:'var(--sage)',med:'var(--gold)',low:'var(--rose)'}[s.compat]||'var(--txd)';
+      return`<div class="sub-row" style="animation-delay:${i*.07}s"><div class="sub-o">${item}</div><div class="sub-arrow">→</div><div class="sub-n" style="color:${col};">${s.substitute}</div><div class="sub-r">${s.reason}</div></div>`;
+    }).join('')}</div>`;
+  }catch(err){document.getElementById('subOut').innerHTML=`<span style="color:var(--rose);">Error: ${err.message}</span>`;}
+  finally{btn.disabled=false;btn.textContent='⟳ Find Substitutes';}
+}
+
+// ══════════════════════════════════════
+// P6 BLUEPRINT EVALUATOR
+// ══════════════════════════════════════
+function drawRing(cid,score,color){
+  const c=document.getElementById(cid);if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=Math.min(w,h)/2-7;
+  ctx.clearRect(0,0,w,h);
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=7;ctx.stroke();
+  if(score>0){ctx.beginPath();ctx.arc(cx,cy,R,-Math.PI/2,-Math.PI/2+Math.PI*2*(score/100));ctx.strokeStyle=color;ctx.lineWidth=7;ctx.lineCap='round';ctx.stroke();}
+}
+
+let evRunning=false;
+async function runEval(){
+  if(evRunning)return;evRunning=true;
+  const btn=document.getElementById('evBtn');btn.disabled=true;btn.textContent='✦ Evaluating…';
+  const formula=document.getElementById('evFormula').value;
+  const emotion=document.getElementById('evEmotion').value;
+  const style=document.getElementById('evStyle').value;
+  const density=parseFloat(document.getElementById('evDensity').value)||0.72;
+  const ribbon=document.getElementById('evRibbon').checked;
+  const symm=document.getElementById('evSymm').checked;
+  const silk=document.getElementById('evSilk').checked;
+  const crowd=document.getElementById('evCrowded').checked;
+
+  drawWreath('evCanvas',formula,density);
+  document.getElementById('evNarrative').className='ai-out sp6';
+  document.getElementById('evNarrative').textContent='';
+  document.getElementById('evDims').innerHTML=`<div class="thinking tp6"><div class="tdots dp6"><span></span><span></span><span></span></div>Evaluating dimensions…</div>`;
+  document.getElementById('evIssues').innerHTML=`<div style="padding:10px 12px;color:var(--txm);font-size:11px;">Evaluating…</div>`;
+
+  try{
+    const ev = await postJSON('/blueprint/evaluate',{formula,emotion,style,density,ribbon,symmetry:symm,silk,crowded:crowd});
+
+    const score=ev.overall||72;
+    const sc=score>=80?'var(--sage)':score>=65?'var(--gold)':score>=50?'var(--amb)':'var(--rose)';
+    const grade=score>=90?'A — Exemplary':score>=80?'B — Strong':score>=65?'C — Acceptable':score>=50?'D — Needs Work':'F — Reject';
+    const gcls=score>=80?'grade-a':score>=65?'grade-b':score>=50?'grade-c':'grade-d';
+    document.getElementById('evScoreNum').textContent=score;
+    document.getElementById('evScoreNum').style.color=sc;
+    document.getElementById('evGrade').textContent=grade;
+    document.getElementById('evGrade').className='score-grade '+gcls;
+    drawRing('evRing',score,sc);
+
+    const DL={emotion_alignment:'Emotion Alignment',brand_fit:'Brand Fit',composition_quality:'Composition Quality',material_integrity:'Material Integrity',negative_space:'Negative Space',design_originality:'Design Originality'};
+    if(ev.dimensions){
+      document.getElementById('evDims').innerHTML=Object.entries(ev.dimensions).map(([k,v])=>{
+        const dc=v>=80?'var(--sage)':v>=65?'var(--gold)':v>=50?'var(--amb)':'var(--rose)';
+        return`<div class="dim-row"><div class="dim-lbl">${DL[k]||k}</div><div class="dim-bar"><div class="dim-fill" style="width:${v}%;background:${dc};"></div></div><div class="dim-val" style="color:${dc};">${v}</div></div>`;
+      }).join('');
+    }
+
+    if(ev.issues?.length){
+      const sc2={critical:'sev-c',warning:'sev-w',info:'sev-i'};
+      const lc={critical:'lc',warning:'lw',info:'li'};
+      document.getElementById('evIssues').innerHTML=ev.issues.map((iss,i)=>`<div class="issue" style="animation-delay:${i*.06}s"><div class="isev ${sc2[iss.severity]||'sev-i'}"></div><div class="itxt">${iss.text}</div><div class="ilvl ${lc[iss.severity]||'li'}">${(iss.severity||'').toUpperCase()}</div></div>`).join('');
+    }else{
+      document.getElementById('evIssues').innerHTML='<div style="padding:10px 12px;color:var(--sage);font-size:11px;">✓ No issues detected.</div>';
+    }
+
+    if(ev.quick_fixes?.length){
+      document.getElementById('evFixes').innerHTML=ev.quick_fixes.map(f=>`<div style="display:flex;gap:7px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:10.5px;color:var(--txd);"><span style="color:var(--p6);">→</span>${f}</div>`).join('');
+    }
+
+    document.getElementById('evNarrative').textContent=ev.narrative||'Evaluation complete.';
+    document.getElementById('evNarrative').className='ai-out';
+  }catch(err){
+    document.getElementById('evNarrative').textContent='Error: '+err.message;
+    document.getElementById('evNarrative').className='ai-out';
+  }finally{evRunning=false;btn.disabled=false;btn.textContent='✦ Evaluate';}
+}
+
+// ══════════════════════════════════════
+// P7 BUILD SHEET
+// ══════════════════════════════════════
+let bsRunning=false,bsCache=null;
+const INV_BY_ROLE={
+  focal:['Ivory Garden Rose','Dusty Mauve Peony','Burgundy Ranunculus'],
+  supporting:['Dried Wheat Bundle','Rust Anemone','Golden Banksia'],
+  filler:['Bleached Lunaria','Champagne Amaranthus','Cotton Stem'],
+  greenery:['Silver Dollar Eucalyptus','Sage Bundle','Lavender Bunch']
+};
+
+async function runBuild(){
+  if(bsRunning)return;bsRunning=true;
+  const btn=document.getElementById('bsBtn');btn.disabled=true;btn.textContent='⊕ Generating…';
+  document.getElementById('bsStatus').textContent='';
+  const formula=document.getElementById('bsFormula').value;
+  const emotion=document.getElementById('bsEmotion').value;
+  const size=document.getElementById('bsSize').value;
+  const skill=document.getElementById('bsSkill').value;
+
+  drawWreath('bsCanvas',formula,.72,'');
+  document.getElementById('bsNotes').className='ai-out sp7';
+  document.getElementById('bsNotes').textContent='';
+  document.getElementById('bsDoc').innerHTML=`<div style="padding:20px;"><div class="thinking tp7"><div class="tdots dp7"><span></span><span></span><span></span></div>Building production document…</div></div>`;
+
+  const stemBase={18:22,20:28,24:36}[parseInt(size)]||28;
+  const cnts={focal:Math.ceil(stemBase*.12),supporting:Math.ceil(stemBase*.22),filler:Math.ceil(stemBase*.26),greenery:Math.ceil(stemBase*.40)};
+  const total=Object.values(cnts).reduce((a,b)=>a+b,0);
+  const timeMap={Beginner:'3–4 hrs',Intermediate:'2–2.5 hrs',Advanced:'1–1.5 hrs'}[skill]||'2–2.5 hrs';
+  document.getElementById('bsTime').textContent=timeMap;
+  document.getElementById('bsStems').textContent=total;
+  document.getElementById('bsSkillStat').textContent=skill.slice(0,5);
+  document.getElementById('bsFormulaStat').textContent=formula.split(' ')[0];
+
+  const items=[];
+  const lenM={focal:'4–6"',supporting:'6–9"',filler:'3–5"',greenery:'9–14"'};
+  Object.entries(cnts).forEach(([role,count])=>{
+    (INV_BY_ROLE[role]||[]).slice(0,role==='greenery'?2:1).forEach(name=>{
+      items.push({name,role,count:Math.ceil(count/(role==='greenery'?2:1)),len:lenM[role]});
+    });
+  });
+
+  try{
+    const resp=await postJSON('/build-sheet',{formula,emotion,size,skill});
+    const bpId=resp.bpId;
+    const steps=resp.steps||[];
+    bsCache={formula,emotion,size,skill,items:resp.items||items,steps,bpId,total:resp.total||total,time:resp.time||timeMap};
+    if(resp.notes){document.getElementById('bsNotes').textContent=resp.notes;}
+  }catch(e){}
+
+  const rcls={focal:'rtf',supporting:'rts',filler:'rtfi',greenery:'rtg'};
+  document.getElementById('bsDoc').innerHTML=`
+    <div class="bs-hd">
+      <div><div class="bs-title">${formula} Build Sheet</div><div style="font-size:10px;color:var(--txd);margin-top:3px;">${emotion} · ${size}" frame · ${skill}</div></div>
+      <div class="bs-meta">${bpId}<br>${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<br>${timeMap}</div>
+    </div>
+    <div class="bs-sec">
+      <div class="bs-sec-lbl">Specifications</div>
+      ${[['Frame',`${size}" wire wreath frame`],['Formula',formula],['Emotion',emotion],['Total Stems',total],['Skill',skill],['Est. Time',timeMap]].map(([k,v])=>`<div class="bs-spec"><div class="bs-sk">${k}</div><div class="bs-sv">${v}</div></div>`).join('')}
+    </div>
+    <div class="bs-sec">
+      <div class="bs-sec-lbl">Cut List — ${items.reduce((a,b)=>a+b.count,0)} Items</div>
+      ${items.map((it,i)=>`<div class="bs-item"><div class="bs-num">${i+1}</div><div class="bs-name">${it.name}</div><span class="rt ${rcls[it.role]||'rtg'}">${it.role}</span><div class="bs-qty">${it.count}×</div><div class="bs-len">${it.len}</div></div>`).join('')}
+    </div>
+    <div class="bs-sec">
+      <div class="bs-sec-lbl">Assembly Steps</div>
+      ${steps.length?steps.map((st,i)=>`<div class="bs-step" style="animation-delay:${i*.04}s"><div class="bs-sn${i<2?' done':''}">${i<2?'✓':st.step||i+1}</div><div class="bs-stxt"><strong style="color:var(--txt);">${st.title||''}</strong><br>${st.instruction||''}</div></div>`).join(''):'<div style="color:var(--txm);font-size:11px;padding:4px 0;">Steps unavailable.</div>'}
+    </div>
+    <div class="bs-sec">
+      <div class="bs-sec-lbl">Quality Check</div>
+      <div class="bs-note">Verify silence arc before final placement. No ribbon or bows. All materials must be faux botanical — no silk or plastic. Embrace asymmetry. Blueprint: ${bpId}</div>
+    </div>`;
+
+  document.getElementById('bsNotes').className='ai-out';
+  document.getElementById('bsStatus').textContent='✓ Complete';
+  bsRunning=false;btn.disabled=false;btn.textContent='⊕ Generate Build Sheet';
+}
+
+function exportBuild(){
+  if(!bsCache)return;
+  const{formula,emotion,size,skill,items,bpId,total,time}=bsCache;
+  let out=`EVERCRAFTED BUILD SHEET\n${bpId}\n${'═'.repeat(38)}\nFormula: ${formula}\nEmotion: ${emotion}\nSize: ${size}"\nSkill: ${skill}\nTime: ${time}\nStems: ${total}\n\nCUT LIST\n--------\n`;
+  items.forEach((it,i)=>{out+=`${i+1}. ${it.name} — ${it.count}× ${it.role} — ${it.len}\n`;});
+  const blob=new Blob([out],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ec-build-${bpId}.txt`;a.click();
+}
+
+// ══════════════════════════════════════
+// P7 WHOLESALE PRICE CALCULATOR
+// ══════════════════════════════════════
+function drawMarginArc(cid,pct,color){
+  const c=document.getElementById(cid);if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const cx=w/2,cy=h-4,R=h-14;
+  ctx.beginPath();ctx.arc(cx,cy,R,Math.PI,0);ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=7;ctx.stroke();
+  if(pct>0){
+    const ang=Math.PI-(Math.PI*(Math.min(pct,100)/100));
+    ctx.beginPath();ctx.arc(cx,cy,R,Math.PI,ang);ctx.strokeStyle=color;ctx.lineWidth=7;ctx.lineCap='round';ctx.stroke();
+  }
+}
+
+function calcPrice(){
+  const mat=+document.getElementById('pcMat').value||0;
+  const hrs=+document.getElementById('pcHrs').value||0;
+  const rate=+document.getElementById('pcRate').value||0;
+  const oh=+document.getElementById('pcOH').value||0;
+  const pkg=+document.getElementById('pcPkg').value||0;
+  const ship=+document.getElementById('pcShip').value||0;
+  const targetMgn=+document.getElementById('pcMargin').value||65;
+  const wsMult=+document.getElementById('pcWS').value||0.6;
+
+  const labor=hrs*rate;
+  const cogs=mat+labor+oh+pkg+ship;
+  const retail=cogs>0?cogs/(1-targetMgn/100):0;
+  const wholesale=retail*wsMult;
+  const profit=retail-cogs;
+  const actualMgn=retail>0?(profit/retail)*100:0;
+
+  document.getElementById('prRetail').textContent=retail>0?`$${retail.toFixed(2)}`:'—';
+  document.getElementById('prWholesale').textContent=wholesale>0?`$${wholesale.toFixed(2)}`:'—';
+  document.getElementById('prCOGS').textContent=cogs>0?`$${cogs.toFixed(2)}`:'—';
+
+  const mc=actualMgn>=60?'var(--sage)':actualMgn>=45?'var(--gold)':actualMgn>=30?'var(--amb)':'var(--rose)';
+  document.getElementById('marginPct').textContent=retail>0?`${actualMgn.toFixed(1)}%`:'—';
+  document.getElementById('marginPct').style.color=mc;
+  document.getElementById('marginLbl').textContent=actualMgn>=60?'Healthy margin':actualMgn>=45?'Acceptable margin':actualMgn>=30?'Thin margin':'Margin too low';
+  drawMarginArc('marginArc',actualMgn,mc);
+
+  // Breakdown
+  document.getElementById('priceBreakdown').innerHTML=[
+    ['Materials',mat,''],['Labor',labor,`${hrs}h × $${rate}`],['Overhead',oh,''],
+    ['Packaging',pkg,''],['Shipping',ship,''],
+    ['───','',''],
+    ['COGS Total',cogs,''],
+    ['Profit at Retail',profit,profit>cogs*.4?'pos':profit>0?'warn':'neg'],
+  ].map(([k,v,cls])=>k==='───'
+    ?`<div style="height:1px;background:var(--bd2);margin:2px 0;"></div>`
+    :`<div class="pr-row"><div class="pr-k">${k}</div><div class="pr-v ${cls}">$${(+v).toFixed(2)}</div></div>`
+  ).join('');
+
+  // Tiers
+  const tiers=[
+    {name:'Direct Retail (DTC)',mult:1,desc:'Full retail — highest margin'},
+    {name:'Shopify / Online',mult:.97,desc:'After platform fees (~3%)'},
+    {name:'Etsy / Marketplace',mult:.88,desc:'After fees (~12%)'},
+    {name:'Wholesale (to retailers)',mult:wsMult,desc:`Your ${(wsMult*100).toFixed(0)}% multiplier`},
+    {name:'Cost Floor',mult:cogs/retail||0,desc:'Break-even minimum'},
+  ];
+  document.getElementById('priceTiers').innerHTML=tiers.map(t=>{
+    const tp=retail*t.mult;const tm=tp>0?(tp-cogs)/tp*100:0;
+    const tc=tm>=50?'var(--sage)':tm>=30?'var(--gold)':tm>=10?'var(--amb)':'var(--rose)';
+    return`<div class="tier-row"><div class="tier-name">${t.name}<div style="font-size:9px;color:var(--txm);margin-top:1px;">${t.desc}</div></div><div style="text-align:right;"><div class="tier-price">$${tp.toFixed(2)}</div><div class="tier-margin" style="color:${tc};">${tm.toFixed(1)}% mgn</div></div></div>`;
+  }).join('');
+
+  // Health indicators
+  const health=[];
+  if(actualMgn>=60)health.push({col:'var(--sage)',txt:'Retail margin is healthy (≥60%)'});
+  else if(actualMgn>=45)health.push({col:'var(--gold)',txt:`Retail margin is acceptable at ${actualMgn.toFixed(1)}% — consider reducing COGS`});
+  else health.push({col:'var(--rose)',txt:`Retail margin of ${actualMgn.toFixed(1)}% is too low — target 60%+`});
+  if(wholesale<cogs)health.push({col:'var(--rose)',txt:'Wholesale price is below COGS — adjust multiplier'});
+  else health.push({col:'var(--sage)',txt:`Wholesale price covers COGS with $${(wholesale-cogs).toFixed(2)} buffer`});
+  if(labor>cogs*.5)health.push({col:'var(--amb)',txt:'Labor >50% of COGS — review efficiency or raise price'});
+  if(retail>0&&retail<120)health.push({col:'var(--gold)',txt:'Retail price may be below Evercrafted luxury positioning'});
+  else if(retail>=120)health.push({col:'var(--sage)',txt:'Retail price aligns with luxury positioning ($120+)'});
+  document.getElementById('priceHealth').innerHTML=health.map(h=>`<div class="health-row"><div class="hdot" style="background:${h.col};"></div><div style="font-size:11px;color:var(--txd);">${h.txt}</div></div>`).join('');
+}
+calcPrice();
+
+// ══════════════════════════════════════
+// P7 DROP LAUNCH PLANNER
+// ══════════════════════════════════════
+let lChecks=[];
+let lRunning=false;
+
+function updateTaskCount(){
+  const done=lChecks.filter(c=>c.checked).length;
+  document.getElementById('lTaskCount').textContent=`${done} / ${lChecks.length}`;
+}
+
+async function runLaunch(){
+  if(lRunning)return;lRunning=true;
+  const btn=document.getElementById('lBtn');btn.disabled=true;btn.textContent='✦ Planning…';
+  const name=document.getElementById('lName').value||'Untitled Drop';
+  const formula=document.getElementById('lFormula').value;
+  const dateVal=document.getElementById('lDate').value;
+  const type=document.getElementById('lType').value;
+  const qty=document.getElementById('lQty').value;
+  const price=document.getElementById('lPrice').value||'—';
+  const launchDate=dateVal?new Date(dateVal).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'TBD';
+
+  document.getElementById('lStatus').textContent='Planning';
+  document.getElementById('lSubStatus').textContent='Generating…';
+  document.getElementById('lStrategy').className='ai-out sp7';
+  document.getElementById('lStrategy').textContent='';
+  document.getElementById('lTimeline').innerHTML=`<div class="thinking tp7"><div class="tdots dp7"><span></span><span></span><span></span></div>Building 14-day timeline…</div>`;
+
+  try{
+    const planData=await postJSON('/launch-plan',{name,formula,type,qty,price,launchDate});
+
+    // Timeline
+    if(planData.timeline?.length){
+      document.getElementById('lTimeline').innerHTML=`<div class="tl-spine"></div>`+planData.timeline.map((item,i)=>{
+        const dotCls=item.status==='done'?'done':item.status==='active'?'live':'';
+        const tagMap={done:'tt-done',active:'tt-live',pending:'tt-pend',ai:'tt-ai'};
+        const tagTxt={done:'Done',active:'This Week',pending:'Upcoming',ai:'AI Task'};
+        return`<div class="tl-item" style="animation-delay:${i*.05}s"><div class="tl-dot ${dotCls}"></div><div class="tl-content"><div class="tl-day">Day ${item.day}</div><div class="tl-task">${item.title}</div><div class="tl-desc">${item.description}</div><span class="tl-tag ${tagMap[item.status]||'tt-pend'}">${tagTxt[item.status]||'Pending'}</span></div></div>`;
+      }).join('');
+    }
+
+    // Checklist
+    lChecks=[];
+    if(planData.checklist?.length){
+      lChecks=planData.checklist.map(c=>({...c,checked:false}));
+      renderChecklist();
+      document.getElementById('lAICount').textContent=planData.timeline?.filter(t=>t.status==='ai').length||0;
+    }
+
+    // Channels
+    if(planData.channels?.length){
+      document.getElementById('lChannels').innerHTML=planData.channels.map(ch=>`<div class="ch-row"><div class="ch-name">${ch.channel}: <span style="color:var(--txt);">${ch.action}</span></div><div class="ch-day">Day ${ch.day}</div></div>`).join('');
+    }
+
+    updateTaskCount();
+    document.getElementById('lStatus').textContent=type;
+    document.getElementById('lSubStatus').textContent=`Launch: ${launchDate}`;
+
+    // Strategy stream
+    document.getElementById('lStrategy').textContent=planData.strategy||'Plan generated.';
+    document.getElementById('lStrategy').className='ai-out';
+
+  }catch(err){
+    document.getElementById('lStrategy').textContent='Error: '+err.message;
+    document.getElementById('lStrategy').className='ai-out';
+  }finally{lRunning=false;btn.disabled=false;btn.textContent='✦ Generate Plan';}
+}
+
+function renderChecklist(){
+  document.getElementById('lChecklist').innerHTML=lChecks.map((item,i)=>`
+    <div class="check-item" onclick="toggleCheck(${i})">
+      <div class="chk${item.checked?' on':''}">${item.checked?'✓':''}</div>
+      <div><div class="chk-txt${item.checked?' done':''}">${item.text}</div><div style="font-size:8.5px;color:var(--txm);margin-top:2px;">${item.category||''}</div></div>
+    </div>`).join('');
+  updateTaskCount();
+}
+function toggleCheck(i){
+  if(!lChecks[i])return;
+  lChecks[i].checked=!lChecks[i].checked;
+  renderChecklist();
+}
+
+// ══════════════════════════════════════
+// THEME
+// ══════════════════════════════════════
+(() => {
+  document.body.classList.add('light');
+})();
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+const canvasBg = document.body.classList.contains('light') ? '#f5f1ea' : '#110f0c';
+['evCanvas','bsCanvas'].forEach(id=>{
+  const c=document.getElementById(id);if(c){const ctx=c.getContext('2d');ctx.fillStyle=canvasBg;ctx.fillRect(0,0,c.width,c.height);}
+});
+drawMarginArc('marginArc',65,'var(--sage)');
+fetch(`${API_BASE}/inventory`).then(r=>r.json()).then(res=>{
+  if(res && res.items){
+    INV = res.items.map(i=>({n:i.name,r:i.role,c:i.color||'',s:i.stock||0,m:i.max||1,f:i.formulas||[],compat:i.compat||'med'}));
+  } else {
+    INV = DEFAULT_INV;
+  }
+  buildInventoryTable();
+}).catch(()=>{INV=DEFAULT_INV;buildInventoryTable();});
+</script>
+</body>
+</html>

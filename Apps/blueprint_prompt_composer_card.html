@@ -1,0 +1,313 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --slate-light: #E8EEF4; --slate-mid: #5A7A9E; --slate-dark: #2E4A6A;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label { font-size: 11px; font-weight: 500; color: var(--slate-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .new-app-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--slate-mid); }
+
+  .app-card { background: var(--warm-white); border: 1.5px solid var(--slate-mid); border-radius: 20px; padding: 2rem; max-width: 760px; position: relative; overflow: hidden; }
+  .card-glow { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(90,122,158,0.1) 0%, transparent 70%); pointer-events: none; }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--slate-light); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge { background: var(--slate-light); color: var(--slate-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .upgrade-strip { background: var(--slate-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .upgrade-text { font-size: 12px; color: var(--slate-dark); font-weight: 400; }
+  .upgrade-text strong { font-weight: 500; }
+  .upgrade-pricing { display: flex; align-items: center; gap: 10px; }
+  .old-price { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
+  .new-price { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--slate-dark); }
+  .new-price sub { font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* COMPOSER UI MOCKUP */
+  .composer-mock { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; overflow: hidden; margin-bottom: 1.75rem; }
+  .composer-header { background: var(--dark); padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
+  .composer-header-title { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7); letter-spacing: 0.06em; text-transform: uppercase; }
+  .composer-header-bp { font-size: 11px; color: var(--sage-light); font-weight: 400; }
+  .composer-body { padding: 1.25rem; }
+  .composer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .composer-field { display: flex; flex-direction: column; gap: 5px; }
+  .cf-label { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; }
+  .cf-select { background: var(--warm-white); border: 0.5px solid var(--border-med); border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--dark); font-family: 'DM Sans', sans-serif; }
+  .style-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+  .style-chip { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 0.5px solid var(--border-med); color: var(--text-muted); background: var(--warm-white); cursor: pointer; }
+  .style-chip.active { background: var(--slate-dark); color: white; border-color: var(--slate-dark); }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .sl-label { font-size: 11px; color: var(--text-muted); min-width: 100px; }
+  .sl-track { flex: 1; height: 4px; background: rgba(42,37,32,0.1); border-radius: 2px; position: relative; }
+  .sl-fill { height: 100%; background: var(--slate-mid); border-radius: 2px; }
+  .sl-thumb { width: 13px; height: 13px; border-radius: 50%; background: var(--slate-dark); position: absolute; top: -5px; transform: translateX(-50%); }
+  .sl-val { font-size: 11px; font-weight: 500; color: var(--dark); min-width: 28px; text-align: right; }
+  .toggles-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .toggle-pill { font-size: 11px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border-med); color: var(--text-muted); background: var(--warm-white); cursor: pointer; display: flex; align-items: center; gap: 5px; }
+  .toggle-pill.on { border-color: var(--sage); color: var(--sage-dark); background: var(--sage-light); }
+  .toggle-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .prompt-output { background: var(--dark); border-radius: 10px; padding: 1rem; position: relative; }
+  .prompt-output-label { font-size: 9px; font-weight: 500; color: rgba(255,255,255,0.35); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .prompt-text { font-size: 11px; color: rgba(255,255,255,0.75); line-height: 1.7; font-family: 'DM Sans', sans-serif; }
+  .prompt-text .section-tag { color: rgba(90,122,158,0.9); font-weight: 500; }
+  .copy-btn { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.1); border: 0.5px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); font-size: 10px; padding: 4px 10px; border-radius: 16px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .advanced-link { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 8px; cursor: pointer; text-decoration: underline; }
+
+  /* TARGET GRID */
+  .target-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1.5rem; }
+  .target-card { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 10px; padding: 10px 10px 8px; text-align: center; }
+  .target-icon { font-size: 18px; margin-bottom: 4px; }
+  .target-name { font-size: 11px; font-weight: 500; color: var(--dark); margin-bottom: 2px; }
+  .target-desc { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+
+  /* RISKS */
+  .risks-wrap { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .risk-row { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .risk-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 1px; background: #DDF0E4; color: #2A6B45; }
+  .risk-text { font-size: 12px; color: var(--dark); line-height: 1.5; }
+  .risk-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; display: block; margin-top: 1px; }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--slate-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .v2-strip { background: var(--slate-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 10px; }
+  .v2-label { font-size: 10px; font-weight: 500; color: var(--slate-dark); letter-spacing: 0.08em; text-transform: uppercase; background: white; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+  .v2-text { font-size: 12px; color: var(--slate-dark); font-weight: 300; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+  .price-block {}
+  .price-main { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add { background: var(--slate-dark); color: white; padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-upgrade { background: var(--sage-light); color: var(--sage-dark); padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-upgrade:hover { background: var(--sage-dark); color: white; transform: translateY(-1px); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 560px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .target-grid { grid-template-columns: repeat(2, 1fr); }
+    .composer-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="new-app-label">Visual Companion upgrade</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">⚙️</div>
+      <div>
+        <div class="app-name">Blueprint Prompt Composer</div>
+        <div class="app-tagline">Any blueprint → any AI target · image · copy · system · multi-blueprint fusion</div>
+      </div>
+    </div>
+    <span class="badge">Visual Companion Pro</span>
+  </div>
+
+  <!-- UPGRADE POSITIONING STRIP -->
+  <div class="upgrade-strip">
+    <div class="upgrade-text">This upgrades your <strong>Visual Companion</strong> subscription — replaces the $8.95 base plan</div>
+    <div class="upgrade-pricing">
+      <span class="old-price">$8.95</span>
+      <span class="new-price">$12.95<sub>/mo</sub></span>
+    </div>
+  </div>
+
+  <p class="app-desc">
+    Visual Companion already generates Midjourney prompts from blueprints. The Prompt Composer takes that engine and opens it to every AI task — product copy, social captions, how-to guides, internal critics, multi-blueprint fusions. Select a blueprint, pick your target, dial in fidelity and creativity, and get a perfectly structured prompt every time.
+  </p>
+
+  <!-- WHAT IT TARGETS -->
+  <div class="target-grid">
+    <div class="target-card">
+      <div class="target-icon">🖼️</div>
+      <div class="target-name">Image</div>
+      <div class="target-desc">Hero render, close-up, lifestyle scene, dark and moody</div>
+    </div>
+    <div class="target-card">
+      <div class="target-icon">✍️</div>
+      <div class="target-name">Copy</div>
+      <div class="target-desc">Product title, description, social caption, workshop guide</div>
+    </div>
+    <div class="target-card">
+      <div class="target-icon">🔧</div>
+      <div class="target-name">System</div>
+      <div class="target-desc">Color critic, balance critic, SKU matcher, internal agents</div>
+    </div>
+    <div class="target-card">
+      <div class="target-icon">🔀</div>
+      <div class="target-name">Fusion</div>
+      <div class="target-desc">Merge 2–3 blueprints — structure from A, color story from B</div>
+    </div>
+  </div>
+
+  <!-- COMPOSER UI MOCKUP -->
+  <div class="composer-mock">
+    <div class="composer-header">
+      <span class="composer-header-title">Prompt Composer</span>
+      <span style="color:rgba(255,255,255,0.3);font-size:11px">·</span>
+      <span class="composer-header-bp">Quiet Evergreen Threshold</span>
+    </div>
+    <div class="composer-body">
+      <div class="composer-row">
+        <div class="composer-field">
+          <span class="cf-label">Target</span>
+          <select class="cf-select"><option>Image — hero render</option><option>Image — close-up</option><option>Copy — product description</option><option>Copy — social caption</option><option>System — color critic</option></select>
+        </div>
+        <div class="composer-field">
+          <span class="cf-label">Mode</span>
+          <select class="cf-select"><option>Exact replication</option><option>Stylistic variation</option><option>Emotional remix</option><option>Material substitution</option></select>
+        </div>
+      </div>
+      <div class="composer-field" style="margin-bottom:10px">
+        <span class="cf-label">Style</span>
+        <div class="style-chips">
+          <span class="style-chip active">Studio catalog</span>
+          <span class="style-chip">Lifestyle door</span>
+          <span class="style-chip">Dark and moody</span>
+          <span class="style-chip">Light and airy</span>
+          <span class="style-chip">Ralph Lauren</span>
+        </div>
+      </div>
+      <div class="slider-row">
+        <span class="sl-label">Blueprint fidelity</span>
+        <div class="sl-track"><div class="sl-fill" style="width:78%"></div><div class="sl-thumb" style="left:78%"></div></div>
+        <span class="sl-val">78</span>
+      </div>
+      <div class="slider-row" style="margin-bottom:10px">
+        <span class="sl-label">Creativity</span>
+        <div class="sl-track"><div class="sl-fill" style="width:35%"></div><div class="sl-thumb" style="left:35%"></div></div>
+        <span class="sl-val">35</span>
+      </div>
+      <div class="toggles-row">
+        <span class="toggle-pill on"><span class="toggle-dot"></span>Exact stems</span>
+        <span class="toggle-pill"><span class="toggle-dot"></span>Allow color variation</span>
+        <span class="toggle-pill on"><span class="toggle-dot"></span>Strict constraints</span>
+      </div>
+      <div class="prompt-output">
+        <button class="copy-btn">Copy</button>
+        <div class="prompt-output-label">Generated prompt — image hero</div>
+        <div class="prompt-text">
+          <span class="section-tag">[CONTEXT]</span> calm hopeful winter wreath, 18 inch grapevine base, asymmetric crescent composition<br>
+          <span class="section-tag">[REQUIREMENTS]</span> soft cedar and eucalyptus, small pinecones, white berries, narrow taupe linen ribbon at lower left<br>
+          <span class="section-tag">[STYLE]</span> studio catalog, straight-on eye-level, warm neutral door background<br>
+          <span class="section-tag">[CONSTRAINTS]</span> must include cedar and eucalyptus, no synthetic materials visible<br>
+          <span class="section-tag">[FLEXIBLE]</span> door color, exact ribbon position ±10°, light temperature
+        </div>
+      </div>
+      <div class="advanced-link">Show advanced controls</div>
+    </div>
+  </div>
+
+  <!-- RISKS RESOLVED -->
+  <div class="risks-wrap">
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Overfit templates feel samey — Prompt DNA adds controlled variation to non-core sections
+        <span>The DSL structure (CONTEXT / REQUIREMENTS / STYLE / CONSTRAINTS / FLEXIBLE) keeps every prompt architecturally consistent, but the FLEXIBLE section randomizes within safe bounds so no two prompts are identical even from the same blueprint</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Under-specified constraints cause model drift — DSL section architecture prevents it
+        <span>CONSTRAINTS section always encodes must-include stems, forbidden colors, and minimum asymmetry tolerance as explicit rules regardless of fidelity slider setting. High fidelity expands REQUIREMENTS; it never shrinks CONSTRAINTS</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">UX overload from too many knobs — progressive disclosure hides advanced controls
+        <span>Default view shows 2 sliders and 3 toggles. "Show advanced controls" reveals verbosity, language, style preset editor, and per-section fidelity overrides. Most users never need to open it</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>8 prompt templates at launch</strong>
+        <span>Image hero, close-up, lifestyle scene, product title, product description, social caption, color critic, balance critic — all keyed to blueprint schema</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Multi-blueprint fusion</strong>
+        <span>Combine 2–3 blueprints — take structure from A and color story from B — to generate hybrid designs no single blueprint can produce alone</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Explain this blueprint mode</strong>
+        <span>Same engine, educational target — generates human-readable copy explaining why a wreath feels the way it does. Great for client presentations and workshops</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Prompt versioning and rating</strong>
+        <span>Every prompt is saved with the blueprint ID, template, and knob settings. Rate outcomes 1–5, tag issues, and the system learns which defaults work best per blueprint type</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Shareable prompt presets</strong>
+        <span>Save "Shop hero images for spring farmhouse wreaths" as a reusable preset — one click applies the same template, style, and knob settings to any new blueprint</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Auto-recommended defaults</strong>
+        <span>Based on past ratings, the system pre-selects the best template and knob settings for each blueprint type — seasonal, emotional, structural patterns all inform the suggestion</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v2-strip">
+    <span class="v2-label">Coming in v2</span>
+    <span class="v2-text">Fine-tuned template DSL · auto-tune knobs from rating history · prompt marketplace for sharing presets · multi-language output (EN, ES, FR)</span>
+  </div>
+
+  <div class="card-footer">
+    <div class="price-block">
+      <div class="price-main"><sup>$</sup>12.95<sub>/mo</sub></div>
+      <div class="price-note">Replaces Visual Companion $8.95 — upgrade for $4 more</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-upgrade">Upgrade from Visual Companion</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Replaces or upgrades Visual Companion · feeds Memory Weaver, Design Studio, and all future AI tasks across the platform
+</div>

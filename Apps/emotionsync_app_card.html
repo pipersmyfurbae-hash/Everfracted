@@ -1,0 +1,263 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --blush: #D4897A; --blush-light: #EDD5CF; --blush-dark: #A05E51;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --rose-light: #F5E0E8; --rose-mid: #C4607A; --rose-dark: #7A2E42;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label { font-size: 11px; font-weight: 500; color: var(--rose-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .new-app-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--rose-mid); }
+
+  .app-card { background: var(--warm-white); border: 1.5px solid var(--rose-mid); border-radius: 20px; padding: 2rem; max-width: 760px; position: relative; overflow: hidden; }
+  .card-glow { position: absolute; top: -50px; right: -50px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(196,96,122,0.09) 0%, transparent 70%); pointer-events: none; }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--rose-light); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge { background: var(--rose-light); color: var(--rose-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* EMOTION → FORM DEMO */
+  .demo-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; }
+  .demo-label { font-size: 10px; font-weight: 500; color: var(--rose-dark); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
+  .demo-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center; }
+  .emotion-pills { display: flex; flex-direction: column; gap: 6px; }
+  .emotion-pill { display: flex; align-items: center; gap: 8px; }
+  .ep-label { font-size: 11px; color: var(--text-muted); font-weight: 400; min-width: 60px; }
+  .ep-bar { flex: 1; height: 6px; background: rgba(42,37,32,0.08); border-radius: 3px; overflow: hidden; }
+  .ep-fill { height: 100%; border-radius: 3px; background: var(--rose-mid); }
+  .arrow-center { display: flex; align-items: center; justify-content: center; }
+  .arrow-label { font-size: 18px; color: var(--rose-mid); opacity: 0.6; }
+  .form-profile { display: flex; flex-direction: column; gap: 6px; }
+  .fp-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .fp-label { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+  .fp-val { font-size: 11px; font-weight: 500; color: var(--dark); }
+  .fp-tag { font-size: 10px; background: var(--sage-light); color: var(--sage-dark); padding: 2px 8px; border-radius: 10px; }
+
+  /* SLIDERS */
+  .sliders-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+  .sliders-label { font-size: 10px; font-weight: 500; color: var(--rose-dark); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.85rem; }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .sl-label { font-size: 12px; color: var(--text-muted); min-width: 80px; font-weight: 300; }
+  .sl-track { flex: 1; height: 4px; background: rgba(42,37,32,0.1); border-radius: 2px; position: relative; }
+  .sl-fill { height: 100%; background: var(--rose-mid); border-radius: 2px; }
+  .sl-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--rose-dark); position: absolute; top: -5px; transform: translateX(-50%); }
+  .sl-val { font-size: 11px; font-weight: 500; color: var(--dark); min-width: 28px; text-align: right; }
+
+  /* BLEND STRIP */
+  .blend-strip { background: var(--rose-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.5rem; }
+  .blend-title { font-size: 10px; font-weight: 500; color: var(--rose-dark); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  .blend-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .blend-emotion { font-size: 12px; font-weight: 500; color: var(--rose-dark); background: white; padding: 4px 12px; border-radius: 20px; }
+  .blend-plus { font-size: 14px; color: var(--rose-mid); font-weight: 300; }
+  .blend-arrow { font-size: 13px; color: var(--rose-mid); }
+  .blend-result { font-size: 12px; color: var(--rose-dark); font-weight: 300; flex: 1; }
+
+  /* RISKS RESOLVED */
+  .risks-wrap { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .risk-row { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .risk-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 1px; background: #DDF0E4; color: #2A6B45; }
+  .risk-text { font-size: 12px; color: var(--dark); line-height: 1.5; }
+  .risk-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; display: block; margin-top: 1px; }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rose-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .v2-strip { background: var(--rose-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 10px; }
+  .v2-label { font-size: 10px; font-weight: 500; color: var(--rose-dark); letter-spacing: 0.08em; text-transform: uppercase; background: white; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+  .v2-text { font-size: 12px; color: var(--rose-dark); font-weight: 300; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+  .price-main { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add { background: var(--rose-dark); color: white; padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn { background: transparent; color: var(--text-muted); padding: 11px 20px; border-radius: 40px; font-size: 13px; font-weight: 400; cursor: pointer; border: 1px solid var(--border-med); transition: border-color 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 560px) { .features-grid { grid-template-columns: 1fr; } .demo-grid { grid-template-columns: 1fr; } .arrow-center { display: none; } }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">💗</div>
+      <div>
+        <div class="app-name">EmotionSync</div>
+        <div class="app-tagline">Emotion → structure · form profiling · micro-tuning · reverse inference</div>
+      </div>
+    </div>
+    <span class="badge">Intelligence layer</span>
+  </div>
+
+  <p class="app-desc">
+    Memory Weaver already turns emotions into color and flowers. EmotionSync goes deeper — it turns emotion into <em style="font-style:italic;color:var(--dark)">structure itself</em>. How asymmetric the ring is. Where the density peaks. Whether the line flows clockwise or diagonally. A calm wreath doesn't just use soft colors — it has high negative space, smooth curves, and restrained focal points. EmotionSync encodes all of that automatically.
+  </p>
+
+  <!-- EMOTION → FORM DEMO -->
+  <div class="demo-wrap">
+    <div class="demo-label">How emotion becomes structure — live mapping example</div>
+    <div class="demo-grid">
+      <div class="emotion-pills">
+        <div style="font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:6px">Emotion vector</div>
+        <div class="emotion-pill"><span class="ep-label">Calm</span><div class="ep-bar"><div class="ep-fill" style="width:82%"></div></div><span style="font-size:10px;color:var(--text-muted)">0.82</span></div>
+        <div class="emotion-pill"><span class="ep-label">Openness</span><div class="ep-bar"><div class="ep-fill" style="width:68%"></div></div><span style="font-size:10px;color:var(--text-muted)">0.68</span></div>
+        <div class="emotion-pill"><span class="ep-label">Order</span><div class="ep-bar"><div class="ep-fill" style="width:74%"></div></div><span style="font-size:10px;color:var(--text-muted)">0.74</span></div>
+        <div class="emotion-pill"><span class="ep-label">Intimacy</span><div class="ep-bar"><div class="ep-fill" style="width:55%"></div></div><span style="font-size:10px;color:var(--text-muted)">0.55</span></div>
+      </div>
+      <div class="arrow-center"><span class="arrow-label">→</span></div>
+      <div class="form-profile">
+        <div style="font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:6px">Form profile output</div>
+        <div class="fp-row"><span class="fp-label">Silhouette</span><span class="fp-tag">Crescent</span></div>
+        <div class="fp-row"><span class="fp-label">Symmetry</span><span class="fp-val">0.72</span></div>
+        <div class="fp-row"><span class="fp-label">Negative space</span><span class="fp-val">0.45</span></div>
+        <div class="fp-row"><span class="fp-label">Line style</span><span class="fp-tag">Soft curve</span></div>
+        <div class="fp-row"><span class="fp-label">Scale contrast</span><span class="fp-val">0.28</span></div>
+        <div class="fp-row"><span class="fp-label">Focal points</span><span class="fp-val">1 at 210°</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MICRO-TUNING SLIDERS -->
+  <div class="sliders-wrap">
+    <div class="sliders-label">Micro-tuning — nudge form without rebuilding</div>
+    <div class="slider-row">
+      <span class="sl-label">Symmetry</span>
+      <div class="sl-track"><div class="sl-fill" style="width:72%"></div><div class="sl-thumb" style="left:72%"></div></div>
+      <span class="sl-val">0.72</span>
+    </div>
+    <div class="slider-row">
+      <span class="sl-label">Fullness</span>
+      <div class="sl-track"><div class="sl-fill" style="width:55%"></div><div class="sl-thumb" style="left:55%"></div></div>
+      <span class="sl-val">0.55</span>
+    </div>
+    <div class="slider-row">
+      <span class="sl-label">Flow</span>
+      <div class="sl-track"><div class="sl-fill" style="width:40%"></div><div class="sl-thumb" style="left:40%"></div></div>
+      <span class="sl-val">0.40</span>
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <span class="sl-label">Openness</span>
+      <div class="sl-track"><div class="sl-fill" style="width:68%"></div><div class="sl-thumb" style="left:68%"></div></div>
+      <span class="sl-val">0.68</span>
+    </div>
+  </div>
+
+  <!-- MULTI-EMOTION BLEND (v1, not v2) -->
+  <div class="blend-strip">
+    <div class="blend-title">Multi-emotion blending — ships in v1</div>
+    <div class="blend-row">
+      <span class="blend-emotion">Grief</span>
+      <span class="blend-plus">+</span>
+      <span class="blend-emotion">Hope</span>
+      <span class="blend-arrow">→</span>
+      <span class="blend-result">Dense base (weight/gravity), lighter open top arc (uplift) — transitional structure for sympathy wreaths</span>
+    </div>
+    <div class="blend-row" style="margin-top:6px">
+      <span class="blend-emotion">Calm</span>
+      <span class="blend-plus">+</span>
+      <span class="blend-emotion">Joy</span>
+      <span class="blend-arrow">→</span>
+      <span class="blend-result">Even fullness, moderate symmetry, warm focal cluster — balanced everyday wreath</span>
+    </div>
+  </div>
+
+  <!-- RISKS RESOLVED -->
+  <div class="risks-wrap">
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Designer agency loss — "Break the rules" mode adds controlled randomness
+        <span>One structural parameter (symmetry) is always visible and editable so users feel they're co-authoring, not just receiving a result. Break the rules toggle relaxes all constraints by 20–40% for experienced designers</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Stereotyped emotion mapping — emotion intensity slider creates variation within each family
+        <span>Calm at intensity 3/10 produces a spare crescent. Calm at 8/10 produces a full symmetrical halo. Same emotion, completely different structure. No two calm wreaths look the same</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Over-fitting — room context input nudges form toward the physical environment
+        <span>Wall color (dark, light, textured) and door style (modern, rustic, traditional) shift the form profile toward more open or compact silhouettes without overriding the emotion base</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Emotion → form pipeline</strong>
+        <span>Emotion vector maps to silhouette, density curve, line style, negative space, and focal point positions — not just color</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Reverse inference</strong>
+        <span>Upload or select any blueprint and EmotionSync computes its emotional fingerprint — discover what a design "feels like" before you describe it</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Multi-emotion blending</strong>
+        <span>Combine two emotions with weighted mix — grief + hope, calm + joy — to produce transitional structures that no single emotion formula can generate</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Room context input</strong>
+        <span>Tell EmotionSync the wall color, door style, and space size — the form profile adjusts to complement the physical environment</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v2-strip">
+    <span class="v2-label">Coming in v2</span>
+    <span class="v2-text">Fine-tuned model trained on real user approvals · debug heat-ring overlay · multi-ring emotion mapping · vertical swag support</span>
+  </div>
+
+  <div class="card-footer">
+    <div>
+      <div class="price-main"><sup>$</sup>6.95<sub>/mo</sub></div>
+      <div class="price-note">Add to any Maker or Studio Pro plan</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Upgrades Memory Weaver significantly · pairs with Blueprint Intelligence Pro and Adaptive Blueprint Composer for a complete AI design brain
+</div>

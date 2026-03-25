@@ -1,0 +1,214 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+  .label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .section { margin-bottom: 2rem; }
+
+  /* OVERLAP MAP */
+  .overlap-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .overlap-row { display: grid; grid-template-columns: 200px 1fr 120px; gap: 10px; align-items: start; padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-primary); }
+  .overlap-feature { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .overlap-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .overlap-status { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 10px; text-align: center; white-space: nowrap; }
+  .status-exists { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .status-partial { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .status-new { background: var(--color-background-success); color: var(--color-text-success); }
+
+  /* GENUINE NEW */
+  .new-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+  .new-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.1rem; background: var(--color-background-primary); display: flex; align-items: flex-start; gap: 12px; }
+  .new-num { width: 26px; height: 26px; border-radius: 50%; background: var(--color-background-success); color: var(--color-text-success); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .new-body { flex: 1; }
+  .new-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .new-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 4px; }
+  .new-where { font-size: 11px; color: var(--color-text-success); }
+  .new-tag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; background: var(--color-background-info); color: var(--color-text-info); }
+
+  /* VERDICT */
+  .verdict { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; }
+  .verdict-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
+  .verdict-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.7; }
+
+  /* NARRATIVE MODE PREVIEW */
+  .narrative-wrap { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin-bottom: 1.5rem; }
+  .narrative-header { background: var(--color-background-secondary); padding: 10px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .narrative-header-title { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; }
+  .narrative-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  .narrative-input { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; font-size: 13px; color: var(--color-text-primary); font-style: italic; line-height: 1.6; }
+  .narrative-arrow { font-size: 11px; color: var(--color-text-tertiary); text-align: center; }
+  .narrative-output { display: flex; flex-direction: column; gap: 6px; }
+  .narrative-out-row { display: flex; align-items: center; gap: 8px; }
+  .out-label { font-size: 11px; color: var(--color-text-secondary); min-width: 100px; }
+  .out-val { font-size: 11px; font-weight: 500; color: var(--color-text-primary); }
+  .out-tag { font-size: 10px; background: var(--color-background-info); color: var(--color-text-info); padding: 2px 8px; border-radius: 8px; }
+
+  /* CREATIVE VARIANCE SLIDER -->
+  .variance-wrap { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .variance-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
+  .variance-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 10px; }
+  .variance-row { display: flex; align-items: center; gap: 10px; }
+  .var-label { font-size: 11px; color: var(--color-text-secondary); }
+  .var-track { flex: 1; height: 4px; background: var(--color-border-tertiary); border-radius: 2px; position: relative; }
+  .var-fill { height: 100%; background: var(--color-text-secondary); border-radius: 2px; opacity: 0.5; }
+  .var-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--color-text-primary); position: absolute; top: -4px; transform: translateX(-50%); }
+  .var-val { font-size: 11px; font-weight: 500; color: var(--color-text-primary); min-width: 28px; text-align: right; }
+
+  .cta-box { background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .cta-title { font-size: 13px; font-weight: 500; color: var(--color-text-info); margin-bottom: 4px; }
+  .cta-desc { font-size: 12px; color: var(--color-text-info); line-height: 1.6; opacity: 0.85; }
+
+  @media (max-width: 560px) { .overlap-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="section">
+  <div class="label">Feature-by-feature overlap check</div>
+  <div class="overlap-grid">
+    <div class="overlap-row">
+      <div class="overlap-feature">Emotion sliders → design parameters</div>
+      <div class="overlap-desc">Energy, Warmth, Elegance, Serenity axes mapping to cluster count, symmetry, density, contrast</div>
+      <div class="overlap-status status-exists">EmotionSync owns this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Emotion → ring shape/geometry</div>
+      <div class="overlap-desc">Calm → ellipse, Energy → spiral, Wild → perturbed circle</div>
+      <div class="overlap-status status-exists">Parametric Layout Lab owns this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Emotion → color palette selection</div>
+      <div class="overlap-desc">Romantic → soft analogous, Joyful → warm triadic, Serene → monochrome</div>
+      <div class="overlap-status status-exists">Memory Weaver owns this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">2D mood map (Energy vs Warmth)</div>
+      <div class="overlap-desc">Interactive plot, draggable point, real-time preview update</div>
+      <div class="overlap-status status-exists">EmotionSync owns this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Focal dominance and cluster layout</div>
+      <div class="overlap-desc">One large focal + support clusters vs. evenly distributed interest</div>
+      <div class="overlap-status status-exists">Focal Orbit Balance owns this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Emotion preset library</div>
+      <div class="overlap-desc">"Quiet Morning", "High Drama", "Cozy Autumn" — presets that set all axes at once</div>
+      <div class="overlap-status status-partial">EmotionSync — needs presets added</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Text prompt → emotion profile</div>
+      <div class="overlap-desc">Free text "a quiet morning in spring" → parsed emotion vector</div>
+      <div class="overlap-status status-partial">Memory Weaver does this, not real-time</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Narrative Mode</div>
+      <div class="overlap-desc">User describes a story or scene, system auto-generates the full mood profile and design path — not just emotions, but context, season, setting</div>
+      <div class="overlap-status status-new">Genuinely new</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Creative Variance slider</div>
+      <div class="overlap-desc">Explicit "how much should the AI surprise me" control — perturbs feature weights randomly within a set range</div>
+      <div class="overlap-status status-new">Genuinely new</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">User rating feedback loop</div>
+      <div class="overlap-desc">Rate how "on-point" the emotion result feels — retrains the emotional weighting over time per user</div>
+      <div class="overlap-status status-new">Genuinely new</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Expand to non-wreath products</div>
+      <div class="overlap-desc">Reuse emotional mapping for centerpieces, garlands, and installations</div>
+      <div class="overlap-status status-new">Platform expansion opportunity</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict">
+  <div class="verdict-title">Verdict — mostly covered, but 4 things worth extracting</div>
+  <div class="verdict-desc">About 70% of what the EAC and Emotion Engine docs describe is already built across EmotionSync, Parametric Layout Lab, Memory Weaver, and Focal Orbit Balance. There's no new standalone app here. But there are 4 specific additions worth pulling out — Narrative Mode, the Creative Variance slider, the user rating feedback loop, and the platform expansion hook — and the right home for all of them is EmotionSync as a v2 feature update. Not a new purchase, just making EmotionSync better.</div>
+</div>
+
+<div class="section">
+  <div class="label">The 4 genuine additions — all go into EmotionSync v2</div>
+  <div class="new-grid">
+
+    <div class="new-card">
+      <div class="new-num">1</div>
+      <div class="new-body">
+        <div class="new-title">Narrative Mode — describe a scene, get a full emotion profile</div>
+        <div class="new-desc">Memory Weaver already turns a memory text into a wreath, but it generates a full blueprint directly. Narrative Mode sits upstream — the user describes a context ("a quiet morning in spring, pale light, coffee getting cold") and the system extracts a rich emotion profile: season, setting, energy, warmth, elegance, serenity. That profile then drives EmotionSync rather than jumping straight to a blueprint. More nuanced, more replayable.</div>
+        <div class="new-where">Where it goes → EmotionSync v2, as an alternative input mode alongside sliders</div>
+        <span class="new-tag">New feature</span>
+      </div>
+    </div>
+
+    <div class="new-card">
+      <div class="new-num">2</div>
+      <div class="new-body">
+        <div class="new-title">Creative Variance slider — "how much should the AI surprise me"</div>
+        <div class="new-desc">Currently EmotionSync produces deterministic output for a given emotion vector. The Creative Variance slider adds controlled randomness — at 0 it's fully predictable, at 100 it perturbs all feature weights within safe ranges, producing genuinely unexpected but still emotionally coherent results. This is the difference between a tool and a creative partner.</div>
+        <div class="new-where">Where it goes → EmotionSync v2, single slider added to the existing UI</div>
+        <span class="new-tag">New feature</span>
+      </div>
+    </div>
+
+    <div class="new-card">
+      <div class="new-num">3</div>
+      <div class="new-body">
+        <div class="new-title">User rating feedback loop — "how on-point does this feel"</div>
+        <div class="new-desc">After generating a design from an emotion profile, the user rates how well the result matches their intent on a simple 1–5 scale. Over time these ratings adjust the emotional weighting matrix for that user — their version of "calm" gradually becomes more precise. This is how EmotionSync goes from good-for-everyone to perfect-for-you.</div>
+        <div class="new-where">Where it goes → EmotionSync v2, post-generation feedback widget</div>
+        <span class="new-tag">New feature</span>
+      </div>
+    </div>
+
+    <div class="new-card">
+      <div class="new-num">4</div>
+      <div class="new-body">
+        <div class="new-title">Platform expansion — same engine for centerpieces, garlands, installations</div>
+        <div class="new-desc">The emotional mapping logic in EmotionSync is product-agnostic. Once the wreath version is proven, the same emotion → composition_profile pipeline applies to centerpieces, garlands, and arch installations. This is a long-term platform unlock — not v2, but worth flagging in the roadmap now so the schema is designed with extensibility in mind from the start.</div>
+        <div class="new-where">Where it goes → EmotionSync roadmap note, schema extensibility flag for developers</div>
+        <span class="new-tag">Roadmap</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NARRATIVE MODE PREVIEW -->
+<div class="section">
+  <div class="label">What Narrative Mode looks like in practice</div>
+  <div class="narrative-wrap">
+    <div class="narrative-header">
+      <div class="narrative-header-title">Narrative Mode — EmotionSync v2</div>
+    </div>
+    <div class="narrative-body">
+      <div class="narrative-input">"A quiet morning in early spring. Pale light, coffee getting cold on the windowsill. Hopeful but unhurried."</div>
+      <div class="narrative-arrow">↓ parsed into emotion profile</div>
+      <div class="narrative-output">
+        <div class="narrative-out-row"><span class="out-label">Season</span><span class="out-val">Early spring</span></div>
+        <div class="narrative-out-row"><span class="out-label">Energy</span><span class="out-val">0.18</span><span class="out-tag">Very calm</span></div>
+        <div class="narrative-out-row"><span class="out-label">Warmth</span><span class="out-val">0.55</span><span class="out-tag">Gentle</span></div>
+        <div class="narrative-out-row"><span class="out-label">Elegance</span><span class="out-val">0.62</span><span class="out-tag">Refined</span></div>
+        <div class="narrative-out-row"><span class="out-label">Serenity</span><span class="out-val">0.81</span><span class="out-tag">Open, spacious</span></div>
+        <div class="narrative-out-row"><span class="out-label">Form output</span><span class="out-val">Soft ellipse, high negative space, single focal</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATIVE VARIANCE -->
+<div class="variance-wrap">
+  <div class="variance-title">Creative Variance slider — how it changes the output</div>
+  <div class="variance-desc">At 0, EmotionSync produces the same result every time for a given emotion vector — great for production consistency. Sliding right introduces controlled randomness: cluster positions shift, density varies slightly, a less predictable palette choice surfaces. At 80+ the AI starts making genuinely surprising choices that still respect the emotional intent.</div>
+  <div class="variance-row">
+    <span class="var-label">Predictable</span>
+    <div class="var-track"><div class="var-fill" style="width:38%"></div><div class="var-thumb" style="left:38%"></div></div>
+    <span class="var-label">Surprising</span>
+    <span class="var-val">38</span>
+  </div>
+</div>
+
+<div class="cta-box">
+  <div class="cta-title">The action: EmotionSync v2 update, not a new app</div>
+  <div class="cta-desc">Add Narrative Mode as an alternate input, the Creative Variance slider to the existing UI, and the 1–5 rating widget post-generation. Flag the schema for product-type extensibility in developer notes. Total effort is modest — no new pricing, no new card in the ecosystem store. Just EmotionSync getting meaningfully better for existing subscribers. That's the right call here.</div>
+</div>

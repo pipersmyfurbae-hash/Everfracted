@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moodoor — Match Result</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --warm:#FAF6F0;--warm2:#F2EBE0;--ink:#2A1F14;--muted:#8A7560;
+      --blush:#C4836A;--sage:#6A8C6A;--rule:rgba(42,31,20,.08);
+    }
+    body{font-family:'Jost',sans-serif;background:var(--warm);color:var(--ink);line-height:1.6}
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;display:flex;align-items:center;padding:0 40px;background:rgba(250,246,240,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--rule)}
+    .nav-brand{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:var(--ink)}
+    .nav-links{display:flex;gap:24px;margin-left:auto}
+    .nav-links a{font-size:13px;color:var(--muted);text-decoration:none}
+    .nav-links a:hover{color:var(--ink)}
+    .btn-nav{margin-left:24px;padding:8px 20px;background:var(--ink);color:var(--warm);text-decoration:none;border-radius:2px;font-size:12px;letter-spacing:.06em}
+    .wrap{max-width:900px;margin:0 auto;padding:100px 32px 80px}
+    h1{font-family:'Playfair Display',serif;font-size:42px;font-weight:300;letter-spacing:-.02em;margin-bottom:12px}
+    p{color:var(--muted);max-width:640px;margin-bottom:28px}
+    .card{background:white;border:1px solid var(--rule);border-radius:12px;padding:28px;display:grid;gap:18px}
+    .pill{display:inline-flex;gap:8px;align-items:center;background:var(--warm2);color:var(--ink);padding:6px 12px;border-radius:999px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+    .result-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:300}
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{background:rgba(106,140,106,.12);color:var(--sage);padding:6px 10px;border-radius:999px;font-size:12px}
+    .cta{display:flex;gap:12px;flex-wrap:wrap}
+    .cta a{background:var(--blush);color:white;text-decoration:none;padding:12px 22px;border-radius:3px;font-size:13px;letter-spacing:.06em}
+    .cta .ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand"><em>Moodoor</em></div>
+    <div class="nav-links">
+      <a href="moodoor.html">Home</a>
+      <a href="quiz.html">Mood quiz</a>
+      <a href="result.html">Match result</a>
+    </div>
+    <a class="btn-nav" href="quiz.html">Retake quiz</a>
+  </nav>
+
+  <div class="wrap">
+    <div class="pill">Your match</div>
+    <h1>Quiet Luxury</h1>
+    <p>Soft hydrangea, muted greens, and a calm, refined palette. This wreath fits a home that feels serene, intentional, and quietly elegant.</p>
+
+    <div class="card">
+      <div class="result-name">Quiet Luxury Wreath</div>
+      <div class="tags">
+        <span class="tag">Serene</span>
+        <span class="tag">Classic</span>
+        <span class="tag">Neutral palette</span>
+      </div>
+      <p>Recommended for entryways with natural light, warm woods, and understated decor. Pairs well with linen textures and soft metallics.</p>
+      <div class="cta">
+        <a href="../evercrafted-marketplace.html">Shop this design</a>
+        <a class="ghost" href="moodoor.html">Browse more wreaths</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

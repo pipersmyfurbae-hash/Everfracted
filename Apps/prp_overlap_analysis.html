@@ -1,0 +1,196 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+  .label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .section { margin-bottom: 2rem; }
+
+  .overlap-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .overlap-row { display: grid; grid-template-columns: 200px 1fr 160px; gap: 10px; align-items: start; padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-primary); }
+  .overlap-feature { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .overlap-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .overlap-status { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 10px; text-align: center; }
+  .status-exists { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .status-partial { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .status-new { background: var(--color-background-success); color: var(--color-text-success); }
+
+  .verdict { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; }
+  .verdict-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.5rem; }
+  .verdict-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.7; }
+
+  .new-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+  .new-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.1rem; background: var(--color-background-primary); display: flex; align-items: flex-start; gap: 12px; }
+  .new-num { width: 26px; height: 26px; border-radius: 50%; background: var(--color-background-success); color: var(--color-text-success); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .new-body { flex: 1; }
+  .new-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .new-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 4px; }
+  .new-where { font-size: 11px; color: var(--color-text-success); }
+  .new-tag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; background: var(--color-background-info); color: var(--color-text-info); }
+
+  .prompt-trace { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin-bottom: 1.5rem; }
+  .pt-header { background: var(--color-background-secondary); padding: 8px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .pt-title { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; }
+  .pt-body { padding: 1rem; display: flex; flex-direction: column; gap: 0; }
+  .pt-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .pt-step:last-child { border-bottom: none; }
+  .pt-badge { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 8px; flex-shrink: 0; margin-top: 1px; min-width: 80px; text-align: center; }
+  .badge-input { background: var(--color-background-info); color: var(--color-text-info); }
+  .badge-parse { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .badge-schema { background: var(--color-background-success); color: var(--color-text-success); }
+  .badge-render { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .pt-content { flex: 1; }
+  .pt-label { font-size: 11px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .pt-detail { font-size: 11px; color: var(--color-text-secondary); line-height: 1.5; font-family: monospace; }
+
+  .cta-box { background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .cta-title { font-size: 13px; font-weight: 500; color: var(--color-text-info); margin-bottom: 4px; }
+  .cta-desc { font-size: 12px; color: var(--color-text-info); line-height: 1.6; opacity: 0.85; }
+
+  @media (max-width: 560px) { .overlap-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="section">
+  <div class="label">Feature-by-feature overlap check</div>
+  <div class="overlap-grid">
+    <div class="overlap-row">
+      <div class="overlap-feature">Prompt parser — emotion words → blueprint attributes</div>
+      <div class="overlap-desc">Text → emotion vector → palette, density, placement rules</div>
+      <div class="overlap-status status-exists">Memory Weaver does this exactly</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Emotion sliders → real-time visual update</div>
+      <div class="overlap-desc">Serenity increases → cooler hues, lower density</div>
+      <div class="overlap-status status-exists">EmotionSync + Mood Map UI owns this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Season / theme / material tag parsing</div>
+      <div class="overlap-desc">"linen ribbon", "grapevine base", "dried lavender" → blueprint constraints</div>
+      <div class="overlap-status status-exists">Memory Weaver + Inventory Weaver v2</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Reference photo → design input (CLIP embeddings)</div>
+      <div class="overlap-desc">Upload a photo, extract emotional and visual similarity vector</div>
+      <div class="overlap-status status-partial">Not built anywhere yet — genuinely new</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Dynamic preview renderer</div>
+      <div class="overlap-desc">Canvas-based scaffold showing color blobs, shape outlines, floral placeholders</div>
+      <div class="overlap-status status-exists">Blueprint canvas already renders this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Prompt Trace Log — conversion journey</div>
+      <div class="overlap-desc">Store every transformation: text → parsed schema → render blueprint, user-viewable</div>
+      <div class="overlap-status status-new">Genuinely new — no app logs this</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Version snapshots — compare wording changes</div>
+      <div class="overlap-desc">How does "nostalgic" vs "melancholy" change the output? Side-by-side</div>
+      <div class="overlap-status status-new">Genuinely new</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">AI commentary mode</div>
+      <div class="overlap-desc">"Added lavender for nostalgia tone" — plain language explanation of why each choice was made</div>
+      <div class="overlap-status status-new">Genuinely new</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Prompt-to-moodboard pre-render</div>
+      <div class="overlap-desc">Visual inspiration cards generated alongside the live blueprint — before commitment</div>
+      <div class="overlap-status status-new">Genuinely new</div>
+    </div>
+    <div class="overlap-row">
+      <div class="overlap-feature">Debounce + undo/redo caching</div>
+      <div class="overlap-desc">Smooth real-time refresh, prior render states for revert</div>
+      <div class="overlap-status status-exists">Standard app infrastructure — not a feature</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict">
+  <div class="verdict-title">Verdict — not a new app, but 4 real additions worth extracting</div>
+  <div class="verdict-desc">The core concept — parsing prompts into blueprint data in real time — is what Memory Weaver, EmotionSync, and the Mood Map UI already do end-to-end. The rendering pipeline is the blueprint canvas. What's genuinely new here is narrower but valuable: the Prompt Trace Log (transparency into how text became a design), version snapshots (compare how wording changes affect output), AI commentary mode (plain-language explanation of design decisions), and photo reference input via CLIP embeddings. The first three go into Memory Weaver v2. The photo reference input is worth its own evaluation — it's the most technically distinct idea in the doc.</div>
+</div>
+
+<div class="section">
+  <div class="label">The 4 genuine additions</div>
+  <div class="new-grid">
+    <div class="new-card">
+      <div class="new-num">1</div>
+      <div class="new-body">
+        <div class="new-title">Prompt Trace Log — see how your words became a design</div>
+        <div class="new-desc">Every Memory Weaver generation stores a visible audit trail: raw text input → parsed emotion vector → palette selection → formula chosen → blueprint generated. Users can click any step to see what the engine decided and why — and rewind to any point to branch in a different direction.</div>
+        <div class="new-where">Where it goes → Memory Weaver v2, "How it was built" panel on any generated blueprint</div>
+        <span class="new-tag">Memory Weaver v2</span>
+      </div>
+    </div>
+    <div class="new-card">
+      <div class="new-num">2</div>
+      <div class="new-body">
+        <div class="new-title">Version snapshots — how does one word change the design?</div>
+        <div class="new-desc">Type "nostalgic autumn" → generate. Change one word to "melancholy autumn" → generate. See both side by side with a diff view showing exactly what changed in the blueprint — emotion scores, palette, density, formula selection. Makes prompt crafting feel like a creative instrument rather than a guessing game.</div>
+        <div class="new-where">Where it goes → Memory Weaver v2, pairs with Dynamic Variant Branching for deeper exploration</div>
+        <span class="new-tag">Memory Weaver v2</span>
+      </div>
+    </div>
+    <div class="new-card">
+      <div class="new-num">3</div>
+      <div class="new-body">
+        <div class="new-title">AI commentary mode — plain language explanation of every design decision</div>
+        <div class="new-desc">"Lavender was added because the text carried a nostalgia signal above 0.75. The crescent formula was chosen over full halo because serenity dominated at 0.82, which maps to high negative space. The blush palette came from the warmth axis sitting at 0.6." Every design explains itself in one paragraph. Builds trust, teaches design logic, and makes clients feel the intention behind their wreath.</div>
+        <div class="new-where">Where it goes → Memory Weaver v2 + Moodoor (consumer-facing version — simpler language, same logic)</div>
+        <span class="new-tag">Both platforms</span>
+      </div>
+    </div>
+    <div class="new-card">
+      <div class="new-num">4</div>
+      <div class="new-body">
+        <div class="new-title">Photo reference input — CLIP embeddings extract emotion from an image</div>
+        <div class="new-desc">This is the only technically distinct idea in the doc. A user uploads a photo — a living room, a mood board, a door they love — and CLIP embeddings extract the emotional and visual character. That vector feeds Memory Weaver the same way text does. "Design something that feels like this photo" is a completely different and powerful entry point that no other app in the ecosystem supports.</div>
+        <div class="new-where">Where it goes → Memory Weaver v2 as an alternate input mode. Also a strong Moodoor feature — "upload a photo of your door, we'll suggest a wreath that fits"</div>
+        <span class="new-tag">Both platforms — high value</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPT TRACE LOG PREVIEW -->
+<div class="section">
+  <div class="label">What the Prompt Trace Log looks like</div>
+  <div class="prompt-trace">
+    <div class="pt-header"><div class="pt-title">How this design was built — "a quiet grandmother's garden"</div></div>
+    <div class="pt-body">
+      <div class="pt-step">
+        <span class="pt-badge badge-input">Input</span>
+        <div class="pt-content">
+          <div class="pt-label">Raw text</div>
+          <div class="pt-detail">"My grandmother's garden in spring. Soft pink roses, white daisies, morning light."</div>
+        </div>
+      </div>
+      <div class="pt-step">
+        <span class="pt-badge badge-parse">Parsed</span>
+        <div class="pt-content">
+          <div class="pt-label">Emotion vector extracted</div>
+          <div class="pt-detail">nostalgia: 0.85 · serenity: 0.75 · love: 0.70 · energy: 0.18</div>
+        </div>
+      </div>
+      <div class="pt-step">
+        <span class="pt-badge badge-schema">Mapped</span>
+        <div class="pt-content">
+          <div class="pt-label">Design decisions made</div>
+          <div class="pt-detail">palette → soft_pink, cream, sage · formula → crescent (serenity 0.75 → high neg. space) · florals → rose (love), daisy (innocence), eucalyptus (memory)</div>
+        </div>
+      </div>
+      <div class="pt-step">
+        <span class="pt-badge badge-render">Blueprint</span>
+        <div class="pt-content">
+          <div class="pt-label">Output generated</div>
+          <div class="pt-detail">bp_abc123 · 3 zones · 14 elements · balance 0.87 · "Grandmother's Garden"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-box">
+  <div class="cta-title">Action: 4 Memory Weaver v2 upgrades — photo input is the standout</div>
+  <div class="cta-desc">Prompt Trace Log, version snapshots, and AI commentary all go into Memory Weaver v2 as a transparency and trust layer — they make the emotional engine explainable, which is especially valuable for client-facing wreath makers who need to articulate why a design was made the way it was. Photo reference input via CLIP is the most technically novel idea and worth flagging as a priority feature — it opens an entirely new entry point on both Evercrafted and Moodoor that currently doesn't exist anywhere in the ecosystem.</div>
+</div>

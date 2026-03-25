@@ -1,0 +1,243 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --amber-light: #F5E8CC; --amber-mid: #C9923A; --amber-dark: #7A5220;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label {
+    font-size: 11px; font-weight: 500; color: var(--amber-dark);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
+  }
+  .new-app-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--amber-mid); }
+
+  .app-card {
+    background: var(--warm-white); border: 1.5px solid var(--amber-mid);
+    border-radius: 20px; padding: 2rem; max-width: 760px;
+    position: relative; overflow: hidden;
+  }
+  .card-glow {
+    position: absolute; top: -50px; right: -50px; width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,146,58,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon {
+    width: 52px; height: 52px; border-radius: 14px; background: var(--amber-light);
+    display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;
+  }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge { background: var(--amber-light); color: var(--amber-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* EVOLUTION TIMELINE PREVIEW */
+  .timeline-preview {
+    background: var(--cream); border: 0.5px solid var(--border-med);
+    border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem;
+  }
+  .timeline-label { font-size: 10px; font-weight: 500; color: var(--amber-dark); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; }
+  .timeline-track {
+    display: flex; align-items: center; gap: 0; position: relative;
+  }
+  .t-node {
+    display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;
+    position: relative;
+  }
+  .t-node::after {
+    content: ''; position: absolute; top: 16px; left: 50%; right: -50%;
+    height: 1px; background: var(--border-med); z-index: 0;
+  }
+  .t-node:last-child::after { display: none; }
+  .t-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid var(--border-med); background: var(--warm-white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; position: relative; z-index: 1;
+    transition: border-color 0.2s;
+  }
+  .t-circle.active { border-color: var(--amber-mid); background: var(--amber-light); }
+  .t-circle.best { border-color: var(--sage); background: var(--sage-light); }
+  .t-name { font-size: 10px; color: var(--text-muted); text-align: center; font-weight: 300; }
+  .t-score { font-size: 10px; color: var(--amber-dark); font-weight: 500; }
+
+  .features-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem;
+  }
+  .feature-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--cream); border: 0.5px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  /* PHASE ROADMAP */
+  .phases-strip {
+    background: var(--amber-light); border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 1.75rem;
+  }
+  .phases-title { font-size: 10px; font-weight: 500; color: var(--amber-dark); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .phases-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .phase-pill {
+    font-size: 11px; padding: 4px 12px; border-radius: 20px;
+    font-weight: 400;
+  }
+  .phase-ship { background: var(--amber-dark); color: white; }
+  .phase-soon { background: white; color: var(--amber-dark); border: 0.5px solid var(--amber-mid); }
+  .phase-v2 { background: rgba(255,255,255,0.5); color: var(--amber-dark); border: 0.5px solid rgba(201,146,58,0.3); }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    padding-top: 1.25rem; border-top: 0.5px solid var(--border);
+  }
+  .price-main { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add {
+    background: var(--amber-dark); color: white; padding: 11px 24px; border-radius: 40px;
+    font-size: 13px; font-weight: 500; cursor: pointer; border: none;
+    transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn {
+    background: transparent; color: var(--text-muted); padding: 11px 20px; border-radius: 40px;
+    font-size: 13px; font-weight: 400; cursor: pointer;
+    border: 1px solid var(--border-med); transition: border-color 0.2s; font-family: 'DM Sans', sans-serif;
+  }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 560px) { .features-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🔬</div>
+      <div>
+        <div class="app-name">Adaptive Blueprint Composer</div>
+        <div class="app-tagline">Self-learning design engine · evolution timeline · fitness scoring</div>
+      </div>
+    </div>
+    <span class="badge">Advanced AI</span>
+  </div>
+
+  <p class="app-desc">
+    Your wreaths get smarter over time. The Adaptive Blueprint Composer watches how you and your customers interact with every design — what gets exported, edited, purchased, or abandoned — then evolves your blueprints automatically. It's not just AI generation. It's AI that learns what works for your specific business and keeps improving.
+  </p>
+
+  <!-- EVOLUTION TIMELINE -->
+  <div class="timeline-preview">
+    <div class="timeline-label">Evolution timeline — "Winter Nostalgia" blueprint</div>
+    <div class="timeline-track">
+      <div class="t-node">
+        <div class="t-circle">🌿</div>
+        <div class="t-name">Base v1</div>
+        <div class="t-score" style="color:var(--text-muted)">—</div>
+      </div>
+      <div class="t-node">
+        <div class="t-circle active">✦</div>
+        <div class="t-name">Mutated</div>
+        <div class="t-score">72%</div>
+      </div>
+      <div class="t-node">
+        <div class="t-circle active">✦</div>
+        <div class="t-name">Refined</div>
+        <div class="t-score">81%</div>
+      </div>
+      <div class="t-node">
+        <div class="t-circle best">★</div>
+        <div class="t-name">Best fit</div>
+        <div class="t-score" style="color:var(--sage-dark)">94%</div>
+      </div>
+      <div class="t-node">
+        <div class="t-circle" style="border-style:dashed">+</div>
+        <div class="t-name">Next gen</div>
+        <div class="t-score" style="color:var(--text-muted)">…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Design DNA extraction</strong>
+        <span>Every blueprint is encoded into a compact DNA vector — color, structure, material ratio, emotional linkage</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Fitness scoring</strong>
+        <span>Designs are scored by exports, edits, sales, and emotional ratings — the best performers evolve forward</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Blueprint evolution engine</strong>
+        <span>Mutates and recombines high-scoring designs within guardrails — never breaks your brand, always improves it</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Cohesion validator</strong>
+        <span>Every evolved design is checked for brand consistency, emotional coherence, and manufacturability before surfacing</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE ROADMAP -->
+  <div class="phases-strip">
+    <div class="phases-title">Launch roadmap</div>
+    <div class="phases-row">
+      <span class="phase-pill phase-ship">v1: DNA + Fitness + Evolution</span>
+      <span class="phase-pill phase-soon">v1.5: Trend weighting</span>
+      <span class="phase-pill phase-v2">v2: Multi-user DNA · Inventory-aware evolution · Narrative layer</span>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <div>
+      <div class="price-main"><sup>$</sup>19.95<sub>/mo</sub></div>
+      <div class="price-note">Add to any Maker or Studio Pro plan</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Works with Blueprint Intelligence Pro, Inventory Weaver, and Design Studio — most powerful when combined
+</div>

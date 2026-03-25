@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — Design Tools for Wreath Makers</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F8F5EF;--cream2:#F0EBE2;--cream3:#E6DFCF;--white:#FDFCF9;
+  --ink:#1B1916;--ink2:#332F28;--muted:#8A8278;--muted2:#B4AFA8;
+  --sage:#506347;--sage-l:#C4D4BF;--sage-ll:#EBF1E8;--sage-d:#324030;
+  --bark:#8A6E52;--bark-l:#C2A98E;--bark-ll:#EDE5D8;--bark-d:#5A4535;
+  --rule:rgba(27,25,22,.07);--rule2:rgba(27,25,22,.13);--ruledark:rgba(27,25,22,.22)
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;line-height:1.6;overflow-x:hidden}
+.page{display:none}.page.on{display:block}
+
+/* ── NAV ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:54px;background:rgba(248,245,239,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--rule)}
+.nav-i{max-width:1180px;margin:0 auto;padding:0 32px;height:100%;display:flex;align-items:center}
+.logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;letter-spacing:.06em;color:var(--ink);display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
+.logo-mark{width:20px;height:20px;position:relative;flex-shrink:0}
+.nav-links{display:flex;gap:22px;margin-left:36px}
+.nav-links a{font-size:12px;color:var(--muted);letter-spacing:.03em;cursor:pointer;transition:color .15s;font-weight:400;text-decoration:none}
+.nav-links a:hover,.nav-links a.on{color:var(--ink)}
+.nav-links a.on{font-weight:500}
+.nav-r{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn-ghost{background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.03em;transition:color .15s;padding:6px 8px}
+.btn-ghost:hover{color:var(--ink)}
+.btn-cta{padding:7px 20px;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-cta:hover{background:var(--ink2)}
+.btn-outline{padding:7px 20px;background:transparent;color:var(--ink2);border:1px solid var(--rule2);border-radius:3px;font-size:12px;font-weight:400;letter-spacing:.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-outline:hover{background:var(--cream2);border-color:var(--bark-l)}
+
+/* ── SHARED ── */
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+.eyebrow{font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--sage)}
+h2.display{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,3.8vw,48px);font-weight:300;line-height:1.1;letter-spacing:-.02em;color:var(--ink)}
+h2.display em{font-style:italic;color:var(--bark)}
+.rule-line{height:1px;background:var(--rule);margin:0}
+
+/* ── PAGE: HOME ── */
+/* HERO */
+.hero{min-height:100vh;padding-top:54px;display:grid;grid-template-columns:2fr 3fr;overflow:hidden;background:var(--white)}
+.hero-l{padding:80px 48px 60px 80px;display:flex;flex-direction:column;justify-content:center}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,4.8vw,66px);font-weight:300;line-height:1.07;letter-spacing:-.025em;color:var(--ink);margin-bottom:16px}
+.hero-h1 em{font-style:italic;color:var(--bark)}
+.hero-sub{font-size:15px;font-weight:300;line-height:1.75;color:var(--muted);max-width:390px;margin-bottom:26px}
+.hero-btns{display:flex;gap:10px;margin-bottom:48px}
+.hero-btn-p{padding:12px 28px;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:13px;font-weight:500;letter-spacing:.06em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.hero-btn-p:hover{background:var(--ink2)}
+.hero-btn-o{padding:12px 22px;background:transparent;color:var(--ink2);border:1px solid var(--rule2);border-radius:3px;font-size:13px;font-weight:400;letter-spacing:.04em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.hero-btn-o:hover{background:var(--cream2);border-color:var(--bark-l)}
+.hero-proof{display:flex;gap:32px}
+.hp-n{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--ink);line-height:1}
+.hp-l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-top:2px}
+
+/* Hero right — product preview */
+
+
+.app-preview{background:rgba(248,245,239,.05);border:1px solid rgba(248,245,239,.12);border-radius:10px;overflow:hidden;width:100%;max-width:480px;position:relative;z-index:2}
+.app-preview-topbar{height:36px;background:rgba(248,245,239,.06);border-bottom:1px solid rgba(248,245,239,.08);display:flex;align-items:center;padding:0 14px;gap:10px}
+.app-tl{font-family:'Cormorant Garamond',serif;font-size:13px;color:rgba(248,245,239,.7);letter-spacing:.04em}
+.app-tl-meta{font-size:10px;color:rgba(248,245,239,.3);margin-left:auto;letter-spacing:.04em}
+.app-body{display:grid;grid-template-columns:164px 1fr;min-height:320px}
+.app-sidebar{border-right:1px solid rgba(248,245,239,.07);padding:12px 8px;display:flex;flex-direction:column;gap:3px}
+.app-nl{font-size:8px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(248,245,239,.2);padding:0 7px;margin:6px 0 2px}
+.app-ni{display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:3px;font-size:10px;color:rgba(248,245,239,.38);font-weight:300}
+.app-ni.on{color:rgba(248,245,239,.82);background:rgba(248,245,239,.07);font-weight:500}
+.app-ni-dot{width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.6}
+.app-main{padding:14px;display:flex;flex-direction:column;gap:10px}
+.app-canvas-area{background:rgba(248,245,239,.04);border-radius:6px;height:180px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px solid rgba(248,245,239,.07)}
+.canvas-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(248,245,239,.2);position:absolute;top:10px;left:12px}
+.app-stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.app-stat{background:rgba(248,245,239,.05);border-radius:4px;padding:7px 9px;border:1px solid rgba(248,245,239,.06)}
+.app-stat-n{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:rgba(248,245,239,.75);line-height:1}
+.app-stat-l{font-size:8px;color:rgba(248,245,239,.3);margin-top:1px;letter-spacing:.04em}
+
+/* PROCESS STEPS */
+.process{padding:88px 0;background:var(--cream2)}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:52px;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--rule)}
+.step{background:var(--white);padding:28px 24px;transition:background .18s}
+.step:hover{background:var(--sage-ll)}
+.step-n{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--cream3);line-height:1;margin-bottom:14px}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--ink);margin-bottom:7px;letter-spacing:-.01em}
+.step-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.7}
+
+/* FEATURES SECTION */
+.features-section{padding:88px 0;background:var(--white)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:52px}
+.feat{background:var(--white);padding:28px 26px;transition:background .18s}
+.feat:hover{background:var(--sage-ll)}
+.feat-ico{width:34px;height:34px;border-radius:50%;background:var(--sage-ll);display:flex;align-items:center;justify-content:center;margin-bottom:14px;flex-shrink:0}
+.feat-ico svg{width:15px;height:15px;stroke:var(--sage);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.feat-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--ink);margin-bottom:7px;letter-spacing:-.01em}
+.feat-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.75}
+
+/* SOCIAL PROOF STRIP */
+.proof-strip{background:var(--ink);padding:28px 0}
+.proof-inner{max-width:1180px;margin:0 auto;padding:0 32px;display:flex;gap:48px;align-items:center;justify-content:center}
+.proof-stat .pn{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:rgba(248,245,239,.85)}
+.proof-stat .pl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(248,245,239,.35)}
+.proof-divider{width:1px;height:40px;background:rgba(248,245,239,.12)}
+
+/* TESTI */
+.testi-section{padding:88px 0;background:var(--cream)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px}
+.testi{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:26px;transition:box-shadow .18s}
+.testi:hover{box-shadow:0 8px 32px rgba(27,25,22,.06)}
+.testi-stars{letter-spacing:3px;color:var(--sage);font-size:10px;margin-bottom:10px}
+.testi-body{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;line-height:1.65;color:var(--ink);margin-bottom:18px}
+.testi-av{display:flex;align-items:center;gap:9px}
+.tav-circle{width:32px;height:32px;border-radius:50%;background:var(--sage-ll);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--sage-d);flex-shrink:0}
+.tav-name{font-size:12px;font-weight:500;color:var(--ink)}
+.tav-handle{font-size:11px;color:var(--muted2)}
+
+/* ── PAGE: FEATURES ── */
+.features-page{padding:100px 0 80px}
+.feat-page-hero{padding:60px 0 48px;background:var(--white);border-bottom:1px solid var(--rule);margin-top:54px}
+.feat-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding:64px 0;border-bottom:1px solid var(--rule)}
+.feat-detail-grid.flip{direction:rtl}.feat-detail-grid.flip>*{direction:ltr}
+.feat-detail-visual{background:var(--cream2);border-radius:10px;height:300px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.feat-detail-label{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);position:absolute;top:16px;left:18px}
+.feat-detail-tag{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-d);background:var(--sage-ll);padding:3px 9px;border-radius:2px;margin-bottom:10px;display:inline-block}
+.feat-detail-h3{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:12px;letter-spacing:-.01em}
+.feat-detail-h3 em{font-style:italic;color:var(--bark)}
+.feat-detail-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.8;margin-bottom:16px}
+.feat-bullets{list-style:none;display:flex;flex-direction:column;gap:6px}
+.feat-bullets li{font-size:12px;font-weight:300;color:var(--ink2);display:flex;align-items:flex-start;gap:8px}
+.feat-bullets li::before{content:'—';color:var(--sage);font-size:11px;flex-shrink:0;margin-top:1px}
+
+/* ── PAGE: APPS ── */
+.apps-page{margin-top:54px}
+.apps-hero{padding:72px 0 52px;background:var(--white);border-bottom:1px solid var(--rule)}
+.apps-philosophy{max-width:580px;font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;margin-top:14px}
+.apps-section-label{font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);padding:20px 0 12px;border-bottom:1px solid var(--rule);margin-bottom:16px}
+.apps-grid{display:flex;flex-direction:column;gap:2px;margin-bottom:32px}
+.app-card{background:var(--white);border:1px solid var(--rule);border-radius:6px;overflow:hidden;transition:border-color .15s}
+.app-card:hover{border-color:var(--rule2)}
+.app-card.open{border-color:var(--rule2);box-shadow:0 4px 24px rgba(27,25,22,.07)}
+.app-card-header{display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;user-select:none}
+.app-card-header:hover .ach-name{color:var(--sage-d)}
+.ach-left{flex:1;min-width:0}
+.ach-cat{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:3px}
+.ach-name{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;color:var(--ink);letter-spacing:-.01em;line-height:1.1;transition:color .15s}
+.ach-tagline{font-size:12px;font-weight:300;color:var(--muted);margin-top:2px}
+.ach-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.ach-price{font-size:13px;font-weight:400;color:var(--ink2);white-space:nowrap}
+.ach-chevron{width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:var(--muted2);transition:transform .25s;font-size:10px;line-height:1}
+.app-card.open .ach-chevron{transform:rotate(180deg)}
+.app-card-body{display:none;border-top:1px solid var(--rule)}
+.app-card.open .app-card-body{display:block}
+.acb-inner{display:grid;grid-template-columns:1fr 280px}
+.acb-content{padding:24px 28px;border-right:1px solid var(--rule)}
+.acb-visual{padding:18px;background:var(--cream);display:flex;flex-direction:column;gap:10px}
+.acb-desc{font-size:13px;font-weight:300;color:var(--ink2);line-height:1.8;margin-bottom:18px;max-width:560px}
+.acb-sl{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:7px}
+.acb-bullets{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+.acb-bullets li{font-size:12px;font-weight:300;color:var(--ink2);display:flex;align-items:flex-start;gap:8px;line-height:1.55}
+.acb-bullets li::before{content:'—';color:var(--sage);font-size:10px;flex-shrink:0;margin-top:1px}
+.acb-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px}
+.acb-tag{font-size:10px;color:var(--muted);border:1px solid var(--rule);border-radius:2px;padding:2px 8px}
+.acb-tag.hl{color:var(--sage-d);background:var(--sage-ll);border-color:rgba(80,99,71,.18)}
+.acb-footer{display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--rule)}
+.acb-price-big{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--ink);line-height:1}
+.acb-per{font-size:10px;font-weight:300;color:var(--muted)}
+.btn-add{padding:9px 22px;background:var(--sage);color:var(--white);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.06em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-add:hover{background:var(--sage-d)}
+.btn-add.inc{background:var(--sage-ll);color:var(--sage-d);cursor:default}
+.av-label{font-size:8px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:5px}
+.av-box{background:var(--white);border:1px solid var(--rule);border-radius:5px;padding:10px 12px}
+.av-stat-row{display:flex;gap:5px}
+.av-stat{background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:6px 9px;flex:1;text-align:center}
+.av-sn{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--ink);line-height:1}
+.av-sl{font-size:8px;color:var(--muted2);margin-top:1px}
+.av-sr-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.av-sr-label{font-size:10px;font-weight:300;color:var(--ink2);width:62px;flex-shrink:0}
+.av-sr-track{flex:1;height:2px;background:var(--cream3);border-radius:1px}
+.av-sr-fill{height:100%;border-radius:1px;background:var(--bark-l)}
+.av-sr-val{font-size:9px;color:var(--muted2);width:20px;text-align:right}
+.pairing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:48px}
+.pairing{background:var(--bark-ll);border:1px solid rgba(138,110,82,.15);border-radius:8px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between}
+.pairing-names{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--ink);margin-bottom:3px}
+.pairing-save{font-size:10px;font-weight:500;color:var(--sage-d)}
+.pairing-price{text-align:right}
+.pairing-bundled{font-size:13px;font-weight:500;color:var(--ink2)}
+.pairing-was{font-size:10px;color:var(--muted2);text-decoration:line-through}
+
+/* ── PAGE: PRICING ── */
+.pricing-page{margin-top:54px}
+.pricing-hero{padding:72px 0 52px;background:var(--white);border-bottom:1px solid var(--rule);text-align:center}
+.pricing-sub{font-size:14px;font-weight:300;color:var(--muted);max-width:440px;margin:12px auto 0}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:860px;margin:52px auto 0}
+.plan{background:var(--white);border:1px solid var(--rule2);border-radius:8px;padding:28px;position:relative;transition:box-shadow .18s}
+.plan:hover{box-shadow:0 8px 32px rgba(27,25,22,.08)}
+.plan.featured{background:var(--ink);border-color:var(--ink)}
+.plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;background:var(--sage);color:var(--white);padding:3px 12px;border-radius:2px;white-space:nowrap}
+.plan-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:3px;letter-spacing:-.01em}
+.plan.featured .plan-name{color:rgba(248,245,239,.9)}
+.plan-note{font-size:11px;font-weight:300;color:var(--muted);margin-bottom:20px}
+.plan.featured .plan-note{color:rgba(248,245,239,.4)}
+.plan-price{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;line-height:1;color:var(--ink);margin-bottom:4px}
+.plan.featured .plan-price{color:rgba(248,245,239,.9)}
+.plan-per{font-size:11px;color:var(--muted);margin-bottom:22px;font-weight:300}
+.plan.featured .plan-per{color:rgba(248,245,239,.38)}
+.plan-features{list-style:none;margin-bottom:22px}
+.plan-features li{font-size:12px;font-weight:300;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--rule);display:flex;align-items:flex-start;gap:8px}
+.plan-features li::before{content:'—';color:var(--sage);font-size:10px;flex-shrink:0}
+.plan.featured .plan-features li{color:rgba(248,245,239,.6);border-bottom-color:rgba(248,245,239,.07)}
+.plan-cta{width:100%;padding:10px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border-radius:3px;cursor:pointer;transition:all .15s;border:1px solid var(--rule2);background:transparent;color:var(--ink)}
+.plan-cta:hover{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.plan.featured .plan-cta{background:var(--sage);color:var(--white);border-color:var(--sage)}
+.plan.featured .plan-cta:hover{background:var(--sage-d)}
+.pricing-faq{padding:72px 0;background:var(--cream2)}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:36px;max-width:860px}
+.faq-item{border-top:1px solid var(--rule2);padding-top:18px}
+.faq-q{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--ink);margin-bottom:7px;letter-spacing:-.01em}
+.faq-a{font-size:12px;font-weight:300;color:var(--muted);line-height:1.8}
+
+/* ── PAGE: MARKETPLACE ── */
+.mkt-page{margin-top:54px}
+.mkt-hero{padding:72px 0 48px;background:var(--white);border-bottom:1px solid var(--rule)}
+.mkt-bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:32px}
+.bp-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s}
+.bp-card:hover{box-shadow:0 4px 24px rgba(27,25,22,.08);transform:translateY(-2px);border-color:var(--rule2)}
+.bp-thumb{height:152px;background:var(--cream2);display:flex;align-items:center;justify-content:center;position:relative}
+.bp-kit{position:absolute;top:8px;right:8px;font-size:8px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:var(--sage);color:var(--white);padding:2px 7px;border-radius:2px}
+.bp-info{padding:11px 13px}
+.bp-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--ink);margin-bottom:3px;letter-spacing:-.01em}
+.bp-meta{display:flex;align-items:center;justify-content:space-between}
+.bp-free{font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--sage-d);background:var(--sage-ll);padding:2px 7px;border-radius:2px}
+.bp-prem{font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--bark-d);background:var(--bark-ll);padding:2px 7px;border-radius:2px}
+.bp-price{font-size:12px;font-weight:400;color:var(--ink2)}
+.mkt-submit{background:var(--ink);color:var(--white);padding:28px 32px;border-radius:8px;display:flex;align-items:center;justify-content:space-between;margin-top:32px}
+.mkt-submit-t{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:rgba(248,245,239,.9);letter-spacing:-.01em}
+.mkt-submit-s{font-size:12px;font-weight:300;color:rgba(248,245,239,.5);margin-top:3px}
+.mkt-submit-btn{padding:10px 22px;background:var(--white);color:var(--ink);border:none;border-radius:3px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.04em;flex-shrink:0;white-space:nowrap}
+
+/* FOOTER */
+footer{background:var(--ink);padding:52px 0 28px}
+.footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px;margin-bottom:40px}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;letter-spacing:.06em;color:rgba(248,245,239,.78);margin-bottom:8px}
+.footer-tag{font-size:11px;font-weight:300;color:rgba(248,245,239,.3);line-height:1.6;max-width:200px}
+.footer-col h4{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(248,245,239,.28);margin-bottom:12px}
+.footer-col a{display:block;font-size:12px;font-weight:300;color:rgba(248,245,239,.45);margin-bottom:6px;cursor:pointer;transition:color .12s}
+.footer-col a:hover{color:rgba(248,245,239,.78)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:18px;border-top:1px solid rgba(248,245,239,.08)}
+.footer-copy{font-size:11px;color:rgba(248,245,239,.25)}
+.footer-links{display:flex;gap:18px}
+.footer-links a{font-size:11px;color:rgba(248,245,239,.25);cursor:pointer;transition:color .12s}
+.footer-links a:hover{color:rgba(248,245,239,.55)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes slowrot{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.ring-rot{transform-origin:76px 76px;animation:slowrot 65s linear infinite}
+.fade-up{animation:fadeUp .55s ease both}
+.d1{animation-delay:.08s;opacity:0}.d2{animation-delay:.18s;opacity:0}.d3{animation-delay:.28s;opacity:0}
+
+/* TOAST */
+.toast{position:fixed;bottom:16px;right:16px;z-index:999;background:var(--ink);color:var(--white);padding:7px 14px;border-radius:3px;font-size:11px;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none;letter-spacing:.02em}
+.toast.on{opacity:1;transform:none}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--cream3);border-radius:2px}
+
+/* ── REAL IMAGE GALLERY HERO ── */
+.hero-r{position:relative;overflow:hidden;background:#1A1814}
+.gallery-slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;background:#1A1814}
+.gallery-slide.on{opacity:1}
+.gallery-slide img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.gallery-caption{position:absolute;bottom:0;left:0;right:0;padding:60px 28px 28px;background:linear-gradient(to top,rgba(26,24,20,.78) 0%,transparent 100%);z-index:10}
+.gc-mood{font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,212,191,.9);margin-bottom:5px}
+.gc-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;color:rgba(248,245,239,.9);line-height:1.45;margin-bottom:5px;max-width:340px}
+.gc-emotions{font-size:10px;color:rgba(248,245,239,.4);letter-spacing:.04em}
+.gallery-dots{position:absolute;top:20px;right:18px;display:flex;flex-direction:column;gap:5px;z-index:20}
+.gallery-dot{width:4px;height:4px;border-radius:50%;background:rgba(248,245,239,.28);cursor:pointer;transition:all .25s}
+.gallery-dot.on{background:rgba(248,245,239,.82);height:18px;border-radius:2px}
+.gallery-brand-mark{position:absolute;top:18px;left:18px;z-index:20;background:rgba(26,24,20,.52);border:1px solid rgba(248,245,239,.1);border-radius:3px;padding:5px 10px;backdrop-filter:blur(8px)}
+.gbm-label{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:rgba(248,245,239,.35);margin-bottom:2px}
+.gbm-name{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:400;color:rgba(248,245,239,.72);letter-spacing:.04em}
+
+/* ── APP LISTING CARDS (simplified) */
+.apps-grid{display:flex;flex-direction:column;gap:1px;margin-bottom:28px;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.app-card{background:var(--white);border-bottom:1px solid var(--rule);transition:background .12s}
+.app-card:last-child{border-bottom:none}
+.app-card-header{display:flex;align-items:center;padding:18px 22px;cursor:pointer;gap:16px}
+.app-card-header:hover{background:var(--cream)}
+.app-card.open .app-card-header{background:var(--cream)}
+.ach-left{flex:1}
+.ach-name{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:400;color:var(--ink);margin-bottom:2px;letter-spacing:-.01em}
+.ach-tagline{font-size:12px;font-weight:300;color:var(--muted)}
+.ach-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ach-price{font-size:12px;color:var(--ink2)}
+.ach-arr{font-size:11px;color:var(--muted2);transition:transform .2s}
+.app-card.open .ach-arr{transform:rotate(180deg)}
+.app-card-body{display:none;border-top:1px solid var(--rule)}
+.app-card.open .app-card-body{display:block}
+.acb-peek{padding:20px 22px 22px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
+.acb-peek-desc{font-size:13px;font-weight:300;color:var(--ink2);line-height:1.75;max-width:560px;margin-bottom:14px}
+.acb-peek-bullets{list-style:none;margin-bottom:16px}
+.acb-peek-bullets li{font-size:12px;font-weight:300;color:var(--ink2);padding:3px 0;display:flex;gap:8px;line-height:1.5}
+.acb-peek-bullets li::before{content:"—";color:var(--sage);font-size:10px;flex-shrink:0;margin-top:2px}
+.acb-peek-right{text-align:right;flex-shrink:0}
+.btn-learn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.05em;cursor:pointer;font-family:"DM Sans",sans-serif;transition:background .15s;white-space:nowrap}
+.btn-learn:hover{background:var(--ink2)}
+.btn-add-sm{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:transparent;color:var(--sage-d);border:1px solid var(--sage-l);border-radius:3px;font-size:11px;font-weight:500;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .15s;margin-top:8px;white-space:nowrap}
+.btn-add-sm:hover{background:var(--sage-ll)}
+.acb-price-block{margin-bottom:10px}
+.acb-price-big{font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:300;color:var(--ink)}
+.acb-per{font-size:10px;color:var(--muted)}
+
+/* ── INDIVIDUAL APP LANDING PAGE */
+.app-landing{margin-top:54px}
+.al-hero{display:grid;grid-template-columns:1fr 1fr;min-height:480px;background:var(--ink)}
+.al-hero-l{padding:72px 56px 56px 72px;display:flex;flex-direction:column;justify-content:center}
+.al-back{font-size:11px;color:rgba(248,245,239,.4);cursor:pointer;margin-bottom:28px;display:flex;align-items:center;gap:6px;background:none;border:none;font-family:"DM Sans",sans-serif;transition:color .15s}
+.al-back:hover{color:rgba(248,245,239,.7)}
+.al-cat{font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,212,191,.8);margin-bottom:12px}
+.al-h1{font-family:"Cormorant Garamond",serif;font-size:clamp(36px,4vw,56px);font-weight:300;line-height:1.08;color:rgba(248,245,239,.95);letter-spacing:-.02em;margin-bottom:16px}
+.al-h1 em{font-style:italic;color:rgba(196,212,191,.9)}
+.al-sub{font-size:15px;font-weight:300;line-height:1.75;color:rgba(248,245,239,.55);max-width:380px;margin-bottom:28px}
+.al-ctas{display:flex;gap:10px;align-items:center;margin-bottom:36px}
+.btn-al-p{padding:12px 28px;background:var(--sage);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.06em;cursor:pointer;font-family:"DM Sans",sans-serif;transition:background .15s}
+.btn-al-p:hover{background:var(--sage-d)}
+.btn-al-o{padding:12px 22px;background:transparent;color:rgba(248,245,239,.6);border:1px solid rgba(248,245,239,.18);border-radius:3px;font-size:12px;letter-spacing:.04em;cursor:pointer;font-family:"DM Sans",sans-serif;transition:all .15s}
+.btn-al-o:hover{color:rgba(248,245,239,.9);border-color:rgba(248,245,239,.4)}
+.al-price-tag{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:300;color:rgba(248,245,239,.5)}
+.al-price-tag span{font-size:11px;color:rgba(248,245,239,.3);font-family:"DM Sans",sans-serif;font-weight:300}
+.al-hero-r{background:rgba(255,255,255,.04);border-left:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;padding:40px 32px}
+/* App screenshot mockup */
+.app-screen{background:rgba(248,245,239,.06);border:1px solid rgba(248,245,239,.1);border-radius:10px;width:100%;max-width:400px;overflow:hidden}
+.app-screen-bar{height:34px;background:rgba(248,245,239,.05);border-bottom:1px solid rgba(248,245,239,.07);display:flex;align-items:center;padding:0 14px;gap:6px}
+.app-screen-dot{width:6px;height:6px;border-radius:50%}
+.app-screen-title{font-size:11px;color:rgba(248,245,239,.4);margin-left:8px;letter-spacing:.04em}
+.app-screen-body{padding:16px}
+/* How it works section */
+.al-how{padding:72px 0;background:var(--cream2)}
+.al-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:40px;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--rule)}
+.al-step{background:var(--white);padding:28px 24px}
+.al-step-n{font-family:"Cormorant Garamond",serif;font-size:42px;font-weight:300;color:var(--cream3);margin-bottom:12px}
+.al-step-t{font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:6px}
+.al-step-d{font-size:12px;font-weight:300;color:var(--muted);line-height:1.7}
+/* What you get */
+.al-features{padding:72px 0;background:var(--white)}
+.al-feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:40px}
+.al-feat{padding:24px;background:var(--cream);border-radius:8px;border:1px solid var(--rule)}
+.al-feat-title{font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:400;color:var(--ink);margin-bottom:6px}
+.al-feat-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.75}
+/* Social proof */
+.al-quote{padding:56px 0;background:var(--ink)}
+.al-quote-text{font-family:"Cormorant Garamond",serif;font-size:clamp(20px,2.5vw,28px);font-weight:300;font-style:italic;line-height:1.5;color:rgba(248,245,239,.85);max-width:640px;margin-bottom:18px}
+.al-quote-name{font-size:12px;color:rgba(248,245,239,.4)}
+/* CTA bar */
+.al-cta-bar{padding:64px 0;background:var(--cream2);text-align:center}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-i">
+    <div class="logo" onclick="nav('home')">
+      <svg class="logo-mark" viewBox="0 0 20 20" fill="none">
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(0,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(72,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(144,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(216,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(288,10,10)"/>
+        <circle cx="10" cy="10" r="2.2" fill="var(--bark)"/>
+      </svg>
+      Evercrafted
+    </div>
+    <div class="nav-links">
+      <a id="nl-home" onclick="nav('home')" class="on">Home</a>
+      <a id="nl-features" onclick="nav('features')">How it works</a>
+      <a id="nl-apps" onclick="nav('apps')">Apps</a>
+      <a id="nl-pricing" onclick="nav('pricing')">Pricing</a>
+      <a id="nl-marketplace" onclick="nav('marketplace')">Marketplace</a>
+      <a id="nl-moodoor" onclick="nav('moodoor')" style="color:var(--bark)!important;font-weight:500">Moodoor</a>
+    </div>
+    <div class="nav-r">
+      <button class="btn-ghost">Sign in</button>
+      <button class="btn-cta">Start free trial</button>
+    </div>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ HOME ══ -->
+<div class="page on" id="page-home">
+
+  <section class="hero">
+    <div class="hero-l">
+      <div class="eyebrow fade-up" style="margin-bottom:16px">Design tools built for wreath makers</div>
+      <h1 class="hero-h1 fade-up d1">Make wreaths that<br>say exactly what<br>you <em>mean them to.</em></h1>
+      <p class="hero-sub fade-up d2">Evercrafted is a set of tools that helps wreath designers plan better, create faster, and waste less. Describe a feeling, sketch a layout, check your costs — all in one place.</p>
+      <div class="hero-btns fade-up d3">
+        <button class="hero-btn-p" onclick="nav('pricing')">Start free trial</button>
+        <button class="hero-btn-o" onclick="nav('features')">See how it works</button>
+      </div>
+      <div class="hero-proof fade-up d3">
+        <div><div class="hp-n">2,400+</div><div class="hp-l">Designers</div></div>
+        <div><div class="hp-n">18,000</div><div class="hp-l">Wreaths designed</div></div>
+        <div><div class="hp-n">4.9 ★</div><div class="hp-l">Average rating</div></div>
+      </div>
+    </div>
+        <div class="hero-r">
+      <div class="gallery-brand-mark">
+        <div class="gbm-label">Created with Evercrafted</div>
+        <div class="gbm-name" id="gc-name">Quiet Luxury</div>
+      </div>
+      <div class="gallery-dots" id="gallery-dots"></div>
+      <div id="gallery-slides"></div>
+      <div class="gallery-caption">
+        <div class="gc-mood" id="gc-mood">Serene</div>
+        <div class="gc-title" id="gc-title">Quiet Luxury — blue hydrangea, ranunculus, eucalyptus on gray plaster</div>
+        <div class="gc-emotions" id="gc-emotions">Calm · Serene</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="process">
+    <div class="wrap">
+      <div class="eyebrow">The process</div>
+      <h2 class="display" style="max-width:480px">From idea to finished design in minutes.</h2>
+      <div class="steps-grid">
+        <div class="step"><div class="step-n">01</div><div class="step-title">Choose a mood</div><div class="step-desc">Pick how you want the wreath to feel — warm and cosy, calm and minimal, romantic, festive. Everything else follows from that.</div></div>
+        <div class="step"><div class="step-n">02</div><div class="step-title">Sketch or describe</div><div class="step-desc">Drag elements onto the canvas to plan your layout — or just type a memory or feeling and let the tool turn it into a design.</div></div>
+        <div class="step"><div class="step-n">03</div><div class="step-title">Get a design back</div><div class="step-desc">The tool gives you a full design — layout, colours, flowers, and a cost estimate. Adjust anything you like.</div></div>
+        <div class="step"><div class="step-n">04</div><div class="step-title">Make and share</div><div class="step-desc">Download a PDF, create product photos with AI tools, or share the design directly with a client.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proof-strip">
+    <div class="proof-inner">
+      <div class="proof-stat"><div class="pn">2,400+</div><div class="pl">Active designers</div></div>
+      <div class="proof-divider"></div>
+      <div class="proof-stat"><div class="pn">18,000</div><div class="pl">Wreaths designed</div></div>
+      <div class="proof-divider"></div>
+      <div class="proof-stat"><div class="pn">$340</div><div class="pl">Avg saved on materials per month</div></div>
+      <div class="proof-divider"></div>
+      <div class="proof-stat"><div class="pn">33</div><div class="pl">Free designs in the library</div></div>
+    </div>
+  </div>
+
+  <div class="testi-section">
+    <div class="wrap">
+      <div class="eyebrow">Loved by designers</div>
+      <h2 class="display">What wreath makers <em>are saying.</em></h2>
+      <div class="testi-grid">
+        <div class="testi"><div class="testi-stars">★ ★ ★ ★ ★</div><div class="testi-body">"I used to spend two hours trying to describe what I wanted to a photographer. Now I type a feeling and get a product photo back in minutes."</div><div class="testi-av"><div class="tav-circle">SR</div><div><div class="tav-name">Sarah R.</div><div class="tav-handle">Etsy seller · 4,200 sales</div></div></div></div>
+        <div class="testi"><div class="testi-stars">★ ★ ★ ★ ★</div><div class="testi-body">"The vocabulary is what gets me. It knows lamb's ear from eucalyptus, farmhouse from organic. That specificity changes everything about the photos it creates."</div><div class="testi-av"><div class="tav-circle">MK</div><div><div class="tav-name">Melissa K.</div><div class="tav-handle">Faux floral educator</div></div></div></div>
+        <div class="testi"><div class="testi-stars">★ ★ ★ ★ ★</div><div class="testi-body">"The cost tool saved me $340 in the first month just on materials I'd have otherwise wasted. My client work is faster, my stock runs tighter. I don't know how I worked without it."</div><div class="testi-av"><div class="tav-circle">JT</div><div><div class="tav-name">Jamie T.</div><div class="tav-handle">Seasonal decor studio</div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+
+  <section style="background:var(--bark-ll);border-top:1px solid rgba(138,110,82,.15);border-bottom:1px solid rgba(138,110,82,.15);padding:40px 0">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+      <div>
+        <div style="font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--bark);margin-bottom:7px">Sister brand</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:5px;letter-spacing:-.01em">Moodoor — wreaths for the home, chosen by mood.</div>
+        <div style="font-size:13px;font-weight:300;color:var(--muted);max-width:480px;line-height:1.7">Moodoor is where your customers shop. They answer a short mood quiz and get matched to a wreath that fits how they want their home to feel. Powered by Evercrafted behind the scenes.</div>
+      </div>
+      <a onclick="nav('moodoor')" style="display:inline-flex;cursor:pointer;align-items:center;gap:7px;padding:11px 24px;background:var(--ink);color:var(--white);border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.05em;text-decoration:none;white-space:nowrap;flex-shrink:0">Visit Moodoor ↗</a>
+    </div>
+  </section>
+  <section style="padding:100px 0;text-align:center;background:var(--cream2)">
+    <div class="wrap">
+      <div class="eyebrow" style="justify-content:center">Ready to start</div>
+      <h2 class="display" style="margin-bottom:12px">Start for free.<br><em>No credit card needed.</em></h2>
+      <p style="font-size:14px;font-weight:300;color:var(--muted);max-width:400px;margin:0 auto 28px;line-height:1.75">Try any tool free for 14 days. If it doesn't save you time, cancel in one click.</p>
+      <button class="hero-btn-p" onclick="nav('pricing')" style="font-size:14px;padding:14px 36px">Start designing free</button>
+    </div>
+  </section>
+
+  <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools built for wreath makers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a onclick="nav('features')">How it works</a><a onclick="nav('apps')">All apps</a><a onclick="nav('marketplace')">Marketplace</a><a onclick="nav('pricing')">Pricing</a><a href="#" onclick="nav('moodoor');return false">Moodoor ↗</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Photo guide</a><a>Design library</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a><a>Contact</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div><div class="footer-links"><a>Privacy</a><a>Terms</a><a>Contact</a></div></div></div></footer>
+</div>
+
+<!-- ══ FEATURES ══ -->
+<div class="page" id="page-features">
+  <div class="feat-page-hero">
+    <div class="wrap">
+      <div class="eyebrow">How it works</div>
+      <h2 class="display" style="max-width:560px">Tools that work the way <em>wreath makers think.</em></h2>
+      <p style="font-size:14px;font-weight:300;color:var(--muted);max-width:520px;margin-top:14px;line-height:1.8">Most design software starts with a blank canvas and leaves you to figure out the rest. Evercrafted starts from what you want the wreath to feel like — and builds the design around that.</p>
+    </div>
+  </div>
+  <div style="padding:64px 0;background:var(--white)">
+    <div class="wrap">
+      <div class="feat-detail-grid">
+        <div>
+          <div class="feat-detail-tag">Emotion & AI</div>
+          <h3 class="feat-detail-h3">Type a memory.<br><em>Get a wreath design back.</em></h3>
+          <p class="feat-detail-desc">Describe any memory or feeling in plain English — a grandmother's garden, a rainy afternoon, a childhood Christmas — and the tool turns it into a complete wreath design: colours, flowers, shape, and mood. Upload a photo if you have one and it matches the colours automatically.</p>
+          <ul class="feat-bullets">
+            <li>Type anything — no special words needed</li>
+            <li>Gets back the mood behind your words</li>
+            <li>Gives you colours, flower choices, and layout</li>
+            <li>Upload a photo for colour matching</li>
+          </ul>
+        </div>
+        <div class="feat-detail-visual">
+          <div class="feat-detail-label">Memory Weaver</div>
+          <div style="max-width:280px;text-align:center;padding:20px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300;font-style:italic;color:var(--ink2);line-height:1.7;margin-bottom:20px">"My grandmother's garden in spring. Soft pink roses, white daisies, morning light through the hedge…"</div>
+            <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px">
+              <span style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:2px;background:var(--sage-ll);color:var(--sage-d)">Serenity 0.81</span>
+              <span style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:2px;background:var(--bark-ll);color:var(--bark-d)">Warmth 0.72</span>
+              <span style="font-size:9px;font-weight:500;padding:3px 8px;border-radius:2px;background:var(--cream3);color:var(--ink2)">Nostalgia 0.68</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-weight:300;line-height:1.7;text-align:left;background:var(--white);border-radius:6px;padding:10px 12px;border:1px solid var(--rule)">Formula: Crescent · Palette: soft pink, cream, sage<br>Focal: rose cluster at 5 o'clock · 11 elements</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-detail-grid flip">
+        <div>
+          <div class="feat-detail-tag">AI tools</div>
+          <h3 class="feat-detail-h3">Create product photos<br><em>without a photographer.</em></h3>
+          <p class="feat-detail-desc">Set emotion weights, choose your materials, season, shape, and style — Created with Evercrafteds both a natural language description and a ready-to-use prompt for AI image tools like Midjourney or DALL-E. It uses wreath-specific language so results look like real product photography. No editing required.</p>
+          <ul class="feat-bullets">
+            <li>Simple mood sliders — set the feeling you want</li>
+            <li>Knows wreath-specific language — results look real, not generic</li>
+            <li>Control the image format and style before generating</li>
+            <li>Save your settings and reuse them for every new listing</li>
+          </ul>
+        </div>
+        <div class="feat-detail-visual">
+          <div class="feat-detail-label">Visual Companion</div>
+          <div style="max-width:300px;width:100%;padding:16px">
+            <div style="display:flex;gap:3px;align-items:flex-end;height:36px;margin-bottom:8px">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:100%;background:var(--bark-l);border-radius:1px 1px 0 0;height:34px;opacity:.8"></div><div style="font-size:8px;color:var(--muted2)">Grat</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:100%;background:var(--sage-l);border-radius:1px 1px 0 0;height:22px;opacity:.8"></div><div style="font-size:8px;color:var(--muted2)">Calm</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:100%;background:var(--cream3);border-radius:1px 1px 0 0;height:14px;opacity:.8"></div><div style="font-size:8px;color:var(--muted2)">Joy</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:100%;background:var(--bark-l);border-radius:1px 1px 0 0;height:10px;opacity:.5"></div><div style="font-size:8px;color:var(--muted2)">Nost</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:100%;background:var(--sage-l);border-radius:1px 1px 0 0;height:6px;opacity:.5"></div><div style="font-size:8px;color:var(--muted2)">Sern</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:100%;background:var(--cream3);border-radius:1px 1px 0 0;height:3px;opacity:.5"></div><div style="font-size:8px;color:var(--muted2)">Hope</div></div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:var(--ink2);line-height:1.6;margin-bottom:8px;padding:8px 10px;background:var(--white);border-radius:5px;border:1px solid var(--rule)">A handcrafted autumn wreath with eucalyptus, muted amber palette, natural dried textures…</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--bark-d);line-height:1.6;padding:7px 9px;background:var(--cream2);border-radius:4px">handcrafted autumn eucalyptus wreath, muted amber::1.6 gentle gratitude::1.4 soothing calm::1.1 --ar 1:1 --style raw</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feat-detail-grid">
+        <div>
+          <div class="feat-detail-tag">Design</div>
+          <h3 class="feat-detail-h3">Plan your wreath layout<br><em>before you buy a single stem.</em></h3>
+          <p class="feat-detail-desc">A canvas-based anchor placement tool where every node carries an emotion tag, anchor type, and visual weight. The structure health meter updates in real time. Generate an AI fill across your placed anchors, or load a skeleton to start from a proven wreath shape.</p>
+          <ul class="feat-bullets">
+            <li>Simple circular canvas — click to place any element</li>
+            <li>Tag each section with a mood — romantic, calm, bold, festive</li>
+            <li>Balance score — tells you if the design looks even before you start making</li>
+            <li>Generate a photo preview of what the finished wreath might look like</li>
+          </ul>
+        </div>
+        <div class="feat-detail-visual">
+          <div class="feat-detail-label">Layout Studio</div>
+          <svg viewBox="0 0 220 220" width="200" height="200">
+            <circle cx="110" cy="110" r="96" stroke="rgba(80,99,71,.15)" stroke-width="1.5" fill="none"/>
+            <circle cx="110" cy="110" r="58" stroke="rgba(80,99,71,.08)" stroke-width="1" fill="none" stroke-dasharray="3 7"/>
+            <circle cx="110" cy="110" r="77" stroke="rgba(80,99,71,.06)" stroke-width=".5" fill="none"/>
+            <circle cx="110" cy="16" r="7" fill="rgba(196,169,142,.75)"/>
+            <circle cx="171" cy="48" r="5.5" fill="rgba(80,99,71,.8)"/>
+            <circle cx="196" cy="126" r="6.5" fill="rgba(80,99,71,.7)"/>
+            <circle cx="168" cy="190" r="7" fill="rgba(196,169,142,.7)"/>
+            <circle cx="90" cy="202" r="5" fill="rgba(80,99,71,.6)"/>
+            <circle cx="28" cy="158" r="6" fill="rgba(80,99,71,.75)"/>
+            <circle cx="18" cy="78" r="5.5" fill="rgba(196,169,142,.65)"/>
+            <circle cx="56" cy="22" r="7" fill="rgba(80,99,71,.8)"/>
+            <circle cx="150" cy="32" r="5" fill="rgba(80,99,71,.55)"/>
+            <circle cx="138" cy="198" r="5" fill="rgba(80,99,71,.55)"/>
+            <circle cx="171" cy="48" r="14" fill="rgba(80,99,71,.1)" stroke="rgba(80,99,71,.3)" stroke-width="1.2"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="feat-detail-grid flip" style="border-bottom:none">
+        <div>
+          <div class="feat-detail-tag">Production</div>
+          <h3 class="feat-detail-h3">Cut your material costs<br><em>without changing the design.</em></h3>
+          <p class="feat-detail-desc">Set your design intent with the A simple slider lets you choose how much to save versus how much to keep the design exactly as is — then the tool adjusts and suggests swaps without touching anything you've locked.</p>
+          <ul class="feat-bullets">
+            <li>λ slider — emotion-first to cost-first in a single control</li>
+            <li>Cost and design quality scores update as you adjust</li>
+            <li>Material substitution suggestions with cost delta</li>
+            <li>Full list of every change — with a reason for each</li>
+          </ul>
+        </div>
+        <div class="feat-detail-visual">
+          <div class="feat-detail-label">Blueprint Optimizer</div>
+          <div style="max-width:280px;width:100%;padding:16px">
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <div style="flex:1;background:var(--white);border:1px solid var(--rule);border-radius:5px;padding:8px 10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--ink)">84</div><div style="font-size:8px;color:var(--muted2);margin-top:1px">Emotional</div></div>
+              <div style="flex:1;background:var(--white);border:1px solid var(--rule);border-radius:5px;padding:8px 10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--ink)">75</div><div style="font-size:8px;color:var(--muted2);margin-top:1px">Efficiency</div></div>
+              <div style="flex:1;background:var(--white);border:1px solid var(--rule);border-radius:5px;padding:8px 10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sage)">80</div><div style="font-size:8px;color:var(--muted2);margin-top:1px">Fitness</div></div>
+            </div>
+            <div style="font-size:9px;color:var(--muted2);margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase">Design intent</div>
+            <div style="height:3px;background:var(--cream3);border-radius:2px;margin-bottom:10px;position:relative"><div style="width:70%;height:100%;background:var(--sage);border-radius:2px"></div><div style="position:absolute;top:-3px;left:70%;width:9px;height:9px;border-radius:50%;background:var(--sage);border:2px solid var(--white);box-shadow:0 0 0 1px var(--sage)"></div></div>
+            <div style="font-size:9px;display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;border-bottom:1px solid var(--rule)"><span style="color:var(--sage)">✓</span><span style="color:var(--ink2);font-weight:300">Swapped rose at 7 o'clock for eucalyptus — saves $2.40</span></div>
+              <div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;border-bottom:1px solid var(--rule)"><span style="color:var(--sage)">✓</span><span style="color:var(--ink2);font-weight:300">Rotated cluster at 210° — symmetry +8</span></div>
+              <div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0"><span style="color:var(--sage)">✓</span><span style="color:var(--ink2);font-weight:300">Locked placements unchanged throughout</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools built for wreath makers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a onclick="nav('features')">How it works</a><a onclick="nav('apps')">All apps</a><a onclick="nav('marketplace')">Marketplace</a><a onclick="nav('pricing')">Pricing</a><a href="#" onclick="nav('moodoor');return false">Moodoor ↗</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Photo guide</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a><a>Contact</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div><div class="footer-links"><a>Privacy</a><a>Terms</a></div></div></div></footer>
+</div>
+
+<!-- ══ APPS ══ -->
+
+
+<!-- ══ APPS LIST ══ -->
+<div class="page" id="page-apps">
+  <div style="margin-top:54px">
+    <div class="apps-hero">
+      <div class="wrap">
+        <div class="eyebrow">Every tool. Pay only for what you use.</div>
+        <h2 class="display" style="max-width:560px">Pick the tools you need. Add more as your business grows.</h2>
+        <p class="apps-philosophy">Every tool is a separate add-on. Start with one or two, add more when they make sense. There are no bundles you have to buy — just the tools you actually use. Cancel any of them at any time.</p>
+      </div>
+    </div>
+    <div style="padding:48px 0 60px;background:var(--cream)">
+      <div class="wrap">
+        <div class="apps-section-label">Free with every paid plan</div>
+        <div class="apps-grid" id="apps-core"></div>
+        <div class="apps-section-label">Design tools</div>
+        <div class="apps-grid" id="apps-design"></div>
+        <div class="apps-section-label">AI tools</div>
+        <div class="apps-grid" id="apps-emotion"></div>
+        <div class="apps-section-label">Materials and costs</div>
+        <div class="apps-grid" id="apps-production"></div>
+        <div class="apps-section-label">Grow your business</div>
+        <div class="apps-grid" id="apps-scaling"></div>
+        <div class="apps-section-label">Advanced tools</div>
+        <div class="apps-grid" id="apps-intelligence"></div>
+        <div style="margin-top:20px">
+          <div class="eyebrow" style="margin-bottom:12px">Save when you buy two together</div>
+          <p style="font-size:13px;font-weight:300;color:var(--muted);max-width:500px;margin-bottom:18px">Some tools work really well together. Buy them as a pair and save on both.</p>
+          <div class="pairing-grid" id="pairings-grid"></div>
+        </div>
+      </div>
+    </div>
+    <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools built for wreath makers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a onclick="nav('features')">How it works</a><a onclick="nav('apps')">All apps</a><a onclick="nav('marketplace')">Marketplace</a><a onclick="nav('pricing')">Pricing</a><a href="#" onclick="nav('moodoor');return false">Moodoor ↗</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div></div></div></footer>
+  </div>
+</div>
+
+<!-- ══ INDIVIDUAL APP PAGES (generated by JS) ══ -->
+<div id="app-pages-container"></div>
+
+
+he prompts — you paste them into Midjourney or any compatible AI image tool. A Midjourney subscription is separate and not included.</div></div>
+          <div class="faq-item"><div class="faq-q">Do I have to buy all the tools at once?</div><div class="faq-a">Yes. No — you add tools one at a time and only pay for the ones you want. Cancel any individual tool at any time, no forms needed.</div></div>
+          <div class="faq-item"><div class="faq-q">What gets saved when I design something?</div><div class="faq-a">Every wreath you design in Evercrafted is saved as a complete record — the layout, the colours, the materials, and the mood. You can go back to any version, share it with a client, or submit it to the marketplace.</div></div>
+          <div class="faq-item"><div class="faq-q">Is there a founding member discount?</div><div class="faq-a">Yes — the first 200 Maker subscribers lock in $19/month for life. This offer ends when spots fill. Sign up now to claim yours.</div></div>
+          <div class="faq-item"><div class="faq-q">Can I sell my designs?</div><div class="faq-a">Yes. Any paid subscriber can list designs for sale. You receive 70% of every sale, paid monthly. You can also include step-by-step instructions for customers who want to recreate the design themselves.</div></div>
+          <div class="faq-item"><div class="faq-q">What's in Studio Pro?</div><div class="faq-a">Studio Pro includes every tool, 3 team seats, the ability to share designs with your own branding, a client portal (currently in beta), and priority support. Nothing is held back.</div></div>
+        </div>
+      </div>
+    </div>
+    <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools built for wreath makers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a onclick="nav('features')">How it works</a><a onclick="nav('apps')">All apps</a><a onclick="nav('marketplace')">Marketplace</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div></div></div></footer>
+  </div>
+</div>
+
+<!-- ══ MARKETPLACE ══ -->
+<div class="page" id="page-marketplace">
+  <div class="mkt-page">
+    <div class="mkt-hero">
+      <div class="wrap">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
+          <div>
+            <div class="eyebrow">Design Marketplace</div>
+            <h2 class="display" style="max-width:500px">33 ready-made designs. <em>8 completely free.</em><br>Sell yours and keep 70%.</h2>
+            <p style="font-size:13px;font-weight:300;color:var(--muted);max-width:480px;margin-top:12px;line-height:1.75">Every design includes a product photo prompt. Premium designs can include a step-by-step guide for customers who want to make the wreath themselves. Designers set their own prices.</p>
+          </div>
+          <button class="btn-cta" onclick="toast('Submit a design — Phase 2')">Submit a design</button>
+        </div>
+      </div>
+    </div>
+    <div style="padding:40px 0 72px;background:var(--cream)">
+      <div class="wrap">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center">
+          <input style="padding:5px 11px;border:1px solid var(--rule2);border-radius:3px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);outline:none;width:160px" placeholder="Search designs…">
+          <span id="mf-all" class="fc on" onclick="mktFilter('all',this)">All</span>
+          <span id="mf-free" class="fc" onclick="mktFilter('free',this)">Free</span>
+          <span id="mf-premium" class="fc" onclick="mktFilter('premium',this)">Premium</span>
+          <span id="mf-kit" class="fc" onclick="mktFilter('kit',this)">Includes step-by-step guide</span>
+          <span id="mf-romantic" class="fc" onclick="mktFilter('romantic',this)">Romantic</span>
+          <span id="mf-calm" class="fc" onclick="mktFilter('calm',this)">Minimal</span>
+        </div>
+        <div class="mkt-bp-grid" id="mkt-grid"></div>
+        <div class="mkt-submit">
+          <div><div class="mkt-submit-t">Share your designs with 2,400 wreath makers.</div><div class="mkt-submit-s">Designers keep 70% of every sale, paid monthly via Stripe Connect.</div></div>
+          <button class="mkt-submit-btn" onclick="toast('Submit flow — Phase 2')">Submit a design →</button>
+        </div>
+      </div>
+    </div>
+    <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools built for wreath makers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a onclick="nav('features')">How it works</a><a onclick="nav('apps')">All apps</a><a onclick="nav('pricing')">Pricing</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div></div></div></footer>
+  </div>
+</div>
+
+<style>
+.fc{padding:4px 10px;border-radius:2px;font-size:10px;cursor:pointer;border:1px solid var(--rule);background:var(--white);color:var(--muted);transition:all .12s;letter-spacing:.03em}
+.fc:hover{border-color:var(--rule2);color:var(--ink)}
+.fc.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+</style>
+
+<script>
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)}
+
+function nav(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('page-'+page).classList.add('on');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('on'));
+  const nl=document.getElementById('nl-'+page);if(nl)nl.classList.add('on');
+  window.scrollTo(0,0);
+  if(page==='apps')buildApps();
+  if(page==='marketplace')buildMkt();
+  if(page==='moodoor'){document.getElementById('nl-moodoor')&&document.getElementById('nl-moodoor').classList.add('on');}
+  if(page && page.startsWith('app-')){const k=page.slice(4);openApp(k);return;}
+}
+
+// ── APPS DATA
+const PAIRINGS=[
+  {a:'Memory Weaver',b:'EmotionSync',bundled:'$8.90/mo',was:'$11.90'},
+  {a:'Inventory Weaver',b:'Blueprint Optimizer',bundled:'$8.90/mo',was:'$10.90'},
+  {a:'Layout Studio',b:'Parametric Lab',bundled:'$14.95/mo',was:'$17.90'},
+  {a:'Blueprint Echo',b:'Variant Branching',bundled:'$14.95/mo',was:'$21.90'},
+  {a:'Design Studio',b:'Blueprint Intel Pro',bundled:'$19.95/mo',was:'$24.90'},
+  {a:'Fusion Engine',b:'Blueprint Intel Pro',bundled:'$21.95/mo',was:'$28.90'},
+];
+
+const APPS=[
+{key:'formula-registry',cat:'Included free',group:'core',name:'Design Library',tagline:'Every wreath you design, saved and organised in one place.',price:'Included',priceDisplay:'Free with every plan',
+sell:"Think of it as your personal wreath filing cabinet. Every design you create in Evercrafted is saved automatically — with its full history, so you can go back to any earlier version. Find any design instantly by mood, season, or client name.",
+why:"Most wreath designers keep designs scattered across photos, notes apps, and their own memory. Design Library fixes that — everything in one searchable place, nothing ever lost.",
+bullets:['Every design saved automatically — no manual saving needed','Full version history — go back to any earlier version','Search by mood, season, client name, or any tag','Share designs with your team or send to clients','Download as a PDF or spreadsheet any time'],
+steps:[['Save','Every wreath you create is saved automatically as you work.'],['Organise','Tag designs by season, mood, or client — find anything instantly.'],['Share','Send a design link to a client, or download a PDF to print.']],
+feats:[['Never lose a design','Even if you close the browser mid-work, your design is saved.'],['Full history','Made a change you regret? Roll back to any previous version with one click.'],['Search everything','Type a client name, a colour, a season — find the right design in seconds.'],['Easy sharing','Send designs to clients as a clean PDF, or share a link directly from Evercrafted.']],
+quote:"I used to have design photos all over my phone and a spreadsheet that never made sense. Now everything's in one place and I can find any design in seconds.",
+quoteBy:'Sarah R. — Etsy seller, 4,200 sales',visual:'registry'},
+
+{key:'memory-weaver',cat:'AI Helper',group:'emotion',name:'Memory Weaver',tagline:"Describe a memory in your own words — get a wreath design back.",price:'$4.95',priceDisplay:'$4.95/mo',
+sell:"You know the feeling you want to capture — maybe it's your grandmother's garden, a wedding morning, or the smell of autumn. Memory Weaver lets you type that feeling in plain English and turns it into a complete wreath design: the right colours, the right flowers, the right mood.",
+why:"The hardest part of wreath design isn't the making — it's starting. Memory Weaver solves the blank canvas problem by turning a feeling into a full design.",
+bullets:['Type any memory or feeling in plain English','Get back colours, flowers, and a complete design','Upload a photo for colour matching','Save multiple versions of the same memory','See exactly which words shaped which design choices'],
+steps:[["Describe","Write anything — 'my grandmother's spring garden' or 'a cosy rainy Sunday.' No special words needed."],["Get a design","Memory Weaver reads the emotion behind your words and creates a full wreath design."],["Refine","Tweak the output, save it, or use it as a starting point in Layout Studio."]],
+feats:[['Plain English input','Write however you naturally talk. No design terms, no technical language.'],['Real designs back','You get colours, flower choices, wreath shape, and overall mood — not vague suggestions.'],['Photo reference','Upload a photo — a room, a fabric swatch, a garden — and the tool matches colours automatically.'],['See the thinking','A log shows you exactly why each design choice was made, so you can learn and adjust.']],
+quote:"I typed 'my daughter's first Christmas' and got back exactly the wreath I had pictured in my head. I was genuinely shocked.",
+quoteBy:'Melissa K. — Faux floral educator',visual:'memory'},
+
+{key:'emotionsync',cat:'AI Helper',group:'emotion',name:'EmotionSync',tagline:"Choose a mood on a map — see your design's style and structure update instantly.",price:'$6.95',priceDisplay:'$6.95/mo',
+sell:"Instead of guessing at words to describe a feeling, EmotionSync gives you a visual map. Drag a point to where your design should sit — calm and formal, or playful and energetic — and the tool tells you what shape, fullness, and style of wreath fits that mood.",
+why:"Clients often can't describe what they want in words. EmotionSync gives you a visual tool to agree on mood before you start — and turns that mood into real design guidance.",
+bullets:['Visual mood map — drag a point instead of finding the right words','See recommended shape, fullness, and style instantly','Six mood presets to start from','Save mood positions and compare side by side','Feeds directly into your designs in Layout Studio'],
+steps:[['Pick a mood','Drag the point on the map toward calm, energetic, formal, or playful.'],['See the guidance','The tool tells you the recommended shape, fullness, and style for that mood.'],['Apply it','Use the mood settings as a starting point in Layout Studio or share with a client for sign-off.']],
+feats:[['No words needed',"A drag on a map is easier than arguing about what 'romantic but not over the top' means in a client email."],['Instant design guidance','Shape, fullness, symmetry, and style are all recommended based on your mood position.'],['Client approval tool','Show a client the mood map and let them drag to where they want the design — then build from there.'],['Saved mood history','Save mood positions for each client or season — no more starting from scratch.']],
+quote:"My clients could never describe what they wanted. Now I show them the mood map and they just point. It's made client calls so much faster.",
+quoteBy:'Jamie T. — Seasonal décor studio owner',visual:'emotionsync'},
+
+{key:'visual-companion',cat:'AI Helper',group:'emotion',name:'Visual Companion',tagline:"Create beautiful product photos for your wreaths — no photography skills needed.",price:'$8.95',priceDisplay:'$8.95/mo',
+sell:"Visual Companion turns your wreath designs into scroll-stopping images for Etsy, Instagram, and your website. Choose the mood, season, and style — and the tool creates a prompt for AI image tools. It knows wreath-specific language, so results look like real product photography, not generic home décor.",
+why:"Great product photos sell wreaths. But hiring a photographer for every design is expensive. Visual Companion gives you professional-looking images for every design you make.",
+bullets:['Creates image prompts tailored specifically to wreaths and florals','Knows the right words — eucalyptus, lamb\'s ear, farmhouse, organic','Set the mood, season, and style with simple sliders','Generates the image prompt and a product description for Etsy','Saves all your image requests so you can return to them'],
+steps:[['Set the mood','Use sliders to choose how your wreath should feel — calm and minimal, lush and romantic, bold and festive.'],['Choose your style','Pick the season, shape, and overall look.'],["Get your image","Copy the prompt into any AI image tool and get a professional-looking product photo in minutes."]],
+feats:[['Wreath-specific language','Generic AI tools produce generic results. Visual Companion uses language built for wreath design — results look like real product photography.'],['Mood sliders','Set six feelings and see how they shape the final image.'],['Etsy listing ready','The tool also writes a product description and title based on the same mood and style settings.'],['Save and reuse','Every image prompt is saved — come back to last season\'s best-performing listing and recreate it.']],
+quote:"My Pinterest saves tripled after I started using Visual Companion for my product shots. I went from 200 to 600 saves in a month.",
+quoteBy:'Sarah R. — Etsy seller, 4,200 sales',visual:'visual-companion'},
+
+{key:'visual-companion-pro',cat:'AI Helper',group:'emotion',name:'Visual Companion Pro',tagline:"Product photos, Etsy listings, Instagram captions — all written for you automatically.",price:'$12.95',priceDisplay:'$12.95/mo',
+sell:"Visual Companion Pro adds full copywriting to your image creation. The same tool that creates your product photos also writes your Etsy listing title, description, and tags — and your Instagram caption with hashtags. All of it matches the mood and style of your design.",
+why:"Writing listings takes as long as making the wreath. Visual Companion Pro handles it automatically.",
+bullets:['Everything in Visual Companion','Full Etsy listing: title, description, and 13 tags','Instagram caption with hashtags, already written','Pinterest description and board suggestions','All copy matches the mood and style of your design — automatically'],
+steps:[["Set your design's mood and style","Same as Visual Companion — mood, season, shape."],['Get your image','AI-ready image prompt, same as before.'],['Get all your copy','Etsy listing, Instagram caption, Pinterest description — all written, all matching, ready to paste.']],
+feats:[['Etsy listing in one click','Title, description, and all 13 tags — written to match the mood and style of your design.'],['Instagram caption','A ready caption with hashtags that fits the vibe — no more staring at a blank caption field.'],['Consistent voice','Every listing, every caption, every description sounds like the same brand.'],['Time saver','What used to take 45 minutes of writing now takes 60 seconds.']],
+quote:"I went from spending a whole evening on listings to doing them in the time it takes to drink a coffee. Pro paid for itself in the first week.",
+quoteBy:'Melissa K. — Faux floral educator',visual:'vc-pro'},
+
+{key:'layout-studio',cat:'Design & Planning',group:'design',name:'Layout Studio',tagline:"Plan your wreath before you buy a single stem.",price:'$7.95',priceDisplay:'$7.95/mo',
+sell:"Layout Studio is a digital canvas where you plan exactly where every element of your wreath goes — before you spend money on materials. Place flowers, greenery, ribbons, and accents on a circle and see the design take shape. A balance score tells you if it will look even before you start making.",
+why:"Ever bought flowers for a design and realised halfway through that it wasn't working? Layout Studio catches those problems before they cost you money.",
+bullets:['Plan any wreath on a simple circular canvas','Place flowers, greenery, accents, and ribbons where you want them','Balance score — see immediately if the design looks even','Tag each section with a mood — romantic, calm, bold, festive','Generate an AI preview of what the finished wreath might look like'],
+steps:[['Open the canvas','A clean circular canvas, ready for your design.'],['Place your elements','Click to place flowers, greenery, ribbons, and accents exactly where you want them.'],['Check the balance','The balance score tells you if one area is too heavy or sparse — before you start wiring.']],
+feats:[['Plan before you buy','Work out the design digitally — save money on materials you\'d have wasted figuring it out by hand.'],['Balance scoring','Know immediately if one side is too heavy or off-centre.'],['Mood tagging','Mark which areas should feel calm, romantic, bold, or festive — useful for complex designs or client work.'],['AI preview','Hit "generate preview" and see an AI interpretation of what your design might look like as a real wreath.']],
+quote:"I stopped wasting stems trying things out. I plan everything in Layout Studio first, and by the time I sit down to make the wreath I already know exactly what I'm doing.",
+quoteBy:'Sarah R. — Etsy seller, 4,200 sales',visual:'layout-studio'},
+
+{key:'design-studio',cat:'Design & Planning',group:'design',name:'Design Studio',tagline:"A full design editor for complex wreaths with multiple sections and moods.",price:'$9.95',priceDisplay:'$9.95/mo',
+sell:"Design Studio is the professional editor for designers who need full control. Divide your wreath into zones — each with its own colour scheme and mood. Lock specific elements so they never get moved. Apply a 'design journey' preset that transitions the mood from one section to another, like calm morning to warm evening.",
+why:"For simple wreaths, Layout Studio is enough. When a client asks for a wreath that transitions in mood or colour from one section to another, that's what Design Studio is built for.",
+bullets:['Divide the wreath into zones — each with its own mood and colours','Lock any element so it\'s never moved or changed','Apply journey presets: calm-to-warm, fresh-to-festive, and more','Full layer control — move elements in front or behind each other','Export a clean design view to share with clients'],
+steps:[['Divide into zones','Split the wreath into sections — each zone has its own settings.'],['Set each zone\'s mood','Choose a colour palette and mood for each zone.'],['Lock what matters','Mark any element as locked — nothing will touch it.']],
+feats:[['Zone-by-zone control','Control each section of the wreath independently — useful for complex or custom designs.'],['Journey presets','Pre-built mood transitions — the design automatically shifts from one mood to another across the wreath.'],['Lock your best elements','A client loves the big white peony at the bottom-left — lock it. Everything else can adjust.'],['Client-ready export','Export a clean version with no grids or technical overlays — easy to share for approval.']],
+quote:"A client asked for a wreath that felt 'winter sunrise to spring afternoon'. I literally set a journey preset and it did it. Took me five minutes.",
+quoteBy:'Jamie T. — Seasonal décor studio owner',visual:'design-studio'},
+
+,
+
+{key:'design-generator',cat:'Design & Planning',group:'design',name:'Design Generator',tagline:"Pick your mood and materials — get a complete placement map with exact positions for every stem.",price:'$6.95',priceDisplay:'$6.95/mo',
+sell:"Design Generator takes the guesswork out of where to put everything. Choose your main flower, supporting flower, greenery, and accent — set the size and mood — and it gives you a complete map showing exactly where every element goes, at what angle, and how many stems to use. If you've set up your inventory, it only shows you materials you actually have in stock.",
+why:"Most designers plan a wreath in their head, then figure it out as they go. Design Generator gives you a precise starting point — every position mapped out before you buy a single stem. And because it reads your inventory, you're never planning with flowers you don't have.",
+bullets:['Full placement map with exact angles and stem counts','Only shows flowers and greenery you have in stock — if you use Inventory Weaver','Five moods: Romantic, Rustic, Modern, Classic, Wild','Three sizes: 12 inch, 18 inch, 24 inch','Download as a CSV to take to your workbench','Save directly to your Design Library'],
+steps:[['Set your materials','Choose your main flower, supporting flower, greenery, and accent filler. If you use Inventory Weaver, the dropdowns only show what you have in stock.'],['Pick your mood and size','Choose the mood (Romantic, Rustic, Modern, Classic, Wild), the season, and the wreath size.'],['Get your placement map','A full diagram and table show every element — its position in degrees, its distance from centre, and how many stems to use.']],
+feats:[['Inventory-connected','If you've set up Inventory Weaver, the flower and greenery dropdowns automatically filter to only show what you have. No planning with materials you don't have.'],['Exact positions','Every element gets a precise angle (e.g. 185°) and a radius measurement — no more guessing where the focal should go.'],['Natural variation','Each generation adds small natural variations so designs feel hand-crafted, not mechanical.'],['Straight to your workbench','Download the placement map as a CSV and take it to your workbench — or save it to your Design Library and access it from any device.']],
+quote:"I used to sketch layouts on paper and still end up improvising half the wreath. Now I generate a map, print it out, and follow it. My designs are more consistent and I waste a lot less.",
+quoteBy:'Sarah R. — Etsy seller, 4,200 sales',visual:'design-generator'},
+
+{key:'parametric-lab',cat:'Design & Planning',group:'design',name:'Parametric Lab',tagline:"Choose a wreath shape and let the mood decide how it looks.",price:'$9.95',priceDisplay:'$9.95/mo',
+sell:"Instead of drawing your wreath shape by hand, Parametric Lab does it from your mood and style choices. Pick a shape — round, crescent, trailing, loose, or figure-eight — and the tool adjusts the proportions and layout based on how you want it to feel.",
+why:"Unusual shapes are hard to plan. Parametric Lab makes crescent, asymmetric, and trailing styles easy to explore without hours of trial and error.",
+bullets:['Five shape families: Round, Crescent, Trailing, Loose, Figure-eight','Shape adjusts based on how full or minimal you want the design','See the structure before placing any elements','Export to Layout Studio to add flowers and details','Great for non-standard client requests and seasonal variety'],
+steps:[['Choose a shape','Pick from five shape families.'],['Set the mood','Choose how full or minimal, how formal or relaxed — proportions adjust automatically.'],['Export your structure','Send the shape to Layout Studio and start placing flowers and greenery on it.']],
+feats:[['Five shape families','Go beyond the standard round wreath — crescent, trailing, and loose shapes made easy.'],['Mood drives proportions','A minimal formal crescent looks different from a lush playful one — adjusted automatically.'],['No drawing required','The shape is generated from your settings — no geometry skills needed.'],['Plug into your workflow','Export directly to Layout Studio to continue the design with real elements.']],
+quote:"Crescent wreaths used to intimidate me. Now I just set the mood and the structure appears. I've sold more unusual shapes this year than ever before.",
+quoteBy:'Melissa K. — Faux floral educator',visual:'parametric-lab'},
+
+{key:'inventory-weaver',cat:'Materials & Costs',group:'production',name:'Inventory Weaver',tagline:"Tell Evercrafted what you have — it designs around your actual stock.",price:'$4.95',priceDisplay:'$4.95/mo',
+sell:"Type what you have in your workroom in plain English — 'three eucalyptus stems, one grapevine base, white peonies' — and Inventory Weaver works out what designs you can actually make, what they'll cost, and whether you're about to run out of anything.",
+why:"How many times have you designed a wreath and then realised you don't have enough of a key material? Inventory Weaver catches that before it happens.",
+bullets:['Type your stock in plain English — no spreadsheets','See the cost of any design using your actual materials','Get alerted when a material is running low','Flag seasonal leftovers so you use them before they go to waste','Design suggestions based on what you have too much of'],
+steps:[["Tell it what you have","Type or paste your stock — 'six eucalyptus stems, two peonies, cream ribbon.' No formatting needed."],['Pick a design','Choose any wreath design and see exactly what it will cost using your materials.'],['Watch your stock','As you plan designs, the tool tracks what you\'re using and warns you before you run out.']],
+feats:[['Plain English stock entry','No spreadsheets, no codes. Just type what you have like you\'d say it out loud.'],['Real cost tracking','See exactly what a design costs to make using your actual stock prices.'],['Low stock alerts','Get a warning when you\'re about to run out of something you use regularly.'],['Seasonal remainder logic','Flags stock from last season so you can design something to use it up before it goes to waste.']],
+quote:"I used to over-order every season because I never really knew what I had. Inventory Weaver paid for itself in the first month just from the materials I stopped buying twice.",
+quoteBy:'Jamie T. — Seasonal décor studio owner',visual:'inventory-weaver'},
+
+{key:'design-optimizer',cat:'Materials & Costs',group:'production',name:'Blueprint Optimizer',tagline:"Cut material costs without losing what makes the design special.",price:'$5.95',priceDisplay:'$5.95/mo',
+sell:"Blueprint Optimizer looks at any design you've made and finds ways to reduce the cost — without changing the elements you care about. You tell it how much you're willing to save, and it suggests swaps and adjustments. Everything you mark as important is never changed.",
+why:"Margins matter. Even small savings on materials add up fast when you're making wreaths in volume.",
+bullets:['Suggests material swaps that save money but keep the look','A simple slider controls how much to optimise','Anything you lock stays exactly as you designed it','See the cost saving before you commit to any change','Full list of every suggested change with a reason for each'],
+steps:[['Choose a design to optimise','Pick any wreath you\'ve designed in Evercrafted.'],['Set how much you want to save','A slider goes from "keep it exactly as designed" to "save as much as possible."'],['Review and accept changes','See every suggested swap, lock the things you want to keep, and accept the rest.']],
+feats:[['Controlled','You\'re always in control — the slider lets you choose how aggressive the savings are.'],['Explained suggestions','Every swap comes with a reason: "replace this stem with seeded eucalyptus, saves $2.40, same visual weight."'],['Nothing locked is moved','Mark any element as important and it\'s never changed.'],['See savings before committing','Review the full list and the total saving before accepting any of them.']],
+quote:"Blueprint Optimizer saved me over $340 in the first month. It found swaps I never would have thought of — and the wreaths looked identical.",
+quoteBy:'Sarah R. — Etsy seller, 4,200 sales',visual:'optimizer'},
+
+{key:'structural-balance',cat:'Materials & Costs',group:'production',name:'Structural Balance',tagline:"Check if your wreath will hang straight — before you make it.",price:'$7.95',priceDisplay:'$7.95/mo',
+sell:"Ever hung a finished wreath and noticed it leans to one side? Structural Balance calculates whether your design will hang straight before you make it. It works out where the centre of weight sits, flags any imbalance, and suggests where to add or move elements to fix it.",
+why:"A beautiful wreath that hangs crooked is one the customer might return. Catching it at the design stage costs nothing. Fixing it after it's made costs time and materials.",
+bullets:['Shows where the centre of weight sits in your design','Flags designs that will lean or hang crooked','Suggests where to adjust to fix an imbalance','Works with any design from Layout Studio or Design Studio','Batch check multiple designs before a big production run'],
+steps:[['Design your wreath','Use Layout Studio or Design Studio to plan your wreath.'],['Run a balance check','One click — the tool calculates where the weight sits and whether it will hang straight.'],['Fix any issues','If it flags a problem, it shows exactly what to move or add to fix it.']],
+feats:[['Weight calculation','Maps every element and calculates where the combined weight sits.'],['Hang angle prediction','Shows which way the wreath will tilt, and by how much, before you\'ve made it.'],['Fix suggestions','Not just "this will hang wrong" — it tells you specifically what to move or add.'],['Batch checking','Check multiple designs at once before a big production run.']],
+quote:"I had a client return a wreath because it hung at an angle. Now I run a balance check on everything before I start making. Haven't had a return since.",
+quoteBy:'Melissa K. — Faux floral educator',visual:'structural-balance'},
+
+{key:'design-echo',cat:'Grow your business',group:'scaling',name:'Blueprint Echo',tagline:"One design, four seasons — automatically.",price:'$9.95',priceDisplay:'$9.95/mo',
+sell:"Blueprint Echo takes any wreath design you love and creates versions of it for every season — using the same style and feel, but with materials that fit spring, summer, autumn, and winter. Instead of designing each seasonal wreath from scratch, you design one and Echo handles the rest.",
+why:"Seasonal collections drive repeat customers. Blueprint Echo makes it easy to offer a full seasonal range without starting every design from zero.",
+bullets:['One design becomes four seasonal versions automatically','Same style and mood, seasonal materials — eucalyptus becomes frosted pine in winter','Each version is a complete design — editable, saveable, sellable','Also creates style variations: minimal, luxe, rustic, wild','Six versions generated in one run'],
+steps:[['Choose a design you love','Any wreath you\'ve created in Evercrafted.'],['Run Echo','The tool reads the style and mood of your design.'],['Get seasonal versions','Spring, summer, autumn, and winter versions — with appropriate materials for each season.']],
+feats:[['Full seasonal set','Go from one design to a complete four-season collection automatically.'],['Same feel, right materials','Same proportions and mood in every season — just with materials that make sense for the time of year.'],['Every version is editable','Echo gives you a starting point, not a final answer — tweak any version as much as you want.'],['Style variations too','Create the same design in different styles — a minimal version and a lush version, for example.']],
+quote:"I designed one wreath I loved for autumn. Echo gave me the spring, summer, and winter versions in about thirty seconds. That's now a collection I sell all year.",
+quoteBy:'Sarah R. — Etsy seller, 4,200 sales',visual:'echo'},
+
+{key:'variant-branching',cat:'Grow your business',group:'scaling',name:'Variant Branching',tagline:"Keep track of every version of a design — from master to client customisation.",price:'$11.95',priceDisplay:'$11.95/mo',
+sell:"When you make a wreath for a client, you often start from a master design and customise it — different size, ribbon, colour. Variant Branching keeps all those versions organised so you always know which client got which version, and you can always get back to the original.",
+why:"Custom orders are the most profitable part of many wreath businesses — and the most chaotic to track. Variant Branching brings order to the chaos without adding admin.",
+bullets:['Keep a master design and branch off client customisations','See every version in a clear tree view','Track exactly what was different for each client','Roll back to any previous version any time','Compare any two versions side by side'],
+steps:[['Start with a master design','Your best version of a wreath.'],['Branch off for each client','Each customisation becomes its own branch — different ribbon, size, or colour.'],['Track everything','Every branch shows what changed, when, and for which client.']],
+feats:[['Clear version tree','See all your variants in one place — master at the top, client versions branching off below.'],['Track what changed','Every branch shows exactly what was different from the version above it.'],['Client records','Each branch can be linked to a client name — easy to find what you made for someone last season.'],["Never lose the master","No matter how many client versions you make, the original is always there, unchanged."]],
+quote:"I had six different size and colour variations of one design for different clients. Before this I kept mixing them up. Now it's all tracked automatically.",
+quoteBy:'Jamie T. — Seasonal décor studio owner',visual:'dvb'},
+
+{key:'fusion-engine',cat:'Grow your business',group:'scaling',name:'Fusion Engine',tagline:"Mix two of your best designs together to create something new.",price:'$13.95',priceDisplay:'$13.95/mo',
+sell:"Fusion Engine takes two of your existing designs and blends them. You control how much of each one comes through — 70% romantic spring, 30% bold winter — and the tool creates a new design that genuinely combines both. Great for new collections, unusual client briefs, or breaking out of your usual style.",
+why:"Creativity doesn't always happen on demand. Fusion Engine gives you a way to explore new combinations without starting from a blank canvas.",
+bullets:['Blend any two of your designs together','Control the mix — 70/30, 50/50, however you want','Apply a style: farmhouse, luxe, coastal, dark romance, cottagecore','Get three different blend results per run','Every result is a full design — edit, save, sell'],
+steps:[['Choose two designs','Pick any two wreaths from your Design Library.'],['Set the blend','A slider controls how much of each design comes through.'],['Get three results','Three different blend variations to choose from.']],
+feats:[['True blending','Combines the feel, structure, and materials of both designs in a way that feels intentional.'],['Style overlays','Apply a style preset on top of the blend to push the result in a specific direction.'],['Three results per run','Never just one option — three different interpretations of the same blend.'],['Full designs back','Every result is a complete design you can edit, save, and sell.']],
+quote:"I blended my best-selling spring wreath with a bold winter design for a Christmas market. The result was unlike anything I'd made before — and it sold out.",
+quoteBy:'Melissa K. — Faux floral educator',visual:'fusion'},
+
+{key:'design-intel-pro',cat:'Advanced tools',group:'intelligence',name:'Blueprint Intelligence',tagline:"Understand your own design style — and get better at it.",price:'$14.95',priceDisplay:'$14.95/mo',
+sell:"Blueprint Intelligence looks across all your designs and tells you what your style actually is — your most-used materials, your preferred shapes, your overall feel. It then uses that to help you make better decisions, and tells you which types of design perform best for you. Think of it as a personal creative coach built into your design tool.",
+why:"Most designers have no idea what their actual creative signature is — they just make what feels right. Blueprint Intelligence makes that visible and actionable.",
+bullets:['Analyses your full design history','Tells you your signature style in plain language','Shows which designs perform best and why','Suggests which direction to take your next design','Tracks how your style has evolved over time'],
+steps:[['Review your profile','Blueprint Intelligence analyses all your past designs and builds a profile of your style.'],['See what works','Shows which of your designs perform best and what they have in common.'],['Make better designs','Use the insights to lean into what\'s working — or deliberately try something different.']],
+feats:[['Your creative signature','A plain-language summary of your style: "You tend toward asymmetric farmhouse designs with a romantic mood."'],['Performance insights','See which types of design sell best and what they have in common.'],['Style evolution','A timeline showing how your aesthetic has shifted — useful for seeing growth.'],['Forward-looking suggestions','Not just what you do, but what you might try next based on what\'s working.']],
+quote:"I always thought I was a 'bit of everything' designer. Blueprint Intelligence told me I have a very clear signature — and showed me which designs to lean into. My sales went up.",
+quoteBy:'Sarah R. — Etsy seller, 4,200 sales',visual:'bip'},
+
+{key:'adaptive-composer',cat:'Advanced tools',group:'intelligence',name:'Adaptive Composer',tagline:"The more you use Evercrafted, the smarter this gets — and the better your designs become.",price:'$19.95',priceDisplay:'$19.95/mo',
+sell:"Adaptive Composer learns from every design you make. Over time it builds a picture of what makes your best work great — and scores every new design against it. The longer you use it, the more accurate the feedback becomes.",
+why:"For designers who are serious about improving, Adaptive Composer is the difference between good and exceptional.",
+bullets:['Scores every new design against your own best work','Gets smarter the more you use it','Shows how your design quality has improved over time','Points out one or two things that would improve your next design most','Connects your designs to your sales performance'],
+steps:[['Keep designing','Just use Evercrafted normally. Adaptive Composer watches and learns.'],['Get scored','Every new design gets a score — how does it compare to your best work?'],['See what to improve','The tool tells you the one or two changes that would make the biggest difference.']],
+feats:[['Self-improving','Unlike every other tool, Adaptive Composer gets better the longer you use it.'],['Your standard, not a generic one','The score is based on your own historical work — not some external benchmark.'],['One or two insights','Not a long list of suggestions — just the things that would move the needle most.'],['Quality over time','A chart showing how your design scores have trended — real evidence of getting better.']],
+quote:"After three months with Adaptive Composer, I look back at my earlier designs and I can see exactly how much I've improved. It's like having a mentor built in.",
+quoteBy:'Jamie T. — Seasonal décor studio owner',visual:'abc'},
+];
+
+function appScreenInner(visual){
+  const row=(n,v,w)=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px"><span style="font-size:9px;color:rgba(248,245,239,.45);width:62px">${n}</span><div style="flex:1;height:2px;background:rgba(248,245,239,.1);border-radius:1px"><div style="width:${w}%;height:100%;background:rgba(196,212,191,.7);border-radius:1px"></div></div><span style="font-size:9px;color:rgba(248,245,239,.4)">${v}</span></div>`;
+  if(visual==='registry')return`<div style="padding:10px 12px 0">${['Autumn Asymmetric','Spring Romantic','Winter Luxe','Minimal Calm'].map((n,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(248,245,239,.06)"><span style="font-size:10px;color:rgba(248,245,239,.7)">${n}</span><span style="font-size:8px;color:rgba(248,245,239,.3)">${['autumn','spring','winter','perennial'][i]}</span></div>`).join('')}</div><div style="padding:10px 12px;display:flex;gap:5px">${[['24','designs'],['v3','latest'],['6','seasons']].map(([n,l])=>`<div style="flex:1;background:rgba(248,245,239,.06);border-radius:4px;padding:6px;text-align:center"><div style="font-size:16px;color:rgba(248,245,239,.8);font-family:'Cormorant Garamond',serif">${n}</div><div style="font-size:8px;color:rgba(248,245,239,.3)">${l}</div></div>`).join('')}</div>`;
+  if(visual==='memory')return`<div style="padding:10px 12px"><div style="font-size:10px;font-style:italic;color:rgba(248,245,239,.55);line-height:1.6;margin-bottom:10px;font-family:'Cormorant Garamond',serif">"My grandmother's spring garden, pink roses, morning light…"</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px"><span style="font-size:8px;padding:2px 6px;border-radius:2px;background:rgba(196,212,191,.18);color:rgba(248,245,239,.7)">Serenity</span><span style="font-size:8px;padding:2px 6px;border-radius:2px;background:rgba(196,173,142,.18);color:rgba(248,245,239,.7)">Warmth</span><span style="font-size:8px;padding:2px 6px;border-radius:2px;background:rgba(200,200,180,.14);color:rgba(248,245,239,.6)">Nostalgia</span></div><div style="background:rgba(248,245,239,.06);border-radius:4px;padding:8px 9px;font-size:9px;color:rgba(248,245,239,.5);line-height:1.65">Shape: Crescent · Palette: soft pink, cream<br>Main flower: garden rose · 11 elements</div></div>`;
+  if(visual==='emotionsync')return`<div style="padding:10px 12px"><div style="height:90px;background:rgba(248,245,239,.04);border-radius:5px;margin-bottom:8px;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 120 90" width="120" height="90"><line x1="60" y1="5" x2="60" y2="85" stroke="rgba(248,245,239,.08)" stroke-width=".5"/><line x1="5" y1="45" x2="115" y2="45" stroke="rgba(248,245,239,.08)" stroke-width=".5"/><text x="60" y="10" text-anchor="middle" font-size="7" fill="rgba(248,245,239,.25)" font-family="DM Sans,sans-serif">Formal</text><text x="60" y="84" text-anchor="middle" font-size="7" fill="rgba(248,245,239,.25)" font-family="DM Sans,sans-serif">Playful</text><text x="6" y="47" font-size="7" fill="rgba(248,245,239,.25)" font-family="DM Sans,sans-serif">Calm</text><text x="88" y="47" font-size="7" fill="rgba(248,245,239,.25)" font-family="DM Sans,sans-serif">Bold</text><circle cx="36" cy="30" r="7" fill="rgba(196,212,191,.7)" opacity=".85"/><circle cx="36" cy="30" r="2.5" fill="rgba(248,245,239,.9)"/></svg></div><div style="font-size:9px;color:rgba(248,245,239,.45);line-height:1.7">Shape: soft ellipse · Fullness: airy<br>Symmetry: high</div></div>`;
+  if(visual==='visual-companion')return`<div style="padding:10px 12px">${row('Warmth','0.9',90)}${row('Calm','0.6',60)}${row('Joy','0.2',20)}${row('Nostalgia','0.1',10)}<div style="margin-top:8px;background:rgba(248,245,239,.06);border-radius:4px;padding:7px 9px;font-family:'DM Mono',monospace;font-size:8.5px;color:rgba(196,212,191,.8);line-height:1.65">autumn eucalyptus wreath, muted amber, gentle warmth::1.4 calm::1.1 --ar 1:1</div></div>`;
+  if(visual==='vc-pro')return`<div style="padding:10px 12px">${[['Image for your listing','Ready for AI image tools'],['Etsy listing','Title + description + 13 tags'],['Instagram caption','With hashtags, ready to post'],['Pinterest description','Board suggestions included']].map(([t,d])=>`<div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(248,245,239,.06)"><span style="width:5px;height:5px;border-radius:50%;background:rgba(196,212,191,.7);flex-shrink:0"></span><div><div style="font-size:10px;color:rgba(248,245,239,.7)">${t}</div><div style="font-size:8.5px;color:rgba(248,245,239,.35)">${d}</div></div></div>`).join('')}</div>`;
+  if(visual==='layout-studio')return`<div style="padding:8px 12px;display:flex;flex-direction:column;align-items:center"><svg viewBox="0 0 120 120" width="108" height="108"><circle cx="60" cy="60" r="52" stroke="rgba(196,212,191,.25)" stroke-width="1.5" fill="none"/><circle cx="60" cy="60" r="32" stroke="rgba(248,245,239,.08)" stroke-width="1" fill="none" stroke-dasharray="3 6"/><circle cx="60" cy="9" r="4.5" fill="rgba(196,173,142,.8)"/><circle cx="103" cy="35" r="3.5" fill="rgba(196,212,191,.9)"/><circle cx="103" cy="35" r="9" fill="none" stroke="rgba(196,212,191,.4)" stroke-width="1"/><circle cx="105" cy="80" r="4" fill="rgba(196,212,191,.8)"/><circle cx="75" cy="112" r="4.5" fill="rgba(196,173,142,.8)"/><circle cx="25" cy="92" r="3.5" fill="rgba(196,212,191,.8)"/><circle cx="15" cy="48" r="4" fill="rgba(196,173,142,.7)"/><circle cx="30" cy="14" r="4.5" fill="rgba(196,212,191,.9)"/></svg><div style="display:flex;gap:4px;margin-top:2px">${[['8','anchors'],['Strong','balance'],['82%','health']].map(([n,l])=>`<div style="background:rgba(248,245,239,.06);border-radius:3px;padding:4px 7px;text-align:center"><div style="font-size:13px;color:rgba(248,245,239,.8);font-family:'Cormorant Garamond',serif">${n}</div><div style="font-size:7.5px;color:rgba(248,245,239,.35)">${l}</div></div>`).join('')}</div></div>`;
+  if(visual==='design-studio')return`<div style="padding:8px 12px;display:flex;flex-direction:column;align-items:center"><svg viewBox="0 0 110 110" width="100" height="100"><circle cx="55" cy="55" r="48" stroke="rgba(196,212,191,.25)" stroke-width="1.2" fill="none"/><line x1="55" y1="7" x2="55" y2="103" stroke="rgba(248,245,239,.08)" stroke-width=".5" stroke-dasharray="2 4"/><line x1="7" y1="55" x2="103" y2="55" stroke="rgba(248,245,239,.08)" stroke-width=".5" stroke-dasharray="2 4"/><path d="M55 7 A48 48 0 0 1 103 55 L55 55Z" fill="rgba(196,173,142,.15)"/><path d="M55 7 A48 48 0 0 0 7 55 L55 55Z" fill="rgba(196,212,191,.12)"/><path d="M7 55 A48 48 0 0 0 55 103 L55 55Z" fill="rgba(196,212,191,.08)"/><path d="M55 103 A48 48 0 0 0 103 55 L55 55Z" fill="rgba(196,173,142,.1)"/><text x="76" y="38" text-anchor="middle" font-size="7" fill="rgba(248,245,239,.3)" font-family="Cormorant Garamond,serif" font-style="italic">Romantic</text><text x="34" y="38" text-anchor="middle" font-size="7" fill="rgba(248,245,239,.3)" font-family="Cormorant Garamond,serif" font-style="italic">Calm</text><text x="34" y="76" text-anchor="middle" font-size="7" fill="rgba(248,245,239,.3)" font-family="Cormorant Garamond,serif" font-style="italic">Cosy</text><text x="76" y="76" text-anchor="middle" font-size="7" fill="rgba(248,245,239,.3)" font-family="Cormorant Garamond,serif" font-style="italic">Festive</text></svg><div style="font-size:8.5px;color:rgba(248,245,239,.4);margin-top:3px">Journey: calm morning → warm evening</div></div>`;
+  if(visual==='design-generator')return`<div style="padding:10px 12px">
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+      ${['Romantic','Rustic','Modern','Classic','Wild'].map((m,i)=>`<span style="font-size:9px;padding:2px 7px;border-radius:2px;border:1px solid ${i===0?'rgba(196,212,191,.6)':'rgba(248,245,239,.1)'};background:${i===0?'rgba(196,212,191,.12)':'transparent'};color:${i===0?'rgba(196,212,191,.9)':'rgba(248,245,239,.4)'}">${m}</span>`).join('')}
+    </div>
+    <div style="background:rgba(248,245,239,.06);border-radius:4px;overflow:hidden;margin-bottom:8px">
+      ${[['Garden Rose','Main','185°','4.75"','2'],['Ranunculus','Supporting','63°','4.5"','2'],['Eucalyptus','Greenery','120°','5.1"','1'],["Baby's Breath",'Filler','45°','3.8"','2']].map(([n,l,a,r,s])=>`<div style="display:flex;gap:4px;padding:4px 8px;border-bottom:1px solid rgba(248,245,239,.06);font-size:8.5px"><span style="flex:2;color:rgba(248,245,239,.7)">${n}</span><span style="flex:1.5;color:rgba(196,212,191,.7)">${l}</span><span style="flex:1;color:rgba(248,245,239,.4)">${a}</span><span style="flex:1;color:rgba(248,245,239,.35)">${r}</span></div>`).join('')}
+    </div>
+    <div style="font-size:8.5px;color:rgba(196,212,191,.7)">24 placements · 18" · grapevine base</div>
+  </div>`;
+  if(visual==='parametric-lab')return`<div style="padding:10px 12px"><div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:10px">${['Round','Crescent','Trailing','Loose','Figure-eight'].map((c,i)=>`<span style="font-size:9px;padding:3px 7px;border-radius:2px;border:1px solid ${i===1?'rgba(196,212,191,.6)':'rgba(248,245,239,.1)'};background:${i===1?'rgba(196,212,191,.12)':'transparent'};color:${i===1?'rgba(196,212,191,.9)':'rgba(248,245,239,.4)'}">${c}</span>`).join('')}</div><div style="background:rgba(248,245,239,.06);border-radius:4px;padding:8px 9px;font-size:9px;color:rgba(248,245,239,.5);line-height:1.8">Shape: Crescent<br>Fullness: medium-high · Negative space: 42%</div></div>`;
+  if(visual==='inventory-weaver')return`<div style="padding:10px 12px"><div style="font-size:9px;font-style:italic;color:rgba(248,245,239,.45);margin-bottom:8px;font-family:'Cormorant Garamond',serif">"3 eucalyptus, grapevine base, white peonies, cream ribbon…"</div>${[['Grapevine base','1 · $8.40'],['Eucalyptus','3 stems · $4.20'],['White peonies','~6 · est.'],['Cream ribbon','2m · $3.80']].map(([n,d])=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(248,245,239,.06);font-size:9px"><span style="color:rgba(248,245,239,.65)">${n}</span><span style="color:rgba(248,245,239,.35)">${d}</span></div>`).join('')}<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:9px;font-weight:500"><span style="color:rgba(248,245,239,.5)">Total</span><span style="color:rgba(196,212,191,.8)">$16.40</span></div></div>`;
+  if(visual==='optimizer')return`<div style="padding:10px 12px"><div style="font-size:8.5px;color:rgba(248,245,239,.4);margin-bottom:4px">How much to save?</div><div style="display:flex;align-items:center;gap:5px;margin-bottom:10px;font-size:8.5px;color:rgba(248,245,239,.35)"><span>Keep design</span><div style="flex:1;height:2px;background:rgba(248,245,239,.1);border-radius:1px;position:relative"><div style="width:70%;height:100%;background:rgba(196,212,191,.7);border-radius:1px"></div><div style="position:absolute;top:-3.5px;left:70%;width:9px;height:9px;border-radius:50%;background:rgba(196,212,191,.9);border:1.5px solid rgba(26,24,20,1)"></div></div><span>Save money</span></div><div style="display:flex;gap:4px;margin-bottom:8px">${[['84','Design'],['75','Cost'],['80','Score']].map(([n,l])=>`<div style="flex:1;background:rgba(248,245,239,.06);border-radius:3px;padding:5px;text-align:center"><div style="font-size:15px;color:rgba(248,245,239,.8);font-family:'Cormorant Garamond',serif">${n}</div><div style="font-size:7.5px;color:rgba(248,245,239,.35)">${l}</div></div>`).join('')}</div><div style="font-size:8.5px;color:rgba(196,212,191,.7)">✓ $3.80 saved · 3 swaps made</div></div>`;
+  if(visual==='structural-balance')return`<div style="padding:8px 12px;display:flex;flex-direction:column;align-items:center"><svg viewBox="0 0 110 100" width="100" height="90"><circle cx="55" cy="52" r="40" stroke="rgba(196,212,191,.25)" stroke-width="1.2" fill="none"/><circle cx="49" cy="46" r="6" fill="rgba(196,173,142,.5)" stroke="rgba(196,173,142,.6)" stroke-width="1"/><text x="49" y="49" text-anchor="middle" font-size="6" fill="rgba(248,245,239,.6)" font-family="DM Sans,sans-serif">weight</text><line x1="55" y1="12" x2="55" y2="22" stroke="rgba(248,245,239,.5)" stroke-width="1.5" stroke-linecap="round"/><circle cx="55" cy="12" r="2.5" fill="rgba(248,245,239,.6)"/><path d="M49 46 L55 12" stroke="rgba(196,173,142,.4)" stroke-width=".8" stroke-dasharray="2 3" fill="none"/><text x="55" y="86" text-anchor="middle" font-size="7" fill="rgba(196,173,142,.6)" font-family="DM Sans,sans-serif">Tilts 3° left — easy fix</text></svg></div>`;
+  if(visual==='echo')return`<div style="padding:10px 12px"><div style="background:rgba(248,245,239,.06);border-radius:4px;padding:6px 9px;font-size:9px;color:rgba(248,245,239,.55);margin-bottom:8px">Source: Autumn Farmhouse wreath</div>${[['Spring','Ranunculus, peony, blush'],['Summer','Delphinium, lavender, white'],['Winter','Frosted eucalyptus, cotton']].map(([s,d])=>`<div style="display:flex;gap:7px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(248,245,239,.06)"><span style="width:5px;height:5px;border-radius:50%;background:rgba(196,212,191,.6);flex-shrink:0"></span><div><div style="font-size:9.5px;color:rgba(248,245,239,.7)">${s} version</div><div style="font-size:8.5px;color:rgba(248,245,239,.35)">${d}</div></div></div>`).join('')}</div>`;
+  if(visual==='dvb')return`<div style="padding:10px 12px">${[{n:'Autumn Luxe (master)',d:'Original design',r:true,i:0},{n:"Sarah — 20\" size",d:'Larger, ivory ribbon',r:false,i:1},{n:"Sarah v2 — final",d:'Jute ribbon',r:false,i:2},{n:'Winter version',d:'Cool palette',r:false,i:1}].map(row=>`<div style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;border-bottom:1px solid rgba(248,245,239,.06);padding-left:${row.i*14}px"><span style="width:5px;height:5px;border-radius:50%;background:${row.r?'rgba(196,212,191,.8)':'rgba(196,173,142,.6)'};flex-shrink:0;margin-top:3px"></span><div><div style="font-size:9.5px;color:rgba(248,245,239,${row.r?.75:.6});font-weight:${row.r?'500':'300'}">${row.n}</div><div style="font-size:8px;color:rgba(248,245,239,.3)">${row.d}</div></div></div>`).join('')}</div>`;
+  if(visual==='fusion')return`<div style="padding:10px 12px"><div style="display:flex;gap:5px;margin-bottom:8px"><div style="flex:3;background:rgba(248,245,239,.06);border-radius:4px;padding:6px 8px"><div style="font-size:8px;color:rgba(248,245,239,.35)">70%</div><div style="font-size:10px;color:rgba(248,245,239,.7)">Spring Romantic</div></div><div style="flex:2;background:rgba(248,245,239,.06);border-radius:4px;padding:6px 8px"><div style="font-size:8px;color:rgba(248,245,239,.35)">30%</div><div style="font-size:10px;color:rgba(248,245,239,.7)">Bold Winter</div></div></div><div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:7px">${['Farmhouse','Quiet Luxury','Coastal','Cottagecore'].map((p,i)=>`<span style="font-size:8.5px;padding:2px 6px;border-radius:2px;border:1px solid ${i===1?'rgba(196,212,191,.5)':'rgba(248,245,239,.1)'};color:${i===1?'rgba(196,212,191,.8)':'rgba(248,245,239,.35)'};background:${i===1?'rgba(196,212,191,.08)':'transparent'}">${p}</span>`).join('')}</div><div style="font-size:8.5px;color:rgba(248,245,239,.5);background:rgba(248,245,239,.06);border-radius:4px;padding:6px 8px">3 blends generated — airy crescent, cream and sage</div></div>`;
+  if(visual==='bip')return`<div style="padding:10px 12px"><div style="font-size:8.5px;color:rgba(248,245,239,.4);margin-bottom:7px">Your creative signature</div>${[['Romantic','84'],['Farmhouse','91'],['Asymmetric','73'],['Autumn/Spring','88']].map(([l,v])=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px"><span style="font-size:9px;color:rgba(248,245,239,.45);width:74px">${l}</span><div style="flex:1;height:2px;background:rgba(248,245,239,.08);border-radius:1px"><div style="width:${v}%;height:100%;background:rgba(196,173,142,.6);border-radius:1px"></div></div><span style="font-size:9px;color:rgba(248,245,239,.35)">0.${v}</span></div>`).join('')}<div style="font-size:8px;color:rgba(248,245,239,.32);font-style:italic;margin-top:8px;font-family:'Cormorant Garamond',serif">"Asymmetric farmhouse, romantic mood — strongest in autumn."</div></div>`;
+  if(visual==='abc')return`<div style="padding:10px 12px"><div style="font-size:8.5px;color:rgba(248,245,239,.4);margin-bottom:6px">Your design quality over time</div><div style="display:flex;align-items:flex-end;gap:2px;height:52px;margin-bottom:8px">${[42,55,61,58,67,72,69,78,82,85].map((h,i)=>`<div style="flex:1;border-radius:1px 1px 0 0;background:${i>=8?'rgba(196,212,191,.8)':'rgba(196,212,191,.3)'};height:${Math.round(h*0.55)}px"></div>`).join('')}</div><div style="font-size:8.5px;color:rgba(248,245,239,.45)">Current score: <span style="color:rgba(196,212,191,.8)">85/100</span></div><div style="font-size:8px;color:rgba(248,245,239,.35);margin-top:3px">Next: try more asymmetric focal placement</div></div>`;
+  return`<div style="padding:20px;font-size:10px;color:rgba(248,245,239,.3)">Preview</div>`;
+}
+
+function buildAppPage(app){
+  const id='page-app-'+app.key;
+  if(document.getElementById(id))return;
+  const div=document.createElement('div');
+  div.className='page';div.id=id;
+  const heroTitle=app.name;
+  div.innerHTML=`
+  <div class="app-landing">
+    <section class="al-hero">
+      <div class="al-hero-l">
+        <button class="al-back" onclick="nav('apps')">← All apps</button>
+        <div class="al-cat">${app.cat}</div>
+        <h1 class="al-h1" style="font-size:clamp(32px,3.5vw,50px)">${heroTitle}</h1>
+        <p class="al-sub">${app.sell}</p>
+        <div class="al-ctas">
+          <button class="btn-al-p" onclick="nav('pricing')">Start free trial</button>
+          <button class="btn-al-o" onclick="nav('apps')">See all apps</button>
+        </div>
+        <div class="al-price-tag">${app.price==='Included'?'Free with every plan':`${app.price} <span>per month · cancel anytime</span>`}</div>
+      </div>
+      <div class="al-hero-r">
+        <div class="app-screen">
+          <div class="app-screen-bar">
+            <div class="app-screen-dot" style="background:rgba(248,245,239,.18)"></div>
+            <div class="app-screen-dot" style="background:rgba(248,245,239,.12)"></div>
+            <div class="app-screen-dot" style="background:rgba(248,245,239,.08)"></div>
+            <span class="app-screen-title">${app.name}</span>
+          </div>
+          <div class="app-screen-body" style="padding:0">${appScreenInner(app.visual)}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="al-how">
+      <div class="wrap">
+        <div class="eyebrow">How it works</div>
+        <h2 class="display" style="max-width:440px;margin-bottom:0">${app.tagline}</h2>
+        <div class="al-steps">
+          ${app.steps.map((s,i)=>`<div class="al-step"><div class="al-step-n">0${i+1}</div><div class="al-step-t">${s[0]}</div><div class="al-step-d">${s[1]}</div></div>`).join('')}
+        </div>
+      </div>
+    </section>
+
+    <section class="al-features">
+      <div class="wrap">
+        <div class="eyebrow">What you get</div>
+        <h2 class="display" style="max-width:440px">Everything included.</h2>
+        <div class="al-feat-grid">
+          ${app.feats.map(([t,d])=>`<div class="al-feat"><div class="al-feat-title">${t}</div><div class="al-feat-desc">${d}</div></div>`).join('')}
+        </div>
+        <div style="margin-top:22px;padding-top:22px;border-top:1px solid var(--rule)">
+          <div style="font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px">Full feature list</div>
+          <ul style="list-style:none;columns:2;gap:24px">${app.bullets.map(b=>`<li style="font-size:12px;font-weight:300;color:var(--ink2);display:flex;gap:8px;line-height:1.5;margin-bottom:6px;break-inside:avoid"><span style="color:var(--sage);flex-shrink:0">—</span>${b}</li>`).join('')}</ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="al-quote">
+      <div class="wrap">
+        <div class="al-quote-text">"${app.quote}"</div>
+        <div class="al-quote-name">${app.quoteBy}</div>
+      </div>
+    </section>
+
+    <section class="al-cta-bar">
+      <div class="wrap">
+        <h2 class="display" style="margin-bottom:10px">Try ${app.name} free for 14 days.</h2>
+        <p style="font-size:13px;font-weight:300;color:var(--muted);max-width:380px;margin:0 auto 24px;line-height:1.75">No credit card needed. Cancel any time. If it doesn't save you time in the first two weeks, it's not for you.</p>
+        <button class="hero-btn-p" onclick="nav('pricing')">Start your free trial</button>
+      </div>
+    </section>
+
+    <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools built for wreath makers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a onclick="nav('features')">How it works</a><a onclick="nav('apps')">All apps</a><a onclick="nav('marketplace')">Marketplace</a><a onclick="nav('pricing')">Pricing</a><a href="#" onclick="nav('moodoor');return false">Moodoor ↗</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div></div></div></footer>
+  </div>`;
+  document.getElementById('app-pages-container').appendChild(div);
+}
+
+function buildApps(){
+  if(document.getElementById('apps-core').innerHTML)return;
+  const groups={core:APPS.filter(a=>a.group==='core'),emotion:APPS.filter(a=>a.group==='emotion'),design:APPS.filter(a=>a.group==='design'),production:APPS.filter(a=>a.group==='production'),scaling:APPS.filter(a=>a.group==='scaling'),intelligence:APPS.filter(a=>a.group==='intelligence')};
+  for(const[key,apps] of Object.entries(groups)){
+    const g=document.getElementById('apps-'+key);if(!g)continue;
+    g.innerHTML=apps.map(app=>`
+    <div class="app-card" id="card-${app.key}">
+      <div class="app-card-header" onclick="toggleApp('${app.key}')">
+        <div class="ach-left"><div class="ach-name">${app.name}</div><div class="ach-tagline">${app.tagline}</div></div>
+        <div class="ach-right"><span class="ach-price">${app.priceDisplay}</span><span class="ach-arr">&#9660;</span></div>
+      </div>
+      <div class="app-card-body">
+        <div class="acb-peek">
+          <div>
+            <p class="acb-peek-desc">${app.why}</p>
+            <ul class="acb-peek-bullets">${app.bullets.slice(0,4).map(b=>`<li>${b}</li>`).join('')}</ul>
+          </div>
+          <div class="acb-peek-right">
+            <div class="acb-price-block"><div class="acb-price-big">${app.price==='Included'?'Free':app.price}</div><div class="acb-per">${app.price==='Included'?'with every plan':'per month'}</div></div>
+            <button class="btn-learn" onclick="openApp('${app.key}')">Full details →</button>
+            ${app.price!=='Included'?`<br><button class="btn-add-sm" onclick="toast('Added ${app.name}')">Add to my plan</button>`:''}
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+  }
+  document.getElementById('pairings-grid').innerHTML=PAIRINGS.map(p=>`<div class="pairing"><div><div class="pairing-names">${p.a} + ${p.b}</div><div class="pairing-save">Buy together and save</div></div><div class="pairing-price"><div class="pairing-bundled">${p.bundled}</div><div class="pairing-was">${p.was}</div></div></div>`).join('');
+}
+
+function toggleApp(key){
+  const card=document.getElementById('card-'+key);
+  const was=card.classList.contains('open');
+  document.querySelectorAll('.app-card.open').forEach(c=>c.classList.remove('open'));
+  if(!was){card.classList.add('open');setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),40);}
+}
+
+function openApp(key){
+  const app=APPS.find(a=>a.key===key);if(!app)return;
+  buildAppPage(app);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('page-app-'+key).classList.add('on');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('on'));
+  window.scrollTo(0,0);
+}
+function buildMkt(){
+  const g=document.getElementById('mkt-grid');if(!g)return;
+  const data=mktActive==='all'?MKT_DATA:mktActive==='free'?MKT_DATA.filter(b=>b.tier==='free'):mktActive==='premium'?MKT_DATA.filter(b=>b.tier==='prem'):mktActive==='kit'?MKT_DATA.filter(b=>b.kit):mktActive==='romantic'?MKT_DATA.filter(b=>b.mood==='romantic'):MKT_DATA.filter(b=>b.mood==='calm');
+  g.innerHTML=data.map((b,i)=>`<div class="bp-card" onclick="toast('${b.name} preview coming soon')"><div class="bp-thumb"><canvas id="bpc${i}" width="140" height="110"></canvas>${b.kit?'<span class="bp-kit">Custom kit</span>':''}</div><div class="bp-info"><div class="bp-name">${b.name}</div><div class="bp-meta">${b.tier==='free'?'<span class="bp-free">Free</span>':`<span class="bp-price">${b.price}</span><span class="bp-prem">Premium</span>`}</div></div></div>`).join('');
+  data.forEach((b,i)=>{const c=document.getElementById('bpc'+i);if(c)drawBpThumb(c,b.anchors);});
+}
+function drawBpThumb(c,anchors){
+  const ctx=c.getContext('2d'),cx=70,cy=55,ro=43,ri=25,rm=34;
+  ctx.clearRect(0,0,140,110);
+  ctx.beginPath();ctx.arc(cx,cy,ro,0,Math.PI*2);ctx.arc(cx,cy,ri,0,Math.PI*2,true);ctx.fillStyle='rgba(80,99,71,.05)';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,ro,0,Math.PI*2);ctx.strokeStyle='rgba(80,99,71,.13)';ctx.lineWidth=.8;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,ri,0,Math.PI*2);ctx.strokeStyle='rgba(80,99,71,.07)';ctx.stroke();
+  anchors.forEach(a=>{const r=a.a*Math.PI/180;ctx.beginPath();ctx.arc(cx+rm*Math.cos(r),cy+rm*Math.sin(r),3,0,Math.PI*2);ctx.fillStyle=EMOC2[a.e]||'#888';ctx.globalAlpha=.7;ctx.fill();ctx.globalAlpha=1;});
+}
+
+window.onload=function(){buildMkt()};
+</script>
+
+<script>
+const WREATHS = [
+  { key: "gray_wall_blue", src: "../assets/inline/Apps-evercrafted-marketing-2-01-2ec62756.png", caption: "Quiet Luxury — blue hydrangea, ranunculus, eucalyptus on gray plaster", mood: "Serene", emotions: "Calm · Serene" },
+  { key: "spring_grapevine", src: "../assets/inline/Apps-evercrafted-marketing-2-954950-d7912202.png", caption: "Spring Grapevine — blue hydrangea, orchid, delphinium on natural base", mood: "Abundant", emotions: "Calm · Joyful" },
+  { key: "romantic_door1", src: "../assets/inline/Apps-evercrafted-marketing-2-1844337-19d1a30c.png", caption: "Garden Rose — white peony, blush ranunculus, lamb's ear on painted door", mood: "Romantic", emotions: "Romantic · Warm" },
+  { key: "romantic_door2", src: "../assets/inline/Apps-evercrafted-marketing-2-2103200-3ed1f45c.png", caption: "Blush Peony — dusty rose, white cabbage rose, eucalyptus on wood door", mood: "Soft", emotions: "Romantic · Nostalgic" },
+  { key: "romantic_door3", src: "../assets/inline/Apps-evercrafted-marketing-2-2404831-96552aff.png", caption: "English Garden — full peony mix, eucalyptus, wax flower on rustic door", mood: "Full", emotions: "Romantic · Joyful" },
+  { key: "white_gray", src: "../assets/inline/Apps-evercrafted-marketing-2-2672949-cfcf5dad.png", caption: "Ivory Studio — white hydrangea, ranunculus, dogwood on soft gray", mood: "Serene", emotions: "Serene · Calm" },
+  { key: "entryway", src: "../assets/inline/Apps-evercrafted-marketing-2-3167053-bfce06d2.png", caption: "Transitional Entryway — quiet luxury, sage paneling, herringbone oak", mood: "Context", emotions: "Calm · Serene" },
+  { key: "blue_orchid", src: "../assets/inline/Apps-evercrafted-marketing-2-3990823-daa29c3c.png", caption: "Indigo Bloom — navy delphinium, white orchid, blue hydrangea cluster", mood: "Dramatic", emotions: "Bold · Dramatic" },
+];
+
+(function(){
+  const slides = document.getElementById('gallery-slides');
+  const dots = document.getElementById('gallery-dots');
+  let current = 0, timer;
+
+  // Build slides and dots
+  WREATHS.forEach((w, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'gallery-slide' + (i === 0 ? ' on' : '');
+    slide.innerHTML = '<img src="' + w.src + '" alt="' + w.caption + '" loading="' + (i < 2 ? 'eager' : 'lazy') + '">';
+    slides.appendChild(slide);
+
+    const dot = document.createElement('div');
+    dot.className = 'gallery-dot' + (i === 0 ? ' on' : '');
+    dot.onclick = () => showSlide(i);
+    dots.appendChild(dot);
+  });
+
+  function showSlide(n) {
+    document.querySelectorAll('.gallery-slide').forEach((s,i) => s.classList.toggle('on', i===n));
+    document.querySelectorAll('.gallery-dot').forEach((d,i) => d.classList.toggle('on', i===n));
+    const w = WREATHS[n];
+    document.getElementById('gc-mood').textContent = w.mood;
+    document.getElementById('gc-title').textContent = w.caption;
+    document.getElementById('gc-emotions').textContent = w.emotions;
+    document.getElementById('gc-name').textContent = w.caption.split(' — ')[0];
+    current = n;
+  }
+
+  function advance() { showSlide((current + 1) % WREATHS.length); }
+  timer = setInterval(advance, 5000);
+
+  // Pause on hover
+  const heroR = document.querySelector('.hero-r');
+  if (heroR) {
+    heroR.addEventListener('mouseenter', () => clearInterval(timer));
+    heroR.addEventListener('mouseleave', () => { timer = setInterval(advance, 5000); });
+  }
+})();
+</script>
+
+<!-- ══ MOODOOR ══ -->
+<div class="page" id="page-moodoor">
+  <div style="margin-top:54px">
+
+    <!-- HERO -->
+    <section style="background:var(--ink);padding:96px 0 80px">
+      <div class="wrap">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
+          <div>
+            <div style="font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,169,142,.7);margin-bottom:14px">Sister brand — consumer home décor</div>
+            <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(44px,5vw,72px);font-weight:300;line-height:1.04;color:rgba(248,245,239,.95);letter-spacing:-.02em;margin-bottom:18px"><em style="font-style:italic;color:rgba(196,169,142,.9)">Moodoor</em></h1>
+            <p style="font-size:18px;font-weight:300;line-height:1.7;color:rgba(248,245,239,.6);max-width:420px;margin-bottom:10px">Wreaths for the home, chosen by mood.</p>
+            <p style="font-size:14px;font-weight:300;line-height:1.8;color:rgba(248,245,239,.42);max-width:420px;margin-bottom:36px">Moodoor is where your customers shop. They answer three simple questions about how they want their home to feel — and get matched to a wreath that fits. No design vocabulary. No decisions. Just the right wreath for the right door.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button style="padding:12px 28px;background:var(--bark);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.06em;cursor:pointer;font-family:'DM Sans',sans-serif" onclick="document.getElementById('moodoor-quiz').scrollIntoView({behavior:'smooth'})">See how the quiz works</button>
+              <button onclick="nav('apps')" style="padding:12px 22px;background:transparent;color:rgba(248,245,239,.5);border:1px solid rgba(248,245,239,.15);border-radius:3px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Back to Evercrafted</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <!-- Moodoor brand mark mockup -->
+            <div style="background:rgba(248,245,239,.04);border:1px solid rgba(248,245,239,.08);border-radius:12px;padding:28px 24px">
+              <div style="font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:rgba(196,169,142,.5);margin-bottom:6px">moodoor.com</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:rgba(248,245,239,.85);margin-bottom:4px;letter-spacing:-.01em"><em>How do you want your</em></div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:rgba(248,245,239,.85);margin-bottom:18px;letter-spacing:-.01em"><em>home to feel today?</em></div>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                ${['Calm and minimal','Warm and welcoming','Bold and dramatic','Romantic and soft','Fresh and natural','Cosy and festive'].map((m,i)=>`
+                <span style="font-size:11px;padding:7px 14px;border-radius:30px;border:1px solid rgba(248,245,239,${i===2?.35:.12});background:rgba(248,245,239,${i===2?.08:.0});color:rgba(248,245,239,${i===2?.8:.4});cursor:pointer">${m}</span>`).join('')}
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="background:rgba(248,245,239,.04);border:1px solid rgba(248,245,239,.07);border-radius:8px;padding:14px 16px">
+                <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:rgba(248,245,239,.7);line-height:1">3</div>
+                <div style="font-size:10px;color:rgba(248,245,239,.35);margin-top:2px">questions in the quiz</div>
+              </div>
+              <div style="background:rgba(248,245,239,.04);border:1px solid rgba(248,245,239,.07);border-radius:8px;padding:14px 16px">
+                <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:rgba(248,245,239,.7);line-height:1">&lt;60s</div>
+                <div style="font-size:10px;color:rgba(248,245,239,.35);margin-top:2px">from start to matched wreath</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT IT IS -->
+    <section style="padding:80px 0;background:var(--cream2)">
+      <div class="wrap">
+        <div style="max-width:680px;margin:0 auto;text-align:center">
+          <div class="eyebrow" style="justify-content:center">What Moodoor is</div>
+          <h2 class="display">Your designs, sold to customers who don't know what they want — but know how they want to feel.</h2>
+          <p style="font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;margin-top:18px">Evercrafted is where you design. Moodoor is where your customers shop. The two are connected — Moodoor runs on Evercrafted's engine in the background, matching mood quiz answers to real wreath designs from real makers. Your inventory, your designs, your products. Moodoor just handles the customer conversation.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px">
+          <div style="background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:28px 24px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px">No design vocabulary</div>
+            <div style="font-size:13px;font-weight:300;color:var(--muted);line-height:1.75">Your customers don't know what a crescent wreath or an 18-inch grapevine base is. Moodoor doesn't ask them. It asks how they want their front door to feel.</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:28px 24px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px">Powered by Evercrafted</div>
+            <div style="font-size:13px;font-weight:300;color:var(--muted);line-height:1.75">Behind the scenes, Moodoor uses the same tools you use to design — the mood engine, the inventory check, the balance scoring. Your customer never sees any of it.</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:28px 24px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--ink);margin-bottom:8px">Separate brand, shared stock</div>
+            <div style="font-size:13px;font-weight:300;color:var(--muted);line-height:1.75">Moodoor has its own look, its own audience, and its own URL. But it pulls from the same inventory and designs you manage in Evercrafted.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE QUIZ -->
+    <section id="moodoor-quiz" style="padding:80px 0;background:var(--white)">
+      <div class="wrap">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start">
+          <div>
+            <div class="eyebrow">The mood quiz</div>
+            <h2 class="display">Three questions. One perfect wreath.</h2>
+            <p style="font-size:14px;font-weight:300;color:var(--muted);line-height:1.8;margin-top:14px;margin-bottom:28px">The quiz takes under 60 seconds. No account needed, no design knowledge required. A customer answers three questions about how they want their home to feel — and Moodoor matches them to a wreath from your catalogue that fits.</p>
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:50%;background:var(--bark-ll);border:1px solid rgba(140,110,82,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--bark-d)">1</div>
+                <div>
+                  <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px">How do you want your home to feel?</div>
+                  <div style="font-size:12px;font-weight:300;color:var(--muted);line-height:1.65">Calm and minimal, warm and welcoming, bold and dramatic, romantic and soft, fresh and natural, or cosy and festive. One choice — mood chips, no dropdowns.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:50%;background:var(--bark-ll);border:1px solid rgba(140,110,82,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--bark-d)">2</div>
+                <div>
+                  <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px">What's the season or occasion?</div>
+                  <div style="font-size:12px;font-weight:300;color:var(--muted);line-height:1.65">Spring, summer, autumn, winter — or a specific occasion like a wedding, housewarming, or Christmas.</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="width:28px;height:28px;border-radius:50%;background:var(--bark-ll);border:1px solid rgba(140,110,82,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--bark-d)">3</div>
+                <div>
+                  <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px">What's your door like?</div>
+                  <div style="font-size:12px;font-weight:300;color:var(--muted);line-height:1.65">Dark wood, painted white, modern, rustic, neutral. Helps match the wreath palette to the door it will hang on.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz mockup -->
+          <div style="background:var(--cream);border:1px solid var(--rule);border-radius:12px;overflow:hidden">
+            <div style="background:var(--ink);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:rgba(248,245,239,.9);letter-spacing:-.01em"><em>Moodoor</em></div>
+              <div style="display:flex;gap:4px">${[1,2,3].map((n,i)=>`<div style="width:20px;height:3px;border-radius:2px;background:rgba(248,245,239,${i===0?.7:.2})"></div>`).join('')}</div>
+            </div>
+            <div style="padding:28px 24px">
+              <div style="font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px">Question 1 of 3</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:6px">How do you want your home to feel?</div>
+              <div style="font-size:12px;font-weight:300;color:var(--muted);margin-bottom:22px">Choose the one that feels most right.</div>
+              <div style="display:flex;flex-direction:column;gap:7px">
+                ${[['Calm and minimal','Quiet, uncluttered, peaceful'],['Warm and welcoming','Inviting, homey, lived-in'],['Bold and dramatic','A statement — nobody walks past'],['Romantic and soft','Gentle, delicate, pretty'],['Fresh and natural','Garden-like, organic, airy'],['Cosy and festive','Seasonal warmth, celebration']].map(([m,d],i)=>`
+                <div style="padding:11px 14px;background:${i===0?'var(--bark-ll)':'var(--white)'};border:1px solid ${i===0?'rgba(140,110,82,.3)':'var(--rule)'};border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-size:13px;font-weight:${i===0?'500':'400'};color:${i===0?'var(--bark-d)':'var(--ink)'}">${m}</div>
+                    <div style="font-size:11px;font-weight:300;color:var(--muted)">${d}</div>
+                  </div>
+                  ${i===0?'<span style="font-size:11px;color:var(--bark-d)">✓</span>':''}
+                </div>`).join('')}
+              </div>
+              <button style="width:100%;margin-top:18px;padding:11px;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.05em;cursor:pointer;font-family:'DM Sans',sans-serif">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS BEHIND THE SCENES -->
+    <section style="padding:80px 0;background:var(--cream2)">
+      <div class="wrap">
+        <div class="eyebrow">Powered by Evercrafted</div>
+        <h2 class="display" style="max-width:500px">What happens behind the scenes when a customer answers the quiz.</h2>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:44px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden">
+          ${[
+            ['Quiz answers','The customer's three answers are converted into a mood profile — calm, romantic, bold, and so on — without them ever seeing those words.'],
+            ['Inventory check','Moodoor checks what designs are currently available and in stock before suggesting anything. No showing customers designs you can't fulfil.'],
+            ['Balance check','A silent quality check confirms that every suggested wreath would hang correctly and look right on the door type the customer described.'],
+            ['Match and present','The best matching wreath is surfaced with a plain explanation: "This wreath was chosen because you wanted something calm and natural for a pale door."']
+          ].map(([t,d])=>`
+          <div style="background:var(--white);padding:28px 24px">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:var(--ink);margin-bottom:8px">${t}</div>
+            <div style="font-size:12px;font-weight:300;color:var(--muted);line-height:1.75">${d}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY IT MATTERS TO DESIGNERS -->
+    <section style="padding:80px 0;background:var(--ink)">
+      <div class="wrap">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
+          <div>
+            <div style="font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,169,142,.6);margin-bottom:14px">For Evercrafted designers</div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,44px);font-weight:300;line-height:1.12;color:rgba(248,245,239,.9);letter-spacing:-.02em;margin-bottom:18px">Your designs sell themselves.<br><em style="color:rgba(196,169,142,.8)">You just make them.</em></h2>
+            <p style="font-size:14px;font-weight:300;color:rgba(248,245,239,.5);line-height:1.8;margin-bottom:28px">Moodoor takes your Evercrafted designs and presents them to customers who are actively looking for a wreath that fits their home. You don't need to manage a shop, write listings, or answer "what would look good on my door?" — Moodoor handles all of that.</p>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              ${['Your designs appear automatically — no separate listing process','Inventory is shared with Evercrafted — no double entry','Customer gets a reason for their match in plain language — fewer returns','Gift mode coming: occasion tags, gift messages, printable cards'].map(b=>`
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="color:var(--bark-l);font-size:12px;flex-shrink:0;margin-top:2px">—</span>
+                <span style="font-size:13px;font-weight:300;color:rgba(248,245,239,.6);line-height:1.6">${b}</span>
+              </div>`).join('')}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <!-- Match result mockup -->
+            <div style="background:rgba(248,245,239,.05);border:1px solid rgba(248,245,239,.09);border-radius:10px;overflow:hidden">
+              <div style="padding:14px 18px;border-bottom:1px solid rgba(248,245,239,.07)">
+                <div style="font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(248,245,239,.3);margin-bottom:4px">Your match</div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:rgba(248,245,239,.8)">Ivory Studio — calm, minimal</div>
+              </div>
+              <div style="padding:14px 18px">
+                <div style="font-size:11px;font-weight:300;color:rgba(248,245,239,.45);line-height:1.7;font-style:italic;font-family:'Cormorant Garamond',serif">"This wreath was chosen because you wanted something calm and minimal for a pale painted door. White hydrangea and eucalyptus on a natural grapevine base — quiet, elegant, and easy to live with."</div>
+                <div style="display:flex;gap:8px;margin-top:14px">
+                  <div style="flex:1;padding:8px 10px;background:rgba(248,245,239,.06);border-radius:4px;font-size:10px;color:rgba(248,245,239,.5)">18" grapevine · $89</div>
+                  <button style="padding:8px 16px;background:var(--bark);color:var(--white);border:none;border-radius:3px;font-size:10px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">Buy this wreath</button>
+                </div>
+              </div>
+            </div>
+            <!-- Coming soon features -->
+            <div style="background:rgba(248,245,239,.03);border:1px solid rgba(248,245,239,.06);border-radius:8px;padding:16px 18px">
+              <div style="font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(248,245,239,.25);margin-bottom:10px">Coming after launch</div>
+              ${[['AI door preview','Upload a photo of your door — see the wreath on it before you buy'],['Gift mode','Occasion tags, gift messages, and printable cards for gifted wreaths'],['Moodoor Quiz Builder','Embed a branded mood quiz on your own shop — powered by the same engine']].map(([t,d])=>`
+              <div style="padding:7px 0;border-bottom:1px solid rgba(248,245,239,.05);display:flex;gap:10px;align-items:flex-start">
+                <span style="color:rgba(248,245,239,.2);font-size:11px;flex-shrink:0;margin-top:2px">◌</span>
+                <div><div style="font-size:11px;font-weight:500;color:rgba(248,245,239,.45)">${t}</div><div style="font-size:10px;font-weight:300;color:rgba(248,245,239,.28)">${d}</div></div>
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="padding:72px 0;background:var(--bark-ll);text-align:center;border-top:1px solid rgba(140,110,82,.15)">
+      <div class="wrap">
+        <div style="font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--bark);margin-bottom:14px">Launching soon</div>
+        <h2 class="display" style="margin-bottom:12px">Moodoor is coming.<br>Your designs will be there from day one.</h2>
+        <p style="font-size:14px;font-weight:300;color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.75">Any Evercrafted designer on a paid plan can list designs on Moodoor. There's nothing extra to set up — your inventory and designs are already connected.</p>
+        <button class="hero-btn-p" onclick="nav('pricing')">Get started on Evercrafted</button>
+      </div>
+    </section>
+
+    <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools for wreath designers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a onclick="nav('features')">How it works</a><a onclick="nav('apps')">All apps</a><a onclick="nav('marketplace')">Marketplace</a><a onclick="nav('pricing')">Pricing</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div></div></div></footer>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — Sign up</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F8F5EF;--cream2:#F0EBE2;--cream3:#E6DFCF;
+  --white:#FDFCF9;
+  --ink:#1B1916;--ink2:#332F28;
+  --muted:#8A8278;--muted2:#B4AFA8;
+  --sage:#506347;--sage-l:#C4D4BF;--sage-ll:#EBF1E8;--sage-d:#324030;
+  --bark:#8A6E52;--bark-l:#C2A98E;--bark-ll:#EDE5D8;--bark-d:#5A4535;
+  --rule:rgba(27,25,22,.07);--rule2:rgba(27,25,22,.13);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);color:var(--ink);
+  font-size:14px;line-height:1.6;
+  min-height:100vh;
+}
+
+/* ── SHARED NAV ── */
+.auth-nav{
+  height:54px;display:flex;align-items:center;
+  padding:0 36px;
+  background:var(--white);
+  border-bottom:1px solid var(--rule);
+  position:sticky;top:0;z-index:50;
+}
+.auth-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:500;letter-spacing:.06em;
+  color:var(--ink);display:flex;align-items:center;gap:8px;
+  cursor:pointer;
+}
+.auth-logo svg{width:18px;height:18px}
+.auth-nav-r{
+  margin-left:auto;
+  font-size:12px;color:var(--muted);
+}
+.auth-nav-r a{
+  color:var(--sage);font-weight:500;
+  text-decoration:none;cursor:pointer;
+}
+
+/* ── AUTH LAYOUT ── */
+.auth-layout{
+  min-height:calc(100vh - 54px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+.auth-l{
+  background:var(--ink);
+  padding:64px 56px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.auth-l::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 60%, rgba(80,99,71,.18) 0, transparent 60%);
+}
+.auth-l-inner{position:relative;z-index:1}
+.auth-l-eyebrow{
+  font-size:9px;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--sage-l);
+  margin-bottom:16px;
+}
+.auth-l-h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(28px,3.5vw,44px);
+  font-weight:300;line-height:1.12;letter-spacing:-.02em;
+  color:rgba(248,245,239,.92);margin-bottom:14px;
+}
+.auth-l-h2 em{font-style:italic;color:var(--bark-l)}
+.auth-l-body{
+  font-size:14px;font-weight:300;
+  color:rgba(248,245,239,.4);
+  line-height:1.8;margin-bottom:36px;max-width:380px;
+}
+/* Feature list in left panel */
+.auth-feats{display:flex;flex-direction:column;gap:12px}
+.auth-feat{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:13px;font-weight:300;
+  color:rgba(248,245,239,.55);line-height:1.55;
+}
+.auth-feat-ico{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(80,99,71,.2);border:1px solid rgba(196,212,191,.2);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:13px;
+}
+
+/* ── FORM SIDE ── */
+.auth-r{
+  padding:60px 72px 60px 56px;
+  display:flex;flex-direction:column;justify-content:center;
+  background:var(--white);
+}
+.auth-form-wrap{max-width:400px;width:100%}
+
+.auth-screen{display:none}
+.auth-screen.on{display:block}
+
+.auth-step-label{
+  font-size:9px;font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--sage);
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.auth-step-label::before{content:'';display:block;width:18px;height:1px;background:var(--sage)}
+.auth-form-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:400;color:var(--ink);
+  margin-bottom:5px;letter-spacing:-.01em;
+}
+.auth-form-sub{
+  font-size:13px;font-weight:300;color:var(--muted);
+  margin-bottom:28px;line-height:1.6;
+}
+
+/* ── FORM ELEMENTS ── */
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.field label{
+  font-size:10px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted2);
+}
+.field input,.field select{
+  padding:10px 13px;
+  background:var(--cream);
+  border:1px solid var(--rule2);border-radius:3px;
+  color:var(--ink);font-size:13px;
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:border-color .15s,background .15s;
+  -webkit-appearance:none;width:100%;
+}
+.field input::placeholder{color:var(--muted2)}
+.field input:focus,.field select:focus{
+  border-color:var(--sage);
+  background:var(--white);
+  box-shadow:0 0 0 3px rgba(80,99,71,.08);
+}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field select{
+  background-image:url("assets/inline/evercrafted-auth-01-71c9dfb6.svg'http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8a49e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;
+  padding-right:34px;cursor:pointer;
+}
+
+.btn-primary{
+  width:100%;padding:12px;
+  background:var(--ink);color:var(--white);
+  border:none;border-radius:3px;
+  font-size:12px;font-weight:500;letter-spacing:.06em;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:background .15s;margin-top:4px;
+}
+.btn-primary:hover{background:var(--ink2)}
+.btn-secondary{
+  width:100%;padding:12px;
+  background:transparent;color:var(--ink2);
+  border:1px solid var(--rule2);border-radius:3px;
+  font-size:12px;font-weight:400;letter-spacing:.04em;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all .15s;
+}
+.btn-secondary:hover{background:var(--cream);border-color:var(--rule2)}
+
+.divider{
+  display:flex;align-items:center;gap:10px;
+  margin:16px 0;
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;background:var(--rule2);
+}
+.divider span{font-size:11px;color:var(--muted2)}
+
+.link-text{
+  font-size:12px;color:var(--muted);
+  text-align:center;margin-top:14px;
+}
+.link-text a,.link-text span{
+  color:var(--sage);font-weight:500;
+  text-decoration:none;cursor:pointer;
+}
+
+/* ── PASSWORD STRENGTH ── */
+.pw-strength{margin-top:5px}
+.pw-bars{display:flex;gap:3px;margin-bottom:3px}
+.pw-bar{flex:1;height:2px;border-radius:1px;background:var(--rule2);transition:background .2s}
+.pw-bar.weak{background:#C45A4A}
+.pw-bar.ok{background:var(--bark)}
+.pw-bar.strong{background:var(--sage)}
+.pw-label{font-size:10px;color:var(--muted2)}
+
+/* ── PLAN SELECTION ── */
+.plan-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.plan-card{
+  background:var(--cream);
+  border:1.5px solid var(--rule2);
+  border-radius:6px;padding:16px 18px;
+  cursor:pointer;transition:all .18s;
+  display:flex;align-items:flex-start;gap:14px;
+}
+.plan-card:hover{border-color:var(--sage-l);background:var(--sage-ll)}
+.plan-card.selected{
+  border-color:var(--sage);
+  background:var(--sage-ll);
+}
+.plan-radio{
+  width:18px;height:18px;border-radius:50%;
+  border:1.5px solid var(--muted2);
+  flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.plan-card.selected .plan-radio{
+  background:var(--sage);border-color:var(--sage);
+}
+.plan-card.selected .plan-radio::after{
+  content:'';display:block;width:6px;height:6px;
+  border-radius:50%;background:white;
+}
+.plan-info{flex:1}
+.plan-name-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:2px;
+}
+.plan-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:400;color:var(--ink);
+}
+.plan-price{
+  font-size:12px;font-weight:500;color:var(--ink2);
+}
+.plan-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.55}
+.plan-badge{
+  font-size:9px;font-weight:500;letter-spacing:.08em;
+  background:var(--sage);color:var(--white);
+  padding:2px 8px;border-radius:2px;
+  white-space:nowrap;
+}
+.trial-note{
+  font-size:11px;font-weight:300;color:var(--muted);
+  text-align:center;margin-bottom:12px;
+}
+
+/* ── ONBOARDING ── */
+.onboard-steps{
+  display:flex;gap:4px;margin-bottom:28px;
+}
+.ob-step{
+  flex:1;height:3px;border-radius:2px;
+  background:var(--rule2);
+  transition:background .25s;
+}
+.ob-step.done{background:var(--sage)}
+.ob-step.active{background:var(--sage-l)}
+
+.app-picker{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:7px;margin-bottom:16px;
+}
+.app-pick{
+  padding:12px 13px;
+  background:var(--cream);
+  border:1.5px solid var(--rule2);
+  border-radius:5px;cursor:pointer;
+  transition:all .15s;
+  display:flex;align-items:flex-start;gap:9px;
+}
+.app-pick:hover{border-color:var(--sage-l);background:var(--sage-ll)}
+.app-pick.selected{border-color:var(--sage);background:var(--sage-ll)}
+.app-pick-check{
+  width:14px;height:14px;border-radius:3px;
+  border:1.5px solid var(--muted2);
+  flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.app-pick.selected .app-pick-check{
+  background:var(--sage);border-color:var(--sage);
+}
+.app-pick.selected .app-pick-check::after{
+  content:'✓';font-size:9px;color:white;line-height:1;
+}
+.app-pick-info{}
+.app-pick-name{
+  font-size:12px;font-weight:500;color:var(--ink);margin-bottom:1px;
+}
+.app-pick-price{font-size:10px;color:var(--muted2)}
+.app-pick-desc{font-size:10px;font-weight:300;color:var(--muted);line-height:1.4;margin-top:2px}
+.app-count{
+  font-size:11px;color:var(--muted);
+  text-align:center;margin-bottom:8px;
+}
+.app-count span{color:var(--sage);font-weight:500}
+
+/* First design nudge */
+.first-design{
+  background:var(--sage-ll);
+  border:1px solid rgba(80,99,71,.18);
+  border-radius:8px;padding:20px;margin-bottom:16px;
+}
+.fd-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:400;color:var(--ink);margin-bottom:5px;
+}
+.fd-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.65;margin-bottom:14px}
+.fd-input{
+  width:100%;padding:9px 12px;
+  background:var(--white);
+  border:1px solid var(--rule2);border-radius:3px;
+  color:var(--ink);font-size:13px;
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  outline:none;margin-bottom:10px;
+  transition:border-color .15s;
+}
+.fd-input:focus{border-color:var(--sage)}
+.fd-input::placeholder{color:var(--muted2);font-style:italic}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.auth-screen.on{animation:fadeIn .3s ease}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="auth-nav" id="auth-nav">
+  <div class="auth-logo" onclick="showScreen('signup')">
+    <svg viewBox="0 0 20 20" fill="none">
+      <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(0,10,10)"/>
+      <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(72,10,10)"/>
+      <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(144,10,10)"/>
+      <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(216,10,10)"/>
+      <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(288,10,10)"/>
+      <circle cx="10" cy="10" r="2.2" fill="var(--bark)"/>
+    </svg>
+    Evercrafted
+  </div>
+  <div class="auth-nav-r" id="nav-right">
+    Already have an account? <a onclick="showScreen('signin')">Sign in</a>
+  </div>
+</nav>
+
+<div class="auth-layout">
+
+  <!-- LEFT PANEL — changes by screen -->
+  <div class="auth-l">
+    <div class="auth-l-inner">
+      <div class="auth-l-eyebrow" id="left-eyebrow">Start for free</div>
+      <h2 class="auth-l-h2" id="left-h2">Design wreaths that say <em>exactly what you mean them to.</em></h2>
+      <p class="auth-l-body" id="left-body">Evercrafted gives you tools to plan better, create faster, and waste less. Start free — no credit card needed.</p>
+      <div class="auth-feats" id="left-feats">
+        <div class="auth-feat"><div class="auth-feat-ico">🌿</div>Plan your wreath layout before you buy a single stem</div>
+        <div class="auth-feat"><div class="auth-feat-ico">✦</div>Type a memory and get a complete design back</div>
+        <div class="auth-feat"><div class="auth-feat-ico">◎</div>Cut material costs without changing what makes the design special</div>
+        <div class="auth-feat"><div class="auth-feat-ico">→</div>Create product photos without hiring a photographer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-r">
+    <div class="auth-form-wrap">
+
+      <!-- ── SIGN UP ── -->
+      <div class="auth-screen on" id="screen-signup">
+        <div class="auth-step-label">Create your account</div>
+        <div class="auth-form-title">Get started free.</div>
+        <div class="auth-form-sub">No credit card needed. Your first 5 designs are free on us.</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>First name</label>
+            <input type="text" placeholder="Sarah" id="su-fname">
+          </div>
+          <div class="field">
+            <label>Last name</label>
+            <input type="text" placeholder="Reynolds" id="su-lname">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" placeholder="sarah@yourstudio.com" id="su-email">
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input type="password" placeholder="At least 8 characters" id="su-pw" oninput="checkPw(this.value)">
+          <div class="pw-strength">
+            <div class="pw-bars">
+              <div class="pw-bar" id="pw1"></div>
+              <div class="pw-bar" id="pw2"></div>
+              <div class="pw-bar" id="pw3"></div>
+              <div class="pw-bar" id="pw4"></div>
+            </div>
+            <div class="pw-label" id="pw-label"></div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="submitSignup()">Create account →</button>
+
+        <div class="divider"><span>or</span></div>
+        <button class="btn-secondary" onclick="showScreen('plan')">
+          <span style="margin-right:6px">G</span> Continue with Google
+        </button>
+
+        <p class="link-text">Already have an account? <a onclick="showScreen('signin')">Sign in</a></p>
+        <p class="link-text" style="font-size:11px;margin-top:8px;color:var(--muted2)">By creating an account you agree to the <span>Terms of Service</span> and <span>Privacy Policy</span>.</p>
+      </div>
+
+      <!-- ── SIGN IN ── -->
+      <div class="auth-screen" id="screen-signin">
+        <div class="auth-step-label">Welcome back</div>
+        <div class="auth-form-title">Sign in to Evercrafted.</div>
+        <div class="auth-form-sub">Your designs are waiting.</div>
+
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" placeholder="sarah@yourstudio.com" id="si-email">
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input type="password" placeholder="Your password" id="si-pw">
+        </div>
+
+        <div style="text-align:right;margin-bottom:14px">
+          <a style="font-size:11px;color:var(--muted);cursor:pointer" onclick="showScreen('reset')">Forgot your password?</a>
+        </div>
+
+        <button class="btn-primary" onclick="submitSignin()">Sign in →</button>
+        <div class="divider"><span>or</span></div>
+        <button class="btn-secondary"><span style="margin-right:6px">G</span> Continue with Google</button>
+        <p class="link-text">New to Evercrafted? <a onclick="showScreen('signup')">Create a free account</a></p>
+      </div>
+
+      <!-- ── PASSWORD RESET ── -->
+      <div class="auth-screen" id="screen-reset">
+        <div class="auth-step-label">Reset password</div>
+        <div class="auth-form-title">Forgot your password?</div>
+        <div class="auth-form-sub">Type your email and we'll send a reset link. It arrives within a minute.</div>
+
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" placeholder="sarah@yourstudio.com" id="reset-email">
+        </div>
+
+        <button class="btn-primary" onclick="submitReset()">Send reset link →</button>
+        <p class="link-text"><a onclick="showScreen('signin')">← Back to sign in</a></p>
+      </div>
+
+      <!-- ── RESET SENT ── -->
+      <div class="auth-screen" id="screen-reset-sent">
+        <div style="text-align:center;padding:24px 0">
+          <div style="font-size:36px;margin-bottom:16px">✉️</div>
+          <div class="auth-form-title" style="font-style:italic">Check your inbox.</div>
+          <p style="font-size:13px;font-weight:300;color:var(--muted);margin:10px 0 24px;line-height:1.7">We've sent a password reset link. It expires in 30 minutes. If you don't see it, check your spam folder.</p>
+          <button class="btn-secondary" onclick="showScreen('signin')" style="max-width:280px;margin:0 auto">Back to sign in</button>
+        </div>
+      </div>
+
+      <!-- ── PLAN SELECTION ── -->
+      <div class="auth-screen" id="screen-plan">
+        <div class="auth-step-label">Choose your plan</div>
+        <div class="auth-form-title">Start with what you need.</div>
+        <div class="auth-form-sub">You can upgrade or change plan at any time. All paid plans include a 14-day free trial.</div>
+
+        <div class="plan-grid">
+          <div class="plan-card selected" onclick="selectPlan(this)">
+            <div class="plan-radio"></div>
+            <div class="plan-info">
+              <div class="plan-name-row">
+                <span class="plan-name">Starter</span>
+                <span class="plan-price">Free</span>
+              </div>
+              <div class="plan-desc">5 designs per month. Design Library included. Good for exploring what Evercrafted can do.</div>
+            </div>
+          </div>
+          <div class="plan-card" onclick="selectPlan(this)">
+            <div class="plan-radio"></div>
+            <div class="plan-info">
+              <div class="plan-name-row">
+                <span class="plan-name">Maker</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span class="plan-badge">Most popular</span>
+                  <span class="plan-price">$29/mo</span>
+                </div>
+              </div>
+              <div class="plan-desc">Unlimited designs. Pick any 4 tools. Sell on the marketplace and keep 70%.</div>
+            </div>
+          </div>
+          <div class="plan-card" onclick="selectPlan(this)">
+            <div class="plan-radio"></div>
+            <div class="plan-info">
+              <div class="plan-name-row">
+                <span class="plan-name">Studio Pro</span>
+                <span class="plan-price">$89/mo</span>
+              </div>
+              <div class="plan-desc">Every tool included. 3 team seats. White-label export. API access.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="trial-note">Paid plans include a 14-day free trial. No credit card until the trial ends.</div>
+        <button class="btn-primary" onclick="showScreen('apps')">Continue →</button>
+        <p class="link-text" style="margin-top:10px">You can always change your plan later.</p>
+      </div>
+
+      <!-- ── APP SELECTION (Maker only) ── -->
+      <div class="auth-screen" id="screen-apps">
+        <div class="onboard-steps">
+          <div class="ob-step done"></div>
+          <div class="ob-step active"></div>
+          <div class="ob-step"></div>
+        </div>
+        <div class="auth-step-label">Pick your tools</div>
+        <div class="auth-form-title">Which 4 tools do you want?</div>
+        <div class="auth-form-sub">Your Maker plan includes any 4. You can swap these any time.</div>
+
+        <div class="app-count">Selected: <span id="app-count-n">0</span> of 4</div>
+
+        <div class="app-picker" id="app-picker">
+          <div class="app-pick" data-app="memory-weaver" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">Memory Weaver</div>
+              <div class="app-pick-price">$4.95/mo</div>
+              <div class="app-pick-desc">Type a memory — get a full design back</div>
+            </div>
+          </div>
+          <div class="app-pick" data-app="inventory-weaver" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">Inventory Weaver</div>
+              <div class="app-pick-price">$4.95/mo</div>
+              <div class="app-pick-desc">Design within what you actually have</div>
+            </div>
+          </div>
+          <div class="app-pick" data-app="layout-studio" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">Layout Studio</div>
+              <div class="app-pick-price">$7.95/mo</div>
+              <div class="app-pick-desc">Plan your layout before buying stems</div>
+            </div>
+          </div>
+          <div class="app-pick" data-app="visual-companion" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">Visual Companion</div>
+              <div class="app-pick-price">$8.95/mo</div>
+              <div class="app-pick-desc">Product photos without a photographer</div>
+            </div>
+          </div>
+          <div class="app-pick" data-app="design-optimizer" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">Blueprint Optimizer</div>
+              <div class="app-pick-price">$5.95/mo</div>
+              <div class="app-pick-desc">Cut costs without changing the design</div>
+            </div>
+          </div>
+          <div class="app-pick" data-app="design-generator" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">Design Generator</div>
+              <div class="app-pick-price">$6.95/mo</div>
+              <div class="app-pick-desc">Full placement map from your materials</div>
+            </div>
+          </div>
+          <div class="app-pick" data-app="emotionsync" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">EmotionSync</div>
+              <div class="app-pick-price">$6.95/mo</div>
+              <div class="app-pick-desc">Drag a mood map — get design guidance</div>
+            </div>
+          </div>
+          <div class="app-pick" data-app="structural-balance" onclick="toggleApp(this)">
+            <div class="app-pick-check"></div>
+            <div class="app-pick-info">
+              <div class="app-pick-name">Structural Balance</div>
+              <div class="app-pick-price">$7.95/mo</div>
+              <div class="app-pick-desc">Check it'll hang straight before you make it</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="apps-next-btn" onclick="showScreen('onboard-1')">Continue with these tools →</button>
+        <p class="link-text">Not sure? You can change your tools any time from Settings.</p>
+      </div>
+
+      <!-- ── ONBOARDING 1: First design ── -->
+      <div class="auth-screen" id="screen-onboard-1">
+        <div class="onboard-steps">
+          <div class="ob-step done"></div>
+          <div class="ob-step done"></div>
+          <div class="ob-step active"></div>
+        </div>
+        <div class="auth-step-label">Make your first design</div>
+        <div class="auth-form-title">Let's start with a memory.</div>
+        <div class="auth-form-sub">Memory Weaver turns anything you type into a complete wreath design. Try it now — it takes 30 seconds.</div>
+
+        <div class="first-design">
+          <div class="fd-title">What feeling do you want to capture?</div>
+          <div class="fd-desc">Type a memory, a mood, a season — anything. There are no wrong answers. The more specific you are, the better the design.</div>
+          <input class="fd-input" placeholder="e.g. my grandmother's spring garden, soft pink roses, morning light…" id="memory-input">
+          <button class="btn-primary" style="font-size:12px;padding:10px" onclick="showScreen('onboard-2')">Generate my first design →</button>
+        </div>
+
+        <div style="font-size:12px;font-weight:300;color:var(--muted);text-align:center">
+          or <a style="color:var(--sage);cursor:pointer;font-weight:500" onclick="showScreen('onboard-2')">skip and go straight to the dashboard</a>
+        </div>
+      </div>
+
+      <!-- ── ONBOARDING 2: All set ── -->
+      <div class="auth-screen" id="screen-onboard-2">
+        <div style="text-align:center;padding:20px 0">
+          <div style="font-size:44px;margin-bottom:18px">🌿</div>
+          <div class="auth-form-title" style="font-style:italic;font-family:'Cormorant Garamond',serif;font-size:32px;margin-bottom:8px">You're all set.</div>
+          <p style="font-size:14px;font-weight:300;color:var(--muted);max-width:340px;margin:0 auto 28px;line-height:1.8">Your account is ready and your first design is waiting. Here's what to do first.</p>
+
+          <div style="text-align:left;background:var(--cream2);border:1px solid var(--rule);border-radius:8px;padding:18px 20px;margin-bottom:24px">
+            <div style="font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:12px">Your first 3 days</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="width:20px;height:20px;border-radius:50%;background:var(--sage-ll);border:1px solid var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--sage-d);flex-shrink:0">1</span>
+                <div style="font-size:12px;font-weight:300;color:var(--ink2);line-height:1.55">Open Memory Weaver and finish your first design. It'll be in your Design Library automatically.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="width:20px;height:20px;border-radius:50%;background:var(--sage-ll);border:1px solid var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--sage-d);flex-shrink:0">2</span>
+                <div style="font-size:12px;font-weight:300;color:var(--ink2);line-height:1.55">Try Layout Studio to plan the placement before you start making.</div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start">
+                <span style="width:20px;height:20px;border-radius:50%;background:var(--sage-ll);border:1px solid var(--sage-l);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--sage-d);flex-shrink:0">3</span>
+                <div style="font-size:12px;font-weight:300;color:var(--ink2);line-height:1.55">Browse the free designs in the Marketplace — they're a good starting point while you build your library.</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary" style="max-width:280px;margin:0 auto;display:block" onclick="goToDashboard()">Open the studio →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE
+let currentScreen = 'signup';
+let selectedApps = 0;
+
+const LEFT_CONTENT = {
+  signup: {
+    eyebrow:'Start for free',
+    h2:'Design wreaths that say <em>exactly what you mean them to.</em>',
+    body:'Evercrafted gives you tools to plan better, create faster, and waste less. Start free — no credit card needed.',
+    feats:[
+      ['🌿','Plan your wreath layout before you buy a single stem'],
+      ['✦','Type a memory and get a complete design back'],
+      ['◎','Cut material costs without changing what makes the design special'],
+      ['→','Create product photos without hiring a photographer'],
+    ]
+  },
+  signin: {
+    eyebrow:'Welcome back',
+    h2:'Your designs are <em>right where you left them.</em>',
+    body:'Sign in to access your Design Library, pick up where you left off, and keep building.',
+    feats:[
+      ['📁','All your saved designs, fully searchable'],
+      ['📊','Your usage and app stats at a glance'],
+      ['🛒','Your marketplace listings and earnings'],
+      ['⚙️','Your team, settings, and billing in one place'],
+    ]
+  },
+  plan: {
+    eyebrow:'Choose your plan',
+    h2:'Start with what you need. <em>Add more when it makes sense.</em>',
+    body:'Every plan comes with Design Library included. Paid plans include any 4 tools on Maker, or everything on Studio Pro.',
+    feats:[
+      ['✓','14-day free trial on all paid plans'],
+      ['✓','No credit card until the trial ends'],
+      ['✓','Cancel or change plan any time'],
+      ['✓','All your designs stay yours, always'],
+    ]
+  },
+  apps: {
+    eyebrow:'Pick your tools',
+    h2:'Your Maker plan. <em>Your four tools.</em>',
+    body:'Choose the four that match where you are right now. You can swap any of them at any time from Settings — no extra charge.',
+    feats:[
+      ['💡','Most designers start with Memory Weaver + Layout Studio'],
+      ['📦','Add Inventory Weaver if you track materials by hand now'],
+      ['📸','Add Visual Companion if you sell on Etsy or Instagram'],
+      ['⚡','You can explore all tools in trial mode first'],
+    ]
+  },
+  'onboard-1': {
+    eyebrow:'One more thing',
+    h2:'Your first design takes <em>thirty seconds.</em>',
+    body:'The fastest way to see what Evercrafted does is to make something. Type anything — a memory, a mood, a season — and watch what happens.',
+    feats:[
+      ['✓','No experience needed — just type naturally'],
+      ['✓','You can edit or delete it after — nothing is permanent'],
+      ['✓','It goes straight into your Design Library'],
+      ['✓','Or skip it and start exploring from the dashboard'],
+    ]
+  },
+  'onboard-2': {
+    eyebrow:"You're in",
+    h2:"Everything is ready. <em>Let's go.</em>",
+    body:'Your account is set up, your tools are active, and your first design is waiting. The dashboard is where everything lives.',
+    feats:[
+      ['🌿','Design Library — all your work in one place'],
+      ['✦','Your active tools in the sidebar'],
+      ['📊','Overview of your designs and activity'],
+      ['→','The Marketplace, just one click away'],
+    ]
+  },
+};
+
+function showScreen(id){
+  document.querySelectorAll('.auth-screen').forEach(s=>s.classList.remove('on'));
+  const el = document.getElementById('screen-'+id);
+  if(el) el.classList.add('on');
+  currentScreen = id;
+  updateLeft(id);
+  updateNav(id);
+}
+
+const API_BASE = "http://localhost:8787";
+
+async function submitSignup(){
+  const firstName = document.getElementById('su-fname').value;
+  const lastName = document.getElementById('su-lname') ? document.getElementById('su-lname').value : document.querySelector('#screen-signup input[type=\"text\"][placeholder=\"Reynolds\"]').value;
+  const email = document.getElementById('su-email').value;
+  const password = document.getElementById('su-pw').value;
+
+  if(!firstName || !lastName || !email || !password){
+    alert('Please complete all fields.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        password
+      })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.ok) throw new Error(json.error || 'Signup failed');
+    showScreen('plan');
+  } catch (err) {
+    alert('Signup failed. Please try again.');
+  }
+}
+
+async function submitSignin(){
+  const email = document.getElementById('si-email').value;
+  const password = document.getElementById('si-pw').value;
+
+  if(!email || !password){
+    alert('Please enter your email and password.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/signin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.ok) throw new Error(json.error || 'Signin failed');
+    showScreen('onboard-1');
+  } catch (err) {
+    alert('Sign in failed. Please check your credentials.');
+  }
+}
+
+async function submitReset(){
+  const email = document.getElementById('reset-email').value;
+  if(!email){
+    alert('Please enter your email address.');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/password-reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const json = await res.json();
+    if (!res.ok || !json.ok) throw new Error(json.error || 'Reset failed');
+    showScreen('reset-sent');
+  } catch (err) {
+    alert('Reset failed. Please try again.');
+  }
+}
+
+function updateLeft(id){
+  const data = LEFT_CONTENT[id] || LEFT_CONTENT.signup;
+  document.getElementById('left-eyebrow').textContent = data.eyebrow;
+  document.getElementById('left-h2').innerHTML = data.h2;
+  document.getElementById('left-body').textContent = data.body;
+  document.getElementById('left-feats').innerHTML = data.feats.map(([ico,text])=>
+    `<div class="auth-feat"><div class="auth-feat-ico">${ico}</div>${text}</div>`
+  ).join('');
+}
+
+function updateNav(id){
+  const navR = document.getElementById('nav-right');
+  if(id === 'signin'){
+    navR.innerHTML = 'New here? <a onclick="showScreen(\'signup\')">Create a free account</a>';
+  } else if(['plan','apps','onboard-1','onboard-2'].includes(id)){
+    navR.innerHTML = '';
+  } else {
+    navR.innerHTML = 'Already have an account? <a onclick="showScreen(\'signin\')">Sign in</a>';
+  }
+}
+
+function selectPlan(el){
+  document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  // If Maker, show app picker next; if Starter/Pro, skip to onboard
+  const name = el.querySelector('.plan-name').textContent;
+  const btn = document.querySelector('#screen-plan .btn-primary');
+  if(name === 'Starter'){
+    btn.onclick = ()=>showScreen('onboard-1');
+  } else if(name === 'Studio Pro'){
+    btn.onclick = ()=>showScreen('onboard-1');
+  } else {
+    btn.onclick = ()=>showScreen('apps');
+  }
+}
+
+function toggleApp(el){
+  const isSelected = el.classList.contains('selected');
+  if(!isSelected && selectedApps >= 4) return;
+  el.classList.toggle('selected');
+  selectedApps = document.querySelectorAll('.app-pick.selected').length;
+  document.getElementById('app-count-n').textContent = selectedApps;
+  document.getElementById('apps-next-btn').textContent =
+    selectedApps === 0 ? 'Skip for now →' :
+    selectedApps < 4 ? `Continue with ${selectedApps} tool${selectedApps>1?'s':''} →` :
+    'Continue with these tools →';
+}
+
+function checkPw(val){
+  const bars = [document.getElementById('pw1'),document.getElementById('pw2'),
+                document.getElementById('pw3'),document.getElementById('pw4')];
+  const label = document.getElementById('pw-label');
+  let strength = 0;
+  if(val.length >= 6) strength++;
+  if(val.length >= 10) strength++;
+  if(/[A-Z]/.test(val) && /[0-9]/.test(val)) strength++;
+  if(/[^A-Za-z0-9]/.test(val)) strength++;
+  bars.forEach((b,i)=>{
+    b.className='pw-bar';
+    if(i<strength){
+      b.classList.add(strength<=1?'weak':strength<=2?'ok':'strong');
+    }
+  });
+  label.textContent = strength===0?'':strength===1?'Weak':strength===2?'Fair':strength===3?'Good':'Strong';
+  label.style.color = strength<=1?'#C45A4A':strength===2?'var(--bark)':'var(--sage)';
+}
+
+function getPrimaryAppKey(){
+  const selected = document.querySelector('.app-pick.selected');
+  return selected?.dataset?.app || 'memory-weaver';
+}
+
+function goToDashboard(){
+  window.location.href = 'evercrafted-home.html';
+}
+
+// Init
+showScreen('signup');
+</script>
+</body>
+</html>

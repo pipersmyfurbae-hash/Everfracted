@@ -1,0 +1,224 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4;
+    --warm-white: #FDFCFA;
+    --sage: #8A9E85;
+    --sage-light: #C5D4C1;
+    --sage-dark: #4D6649;
+    --blush: #D4897A;
+    --blush-light: #EDD5CF;
+    --blush-dark: #A05E51;
+    --dark: #2A2520;
+    --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1);
+    --border-med: rgba(42,37,32,0.18);
+    --purple-light: #EDE8F8;
+    --purple-mid: #9B7FD4;
+    --purple-dark: #5A3FA8;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label {
+    font-size: 11px; font-weight: 500; color: var(--purple-dark);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .new-app-label::before {
+    content: ''; display: inline-block;
+    width: 24px; height: 1px; background: var(--purple-mid);
+  }
+
+  .app-card {
+    background: var(--warm-white);
+    border: 1.5px solid var(--purple-mid);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 760px;
+    position: relative; overflow: hidden;
+  }
+
+  .card-glow {
+    position: absolute; top: -60px; right: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(155,127,212,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--purple-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .app-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 500; color: var(--dark);
+    line-height: 1.1;
+  }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .badge-new {
+    background: var(--purple-light); color: var(--purple-dark);
+    font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 20px; flex-shrink: 0;
+  }
+
+  .app-desc {
+    font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300;
+    margin-bottom: 1.75rem;
+  }
+
+  .features-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 1.75rem;
+  }
+  .feature-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--cream); border: 0.5px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .feature-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--purple-mid); flex-shrink: 0; margin-top: 5px;
+  }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .v2-strip {
+    background: var(--purple-light); border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 1.75rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .v2-label {
+    font-size: 10px; font-weight: 500; color: var(--purple-dark);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: white; padding: 3px 8px; border-radius: 6px; flex-shrink: 0;
+  }
+  .v2-text { font-size: 12px; color: var(--purple-dark); font-weight: 300; }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .price-block {}
+  .price-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1;
+  }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add {
+    background: var(--purple-dark); color: white;
+    padding: 11px 24px; border-radius: 40px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    border: none; transition: background 0.2s, transform 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn {
+    background: transparent; color: var(--text-muted);
+    padding: 11px 20px; border-radius: 40px;
+    font-size: 13px; font-weight: 400; cursor: pointer;
+    border: 1px solid var(--border-med); transition: border-color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note {
+    font-size: 11px; color: var(--text-muted); font-weight: 300;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 560px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .card-header { flex-direction: column; }
+  }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🧠</div>
+      <div>
+        <div class="app-name">Blueprint Intelligence Pro</div>
+        <div class="app-tagline">AI design personality · emotion tuning · version control</div>
+      </div>
+    </div>
+    <span class="badge-new">New app</span>
+  </div>
+
+  <p class="app-desc">
+    Stop generating from scratch every time. Blueprint Intelligence Pro builds a living AI model of your unique design style — learning your color preferences, emotional targets, and floral instincts — then applies that profile to every wreath you create. The more you use it, the smarter it gets.
+  </p>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Design DNA</strong>
+        <span>Train a personal AI profile from your saved wreaths, palette choices, and emotional tags</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Emotion sliders</strong>
+        <span>Dial in exactly how serene, festive, romantic, or nostalgic your design should feel</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Blueprint versioning</strong>
+        <span>Every revision is saved as a timeline node — fork, revert, or merge any past design</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Predictive tuning</strong>
+        <span>AI scores each design against your style profile and flags what to adjust before you export</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v2-strip">
+    <span class="v2-label">Coming in v2</span>
+    <span class="v2-text">Batch generation (up to 25 variants) · Seasonal auto-refresh · Trend Sync engine · Team design DNA sharing</span>
+  </div>
+
+  <div class="card-footer">
+    <div class="price-block">
+      <div class="price-main"><sup>$</sup>14.95<sub>/mo</sub></div>
+      <div class="price-note">Add to any Maker or Studio Pro plan</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note" style="margin-top: 1rem; padding-left: 4px;">
+  <div class="compat-dot"></div>
+  Works with Memory Weaver, Inventory Weaver, and Design Studio
+</div>

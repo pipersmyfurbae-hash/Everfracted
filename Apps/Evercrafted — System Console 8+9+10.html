@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — Console P8/9/10</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0907;--sf:#110f0c;--sf2:#1a1714;--sf3:#221f1b;
+  --bd:#2a2520;--bd2:#3a342d;
+  --gold:#c9a96e;--gd:rgba(201,169,110,.12);--gg:rgba(201,169,110,.06);
+  --sage:#7a9e7e;--saged:rgba(122,158,126,.15);
+  --rose:#c47c6e;--rosed:rgba(196,124,110,.15);
+  --amb:#d4a843;--ambd:rgba(212,168,67,.15);
+  --lav:#9b8ec4;--lavd:rgba(155,142,196,.15);
+  --p8:#c4946e;--p8d:rgba(196,148,110,.15);
+  --p9:#6e9ec4;--p9d:rgba(110,158,196,.15);
+  --p10:#c46e9e;--p10d:rgba(196,110,158,.15);
+  --txt:#e8e0d4;--txd:#8a7d6e;--txm:#4a4038;
+  --fd:'Cormorant Garamond',serif;--fm:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:var(--fm);font-size:13px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5;}
+
+body.light{
+  --bg:#f9f7f3;--sf:#ffffff;--sf2:#f5f1ea;--sf3:#efe9df;
+  --bd:rgba(30,28,24,0.08);--bd2:rgba(30,28,24,0.14);
+  --gold:#8c7258;--gd:rgba(140,114,88,.12);--gg:rgba(140,114,88,.06);
+  --sage:#5c7353;--saged:rgba(92,115,83,.16);
+  --rose:#c47c6e;--rosed:rgba(196,124,110,.12);
+  --amb:#c9a96e;--ambd:rgba(201,169,110,.14);
+  --lav:#8b86b0;--lavd:rgba(139,134,176,.12);
+  --p8:#8c7258;--p8d:rgba(140,114,88,.12);
+  --p9:#5a8a84;--p9d:rgba(90,138,132,.12);
+  --p10:#8b86b0;--p10d:rgba(139,134,176,.12);
+  --txt:#1e1c18;--txd:#5c544b;--txm:#8b8278;
+  --fm:'DM Sans',sans-serif;
+}
+body.light::before{opacity:.25;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sb{width:238px;min-width:238px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;}
+.sb-logo{padding:20px 20px 13px;border-bottom:1px solid var(--bd);}
+.logo-name{font-family:var(--fd);font-size:21px;font-weight:300;letter-spacing:.12em;color:var(--gold);display:block;}
+.logo-sub{font-size:9px;letter-spacing:.22em;color:var(--txm);margin-top:4px;text-transform:uppercase;display:block;}
+.sb-sec{padding:10px 0 3px;}
+.ssl{font-size:8px;letter-spacing:.26em;color:var(--txm);text-transform:uppercase;padding:0 20px;margin-bottom:4px;}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 20px;cursor:pointer;color:var(--txd);transition:all .14s;border-left:2px solid transparent;font-size:11px;}
+.ni:hover{color:var(--txt);background:var(--gg);}
+.ni.active{color:var(--gold);border-left-color:var(--gold);background:var(--gd);}
+.ni.dim{opacity:.26;pointer-events:none;}
+.nic{font-size:12px;opacity:.6;width:14px;text-align:center;}
+.pb{font-size:7px;letter-spacing:.1em;padding:1px 5px;border-radius:1px;margin-left:auto;white-space:nowrap;}
+.pb-dim{background:rgba(42,37,32,.8);color:var(--txm);border:1px solid var(--bd);}
+.pb-p8{background:var(--p8d);color:var(--p8);border:1px solid rgba(196,148,110,.35);}
+.pb-p9{background:var(--p9d);color:var(--p9);border:1px solid rgba(110,158,196,.35);}
+.pb-p10{background:var(--p10d);color:var(--p10);border:1px solid rgba(196,110,158,.35);}
+.sb-foot{margin-top:auto;padding:11px 20px;border-top:1px solid var(--bd);}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;}
+
+/* ANIMATIONS */
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.2;}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+@keyframes aidot{0%,80%,100%{transform:scale(.5);opacity:.2;}40%{transform:scale(1);opacity:1;}}
+@keyframes pIn{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideR{from{opacity:0;transform:translateX(-6px);}to{opacity:1;transform:translateX(0);}}
+@keyframes countUp{from{opacity:0;transform:scale(.85);}to{opacity:1;transform:scale(1);}}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--sf);border-bottom:1px solid var(--bd);padding:11px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-title{font-family:var(--fd);font-size:17px;font-weight:300;letter-spacing:.08em;}
+.tm{display:flex;gap:9px;align-items:center;}
+.mtag{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--txm);background:var(--sf2);border:1px solid var(--bd);padding:3px 7px;border-radius:2px;}
+.mtag.hl{color:var(--gold);border-color:rgba(201,169,110,.3);background:var(--gd);}
+.mtag.p8t{color:var(--p8);border-color:rgba(196,148,110,.3);background:var(--p8d);}
+.mtag.p9t{color:var(--p9);border-color:rgba(110,158,196,.3);background:var(--p9d);}
+.mtag.p10t{color:var(--p10);border-color:rgba(196,110,158,.3);background:var(--p10d);}
+.panel{display:none;padding:24px 26px;animation:pIn .24s ease both;}
+.panel.active{display:block;}
+
+/* SHARED COMPONENTS */
+.sh{font-family:var(--fd);font-size:11.5px;font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sh::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--bd2),transparent);}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gd),transparent);}
+.clbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:5px;}
+.cval{font-family:var(--fd);font-size:28px;font-weight:300;color:var(--gold);line-height:1;}
+.csub{font-size:10.5px;color:var(--txd);margin-top:3px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:16px;}
+.btn{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10px;letter-spacing:.12em;padding:7px 12px;cursor:pointer;text-transform:uppercase;transition:all .14s;border-radius:2px;}
+.btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.btn.p8{border-color:var(--p8);color:var(--p8);background:var(--p8d);}
+.btn.p8:hover:not(:disabled){background:rgba(196,148,110,.25);}
+.btn.p9{border-color:var(--p9);color:var(--p9);background:var(--p9d);}
+.btn.p9:hover:not(:disabled){background:rgba(110,158,196,.25);}
+.btn.p10{border-color:var(--p10);color:var(--p10);background:var(--p10d);}
+.btn.p10:hover:not(:disabled){background:rgba(196,110,158,.25);}
+.btn.sage{border-color:var(--sage);color:var(--sage);background:var(--saged);}
+.btn.rose{border-color:var(--rose);color:var(--rose);background:var(--rosed);}
+.sel{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10.5px;padding:6px 9px;border-radius:2px;outline:none;cursor:pointer;transition:border-color .14s;}
+.sel:focus{border-color:var(--gold);}
+.sel option{background:var(--sf2);}
+.inp{background:var(--sf2);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:11px;padding:7px 10px;border-radius:2px;outline:none;transition:border-color .14s;}
+.inp:focus{border-color:var(--gold);}
+.inp::placeholder{color:var(--txm);}
+.ta{width:100%;background:var(--sf2);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:11px;padding:8px 11px;border-radius:2px;outline:none;resize:vertical;transition:border-color .14s;line-height:1.7;}
+.ta:focus{border-color:var(--gold);}
+.ta::placeholder{color:var(--txm);}
+.lbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:5px;display:block;}
+.row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.ai-out{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px 17px;font-size:11.5px;color:var(--txd);line-height:1.9;white-space:pre-wrap;word-break:break-word;}
+.streaming-p8::after{content:'▋';color:var(--p8);animation:blink .7s infinite;}
+.streaming-p9::after{content:'▋';color:var(--p9);animation:blink .7s infinite;}
+.streaming-p10::after{content:'▋';color:var(--p10);animation:blink .7s infinite;}
+.badge{font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:2px 6px;border-radius:1px;}
+.bp8{color:var(--p8);background:var(--p8d);border:1px solid rgba(196,148,110,.3);}
+.bp9{color:var(--p9);background:var(--p9d);border:1px solid rgba(110,158,196,.3);}
+.bp10{color:var(--p10);background:var(--p10d);border:1px solid rgba(196,110,158,.3);}
+.thinking{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:2px;font-size:10.5px;}
+.tp8{background:var(--p8d);border:1px solid rgba(196,148,110,.3);color:var(--p8);}
+.tp9{background:var(--p9d);border:1px solid rgba(110,158,196,.3);color:var(--p9);}
+.tp10{background:var(--p10d);border:1px solid rgba(196,110,158,.3);color:var(--p10);}
+.tdots{display:flex;gap:4px;}
+.tdots span{width:5px;height:5px;border-radius:50%;animation:aidot .9s infinite both;}
+.tdots span:nth-child(2){animation-delay:.18s;}
+.tdots span:nth-child(3){animation-delay:.36s;}
+.dp8 span{background:var(--p8);}
+.dp9 span{background:var(--p9);}
+.dp10 span{background:var(--p10);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bd2);}
+::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+
+/* ═══════════════════════════════════
+   P8 · CUSTOMER ORDER STUDIO
+═══════════════════════════════════ */
+.order-layout{display:flex;gap:14px;}
+.order-form-col{flex:1;display:flex;flex-direction:column;gap:12px;}
+.order-out-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.order-form{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:18px;}
+.of-field{margin-bottom:13px;}
+.of-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:6px;display:flex;align-items:center;gap:7px;}
+.of-req{color:var(--p8);font-size:8px;}
+.chip-group{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{padding:5px 11px;border:1px solid var(--bd);border-radius:2px;font-size:10px;color:var(--txd);cursor:pointer;transition:all .14s;}
+.chip:hover{border-color:var(--p8);color:var(--p8);}
+.chip.on{border-color:var(--p8);color:var(--p8);background:var(--p8d);}
+.order-stage{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:10.5px;}
+.order-stage:last-child{border-bottom:none;}
+.ostage-dot{width:7px;height:7px;border-radius:50%;background:var(--bd2);flex-shrink:0;transition:background .4s;}
+.ostage-dot.done{background:var(--sage);}
+.ostage-dot.active{background:var(--p8);animation:pulse 1s infinite;}
+.ostage-lbl{flex:1;color:var(--txd);}
+.ostage-val{font-size:10px;color:var(--txm);}
+.quote-box{background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.quote-hd{padding:14px 16px;border-bottom:1px solid var(--bd);background:var(--sf2);display:flex;justify-content:space-between;align-items:flex-start;}
+.quote-name{font-family:var(--fd);font-size:17px;font-weight:300;}
+.quote-id{font-size:9px;color:var(--txm);text-align:right;line-height:1.7;}
+.quote-row{display:flex;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--bd);font-size:11px;}
+.quote-row:last-child{border-bottom:none;}
+.quote-row.total-row{background:var(--p8d);}
+.qk{color:var(--txm);}
+.qv{color:var(--txt);}
+.qv.big{font-family:var(--fd);font-size:22px;font-weight:300;color:var(--p8);}
+.score-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.spill{padding:3px 9px;border-radius:2px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;}
+
+/* ═══════════════════════════════════
+   P8 · ORDER TRACKER
+═══════════════════════════════════ */
+.kanban{display:flex;gap:13px;overflow-x:auto;padding-bottom:6px;}
+.kb-col{min-width:220px;background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.kb-col-hd{padding:10px 13px;border-bottom:1px solid var(--bd);background:var(--sf2);display:flex;align-items:center;gap:8px;}
+.kb-col-title{font-size:11px;color:var(--txt);flex:1;}
+.kb-count{font-size:10px;padding:1px 7px;border-radius:10px;background:var(--sf3);color:var(--txm);}
+.kb-cards{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:200px;}
+.kb-card{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:11px 13px;cursor:pointer;transition:all .16s;animation:fadeUp .2s ease both;}
+.kb-card:hover{border-color:var(--gold);background:var(--gg);}
+.kb-card-name{font-size:12px;color:var(--txt);margin-bottom:3px;font-family:var(--fd);font-weight:300;}
+.kb-card-formula{font-size:9.5px;color:var(--txd);margin-bottom:5px;}
+.kb-card-date{font-size:9px;color:var(--txm);}
+.kb-card-price{font-size:11px;color:var(--p8);margin-top:4px;}
+.kb-add{padding:8px 13px;border-top:1px solid var(--bd);display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--txm);font-size:10px;transition:all .14s;}
+.kb-add:hover{color:var(--gold);}
+.kb-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.order-modal-overlay{position:fixed;inset:0;background:rgba(10,9,7,.85);z-index:200;display:flex;align-items:center;justify-content:center;animation:pIn .2s ease both;}
+.order-modal{background:var(--sf);border:1px solid var(--bd);border-radius:4px;width:520px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.6);}
+.modal-hd{padding:18px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:var(--fd);font-size:18px;font-weight:300;}
+.modal-close{background:none;border:none;color:var(--txm);cursor:pointer;font-size:16px;padding:2px 6px;transition:color .12s;}
+.modal-close:hover{color:var(--txt);}
+.modal-body{padding:18px 20px;}
+.modal-field{margin-bottom:13px;}
+.modal-actions{padding:14px 20px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end;}
+.email-preview{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px 17px;font-size:11.5px;color:var(--txd);line-height:1.85;white-space:pre-wrap;margin-top:10px;}
+
+/* ═══════════════════════════════════
+   P9 · ANALYTICS
+═══════════════════════════════════ */
+.analytics-layout{display:flex;gap:14px;}
+.analytics-main{flex:1;display:flex;flex-direction:column;gap:14px;}
+.analytics-side{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.chart-box{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;overflow:hidden;}
+.chart-title{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:12px;}
+.bar-chart{display:flex;align-items:flex-end;gap:7px;height:120px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{width:100%;border-radius:2px 2px 0 0;transition:height .6s ease;min-height:2px;}
+.bar-lbl{font-size:8.5px;color:var(--txm);text-align:center;white-space:nowrap;}
+.bar-val{font-size:9px;color:var(--txd);}
+.sparkline-row{display:flex;align-items:center;gap:11px;padding:7px 0;border-bottom:1px solid var(--bd);}
+.sparkline-row:last-child{border-bottom:none;}
+.spark-name{font-size:11px;color:var(--txd);flex:1;}
+.spark-canvas{flex-shrink:0;}
+.spark-val{font-size:11px;color:var(--txt);width:42px;text-align:right;}
+.spark-delta{font-size:9px;width:34px;text-align:right;}
+.drop-row{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s;animation:fadeUp .18s ease both;}
+.drop-row:last-child{border-bottom:none;}
+.drop-row:hover{background:var(--gg);}
+.drop-name{font-family:var(--fd);font-size:13px;font-weight:300;flex:1;}
+.drop-formula{font-size:10px;color:var(--txm);margin-top:1px;}
+.drop-rev{font-family:var(--fd);font-size:16px;font-weight:300;color:var(--p9);}
+.drop-mgn{font-size:10px;margin-top:1px;}
+.drop-bar-wrap{width:70px;}
+.drop-bar-track{height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;margin-top:3px;}
+.drop-bar-fill{height:100%;border-radius:2px;background:var(--p9);}
+.vel-row{display:flex;align-items:center;gap:10px;padding:8px 13px;border-bottom:1px solid var(--bd);}
+.vel-row:last-child{border-bottom:none;}
+.vel-name{flex:1;font-size:11px;color:var(--txd);}
+.vel-bar-wrap{width:80px;}
+.vel-bar-bg{height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.vel-bar-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+.vel-val{font-size:10px;width:32px;text-align:right;}
+.vel-signal{font-size:8px;letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:1px;}
+.sig-reorder{background:var(--rosed);color:var(--rose);border:1px solid rgba(196,124,110,.3);}
+.sig-watch{background:var(--ambd);color:var(--amb);border:1px solid rgba(212,168,67,.3);}
+.sig-ok{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.stat-card{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:12px 14px;}
+.stat-lbl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:4px;}
+.stat-val{font-family:var(--fd);font-size:22px;font-weight:300;color:var(--p9);animation:countUp .5s ease both;}
+.stat-sub{font-size:10px;color:var(--txd);margin-top:2px;}
+
+/* ═══════════════════════════════════
+   P9 · BLUEPRINT LIBRARY
+═══════════════════════════════════ */
+.lib-layout{display:flex;gap:14px;}
+.lib-main{flex:1;display:flex;flex-direction:column;gap:12px;}
+.lib-side{width:270px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px;}
+.bp-card{background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;cursor:pointer;transition:all .16s;animation:fadeUp .2s ease both;}
+.bp-card:hover{border-color:var(--p9);transform:translateY(-2px);}
+.bp-card.selected{border-color:var(--gold);}
+.bp-canvas-wrap{padding:12px;background:var(--sf2);display:flex;justify-content:center;}
+.bp-card-body{padding:12px 14px;}
+.bp-card-name{font-family:var(--fd);font-size:14px;font-weight:300;color:var(--txt);margin-bottom:3px;}
+.bp-card-meta{font-size:9.5px;color:var(--txd);margin-bottom:5px;}
+.bp-card-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.bp-tag{font-size:7.5px;letter-spacing:.1em;text-transform:uppercase;padding:1px 5px;border-radius:1px;background:var(--sf3);color:var(--txm);border:1px solid var(--bd);}
+.bp-actions{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--bd);}
+.bp-empty{padding:32px;text-align:center;color:var(--txm);font-size:11px;font-style:italic;}
+.save-form{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;}
+.version-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--bd);font-size:11px;animation:slideR .18s ease both;}
+.version-row:last-child{border-bottom:none;}
+.ver-num{color:var(--p9);width:30px;flex-shrink:0;}
+.ver-date{color:var(--txm);font-size:10px;flex:1;}
+.ver-note{color:var(--txd);flex:2;}
+.ver-restore{background:none;border:1px solid var(--bd);color:var(--txm);font-family:var(--fm);font-size:8px;padding:2px 7px;cursor:pointer;border-radius:1px;transition:all .12s;}
+.ver-restore:hover{border-color:var(--p9);color:var(--p9);}
+
+/* ═══════════════════════════════════
+   P10 · INTEGRATIONS
+═══════════════════════════════════ */
+.int-layout{display:flex;gap:14px;}
+.int-main{flex:1;display:flex;flex-direction:column;gap:12px;}
+.int-side{width:268px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.int-card{background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.int-card-hd{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;}
+.int-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.int-name{font-size:12px;color:var(--txt);flex:1;}
+.int-connected{font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:2px 7px;border-radius:1px;}
+.conn-yes{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.conn-no{background:var(--sf3);color:var(--txm);border:1px solid var(--bd);}
+.int-card-body{padding:14px 16px;}
+.int-field{margin-bottom:12px;}
+.int-field:last-child{margin-bottom:0;}
+.int-actions{padding:12px 16px;border-top:1px solid var(--bd);display:flex;gap:8px;}
+.send-log{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;max-height:220px;overflow-y:auto;}
+.log-row{display:flex;align-items:center;gap:9px;padding:7px 12px;border-bottom:1px solid var(--bd);font-size:10.5px;animation:slideR .18s ease both;}
+.log-row:last-child{border-bottom:none;}
+.log-icon{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.log-ok{background:var(--sage);}
+.log-err{background:var(--rose);}
+.log-pending{background:var(--p10);animation:pulse 1s infinite;}
+.log-msg{flex:1;color:var(--txd);}
+.log-time{font-size:9px;color:var(--txm);}
+.cal-event{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:10px 12px;margin-bottom:7px;animation:fadeUp .2s ease both;}
+.cal-event:last-child{margin-bottom:0;}
+.cal-ev-title{font-size:11.5px;color:var(--txt);margin-bottom:3px;}
+.cal-ev-date{font-size:10px;color:var(--txm);}
+.shopify-preview{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px 17px;}
+.sp-field{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--bd);}
+.sp-field:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+.sp-lbl{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:4px;}
+.sp-val{font-size:11px;color:var(--txd);line-height:1.65;}
+
+@media(max-width:900px){
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .order-layout,.analytics-layout,.lib-layout,.int-layout{flex-direction:column;}
+  .order-out-col,.analytics-side,.lib-side,.int-side{width:100%;}
+  .kanban{flex-direction:column;}
+  .kb-col{min-width:unset;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <span class="logo-name">Evercrafted</span>
+    <span class="logo-sub">System Console · P8–P10</span>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phases 1–7</div>
+    <div class="ni dim"><span class="nic">◈</span>P1–P4 Console<span class="pb pb-dim">P1–4</span></div>
+    <div class="ni dim"><span class="nic">✦</span>AI Modules<span class="pb pb-dim">P5</span></div>
+    <div class="ni dim"><span class="nic">⬡</span>Intelligence<span class="pb pb-dim">P6</span></div>
+    <div class="ni dim"><span class="nic">⊞</span>Production<span class="pb pb-dim">P7</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 8 — Customer</div>
+    <div class="ni active" onclick="nav('orders',this)"><span class="nic">✦</span>Order Studio<span class="pb pb-p8">P8 AI</span></div>
+    <div class="ni" onclick="nav('tracker',this)"><span class="nic">◧</span>Order Tracker<span class="pb pb-p8">P8 AI</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 9 — Analytics</div>
+    <div class="ni" onclick="nav('analytics',this)"><span class="nic">◉</span>Drop Performance<span class="pb pb-p9">P9</span></div>
+    <div class="ni" onclick="nav('library',this)"><span class="nic">▦</span>Blueprint Library<span class="pb pb-p9">P9</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 10 — Integrations</div>
+    <div class="ni" onclick="nav('integrations',this)"><span class="nic">◈</span>Gmail + Calendar<span class="pb pb-p10">P10 MCP</span></div>
+    <div class="ni" onclick="nav('shopify',this)"><span class="nic">◬</span>Shopify Publisher<span class="pb pb-p10">P10</span></div>
+  </div>
+  <div class="sb-foot">
+    <div style="margin-bottom:4px;"><span class="dot" style="background:var(--p8);animation:pulse 2s infinite;"></span><span style="font-size:10px;color:var(--p8);">P8 Customer</span></div>
+    <div style="margin-bottom:4px;"><span class="dot" style="background:var(--p9);animation:pulse 1.7s infinite;"></span><span style="font-size:10px;color:var(--p9);">P9 Analytics</span></div>
+    <div><span class="dot" style="background:var(--p10);animation:pulse 1.4s infinite;"></span><span style="font-size:10px;color:var(--p10);">P10 Integrations</span></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="topbar">
+  <div class="tb-title" id="topbarTitle">Customer Order Studio</div>
+  <div class="tm">
+    <span class="mtag hl">EC_CANON_V1</span>
+    <span class="mtag p8t" id="phaseTag">P8 Customer</span>
+    <span class="mtag" id="clk">—</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     P8 · CUSTOMER ORDER STUDIO
+════════════════════════════════ -->
+<div class="panel active" id="panel-orders">
+  <div class="sh">Customer Order Studio — Memory → Quote Pipeline</div>
+  <div class="g4">
+    <div class="card"><div class="clbl">Pipeline</div><div class="cval">7</div><div class="csub">Stages to quote</div></div>
+    <div class="card"><div class="clbl">Output</div><div style="font-size:11px;color:var(--p8);margin-top:6px;line-height:1.55;">Blueprint + Quote<br>+ Customer Brief</div></div>
+    <div class="card"><div class="clbl">AI Role</div><div style="font-size:11px;color:var(--txd);margin-top:6px;line-height:1.55;">Interprets memory<br>Selects formula</div></div>
+    <div class="card"><div class="clbl">Orders Saved</div><div class="cval" id="ordSavedCount">0</div><div class="csub">In persistent storage</div></div>
+  </div>
+
+  <div class="order-layout">
+    <div class="order-form-col">
+      <div class="order-form">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;">
+          <div style="font-family:var(--fd);font-size:17px;font-weight:300;">Customer Intake</div>
+          <div class="badge bp8">AI Interprets</div>
+        </div>
+
+        <div class="of-field">
+          <div class="of-label">Customer Name <span class="of-req">required</span></div>
+          <input class="inp" id="ordName" placeholder="Full name" style="width:100%;">
+        </div>
+
+        <div class="of-field" style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+          <div>
+            <div class="of-label">Email</div>
+            <input class="inp" id="ordEmail" type="email" placeholder="customer@email.com" style="width:100%;">
+          </div>
+          <div>
+            <div class="of-label">Budget</div>
+            <select class="sel" id="ordBudget" style="width:100%;">
+              <option value="95">$95–120</option>
+              <option value="145">$120–165</option>
+              <option value="185" selected>$165–210</option>
+              <option value="240">$210–275</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="of-field">
+          <div class="of-label">Memory or Story <span class="of-req">required</span></div>
+          <textarea class="ta" id="ordMemory" rows="4" placeholder="The story, memory, or feeling this wreath should hold. The more specific, the better the result."></textarea>
+        </div>
+
+        <div class="of-field">
+          <div class="of-label">Occasion</div>
+          <div class="chip-group" id="ordOccasion">
+            <div class="chip on" data-val="unspecified">No occasion</div>
+            <div class="chip" data-val="holiday">Holiday</div>
+            <div class="chip" data-val="memorial">Memorial</div>
+            <div class="chip" data-val="celebration">Celebration</div>
+            <div class="chip" data-val="gift">Gift</div>
+            <div class="chip" data-val="home">Home décor</div>
+          </div>
+        </div>
+
+        <div class="of-field">
+          <div class="of-label">Color Instinct</div>
+          <div class="chip-group" id="ordColor">
+            <div class="chip on" data-val="Let AI decide">Let AI decide</div>
+            <div class="chip" data-val="Warm & earthy">Warm & earthy</div>
+            <div class="chip" data-val="Cool & muted">Cool & muted</div>
+            <div class="chip" data-val="Deep & dramatic">Deep & dramatic</div>
+            <div class="chip" data-val="Soft & neutral">Soft & neutral</div>
+          </div>
+        </div>
+
+        <div class="of-field" style="margin-bottom:0;">
+          <div class="of-label">Size</div>
+          <div class="chip-group" id="ordSize">
+            <div class="chip" data-val="18">18"</div>
+            <div class="chip on" data-val="20">20"</div>
+            <div class="chip" data-val="24">24"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:0;">
+        <button class="btn p8" id="ordRunBtn" onclick="runOrderStudio()" style="font-size:11px;padding:9px 18px;">✦ Generate Quote & Blueprint</button>
+        <button class="btn" onclick="ordReset()">↺ Reset</button>
+        <button class="btn sage" onclick="loadOrderExample()">⊕ Example</button>
+      </div>
+
+      <!-- Pipeline stages -->
+      <div>
+        <div class="sh">Pipeline Progress</div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px 16px;">
+          <div class="order-stage"><div class="ostage-dot" id="os0"></div><div class="ostage-lbl">Memory intake & emotional content extraction</div><div class="ostage-val" id="osv0">—</div></div>
+          <div class="order-stage"><div class="ostage-dot" id="os1"></div><div class="ostage-lbl">Emotion space mapping (valence + arousal)</div><div class="ostage-val" id="osv1">—</div></div>
+          <div class="order-stage"><div class="ostage-dot" id="os2"></div><div class="ostage-lbl">Formula selection & DNA synthesis</div><div class="ostage-val" id="osv2">—</div></div>
+          <div class="order-stage"><div class="ostage-dot" id="os3"></div><div class="ostage-lbl">Blueprint compilation (EC_CANON_V1)</div><div class="ostage-val" id="osv3">—</div></div>
+          <div class="order-stage"><div class="ostage-dot" id="os4"></div><div class="ostage-lbl">Pricing calculation & lead time estimate</div><div class="ostage-val" id="osv4">—</div></div>
+          <div class="order-stage"><div class="ostage-dot" id="os5"></div><div class="ostage-lbl">Customer brief generation</div><div class="ostage-val" id="osv5">—</div></div>
+          <div class="order-stage"><div class="ostage-dot" id="os6"></div><div class="ostage-lbl">Order saved to persistent storage</div><div class="ostage-val" id="osv6">—</div></div>
+        </div>
+      </div>
+
+      <!-- Customer Brief -->
+      <div>
+        <div class="sh">AI Customer Brief</div>
+        <div class="ai-out" id="ordBrief" style="min-height:80px;color:var(--txm);font-style:italic;">Brief will appear after generating the order.</div>
+      </div>
+    </div>
+
+    <div class="order-out-col">
+      <!-- Wreath preview -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div class="lbl" style="align-self:flex-start;margin-bottom:0;">Blueprint Preview</div>
+        <canvas id="ordCanvas" width="260" height="260"></canvas>
+        <div style="font-size:9px;color:var(--txm);text-align:center;" id="ordPreviewLbl">Generate to preview</div>
+      </div>
+
+      <!-- Quote box -->
+      <div class="quote-box" id="ordQuoteBox">
+        <div class="quote-hd">
+          <div>
+            <div class="quote-name" id="ordQuoteName">—</div>
+            <div style="font-size:10px;color:var(--txd);margin-top:2px;" id="ordQuoteFormula">No order generated</div>
+          </div>
+          <div class="quote-id" id="ordQuoteId">—</div>
+        </div>
+        <div class="quote-row"><div class="qk">Size</div><div class="qv" id="ordQSize">—</div></div>
+        <div class="quote-row"><div class="qk">Formula</div><div class="qv" id="ordQFormula">—</div></div>
+        <div class="quote-row"><div class="qk">Emotion Quadrant</div><div class="qv" id="ordQEmotion">—</div></div>
+        <div class="quote-row"><div class="qk">Lead Time</div><div class="qv" id="ordQLead">—</div></div>
+        <div class="quote-row"><div class="qk">Materials</div><div class="qv" id="ordQMat">—</div></div>
+        <div class="quote-row"><div class="qk">Labor</div><div class="qv" id="ordQLabor">—</div></div>
+        <div class="quote-row total-row"><div class="qk">Total</div><div class="qv big" id="ordQTotal">—</div></div>
+      </div>
+
+      <!-- Scores -->
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px;">
+        <div class="lbl" style="margin-bottom:7px;">Blueprint Scores</div>
+        <div id="ordScores" style="color:var(--txm);font-size:11px;">Generate to see scores.</div>
+      </div>
+
+      <!-- Save button -->
+      <button class="btn p8" id="ordSaveBtn" onclick="saveOrder()" disabled style="width:100%;padding:10px;">⊕ Save Order to Tracker</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     P8 · ORDER TRACKER (KANBAN)
+════════════════════════════════ -->
+<div class="panel" id="panel-tracker">
+  <div class="sh">Order Tracker — Build Pipeline Kanban</div>
+  <div class="g4">
+    <div class="card"><div class="clbl">Total Orders</div><div class="cval" id="tkTotal">0</div></div>
+    <div class="card"><div class="clbl">In Progress</div><div class="cval" id="tkActive">0</div></div>
+    <div class="card"><div class="clbl">Ready to Ship</div><div class="cval" id="tkReady">0</div></div>
+    <div class="card"><div class="clbl">Revenue Pipeline</div><div class="cval" id="tkRevenue" style="font-size:20px;margin-top:4px;">$0</div></div>
+  </div>
+
+  <div style="display:flex;gap:9px;margin-bottom:16px;align-items:center;">
+    <button class="btn p8" onclick="addSampleOrders()">⊕ Load Sample Orders</button>
+    <button class="btn" onclick="clearOrders()">↺ Clear All</button>
+    <div style="margin-left:auto;font-size:10px;color:var(--txm);" id="tkLastSync">Last sync: —</div>
+  </div>
+
+  <div class="kanban" id="kanban">
+    <div class="kb-col" id="col-received">
+      <div class="kb-col-hd"><div class="kb-status-dot" style="background:var(--lav);"></div><div class="kb-col-title">Received</div><div class="kb-count" id="cnt-received">0</div></div>
+      <div class="kb-cards" id="cards-received"></div>
+      <div class="kb-add" onclick="showAddOrder('received')">+ Add order</div>
+    </div>
+    <div class="kb-col" id="col-in-build">
+      <div class="kb-col-hd"><div class="kb-status-dot" style="background:var(--amb);"></div><div class="kb-col-title">In Build</div><div class="kb-count" id="cnt-in-build">0</div></div>
+      <div class="kb-cards" id="cards-in-build"></div>
+      <div class="kb-add" onclick="showAddOrder('in-build')">+ Add order</div>
+    </div>
+    <div class="kb-col" id="col-quality-check">
+      <div class="kb-col-hd"><div class="kb-status-dot" style="background:var(--p8);"></div><div class="kb-col-title">Quality Check</div><div class="kb-count" id="cnt-quality-check">0</div></div>
+      <div class="kb-cards" id="cards-quality-check"></div>
+      <div class="kb-add" onclick="showAddOrder('quality-check')">+ Add order</div>
+    </div>
+    <div class="kb-col" id="col-shipped">
+      <div class="kb-col-hd"><div class="kb-status-dot" style="background:var(--sage);"></div><div class="kb-col-title">Shipped</div><div class="kb-count" id="cnt-shipped">0</div></div>
+      <div class="kb-cards" id="cards-shipped"></div>
+      <div class="kb-add" onclick="showAddOrder('shipped')">+ Add order</div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="sh" style="margin-top:20px;">Activity Log</div>
+  <div class="send-log" id="tkLog"><div style="padding:10px 12px;color:var(--txm);font-size:11px;">No activity yet.</div></div>
+</div>
+
+<!-- ════════════════════════════════
+     P9 · DROP PERFORMANCE
+════════════════════════════════ -->
+<div class="panel" id="panel-analytics">
+  <div class="sh">Drop Performance Dashboard</div>
+  <div class="analytics-layout">
+    <div class="analytics-main">
+      <div class="g4">
+        <div class="stat-card"><div class="stat-lbl">Total Revenue</div><div class="stat-val" id="anRevTotal">$0</div><div class="stat-sub">All drops</div></div>
+        <div class="stat-card"><div class="stat-lbl">Units Sold</div><div class="stat-val" id="anUnitsTotal">0</div><div class="stat-sub">Across all drops</div></div>
+        <div class="stat-card"><div class="stat-lbl">Avg Margin</div><div class="stat-val" id="anAvgMgn">0%</div><div class="stat-sub">Across all drops</div></div>
+        <div class="stat-card"><div class="stat-lbl">Best Drop</div><div class="stat-val" id="anBestDrop" style="font-size:14px;margin-top:4px;">—</div><div class="stat-sub" id="anBestSub">—</div></div>
+      </div>
+
+      <!-- Revenue chart -->
+      <div class="chart-box">
+        <div class="chart-title">Revenue by Drop</div>
+        <div class="bar-chart" id="revChart"></div>
+      </div>
+
+      <!-- Drops table -->
+      <div>
+        <div class="sh">All Drops</div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1fr 80px 80px 80px 90px;background:var(--sf);border-bottom:1px solid var(--bd);">
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 13px;">Drop</div>
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 8px;">Units</div>
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 8px;">Revenue</div>
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 8px;">Margin</div>
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 8px;">Sell-thru</div>
+          </div>
+          <div id="dropsTable"></div>
+        </div>
+      </div>
+
+      <!-- Velocity tracker -->
+      <div>
+        <div class="sh">Inventory Velocity</div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1fr 90px 60px 70px;background:var(--sf);border-bottom:1px solid var(--bd);">
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 13px;">Item</div>
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 8px;">Usage Rate</div>
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 8px;">Stock</div>
+            <div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);padding:7px 8px;">Signal</div>
+          </div>
+          <div id="velTable"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analytics-side">
+      <!-- Sparklines -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;">
+        <div class="lbl" style="color:var(--p9);margin-bottom:9px;">Metric Trends</div>
+        <div id="sparklines"></div>
+      </div>
+
+      <!-- Add drop form -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px;">
+        <div style="font-family:var(--fd);font-size:15px;font-weight:300;margin-bottom:12px;">Log a Drop</div>
+        <div class="of-field"><div class="lbl">Drop Name</div><input class="inp" id="anName" placeholder="e.g. Autumn Crescent No.4" style="width:100%;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div class="of-field" style="margin-bottom:0;"><div class="lbl">Formula</div>
+            <select class="sel" id="anFormula" style="width:100%;"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+          </div>
+          <div class="of-field" style="margin-bottom:0;"><div class="lbl">Units Sold</div><input class="inp" id="anUnits" type="number" min="0" value="24" style="width:100%;"></div>
+          <div class="of-field" style="margin-bottom:0;"><div class="lbl">Retail Price</div><input class="inp" id="anPrice" type="number" min="0" value="185" style="width:100%;"></div>
+          <div class="of-field" style="margin-bottom:0;"><div class="lbl">Total Units</div><input class="inp" id="anTotal" type="number" min="0" value="24" style="width:100%;"></div>
+          <div class="of-field" style="margin-bottom:0;"><div class="lbl">COGS / Unit</div><input class="inp" id="anCOGS" type="number" min="0" value="72" style="width:100%;"></div>
+          <div class="of-field" style="margin-bottom:0;"><div class="lbl">Month</div><input class="inp" id="anMonth" placeholder="Nov 2024" style="width:100%;"></div>
+        </div>
+        <button class="btn p9" onclick="logDrop()" style="width:100%;">⊕ Log Drop</button>
+      </div>
+
+      <!-- AI insight -->
+      <div>
+        <div class="lbl" style="color:var(--p9);margin-bottom:7px;">AI Performance Insight</div>
+        <div class="ai-out" id="anInsight" style="min-height:80px;color:var(--txm);font-style:italic;font-size:11px;">Log drops to generate AI insights.</div>
+        <button class="btn p9" id="anInsightBtn" onclick="getAnalyticsInsight()" style="width:100%;margin-top:8px;" disabled>✦ Generate Insight</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     P9 · BLUEPRINT LIBRARY
+════════════════════════════════ -->
+<div class="panel" id="panel-library">
+  <div class="sh">Blueprint Library — Persistent Design Archive</div>
+  <div class="lib-layout">
+    <div class="lib-main">
+      <div style="display:flex;gap:9px;align-items:center;margin-bottom:4px;">
+        <input class="inp" id="libSearch" placeholder="Search blueprints…" style="flex:1;" oninput="renderLibrary()">
+        <select class="sel" id="libFilter" onchange="renderLibrary()">
+          <option value="">All formulas</option>
+          <option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option>
+        </select>
+        <button class="btn p9" onclick="loadSampleBPs()">⊕ Load Samples</button>
+        <button class="btn" onclick="clearBPs()">↺ Clear</button>
+      </div>
+      <div style="font-size:10px;color:var(--txm);" id="libCount">0 blueprints saved</div>
+      <div class="bp-grid" id="bpGrid">
+        <div class="bp-empty">No blueprints saved yet. Save from the Order Studio or load sample blueprints.</div>
+      </div>
+    </div>
+    <div class="lib-side">
+      <!-- Save form -->
+      <div class="save-form">
+        <div style="font-family:var(--fd);font-size:15px;font-weight:300;margin-bottom:12px;">Save Blueprint</div>
+        <div class="of-field"><div class="lbl">Blueprint Name</div><input class="inp" id="libName" placeholder="e.g. Grandma's Garden Crescent" style="width:100%;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div><div class="lbl">Formula</div><select class="sel" id="libFormula" style="width:100%;"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select></div>
+          <div><div class="lbl">Emotion</div><select class="sel" id="libEmotion" style="width:100%;"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select></div>
+        </div>
+        <div class="of-field"><div class="lbl">Notes</div><textarea class="ta" id="libNotes" rows="2" placeholder="Design notes, customer name, occasion…"></textarea></div>
+        <div class="of-field" style="margin-bottom:10px;"><div class="lbl">Tags (comma separated)</div><input class="inp" id="libTags" placeholder="memorial, autumn, cozy" style="width:100%;"></div>
+        <button class="btn p9" onclick="saveBP()" style="width:100%;">⊕ Save to Library</button>
+      </div>
+
+      <!-- Detail view -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px;" id="libDetail">
+        <div class="lbl" style="margin-bottom:8px;">Selected Blueprint</div>
+        <div style="color:var(--txm);font-size:11px;">Click a blueprint to view details.</div>
+      </div>
+
+      <!-- Version history -->
+      <div>
+        <div class="lbl" style="color:var(--p9);margin-bottom:7px;">Version History</div>
+        <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;" id="libVersions">
+          <div style="padding:10px 12px;color:var(--txm);font-size:11px;">Select a blueprint.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     P10 · GMAIL + CALENDAR
+════════════════════════════════ -->
+<div class="panel" id="panel-integrations">
+  <div class="sh">Gmail + Calendar Integration — Live MCP</div>
+  <div class="g4">
+    <div class="card"><div class="clbl">Gmail</div><div style="font-size:11px;color:var(--sage);margin-top:6px;line-height:1.55;">Connected<br>MCP Live</div></div>
+    <div class="card"><div class="clbl">Google Calendar</div><div style="font-size:11px;color:var(--sage);margin-top:6px;line-height:1.55;">Connected<br>MCP Live</div></div>
+    <div class="card"><div class="clbl">Emails Sent</div><div class="cval" id="emailsSent">0</div><div class="csub">This session</div></div>
+    <div class="card"><div class="clbl">Events Created</div><div class="cval" id="eventsMade">0</div><div class="csub">This session</div></div>
+  </div>
+
+  <div class="int-layout">
+    <div class="int-main">
+      <!-- Email composer -->
+      <div class="int-card">
+        <div class="int-card-hd">
+          <div class="int-icon" style="background:var(--rosed);color:var(--rose);">✉</div>
+          <div class="int-name">Order Status Email</div>
+          <div class="badge bp10">Gmail MCP</div>
+          <div class="int-connected conn-yes">Connected</div>
+        </div>
+        <div class="int-card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px;">
+            <div><div class="lbl">To (Customer Email)</div><input class="inp" id="gmailTo" placeholder="customer@email.com" style="width:100%;"></div>
+            <div><div class="lbl">Customer Name</div><input class="inp" id="gmailName" placeholder="Customer name" style="width:100%;"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:12px;">
+            <div><div class="lbl">Order ID</div><input class="inp" id="gmailOrderId" placeholder="EC-ABC123" style="width:100%;"></div>
+            <div><div class="lbl">Status Update</div>
+              <select class="sel" id="gmailStatus" style="width:100%;" onchange="previewEmail()">
+                <option value="received">Order Received</option>
+                <option value="in-build">In Build</option>
+                <option value="quality-check">Quality Check</option>
+                <option value="shipped">Shipped — Ready to Track</option>
+                <option value="ready">Ready for Pickup</option>
+              </select>
+            </div>
+            <div><div class="lbl">Formula</div>
+              <select class="sel" id="gmailFormula" style="width:100%;" onchange="previewEmail()">
+                <option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button class="btn p10" id="previewEmailBtn" onclick="previewEmail()">↻ Preview Email</button>
+            <button class="btn p10" id="genEmailBtn" onclick="generateEmail()">✦ AI-Write Email</button>
+          </div>
+          <div id="emailPreviewArea">
+            <div class="lbl" style="margin-bottom:6px;">Email Preview</div>
+            <div class="email-preview" id="emailPreviewContent" style="color:var(--txm);font-style:italic;">Preview will appear here.</div>
+          </div>
+        </div>
+        <div class="int-actions">
+          <button class="btn p10" id="sendEmailBtn" onclick="sendEmail()" disabled>✉ Send via Gmail</button>
+          <button class="btn" onclick="copyEmail()">Copy Text</button>
+          <div style="margin-left:auto;font-size:10px;color:var(--txm);" id="emailSendStatus"></div>
+        </div>
+      </div>
+
+      <!-- Calendar events -->
+      <div class="int-card">
+        <div class="int-card-hd">
+          <div class="int-icon" style="background:var(--p9d);color:var(--p9);">📅</div>
+          <div class="int-name">Calendar Event Creator</div>
+          <div class="badge bp10">Calendar MCP</div>
+          <div class="int-connected conn-yes">Connected</div>
+        </div>
+        <div class="int-card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px;">
+            <div><div class="lbl">Event Title</div><input class="inp" id="calTitle" placeholder="e.g. Crescent Build · EC-ABC123" style="width:100%;"></div>
+            <div><div class="lbl">Event Type</div>
+              <select class="sel" id="calType" style="width:100%;">
+                <option value="build">Build Session</option>
+                <option value="launch">Drop Launch</option>
+                <option value="delivery">Customer Delivery</option>
+                <option value="photo">Photography Session</option>
+                <option value="reorder">Inventory Reorder</option>
+              </select>
+            </div>
+            <div><div class="lbl">Date</div><input class="inp" id="calDate" type="date" style="width:100%;"></div>
+            <div><div class="lbl">Duration (hours)</div><input class="inp" id="calDuration" type="number" value="2.5" min="0.5" step="0.5" style="width:100%;"></div>
+          </div>
+          <div><div class="lbl">Notes / Description</div><textarea class="ta" id="calNotes" rows="2" placeholder="Optional details for this event…"></textarea></div>
+        </div>
+        <div class="int-actions">
+          <button class="btn p10" id="createCalBtn" onclick="createCalEvent()">📅 Create Calendar Event</button>
+          <div style="margin-left:auto;font-size:10px;color:var(--txm);" id="calStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="int-side">
+      <!-- Activity log -->
+      <div>
+        <div class="lbl" style="color:var(--p10);margin-bottom:7px;">Integration Activity Log</div>
+        <div class="send-log" id="intLog">
+          <div style="padding:10px 12px;color:var(--txm);font-size:11px;">No activity yet.</div>
+        </div>
+      </div>
+
+      <!-- Upcoming calendar events -->
+      <div>
+        <div class="lbl" style="color:var(--p10);margin-bottom:7px;">Created Events</div>
+        <div id="calEventList" style="color:var(--txm);font-size:11px;">No events created yet.</div>
+      </div>
+
+      <!-- Quick send templates -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;">
+        <div class="lbl" style="color:var(--p10);margin-bottom:8px;">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn p10" onclick="quickAction('order_confirm')" style="text-align:left;width:100%;">✉ Send Order Confirmation</button>
+          <button class="btn p10" onclick="quickAction('build_start')" style="text-align:left;width:100%;">✉ Build Started Notice</button>
+          <button class="btn p10" onclick="quickAction('quality_done')" style="text-align:left;width:100%;">✉ Quality Check Complete</button>
+          <button class="btn p10" onclick="quickAction('shipped')" style="text-align:left;width:100%;">✉ Shipment Notification</button>
+          <button class="btn p10" onclick="quickAction('drop_launch')" style="text-align:left;width:100%;">📅 Schedule Drop Launch</button>
+          <button class="btn p10" onclick="quickAction('build_session')" style="text-align:left;width:100%;">📅 Block Build Session</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     P10 · SHOPIFY PUBLISHER
+════════════════════════════════ -->
+<div class="panel" id="panel-shopify">
+  <div class="sh">Shopify Publisher — Product Listing Engine</div>
+  <div class="int-layout">
+    <div class="int-main">
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px;">
+          <div style="font-family:var(--fd);font-size:16px;font-weight:300;">Generate Listing</div>
+          <div class="badge bp10">AI + Shopify</div>
+        </div>
+        <div class="row" style="margin-bottom:11px;">
+          <select class="sel" id="shFormula"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+          <select class="sel" id="shEmotion"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+          <select class="sel" id="shSize"><option value="18">18"</option><option value="20" selected>20"</option><option value="24">24"</option></select>
+          <input class="inp" id="shPrice" type="number" placeholder="Price $" value="185" style="width:100px;">
+          <input class="inp" id="shQty" type="number" placeholder="Qty" value="12" style="width:70px;">
+        </div>
+        <div class="row" style="margin-bottom:0;">
+          <button class="btn p10" id="shGenBtn" onclick="generateListing()">✦ Generate Listing</button>
+          <button class="btn p10" id="shPublishBtn" onclick="publishToShopify()" disabled>⊕ Publish to Shopify</button>
+          <div style="margin-left:auto;font-size:10px;color:var(--txm);" id="shStatus"></div>
+        </div>
+      </div>
+
+      <!-- Listing preview -->
+      <div class="sh">Listing Preview</div>
+      <div class="shopify-preview" id="shPreview">
+        <div style="color:var(--txm);font-size:11px;font-style:italic;">Generate a listing to preview.</div>
+      </div>
+    </div>
+
+    <div class="int-side">
+      <!-- Wreath preview -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:7px;">
+        <div class="lbl" style="align-self:flex-start;margin-bottom:0;">Product Preview</div>
+        <canvas id="shCanvas" width="230" height="230"></canvas>
+      </div>
+
+      <!-- Published log -->
+      <div>
+        <div class="lbl" style="color:var(--p10);margin-bottom:7px;">Published Listings</div>
+        <div class="send-log" id="shLog">
+          <div style="padding:10px 12px;color:var(--txm);font-size:11px;">No listings published yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ORDER MODAL -->
+<div id="orderModal" style="display:none;"></div>
+
+<script>
+// ══════════════════════════════════
+// CORE
+// ══════════════════════════════════
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,10000);
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+const API_BASE="http://localhost:8787";
+async function requestJSON(path,opts={}){
+  const res=await fetch(API_BASE+path,{headers:{"Content-Type":"application/json"},...opts});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(data.error||`Request failed: ${res.status}`);
+  return data;
+}
+const getJSON=(path)=>requestJSON(path,{method:"GET"});
+const postJSON=(path,body)=>requestJSON(path,{method:"POST",body:JSON.stringify(body||{})});
+const patchJSON=(path,body)=>requestJSON(path,{method:"PATCH",body:JSON.stringify(body||{})});
+const delJSON=(path)=>requestJSON(path,{method:"DELETE"});
+
+const TITLES={orders:'Customer Order Studio',tracker:'Order Tracker',analytics:'Drop Performance',library:'Blueprint Library',integrations:'Gmail + Calendar',shopify:'Shopify Publisher'};
+const PTAGS={orders:['P8 Customer','p8t'],tracker:['P8 Customer','p8t'],analytics:['P9 Analytics','p9t'],library:['P9 Analytics','p9t'],integrations:['P10 Integrations','p10t'],shopify:['P10 Integrations','p10t']};
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbarTitle').textContent=TITLES[id];
+  const[txt,cls]=PTAGS[id]||['P8','p8t'];
+  const tag=document.getElementById('phaseTag');
+  tag.textContent=txt;tag.className='mtag '+cls;
+}
+
+// Chip groups
+document.querySelectorAll('.chip-group').forEach(g=>{
+  g.querySelectorAll('.chip').forEach(c=>{
+    c.onclick=()=>{g.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');};
+  });
+});
+
+// Wreath drawing
+const FI={Crescent:0,'Double Echo':1,'Bottom Heavy':2,'Side Sweep':3,'Open Arc':4,'Full Halo':5,'Split Garden':6,'Focal Burst':7,'Laddered Rhythm':8,'Radial Burst':9,'Bow Anchor':10,'Inventory Salvage':11};
+function drawWreath(cid,formula,density=.7,lbl=''){
+  const c=document.getElementById(cid);if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=Math.min(w,h)/2-20;
+  const light=document.body.classList.contains('light');
+  ctx.clearRect(0,0,w,h);ctx.fillStyle=light?'#f5f1ea':'#110f0c';ctx.fillRect(0,0,w,h);
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle=light?'rgba(30,28,24,.2)':'rgba(42,37,32,.9)';ctx.lineWidth=Math.max(12,R*.17);ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle=light?'rgba(140,114,88,.18)':'rgba(201,169,110,.14)';ctx.lineWidth=1;ctx.stroke();
+  const g=light?'#8c7258':'#c9a96e',sg=light?'#5c7353':'#7a9e7e',rs=light?'#c47c6e':'#c47c6e',dm=.55+density*.75;
+  function s(a,r2,l,col,w2=1.5){const x=cx+r2*Math.cos(a),y=cy+r2*Math.sin(a),ex=cx+(r2+l)*Math.cos(a),ey=cy+(r2+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w2;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w2+.4,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+  function cl(sa,ea,n,l,col){for(let i=0;i<=Math.round(n*dm);i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.1;s(a,R-Math.max(4,R*.07),l+Math.random()*(R*.09),col);}}
+  const L=R*.18,SL=R*.13;
+  [[()=>cl(Math.PI*.3,Math.PI*1.7,13,L,g)],[()=>{cl(-.4,.4,6,L,g);cl(Math.PI-.4,Math.PI+.4,6,L,sg);}],[()=>cl(Math.PI*.12,Math.PI*.88,15,L*1.1,g)],[()=>{cl(-.55,.55,8,L,g);s(0,R,L*1.7,rs,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,10,L,g);cl(Math.PI*.95,Math.PI*1.85,7,SL,sg);}],[()=>cl(0,Math.PI*2,21,SL,g)],[()=>{cl(Math.PI*.1,Math.PI*.85,10,L,g);cl(Math.PI*1.1,Math.PI*1.85,10,L,sg);}],[()=>{for(let i=0;i<Math.round(11*dm);i++){const a=(i/11)*Math.PI*2;s(a,R-R*.08,L*1.25+Math.random()*(R*.14),i%3===0?rs:g,1.7);}}],[()=>{for(let i=0;i<8;i++){const a=-.3+i*.16;s(a,R-R*.05,SL+i*(R*.024),i%2===0?g:sg,1.4);}}],[()=>{for(let i=0;i<11;i++){const a=(i/11)*Math.PI*2;s(a,R-R*.06,L,g,1.6);}}],[()=>cl(Math.PI*.6,Math.PI*1.4,11,L,g)],[()=>{const cs=[g,sg,rs];for(let i=0;i<Math.round(15*dm);i++){const a=Math.random()*Math.PI*2;s(a,R-R*.08,SL+Math.random()*(L*.85),cs[Math.floor(Math.random()*3)],1.3);}}]][(FI[formula]??0)][0]();
+  if(lbl){ctx.font=`7.5px ${light?'"DM Sans"':'"DM Mono"'}`;ctx.fillStyle=light?'rgba(140,114,88,.55)':'rgba(201,169,110,.36)';ctx.textAlign='right';ctx.fillText(lbl,w-6,h-6);}
+}
+
+function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+function buildBlueprintId() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let id = 'EC-';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+function deriveCanonDNA(emotionData, colorPref='') {
+  const valence = clamp(Number(emotionData.valence) || 0, -1, 1);
+  const arousal = clamp(Number(emotionData.arousal) || 0, -1, 1);
+  const absA = Math.abs(arousal);
+  const densityProfile = clamp(0.3 + absA * 0.65, 0.3, 0.95);
+  const dist = clamp(Math.hypot(valence, arousal) / Math.sqrt(2), 0, 1);
+  const quadrant = emotionData.quadrant || 'Cozy & Calm';
+  let colorBias = 'neutral';
+  const c = (colorPref || '').toLowerCase();
+  if (c.includes('warm')) colorBias = 'warm';
+  else if (c.includes('cool')) colorBias = 'cool';
+  else if (c.includes('split') || c.includes('contrast')) colorBias = 'split';
+  else if (valence > 0.2) colorBias = 'warm';
+  else if (valence < -0.2) colorBias = 'cool';
+  return {
+    cluster_count: clamp(Math.round(3 + ((valence + 1) / 2) * 5), 3, 8),
+    cluster_weight_distribution: Number(((arousal + 1) / 2).toFixed(2)),
+    cluster_spread_deg: clamp(Math.round(15 + ((valence + 1) / 2) * 75), 15, 90),
+    density_profile: Number(densityProfile.toFixed(2)),
+    greenery_direction: valence > 0.2 ? 'outward' : valence < -0.2 ? 'inward' : 'balanced',
+    silhouette_bias: quadrant === 'Dramatic Tension' ? 'structured' : quadrant === 'Vintage Melancholy' ? 'organic' : 'mixed',
+    greenery_ratio: Number((0.25 + dist * 0.3).toFixed(2)),
+    focal_ratio: Number(clamp(0.38 - densityProfile * 0.3, 0.1, 0.28).toFixed(2)),
+    silence_arc: clamp(Math.round(absA * 60), 0, 60),
+    focal_depth: Number(clamp(0.4 + densityProfile * 0.5, 0.4, 0.9).toFixed(2)),
+    style_signature: quadrant === 'Festive & Bright' ? 'abundant' : quadrant === 'Cozy & Calm' ? 'minimal' : quadrant === 'Dramatic Tension' ? 'editorial' : 'memorial',
+    color_bias: colorBias
+  };
+}
+
+
+// ══════════════════════════════════
+// P8 · CUSTOMER ORDER STUDIO
+// ══════════════════════════════════
+let ordRunning=false,currentOrder=null;
+
+function getChip(groupId){
+  const a=document.querySelector(`#${groupId} .chip.on`);return a?a.dataset.val||a.textContent:'';
+}
+function ordStage(i,state,val=''){
+  const dot=document.getElementById(`os${i}`);const v=document.getElementById(`osv${i}`);
+  dot.className='ostage-dot '+(state==='done'?'done':state==='active'?'active':'');
+  if(val)v.textContent=val;
+}
+function ordReset(){
+  for(let i=0;i<7;i++)ordStage(i,'','—');
+  document.getElementById('ordBrief').textContent='Brief will appear after generating the order.';
+  document.getElementById('ordBrief').className='ai-out';
+  document.getElementById('ordPreviewLbl').textContent='Generate to preview';
+  document.getElementById('ordQuoteName').textContent='—';
+  document.getElementById('ordQuoteFormula').textContent='No order generated';
+  document.getElementById('ordQuoteId').textContent='—';
+  ['ordQSize','ordQFormula','ordQEmotion','ordQLead','ordQMat','ordQLabor','ordQTotal'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('ordScores').innerHTML='<div style="color:var(--txm);font-size:11px;">Generate to see scores.</div>';
+  document.getElementById('ordSaveBtn').disabled=true;
+  const c=document.getElementById('ordCanvas');if(c){const ctx=c.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,c.width,c.height);}
+  currentOrder=null;
+}
+function loadOrderExample(){
+  document.getElementById('ordName').value='Sarah Chen';
+  document.getElementById('ordEmail').value='sarah.chen@example.com';
+  document.getElementById('ordMemory').value="My mother kept a small garden in the backyard of the house where I grew up in Vermont. Every October she'd cut the last of the dahlias before the first frost — dark burgundy ones, almost black at the center. The smell of cold earth and the weight of those late blooms. She passed last spring. I want something that feels like standing in that garden one last time.";
+  document.querySelector('#ordOccasion .chip[data-val="memorial"]').click();
+  document.querySelector('#ordColor .chip[data-val="Deep & dramatic"]').click();
+  document.getElementById('ordBudget').value='185';
+}
+
+async function runOrderStudio(){
+  if(ordRunning)return;
+  const name=document.getElementById('ordName').value.trim();
+  const memory=document.getElementById('ordMemory').value.trim();
+  if(!name||!memory){
+    if(!name)document.getElementById('ordName').style.borderColor='var(--rose)';
+    if(!memory)document.getElementById('ordMemory').style.borderColor='var(--rose)';
+    setTimeout(()=>{document.getElementById('ordName').style.borderColor='';document.getElementById('ordMemory').style.borderColor='';},1500);
+    return;
+  }
+  ordRunning=true;
+  const btn=document.getElementById('ordRunBtn');btn.disabled=true;btn.textContent='✦ Generating…';
+  ordReset();
+  const occasion=getChip('ordOccasion');
+  const color=getChip('ordColor');
+  const size=document.getElementById('ordSize').querySelector('.on')?.dataset?.val||'20';
+  const budget=document.getElementById('ordBudget').value;
+
+  try{
+    ordStage(0,'active','reading…');
+    await delay(300);
+    ordStage(0,'done','complete');
+    ordStage(1,'active','mapping…');
+    const quoteRes=await postJSON("/orders/quote",{name,email:document.getElementById('ordEmail').value||'',memory,occasion,color,size,budget});
+    const emoData=quoteRes.emotion||{};
+    const order=quoteRes.order||{};
+    ordStage(1,'done',emoData.quadrant||'mapped');
+    ordStage(2,'active','selecting…');
+    await delay(300);
+    const dna = order.dna || deriveCanonDNA(emoData, color);
+    const density = dna.density_profile || 0.7;
+    ordStage(2,'done',order.formula||emoData.formula||'Crescent');
+    ordStage(3,'active','compiling…');
+    await delay(400);
+    const bpId = order.order_id||buildBlueprintId();
+    const scores=order.scores||{emotion_fit:0.86,brand_alignment:0.88,memory_fidelity:0.84};
+    ordStage(3,'done',order.blueprint_version||'EC_CANON_V1');
+    ordStage(4,'active','calculating…');
+    const quote=order.quote||{};
+    const matCost=quote.material_cost||{18:32,20:42,24:58}[parseInt(size)]||42;
+    const laborHrs=quote.labor_hours||{18:1.8,20:2.5,24:3.2}[parseInt(size)]||2.5;
+    const laborCost=quote.labor_cost||laborHrs*22;
+    const total=quote.total||order.total||matCost+laborCost+12+8+14;
+    const leadWeeks=order.lead_weeks||((size==='24'||occasion==='memorial')?3:2);
+    ordStage(4,'done',`$${Number(total).toFixed(0)}`);
+    ordStage(5,'active','writing brief…');
+    document.getElementById('ordBrief').className='ai-out';
+    document.getElementById('ordBrief').textContent=order.brief||'Brief generated.';
+    document.getElementById('ordBrief').className='ai-out';
+    ordStage(5,'done','complete');
+    ordStage(6,'active','saving…');
+    currentOrder={id:bpId,customer:name,email:document.getElementById('ordEmail').value||'',memory,formula:order.formula||emoData.formula,emotion:emoData.quadrant||order.emotion,size,total:Number(total).toFixed(2),lead:leadWeeks,dna,scores,status:'received',created:order.created_at||new Date().toISOString()};
+
+    // Update UI
+    document.getElementById('ordQuoteName').textContent=name;
+    document.getElementById('ordQuoteFormula').textContent=`${currentOrder.formula} · ${size}"`;
+    document.getElementById('ordQuoteId').textContent=bpId+'\n'+new Date().toLocaleDateString();
+    document.getElementById('ordQSize').textContent=`${size}" frame`;
+    document.getElementById('ordQFormula').textContent=currentOrder.formula;
+    document.getElementById('ordQEmotion').textContent=currentOrder.emotion;
+    document.getElementById('ordQLead').textContent=`${leadWeeks} weeks`;
+    document.getElementById('ordQMat').textContent=`$${matCost.toFixed(2)}`;
+    document.getElementById('ordQLabor').textContent=`$${laborCost.toFixed(2)} (${laborHrs}h)`;
+    document.getElementById('ordQTotal').textContent=`$${total.toFixed(2)}`;
+    document.getElementById('ordPreviewLbl').textContent=`${currentOrder.formula} · ${currentOrder.emotion}`;
+    drawWreath('ordCanvas',currentOrder.formula,density,bpId.slice(-4));
+
+    document.getElementById('ordScores').innerHTML=Object.entries(scores).map(([k,v])=>{
+      const col=v>=.85?'var(--sage)':v>=.70?'var(--gold)':'var(--rose)';
+      const lbl={emotion_fit:'Emotion Fit',brand_alignment:'Brand Align',memory_fidelity:'Memory Fidelity'}[k]||k;
+      return`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);"><div style="flex:1;font-size:9.5px;color:var(--txm);">${lbl}</div><div style="flex:2;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;"><div style="width:${(v*100).toFixed(0)}%;height:100%;background:${col};border-radius:2px;"></div></div><div style="font-size:10px;color:${col};width:34px;text-align:right;">${(v*100).toFixed(0)}%</div></div>`;
+    }).join('');
+
+    ordStage(6,'done','ready');
+    document.getElementById('ordSaveBtn').disabled=false;
+    await updateOrderCount();
+
+  }catch(err){
+    document.getElementById('ordBrief').textContent='Error: '+err.message;
+    document.getElementById('ordBrief').className='ai-out';
+  }finally{
+    ordRunning=false;btn.disabled=false;btn.textContent='✦ Generate Quote & Blueprint';
+  }
+}
+
+async function saveOrder(){
+  if(!currentOrder)return;
+  try{
+    const saved=await postJSON("/orders",{order:currentOrder});
+    const order=saved.order||currentOrder;
+    addToKanban(order);
+    await updateOrderCount();
+    logActivity('Order saved: '+order.id+' · '+order.customer,'ok');
+    document.getElementById('ordSaveBtn').disabled=true;
+    document.getElementById('ordSaveBtn').textContent='✓ Saved';
+  }catch(err){
+    logActivity('Save failed: '+err.message,'err');
+  }
+}
+
+async function updateOrderCount(){
+  try{
+    const data=await getJSON("/orders");
+    document.getElementById('ordSavedCount').textContent=(data.orders||[]).length;
+  }catch(e){
+    document.getElementById('ordSavedCount').textContent='0';
+  }
+}
+
+// ══════════════════════════════════
+// P8 · ORDER TRACKER
+// ══════════════════════════════════
+let orders={};
+const STATUS_COLS=['received','in-build','quality-check','shipped'];
+
+function addToKanban(order){
+  const col=order.status||'received';
+  orders[order.id]=order;
+  renderKanban();
+}
+
+function renderKanban(){
+  STATUS_COLS.forEach(col=>{
+    const colOrders=Object.values(orders).filter(o=>o.status===col);
+    document.getElementById('cnt-'+col).textContent=colOrders.length;
+    document.getElementById('cards-'+col).innerHTML=colOrders.length
+      ?colOrders.map((o,i)=>`<div class="kb-card" onclick="openOrderModal('${o.id}')" style="animation-delay:${i*.05}s">
+          <div class="kb-card-name">${o.customer}</div>
+          <div class="kb-card-formula">${o.formula} · ${o.size}"</div>
+          <div class="kb-card-date">${new Date(o.created).toLocaleDateString()}</div>
+          <div class="kb-card-price">$${o.total}</div>
+        </div>`).join('')
+      :'<div style="padding:16px;text-align:center;color:var(--txm);font-size:10.5px;font-style:italic;">Empty</div>';
+  });
+  const all=Object.values(orders);
+  document.getElementById('tkTotal').textContent=all.length;
+  document.getElementById('tkActive').textContent=all.filter(o=>o.status==='in-build').length;
+  document.getElementById('tkReady').textContent=all.filter(o=>o.status==='quality-check').length;
+  document.getElementById('tkRevenue').textContent='$'+all.reduce((s,o)=>s+parseFloat(o.total||0),0).toFixed(0);
+  document.getElementById('tkLastSync').textContent='Last sync: '+new Date().toLocaleTimeString();
+}
+
+function openOrderModal(id){
+  const o=orders[id];if(!o)return;
+  const overlay=document.createElement('div');overlay.className='order-modal-overlay';overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+  overlay.innerHTML=`<div class="order-modal">
+    <div class="modal-hd"><div class="modal-title">${o.customer}</div><button class="modal-close" onclick="this.closest('.order-modal-overlay').remove()">✕</button></div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;">
+        <div><div class="lbl">Order ID</div><div style="font-size:11px;color:var(--p8);">${o.id}</div></div>
+        <div><div class="lbl">Total</div><div style="font-family:var(--fd);font-size:20px;font-weight:300;color:var(--p8);">$${o.total}</div></div>
+        <div><div class="lbl">Formula</div><div style="font-size:11px;color:var(--txd);">${o.formula} · ${o.size}"</div></div>
+        <div><div class="lbl">Emotion</div><div style="font-size:11px;color:var(--txd);">${o.emotion}</div></div>
+        <div><div class="lbl">Lead Time</div><div style="font-size:11px;color:var(--txd);">${o.lead} weeks</div></div>
+        <div><div class="lbl">Email</div><div style="font-size:11px;color:var(--txd);">${o.email||'—'}</div></div>
+      </div>
+      <div class="modal-field">
+        <div class="lbl">Move to Stage</div>
+        <select class="sel" id="modalStage" style="width:100%;">
+          ${STATUS_COLS.map(s=>`<option value="${s}" ${s===o.status?'selected':''}>${s.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</option>`).join('')}
+        </select>
+      </div>
+      <div class="modal-field">
+        <div class="lbl">AI Status Email Preview</div>
+        <div id="modalEmailPreview" class="email-preview" style="color:var(--txm);font-style:italic;">Click "Generate Email" to preview.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="this.closest('.order-modal-overlay').remove()">Close</button>
+      <button class="btn p8" onclick="generateStatusEmail('${id}')">✦ Generate Email</button>
+      <button class="btn p8" onclick="moveOrder('${id}')">→ Move Stage</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function moveOrder(id){
+  const sel=document.getElementById('modalStage');if(!sel||!orders[id])return;
+  orders[id].status=sel.value;
+  patchJSON(`/orders/${id}`,{status:sel.value})
+    .then(()=>{renderKanban();logActivity(`${orders[id].customer} moved to ${sel.value}`,'ok');})
+    .catch((err)=>{logActivity(`Update failed: ${err.message}`,'err');});
+  document.querySelector('.order-modal-overlay')?.remove();
+}
+
+async function generateStatusEmail(id){
+  const o=orders[id];if(!o)return;
+  const el=document.getElementById('modalEmailPreview');
+  el.textContent='Generating…';el.style.fontStyle='normal';
+  try{
+    const resp=await postJSON("/orders/status-email",{order:o});
+    el.textContent=resp.email||'Preview unavailable.';
+    el.style.fontStyle='normal';
+  }catch(err){el.textContent='Error: '+err.message;}
+}
+
+function showAddOrder(status){
+  const overlay=document.createElement('div');overlay.className='order-modal-overlay';overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+  overlay.innerHTML=`<div class="order-modal">
+    <div class="modal-hd"><div class="modal-title">Add Order</div><button class="modal-close" onclick="this.closest('.order-modal-overlay').remove()">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-field"><div class="lbl">Customer Name</div><input class="inp" id="maName" placeholder="Full name" style="width:100%;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">
+        <div class="modal-field"><div class="lbl">Formula</div><select class="sel" id="maFormula" style="width:100%;"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select></div>
+        <div class="modal-field"><div class="lbl">Size</div><select class="sel" id="maSize" style="width:100%;"><option value="18">18"</option><option value="20" selected>20"</option><option value="24">24"</option></select></div>
+        <div class="modal-field"><div class="lbl">Total ($)</div><input class="inp" id="maTotal" type="number" value="185" style="width:100%;"></div>
+        <div class="modal-field"><div class="lbl">Email</div><input class="inp" id="maEmail" placeholder="email@example.com" style="width:100%;"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="this.closest('.order-modal-overlay').remove()">Cancel</button>
+      <button class="btn p8" onclick="addManualOrder('${status}')">⊕ Add Order</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function addManualOrder(status){
+  const name=document.getElementById('maName')?.value?.trim();if(!name)return;
+  const payload={customer:name,formula:document.getElementById('maFormula')?.value||'Crescent',size:document.getElementById('maSize')?.value||'20',total:document.getElementById('maTotal')?.value||'185',email:document.getElementById('maEmail')?.value||'',emotion:'—',lead:2,status};
+  postJSON("/orders/manual",payload)
+    .then((resp)=>{const o=resp.order||payload;orders[o.id]=o;renderKanban();logActivity(`Order added: ${o.id} · ${name}`,'ok');})
+    .catch((err)=>{logActivity(`Add failed: ${err.message}`,'err');});
+  document.querySelector('.order-modal-overlay')?.remove();
+}
+
+function addSampleOrders(){
+  postJSON("/orders/sample",{})
+    .then((resp)=>{orders={};(resp.orders||[]).forEach(o=>{orders[o.id]=o;});renderKanban();logActivity('Sample orders loaded','ok');})
+    .catch((err)=>{logActivity(`Sample load failed: ${err.message}`,'err');});
+}
+
+function clearOrders(){
+  postJSON("/orders/clear",{})
+    .then(()=>{orders={};renderKanban();logActivity('All orders cleared','ok');})
+    .catch((err)=>{logActivity(`Clear failed: ${err.message}`,'err');});
+}
+
+function logActivity(msg,type='ok'){
+  const log=document.getElementById('tkLog');
+  if(log.querySelector('div[style]'))log.innerHTML='';
+  const row=document.createElement('div');row.className='log-row';row.style.animationDelay='0s';
+  row.innerHTML=`<div class="log-icon log-${type}"></div><div class="log-msg">${msg}</div><div class="log-time">${new Date().toLocaleTimeString()}</div>`;
+  log.prepend(row);
+}
+
+// ══════════════════════════════════
+// P9 · DROP PERFORMANCE
+// ══════════════════════════════════
+let drops=[];
+
+async function loadDrops(){
+  try{
+    const data=await getJSON("/drops");
+    drops=data.drops||[];
+    renderDrops();
+  }catch(err){
+    drops=[];
+    renderDrops();
+  }
+}
+
+async function logDrop(){
+  const name=document.getElementById('anName').value.trim();if(!name)return;
+  const units=+document.getElementById('anUnits').value||0;
+  const price=+document.getElementById('anPrice').value||0;
+  const total=+document.getElementById('anTotal').value||units;
+  const cogs=+document.getElementById('anCOGS').value||0;
+  const formula=document.getElementById('anFormula').value;
+  const month=document.getElementById('anMonth').value||new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  const rev=units*price;const profit=rev-(units*cogs);const mgn=rev>0?(profit/rev)*100:0;const sellThru=total>0?(units/total)*100:0;
+  const drop={id:'DROP-'+Date.now().toString(36).toUpperCase().slice(-5),name,formula,units,total,price,cogs,rev,profit,mgn:parseFloat(mgn.toFixed(1)),sellThru:parseFloat(sellThru.toFixed(0)),month,created:new Date().toISOString()};
+  try{
+    const saved=await postJSON("/drops",{drop});
+    if(saved.drop)drops.push(saved.drop);
+    else drops.push(drop);
+    renderDrops();
+  }catch(err){
+    renderDrops();
+  }
+  document.getElementById('anName').value='';
+  document.getElementById('anInsightBtn').disabled=false;
+}
+
+function renderDrops(){
+  if(!drops.length){document.getElementById('dropsTable').innerHTML='<div style="padding:16px;color:var(--txm);font-size:11px;">No drops logged yet.</div>';return;}
+  const totalRev=drops.reduce((s,d)=>s+d.rev,0);
+  const totalUnits=drops.reduce((s,d)=>s+d.units,0);
+  const avgMgn=drops.reduce((s,d)=>s+d.mgn,0)/drops.length;
+  const best=drops.reduce((a,b)=>a.rev>b.rev?a:b);
+  document.getElementById('anRevTotal').textContent='$'+totalRev.toLocaleString();
+  document.getElementById('anUnitsTotal').textContent=totalUnits;
+  document.getElementById('anAvgMgn').textContent=avgMgn.toFixed(1)+'%';
+  document.getElementById('anBestDrop').textContent=best.name.split(' ').slice(0,3).join(' ');
+  document.getElementById('anBestSub').textContent='$'+best.rev.toLocaleString();
+
+  // Drops table
+  document.getElementById('dropsTable').innerHTML=drops.map((d,i)=>{
+    const mc=d.mgn>=60?'var(--sage)':d.mgn>=40?'var(--gold)':'var(--rose)';
+    const st=d.sellThru>=90?'var(--sage)':d.sellThru>=70?'var(--gold)':'var(--rose)';
+    return`<div class="drop-row" style="display:grid;grid-template-columns:1fr 80px 80px 80px 90px;animation-delay:${i*.04}s">
+      <div><div class="drop-name">${d.name}</div><div class="drop-formula">${d.formula} · ${d.month}</div></div>
+      <div style="padding:9px 8px;font-size:11px;color:var(--txd);">${d.units}/${d.total}</div>
+      <div style="padding:9px 8px;font-family:var(--fd);font-size:14px;font-weight:300;color:var(--p9);">$${d.rev.toLocaleString()}</div>
+      <div style="padding:9px 8px;font-size:11px;color:${mc};">${d.mgn}%</div>
+      <div style="padding:9px 8px;">
+        <div style="font-size:11px;color:${st};">${d.sellThru}%</div>
+        <div style="height:3px;background:var(--bd2);border-radius:2px;margin-top:3px;overflow:hidden;"><div style="width:${d.sellThru}%;height:100%;background:${st};border-radius:2px;"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Revenue bar chart
+  const maxRev=Math.max(...drops.map(d=>d.rev),1);
+  document.getElementById('revChart').innerHTML=drops.slice(-8).map(d=>{
+    const h=Math.max(4,(d.rev/maxRev)*110);
+    return`<div class="bar-wrap"><div class="bar-val">$${(d.rev/1000).toFixed(1)}k</div><div class="bar" style="height:${h}px;background:var(--p9);opacity:.8;"></div><div class="bar-lbl">${d.name.split(' ').slice(-1)[0]}</div></div>`;
+  }).join('');
+
+  // Sparklines (formula performance)
+  const byFormula={};drops.forEach(d=>{if(!byFormula[d.formula])byFormula[d.formula]=[];byFormula[d.formula].push(d.rev);});
+  document.getElementById('sparklines').innerHTML=Object.entries(byFormula).slice(0,5).map(([f,revs])=>{
+    const avg=revs.reduce((a,b)=>a+b,0)/revs.length;
+    const last=revs[revs.length-1];const prev=revs[revs.length-2]||last;
+    const delta=prev>0?((last-prev)/prev)*100:0;
+    const dc=delta>=0?'var(--sage)':'var(--rose)';
+    return`<div class="sparkline-row"><div class="spark-name">${f}</div><div style="font-size:10px;color:var(--p9);">$${(avg/1000).toFixed(1)}k avg</div><div class="spark-delta" style="color:${dc};">${delta>=0?'+':''}${delta.toFixed(0)}%</div></div>`;
+  }).join('');
+
+  // Velocity (reuse INV data if available)
+  const velItems=[
+    {name:'Ivory Garden Rose',usage:0.92,stock:12,max:24},
+    {name:'Dusty Mauve Peony',usage:0.72,stock:6,max:24},
+    {name:'Silver Dollar Eucalyptus',usage:0.45,stock:48,max:80},
+    {name:'Burgundy Ranunculus',usage:0.88,stock:3,max:24},
+    {name:'Black Protea',usage:0.95,stock:2,max:16},
+    {name:'Golden Banksia',usage:0.65,stock:7,max:30},
+  ].sort((a,b)=>b.usage-a.usage);
+  document.getElementById('velTable').innerHTML=velItems.map((item,i)=>{
+    const pct=Math.min(100,(item.stock/item.max)*100);
+    const signal=pct<20?'sig-reorder':pct<45?'sig-watch':'sig-ok';
+    const stxt=pct<20?'Reorder':pct<45?'Watch':'OK';
+    const vcol=item.usage>=.85?'var(--rose)':item.usage>=.65?'var(--amb)':'var(--sage)';
+    return`<div class="vel-row" style="animation-delay:${i*.04}s">
+      <div class="vel-name">${item.name}</div>
+      <div class="vel-bar-wrap"><div class="vel-bar-bg"><div class="vel-bar-fill" style="width:${item.usage*100}%;background:${vcol};"></div></div></div>
+      <div class="vel-val" style="color:var(--txd);">${item.stock}/${item.max}</div>
+      <div style="padding:0 8px;"><span class="vel-signal ${signal}">${stxt}</span></div>
+    </div>`;
+  }).join('');
+}
+
+async function getAnalyticsInsight(){
+  const btn=document.getElementById('anInsightBtn');btn.disabled=true;
+  const el=document.getElementById('anInsight');
+  el.className='ai-out streaming-p9';el.textContent='';
+  try{
+    const resp=await postJSON("/drops/insight",{drops});
+    el.textContent=resp.insight||'Insight unavailable.';
+    el.className='ai-out';
+  }catch(err){el.textContent='Error: '+err.message;el.className='ai-out';}
+  finally{btn.disabled=false;}
+}
+
+// ══════════════════════════════════
+// P9 · BLUEPRINT LIBRARY
+// ══════════════════════════════════
+let blueprints=[];let selectedBP=null;
+
+async function loadBPs(){
+  try{
+    const data=await getJSON("/blueprint-library");
+    blueprints=data.blueprints||[];
+    renderLibrary();
+  }catch(err){
+    blueprints=[];
+    renderLibrary();
+  }
+}
+
+async function saveBP(){
+  const name=document.getElementById('libName').value.trim();if(!name)return;
+  const formula=document.getElementById('libFormula').value;
+  const emotion=document.getElementById('libEmotion').value;
+  const notes=document.getElementById('libNotes').value;
+  const tags=document.getElementById('libTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const bp={name,formula,emotion,notes,tags};
+  try{
+    const saved=await postJSON("/blueprint-library",{blueprint:bp});
+    if(saved.blueprint)blueprints.push(saved.blueprint);
+    renderLibrary();
+  }catch(err){
+    renderLibrary();
+  }
+  document.getElementById('libName').value='';document.getElementById('libNotes').value='';document.getElementById('libTags').value='';
+}
+
+function renderLibrary(){
+  const search=document.getElementById('libSearch').value.toLowerCase();
+  const filter=document.getElementById('libFilter').value;
+  const filtered=blueprints.filter(b=>{
+    const matchSearch=!search||b.name.toLowerCase().includes(search)||b.formula.toLowerCase().includes(search)||b.tags.some(t=>t.toLowerCase().includes(search));
+    const matchFilter=!filter||b.formula===filter;
+    return matchSearch&&matchFilter;
+  });
+  document.getElementById('libCount').textContent=`${blueprints.length} blueprint${blueprints.length!==1?'s':''} saved`;
+  if(!filtered.length){document.getElementById('bpGrid').innerHTML='<div class="bp-empty">No blueprints match your search.</div>';return;}
+  const gridHTML=filtered.map((bp,i)=>{
+    const canvasId='bpc-'+bp.id;
+    return`<div class="bp-card${selectedBP?.id===bp.id?' selected':''}" onclick="selectBP('${bp.id}')" style="animation-delay:${i*.04}s">
+      <div class="bp-canvas-wrap"><canvas id="${canvasId}" width="180" height="120"></canvas></div>
+      <div class="bp-card-body">
+        <div class="bp-card-name">${bp.name}</div>
+        <div class="bp-card-meta">${bp.formula} · ${bp.emotion}</div>
+        <div class="bp-card-tags">${bp.tags.slice(0,3).map(t=>`<span class="bp-tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="bp-actions">
+        <button class="btn p9" onclick="event.stopPropagation();cloneBP('${bp.id}')" style="font-size:9px;padding:5px 8px;">Clone</button>
+        <button class="btn rose" onclick="event.stopPropagation();deleteBP('${bp.id}')" style="font-size:9px;padding:5px 8px;">Delete</button>
+        <span style="margin-left:auto;font-size:9px;color:var(--txm);">v${bp.version}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('bpGrid').innerHTML=gridHTML;
+  // Draw wreaths after DOM update
+  setTimeout(()=>{filtered.forEach(bp=>drawWreath('bpc-'+bp.id,bp.formula,.65,''));},50);
+}
+
+function selectBP(id){
+  selectedBP=blueprints.find(b=>b.id===id);
+  if(!selectedBP)return;
+  renderLibrary();
+  document.getElementById('libDetail').innerHTML=`
+    <div class="lbl" style="margin-bottom:8px;">Selected Blueprint</div>
+    <div style="font-family:var(--fd);font-size:16px;font-weight:300;margin-bottom:5px;">${selectedBP.name}</div>
+    <div style="font-size:10.5px;color:var(--txd);margin-bottom:8px;">${selectedBP.formula} · ${selectedBP.emotion}</div>
+    ${selectedBP.notes?`<div style="font-size:11px;color:var(--txm);margin-bottom:8px;font-style:italic;">"${selectedBP.notes}"</div>`:''}
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">${selectedBP.tags.map(t=>`<span class="bp-tag">${t}</span>`).join('')}</div>
+    <div style="font-size:9px;color:var(--txm);margin-top:8px;">Created ${new Date(selectedBP.created).toLocaleDateString()}</div>`;
+  document.getElementById('libVersions').innerHTML=selectedBP.versions.map((v,i)=>`<div class="version-row" style="animation-delay:${i*.05}s"><div class="ver-num">v${v.v}</div><div class="ver-date">${new Date(v.date).toLocaleDateString()}</div><div class="ver-note">${v.note}</div></div>`).join('');
+}
+
+async function cloneBP(id){
+  const orig=blueprints.find(b=>b.id===id);if(!orig)return;
+  try{
+    const resp=await postJSON("/blueprint-library/clone",{id});
+    if(resp.blueprint)blueprints.push(resp.blueprint);
+    renderLibrary();
+  }catch(err){
+    renderLibrary();
+  }
+}
+
+async function deleteBP(id){
+  blueprints=blueprints.filter(b=>b.id!==id);
+  try{await delJSON(`/blueprint-library/${id}`);}catch(e){}
+  if(selectedBP?.id===id){selectedBP=null;document.getElementById('libDetail').innerHTML='<div class="lbl" style="margin-bottom:8px;">Selected Blueprint</div><div style="color:var(--txm);font-size:11px;">Click a blueprint to view details.</div>';document.getElementById('libVersions').innerHTML='<div style="padding:10px 12px;color:var(--txm);font-size:11px;">Select a blueprint.</div>';}
+  renderLibrary();
+}
+
+function loadSampleBPs(){
+  postJSON("/blueprint-library/sample",{}).then((resp)=>{
+    blueprints=resp.blueprints||blueprints;
+    renderLibrary();
+  }).catch(()=>{renderLibrary();});
+}
+function clearBPs(){
+  postJSON("/blueprint-library/clear",{})
+    .then(()=>{blueprints=[];selectedBP=null;renderLibrary();})
+    .catch(()=>{blueprints=[];selectedBP=null;renderLibrary();});
+}
+
+// ══════════════════════════════════
+// P10 · GMAIL + CALENDAR MCP
+// ══════════════════════════════════
+let emailCount=0,calCount=0;
+
+const STATUS_MSGS={
+  received:'We have received your order and our design team is reviewing your request. We\'ll begin building your wreath shortly.',
+  'in-build':'Your wreath is now being hand-crafted by our design team. We\'re working with care to honor the story you shared with us.',
+  'quality-check':'Your wreath has completed our quality review process and is being prepared for shipping.',
+  shipped:'Your order is on its way. We hope it brings the feeling you were looking for into your home.',
+  ready:'Your order is ready for pickup. We look forward to seeing you.'
+};
+
+function previewEmail(){
+  const name=document.getElementById('gmailName').value||'[Customer Name]';
+  const ordId=document.getElementById('gmailOrderId').value||'[Order ID]';
+  const status=document.getElementById('gmailStatus').value;
+  const formula=document.getElementById('gmailFormula').value;
+  const msg=STATUS_MSGS[status]||'Your order has been updated.';
+  const preview=`Hi ${name},\n\nThank you for trusting Evercrafted with something meaningful.\n\n${msg}\n\nOrder: ${ordId}\nDesign: ${formula} — Faux Botanical Wreath\n\nIf you have any questions, simply reply to this email.\n\nWith care,\nEvercrafted Studio`;
+  document.getElementById('emailPreviewContent').textContent=preview;
+  document.getElementById('emailPreviewContent').style.fontStyle='normal';
+  document.getElementById('emailPreviewContent').style.color='var(--txd)';
+  document.getElementById('sendEmailBtn').disabled=!document.getElementById('gmailTo').value;
+}
+
+async function generateEmail(){
+  const btn=document.getElementById('genEmailBtn');btn.disabled=true;
+  const el=document.getElementById('emailPreviewContent');
+  el.style.color='var(--txd)';el.style.fontStyle='normal';
+  el.className='email-preview streaming-p10';el.textContent='';
+  const name=document.getElementById('gmailName').value||'valued customer';
+  const formula=document.getElementById('gmailFormula').value;
+  const status=document.getElementById('gmailStatus').value;
+  const ordId=document.getElementById('gmailOrderId').value||'your order';
+  try{
+    const resp=await postJSON("/integrations/email/generate",{name,order_id:ordId,formula,status});
+    el.textContent=resp.email||'Preview unavailable.';
+    el.className='email-preview';
+    document.getElementById('sendEmailBtn').disabled=!document.getElementById('gmailTo').value;
+  }catch(err){el.textContent='Error: '+err.message;el.className='email-preview';}
+  finally{btn.disabled=false;}
+}
+
+async function sendEmail(){
+  const to=document.getElementById('gmailTo').value.trim();if(!to)return;
+  const btn=document.getElementById('sendEmailBtn');btn.disabled=true;
+  const status=document.getElementById('emailSendStatus');
+  status.textContent='Sending…';status.style.color='var(--p10)';
+  const name=document.getElementById('gmailName').value||'Valued Customer';
+  const formula=document.getElementById('gmailFormula').value;
+  const statusVal=document.getElementById('gmailStatus').value;
+  const emailBody=document.getElementById('emailPreviewContent').textContent;
+  const subject=`Your Evercrafted Order Update — ${formula}`;
+  addIntLog(`Sending email to ${to}…`,'pending');
+  try{
+    await postJSON("/integrations/email/send",{to,subject,body:emailBody,name,formula,status:statusVal});
+    emailCount++;
+    document.getElementById('emailsSent').textContent=emailCount;
+    status.textContent='✓ Sent';status.style.color='var(--sage)';
+    addIntLog(`Email sent to ${to} · ${formula} update`,'ok');
+  }catch(err){
+    status.textContent='Error: '+err.message;status.style.color='var(--rose)';
+    addIntLog(`Send failed: ${err.message}`,'err');
+  }finally{btn.disabled=false;setTimeout(()=>{status.textContent='';},4000);}
+}
+
+function copyEmail(){
+  const txt=document.getElementById('emailPreviewContent').textContent;
+  if(txt&&txt!=='Preview will appear here.')navigator.clipboard.writeText(txt);
+}
+
+async function createCalEvent(){
+  const title=document.getElementById('calTitle').value.trim();
+  const dateVal=document.getElementById('calDate').value;
+  if(!title||!dateVal){if(!title)document.getElementById('calTitle').style.borderColor='var(--rose)';if(!dateVal)document.getElementById('calDate').style.borderColor='var(--rose)';setTimeout(()=>{document.getElementById('calTitle').style.borderColor='';document.getElementById('calDate').style.borderColor='';},1500);return;}
+  const btn=document.getElementById('createCalBtn');btn.disabled=true;
+  const calStatus=document.getElementById('calStatus');calStatus.textContent='Creating…';calStatus.style.color='var(--p10)';
+  const duration=parseFloat(document.getElementById('calDuration').value)||2;
+  const notes=document.getElementById('calNotes').value;
+  const evType=document.getElementById('calType').value;
+  const startDate=new Date(dateVal+'T09:00:00');
+  const endDate=new Date(startDate.getTime()+duration*60*60*1000);
+  addIntLog(`Creating calendar event: ${title}…`,'pending');
+  try{
+    await postJSON("/integrations/calendar/create",{title,start:startDate.toISOString(),end:endDate.toISOString(),description:notes||evType+' — Evercrafted Studio',type:evType});
+    calCount++;
+    document.getElementById('eventsMade').textContent=calCount;
+    calStatus.textContent='✓ Created';calStatus.style.color='var(--sage)';
+    addIntLog(`Event created: ${title}`,'ok');
+    addCalEventDisplay(title,startDate,evType);
+  }catch(err){
+    calStatus.textContent='Error: '+err.message;calStatus.style.color='var(--rose)';
+    addIntLog(`Calendar error: ${err.message}`,'err');
+  }finally{btn.disabled=false;setTimeout(()=>{calStatus.textContent='';},4000);}
+}
+
+function addCalEventDisplay(title,date,type){
+  const list=document.getElementById('calEventList');
+  if(list.textContent==='No events created yet.')list.innerHTML='';
+  const div=document.createElement('div');div.className='cal-event';
+  div.innerHTML=`<div class="cal-ev-title">${title}</div><div class="cal-ev-date">${date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${type}</div>`;
+  list.prepend(div);
+}
+
+function addIntLog(msg,type='ok'){
+  const log=document.getElementById('intLog');
+  if(log.querySelector('div[style]'))log.innerHTML='';
+  const row=document.createElement('div');row.className='log-row';
+  row.innerHTML=`<div class="log-icon log-${type}"></div><div class="log-msg">${msg}</div><div class="log-time">${new Date().toLocaleTimeString()}</div>`;
+  log.prepend(row);
+}
+
+function quickAction(type){
+  const actions={
+    order_confirm:{to:'gmailTo',name:'gmailName',status:'received',tab:'email'},
+    build_start:{to:'gmailTo',name:'gmailName',status:'in-build',tab:'email'},
+    quality_done:{to:'gmailTo',name:'gmailName',status:'quality-check',tab:'email'},
+    shipped:{to:'gmailTo',name:'gmailName',status:'shipped',tab:'email'},
+    drop_launch:{calTitle:'Drop Launch Day',calType:'launch',tab:'cal'},
+    build_session:{calTitle:'Wreath Build Session',calType:'build',tab:'cal'},
+  };
+  const a=actions[type];if(!a)return;
+  if(a.tab==='email'){
+    document.getElementById('gmailStatus').value=a.status;
+    previewEmail();
+  }else if(a.tab==='cal'){
+    document.getElementById('calTitle').value=a.calTitle;
+    document.getElementById('calType').value=a.calType;
+    document.getElementById('calDate').value=new Date(Date.now()+7*24*3600*1000).toISOString().split('T')[0];
+  }
+}
+
+// ══════════════════════════════════
+// P10 · SHOPIFY PUBLISHER
+// ══════════════════════════════════
+let shListing=null;
+let shPublished=0;
+
+async function generateListing(){
+  const formula=document.getElementById('shFormula').value;
+  const emotion=document.getElementById('shEmotion').value;
+  const size=document.getElementById('shSize').value;
+  const price=document.getElementById('shPrice').value||185;
+  const qty=document.getElementById('shQty').value||12;
+  const btn=document.getElementById('shGenBtn');btn.disabled=true;
+  document.getElementById('shStatus').textContent='Generating…';
+  document.getElementById('shPreview').innerHTML=`<div class="thinking tp10"><div class="tdots dp10"><span></span><span></span><span></span></div>Writing Shopify listing…</div>`;
+  drawWreath('shCanvas',formula,.72,'');
+
+  try{
+    const resp=await postJSON("/shopify/listing",{formula,emotion,size,price,qty});
+    const listing=resp.listing||{};
+    shListing={...listing,formula,emotion,size,price,qty,id:'SH-'+Math.random().toString(36).substr(2,6).toUpperCase()};
+    document.getElementById('shPreview').innerHTML=`
+      <div class="sp-field"><div class="sp-lbl">Product Title</div><div class="sp-val" style="font-family:var(--fd);font-size:17px;font-weight:300;color:var(--txt);">${listing.title}</div></div>
+      <div class="sp-field"><div class="sp-lbl">Handle</div><div class="sp-val" style="color:var(--p10);">/products/${listing.handle}</div></div>
+      <div class="sp-field"><div class="sp-lbl">Price / Quantity</div><div class="sp-val">$${price} · ${qty} units</div></div>
+      <div class="sp-field"><div class="sp-lbl">Short Description</div><div class="sp-val">${listing.short_desc}</div></div>
+      <div class="sp-field"><div class="sp-lbl">Long Description</div><div class="sp-val">${listing.long_desc}</div></div>
+      <div class="sp-field"><div class="sp-lbl">Tags</div><div class="sp-val">${Array.isArray(listing.tags)?listing.tags.join(' · '):listing.tags}</div></div>
+      <div class="sp-field" style="border-bottom:none;"><div class="sp-lbl">SEO Meta</div><div class="sp-val" style="color:var(--p10);">${listing.seo}</div></div>`;
+    document.getElementById('shPublishBtn').disabled=false;
+    document.getElementById('shStatus').textContent='✓ Ready to publish';
+  }catch(err){
+    document.getElementById('shPreview').innerHTML=`<div style="color:var(--rose);font-size:11px;">Error: ${err.message}</div>`;
+    document.getElementById('shStatus').textContent='';
+  }finally{btn.disabled=false;}
+}
+
+async function publishToShopify(){
+  if(!shListing)return;
+  const btn=document.getElementById('shPublishBtn');btn.disabled=true;
+  document.getElementById('shStatus').textContent='Publishing…';
+  try{
+    await postJSON("/shopify/publish",{listing:shListing});
+    shPublished++;
+    document.getElementById('shStatus').textContent='✓ Published';
+    const log=document.getElementById('shLog');
+    if(log.querySelector('[style*="font-style"]'))log.innerHTML='';
+    const row=document.createElement('div');row.className='log-row';
+    row.innerHTML=`<div class="log-icon log-ok"></div><div class="log-msg">${shListing.title} · $${shListing.price} · ${shListing.qty} units</div><div class="log-time">${new Date().toLocaleTimeString()}</div>`;
+    log.prepend(row);
+    setTimeout(()=>{document.getElementById('shStatus').textContent='';},3000);
+  }catch(err){
+    document.getElementById('shStatus').textContent='Error: '+err.message;
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+// ── THEME ──
+(() => {
+  document.body.classList.add('light');
+})();
+
+(async()=>{
+  // Init canvases
+  const canvasBg = document.body.classList.contains('light') ? '#f5f1ea' : '#110f0c';
+  ['ordCanvas','shCanvas'].forEach(id=>{
+    const c=document.getElementById(id);if(c){const ctx=c.getContext('2d');ctx.fillStyle=canvasBg;ctx.fillRect(0,0,c.width,c.height);}
+  });
+  // Load persistent data
+  await loadDrops();
+  await loadBPs();
+  await updateOrderCount();
+  // Load saved orders into tracker
+  try{
+    const data=await getJSON("/orders");
+    orders={};
+    (data.orders||[]).forEach(o=>{orders[o.id]=o;});
+    renderKanban();
+  }catch(e){
+    orders={};
+    renderKanban();
+  }
+  // Set default calendar date
+  document.getElementById('calDate').value=new Date().toISOString().split('T')[0];
+})();
+</script>
+</body>
+</html>

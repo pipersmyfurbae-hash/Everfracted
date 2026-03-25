@@ -1,0 +1,647 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-03-17",
+  "description": "Evercrafted Visual Companion — Midjourney prompt packs for 10 wreath designs",
+  "prompt_packs": [
+    {
+      "id": "wreath_rl_lodge_ring_v1",
+      "design_name": "Ralph Lauren Lodge Ring",
+      "emotion_profile": {
+        "primary": "Grounded",
+        "secondary": "Nostalgic",
+        "intensity": 6
+      },
+      "subject": "heritage winter door wreath, thick fir, cedar and boxwood ring with asymmetrical weight on the left, pinecones and subtle antler picks, navy and green plaid ribbon woven through",
+      "style_tags": ["Ralph Lauren lodge", "heritage", "matte natural materials", "classic American winter"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "moderate, wreath sharp, background slightly soft"
+      },
+      "base_environment": {
+        "context": "front door styling",
+        "background": "warm wood paneled door, minimal distractions",
+        "lighting": "soft overcast daylight, gentle shadows"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "style raw"],
+        "notes": "keep colors rich but not oversaturated; avoid heavy bokeh or extreme lens effects"
+      },
+      "hero": {
+        "prompt": "grounded nostalgic winter wreath on a warm wood front door, thick 22 inch fir cedar and boxwood ring, 85 percent full with asymmetrical weight on the left, small pinecone clusters and two subtle antler picks, navy and green plaid ribbon band woven around the greenery, classic Ralph Lauren lodge style, straight-on product shot, eye-level, warm wood paneled background slightly soft, soft overcast daylight, ultra realistic product photography, style raw",
+        "notes": "use for main catalog hero images; keep door and trim simple so the wreath remains the focal point"
+      },
+      "variations": [
+        {
+          "id": "wreath_rl_lodge_ring_v1_var1",
+          "prompt": "same grounded nostalgic winter wreath on a dark charcoal paneled door, thick 22 inch fir cedar and boxwood ring, pinecone clusters and subtle antler picks, navy and green plaid ribbon woven through, cozy heritage cabin vibe, straight-on eye-level shot, moodier lighting with slightly deeper shadows, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "slightly more dramatic and cozy",
+            "density_shift": "no change",
+            "palette_shift": "background shifted darker, wreath colors unchanged",
+            "context_shift": "door color changed from warm wood to charcoal",
+            "camera_shift": "same framing and angle"
+          }
+        },
+        {
+          "id": "wreath_rl_lodge_ring_v1_var2",
+          "prompt": "heritage winter wreath on a warm wood front door, slightly fuller fir and cedar greenery, no antlers, emphasis on pinecone clusters and navy and green plaid ribbon, gentle snow visible in soft blur behind the door glass, straight-on eye-level product shot, soft bright overcast daylight, ultra realistic, style raw",
+          "dial": {
+            "emotion_shift": "more sentimental and gentle",
+            "density_shift": "slightly fuller greenery band",
+            "palette_shift": "cooler highlights from snow, same wreath palette",
+            "context_shift": "adds subtle outdoor snowy context",
+            "camera_shift": "same framing, slightly brighter exposure"
+          }
+        },
+        {
+          "id": "wreath_rl_lodge_ring_v1_var3",
+          "prompt": "close-up detail of the left side of a heritage winter wreath, thick fir, cedar and boxwood with pinecone clusters and navy and green plaid ribbon, classic lodge style, shallow depth of field, texture and needles in crisp focus, background fully blurred, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "more intimate and tactile",
+            "density_shift": "local density appears higher due to close crop",
+            "palette_shift": "no change",
+            "context_shift": "background abstracted to soft blur",
+            "camera_shift": "close-up crop with shallow depth of field"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_urban_loft_hoop_v1",
+      "design_name": "Urban Loft Hoop",
+      "emotion_profile": {
+        "primary": "Sophisticated",
+        "secondary": "Cool",
+        "intensity": 5
+      },
+      "subject": "minimalist modern door hoop, black metal ring, 70 percent negative space, seeded eucalyptus and olive band from 7 to 11 o'clock, matte brass disc accents, leather hanging strap",
+      "style_tags": ["modern industrial", "minimalist", "Scandinavian", "urban loft"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "sharp throughout, clean background"
+      },
+      "base_environment": {
+        "context": "interior or exterior modern door",
+        "background": "matte white or light concrete wall",
+        "lighting": "clean studio light, no harsh shadows"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "minimalist editorial", "style raw"],
+        "notes": "emphasize negative space and structural quality of the metal hoop; avoid busy backgrounds"
+      },
+      "hero": {
+        "prompt": "sophisticated minimalist 18 inch black metal hoop wreath, 70 percent open space, tight band of seeded eucalyptus and olive branches from lower left to upper left, two small matte brass disc accents near 9 o'clock, narrow leather hanging strap at top, straight-on eye-level product shot, matte white wall background, clean studio lighting, ultra realistic product photography, style raw",
+        "notes": "hero should feel editorial and restrained; the negative space is the design feature"
+      },
+      "variations": [
+        {
+          "id": "wreath_urban_loft_hoop_v1_var1",
+          "prompt": "minimalist black metal hoop wreath on a dark charcoal concrete wall, seeded eucalyptus and olive band, matte brass accents, leather strap, moody dramatic lighting with single directional light source, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "more dramatic and editorial",
+            "density_shift": "no change",
+            "palette_shift": "background darkened to near-black concrete",
+            "context_shift": "wall texture changed to concrete",
+            "camera_shift": "same framing, lower key lighting"
+          }
+        },
+        {
+          "id": "wreath_urban_loft_hoop_v1_var2",
+          "prompt": "minimalist black metal hoop wreath, slightly denser eucalyptus and olive band with added silver-green ruscus, matte brass disc accents, leather strap, straight-on eye-level shot, warm white plaster wall, gentle warm afternoon light, ultra realistic, style raw",
+          "dial": {
+            "emotion_shift": "warmer and more approachable",
+            "density_shift": "slightly denser foliage band",
+            "palette_shift": "warm white wall, gentle golden light added",
+            "context_shift": "wall texture changed to warm plaster",
+            "camera_shift": "same framing, warmer exposure"
+          }
+        },
+        {
+          "id": "wreath_urban_loft_hoop_v1_var3",
+          "prompt": "close-up of a minimalist black metal hoop with seeded eucalyptus and matte brass accent discs, crisp macro detail, shallow depth of field, metal ring texture visible, background soft white blur, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "intimate and material-focused",
+            "density_shift": "no change, close crop amplifies texture",
+            "palette_shift": "no change",
+            "context_shift": "abstracted to macro detail shot",
+            "camera_shift": "macro with shallow depth of field"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_honeyed_porch_v1",
+      "design_name": "Honeyed Porch Welcome",
+      "emotion_profile": {
+        "primary": "Welcoming",
+        "secondary": "Cheerful",
+        "intensity": 7
+      },
+      "subject": "late summer grapevine wreath, diagonal swag of magnolia leaves and sunflowers from 2 to 7 o'clock, honey-colored wooden beads, mustard cotton ticking stripe ribbon",
+      "style_tags": ["farmhouse", "late summer", "front porch", "cheerful American home"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "moderate, wreath sharp, door soft"
+      },
+      "base_environment": {
+        "context": "front porch door",
+        "background": "white painted wood door, porch visible at edges",
+        "lighting": "warm late afternoon sun, soft golden light"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "warm natural light", "style raw"],
+        "notes": "golden hour warmth is essential to the mood; sunflowers should face slightly outward, not straight forward"
+      },
+      "hero": {
+        "prompt": "welcoming cheerful 20 inch grapevine wreath with diagonal swag of magnolia leaves and five small sunflowers from upper right to lower center, honey-colored wooden beads on a loop near 4 o'clock, mustard cotton ticking stripe ribbon tied at 5 o'clock, 40 percent exposed vine at top left, straight-on eye-level shot, white painted front door background, warm golden afternoon light, ultra realistic product photography, style raw",
+        "notes": "exposed vine at top left is key to the asymmetry; keep top-left completely bare for clean negative space"
+      },
+      "variations": [
+        {
+          "id": "wreath_honeyed_porch_v1_var1",
+          "prompt": "same late summer grapevine wreath with sunflowers and magnolia leaves, diagonal swag composition, mustard ribbon, shot in bright midday light on a sage green painted front door, more vibrant and energetic feel, straight-on product shot, ultra realistic, style raw",
+          "dial": {
+            "emotion_shift": "more energetic and vibrant",
+            "density_shift": "no change",
+            "palette_shift": "door changed to sage green, brighter midday light",
+            "context_shift": "door color changed to sage green",
+            "camera_shift": "same framing, brighter midday exposure"
+          }
+        },
+        {
+          "id": "wreath_honeyed_porch_v1_var2",
+          "prompt": "late summer porch wreath with magnolia swag, sunflowers and mustard ribbon, softer light as if overcast, muted warm palette, more relaxed welcoming mood, straight-on product shot on white door, soft diffused light, ultra realistic, style raw",
+          "dial": {
+            "emotion_shift": "gentler and more relaxed",
+            "density_shift": "no change",
+            "palette_shift": "softer muted tones, overcast light reduces saturation",
+            "context_shift": "same white door, overcast sky light",
+            "camera_shift": "same framing, softer exposure"
+          }
+        },
+        {
+          "id": "wreath_honeyed_porch_v1_var3",
+          "prompt": "lifestyle shot of a late summer grapevine wreath on a front door viewed slightly from the side, porch railing and plants visible at edges, warm golden hour atmosphere, natural home setting, wide enough to show door context, ultra realistic lifestyle photography, style raw",
+          "dial": {
+            "emotion_shift": "more narrative and aspirational lifestyle",
+            "density_shift": "no change, appears in context",
+            "palette_shift": "golden hour palette intensified by environment",
+            "context_shift": "expanded to lifestyle scene with porch visible",
+            "camera_shift": "wider shot with slight side angle"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_monochrome_cloud_v1",
+      "design_name": "Monochrome Cloud",
+      "emotion_profile": {
+        "primary": "Serene",
+        "secondary": "Pure",
+        "intensity": 5
+      },
+      "subject": "all-white wreath on white satin wrapped foam ring, continuous ring of white roses, ranunculus, and hydrangea tufts, soft halo silhouette, no ribbon",
+      "style_tags": ["monochrome", "bridal", "minimal luxe", "tonal white study"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "crisp throughout, no blur"
+      },
+      "base_environment": {
+        "context": "studio or interior door",
+        "background": "pure white or off-white seamless",
+        "lighting": "soft even studio light, no hard shadows"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "tonal whites", "style raw"],
+        "notes": "critical to distinguish cool whites from warm whites in the florals; edge should feel diffused not sharp"
+      },
+      "hero": {
+        "prompt": "serene pure 18 inch all-white wreath, continuous ring of small white roses, ranunculus, and hydrangea tufts on a white satin-wrapped foam base, slight density bump at bottom, cool and warm white tonal variation in blooms, soft halo silhouette, no ribbon, straight-on eye-level product shot, seamless white background, soft even studio lighting, ultra realistic product photography, style raw",
+        "notes": "the tonal variation between cool and warm whites is what makes this feel luxe rather than flat; direct the AI to render subtle differences"
+      },
+      "variations": [
+        {
+          "id": "wreath_monochrome_cloud_v1_var1",
+          "prompt": "all-white wreath with roses, ranunculus, and hydrangea, same continuous ring composition, shot on a pale gray seamless background, slightly moodier soft studio light with gentle directional shadow, tonal whites, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "slightly more sculptural and editorial",
+            "density_shift": "no change",
+            "palette_shift": "background shifted to pale gray, gentle shadow added",
+            "context_shift": "background tone changed to pale gray",
+            "camera_shift": "same framing, slight direction added to light source"
+          }
+        },
+        {
+          "id": "wreath_monochrome_cloud_v1_var2",
+          "prompt": "all-white wreath on a white door, styled with a single trailing ivory satin ribbon tucked loosely at base, bridal and ethereal atmosphere, soft natural window light from left, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "more romantic and bridal",
+            "density_shift": "no change",
+            "palette_shift": "ivory ribbon adds warmth against cool whites",
+            "context_shift": "white door context, window light introduced",
+            "camera_shift": "same framing, natural side lighting"
+          }
+        },
+        {
+          "id": "wreath_monochrome_cloud_v1_var3",
+          "prompt": "macro close-up of the lower focal area of an all-white wreath, white roses and ranunculus in crisp detail, hydrangea tufts softly blurred at edges, shallow depth of field, seamless white background, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "intimate and botanical",
+            "density_shift": "close crop shows full texture",
+            "palette_shift": "no change",
+            "context_shift": "abstracted to botanical macro detail",
+            "camera_shift": "macro with shallow depth of field"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_midnight_citrus_v1",
+      "design_name": "Midnight Citrus Door",
+      "emotion_profile": {
+        "primary": "Dramatic",
+        "secondary": "Energizing",
+        "intensity": 8
+      },
+      "subject": "moody contemporary winter wreath, thick evergreen ring with bold crescent from 3 to 9 o'clock, dried orange wheels, deep plum berries, charcoal velvet magnolia leaves, inky navy velvet bow",
+      "style_tags": ["moody contemporary", "dramatic winter", "editorial", "dark botanical"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "sharp wreath, background soft"
+      },
+      "base_environment": {
+        "context": "front door, evening or moody atmosphere",
+        "background": "near-black painted door or dark navy door",
+        "lighting": "low-key directional light, dramatic shadows"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "dramatic moody", "style raw"],
+        "notes": "burnt orange of dried citrus should pop against deep greens; berries in tight clusters not scattered"
+      },
+      "hero": {
+        "prompt": "dramatic energizing 22 inch winter evergreen wreath, bold crescent from 3 to 9 o'clock heaviest at 6, dried orange wheel slices in lower half, deep plum faux berry clusters, two charcoal velvet magnolia leaves, inky navy velvet bow with angled tails at 7 o'clock, dark navy painted door background, low-key directional lighting with dramatic shadows, straight-on product shot, ultra realistic product photography, style raw",
+        "notes": "oranges must stay below 3 and 9 o'clock line; berry clusters in tight groups of 2-3 not scattered individually"
+      },
+      "variations": [
+        {
+          "id": "wreath_midnight_citrus_v1_var1",
+          "prompt": "same moody winter wreath on a deep forest green door, bold crescent with dried oranges, plum berries, charcoal velvet magnolia leaves, navy bow, richer jewel-tone atmosphere, slightly warmer directional light, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "richer and more jewel-toned",
+            "density_shift": "no change",
+            "palette_shift": "background shifted to deep forest green, warmer light",
+            "context_shift": "door color changed to deep forest green",
+            "camera_shift": "same framing, warmer light temperature"
+          }
+        },
+        {
+          "id": "wreath_midnight_citrus_v1_var2",
+          "prompt": "moody winter wreath on black door, crescent composition with dried oranges and plum berries, replace velvet bow with narrow black satin ribbon, more editorial fashion-adjacent aesthetic, single spotlight from above, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "more editorial and fashion-forward",
+            "density_shift": "no change",
+            "palette_shift": "black door, black ribbon, spotlight creates high contrast",
+            "context_shift": "door changed to black, ribbon swapped to black satin",
+            "camera_shift": "same framing, spotlight from directly above"
+          }
+        },
+        {
+          "id": "wreath_midnight_citrus_v1_var3",
+          "prompt": "close-up of the focal crescent area of a dramatic winter wreath, dried orange slices and deep plum berry clusters in crisp detail against thick dark cedar greenery, shallow depth of field, charcoal velvet magnolia leaf visible at edge, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "intensely textural and intimate",
+            "density_shift": "local density amplified by crop",
+            "palette_shift": "no change",
+            "context_shift": "abstracted to botanical macro detail",
+            "camera_shift": "close-up macro with shallow depth of field"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_threshold_moss_v1",
+      "design_name": "Threshold of Moss",
+      "emotion_profile": {
+        "primary": "Grounded",
+        "secondary": "Restorative",
+        "intensity": 4
+      },
+      "subject": "preserved moss-covered foam ring, uniform circular silhouette, small wood rounds and twig slices tucked low, single miniature feather, coarse linen hanging loop",
+      "style_tags": ["biophilic", "foraged", "naturalist", "quiet cottagecore"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "sharp throughout"
+      },
+      "base_environment": {
+        "context": "natural wood or linen-texture door",
+        "background": "pale linen or raw wood wall",
+        "lighting": "soft even diffused light, no hard shadows"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "natural textures", "style raw"],
+        "notes": "moss texture must read clearly; accents should feel discovered not displayed; clean circular silhouette is essential"
+      },
+      "hero": {
+        "prompt": "grounded restorative 18 inch preserved moss wreath on a pale raw wood wall, uniform moss-covered ring with clean circular silhouette, two slightly raised areas of moss at 4 and 10 o'clock, three small wood round slices and lichen patches tucked low, single tiny feather, coarse linen hanging loop at top, no ribbon or bow, straight-on eye-level shot, soft even diffused light, ultra realistic product photography, style raw",
+        "notes": "the wreath should feel like something you would find in nature; no obviously artificial elements; accents must be discoverable not decorative"
+      },
+      "variations": [
+        {
+          "id": "wreath_threshold_moss_v1_var1",
+          "prompt": "preserved moss wreath on a dark slate or aged wood wall, same clean circular silhouette and tucked wood round accents, moodier atmospheric lighting as if filtered through forest canopy, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "deeper and more mysterious",
+            "density_shift": "no change",
+            "palette_shift": "darker background emphasizes green of moss",
+            "context_shift": "wall changed to dark slate or aged wood",
+            "camera_shift": "same framing, forest-filtered lighting"
+          }
+        },
+        {
+          "id": "wreath_threshold_moss_v1_var2",
+          "prompt": "preserved moss wreath styled on a pale linen-textured interior wall, soft morning window light from the left, a single small dried wildflower added near 6 o'clock, restful and domestic atmosphere, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "more domestic and restful",
+            "density_shift": "one tiny wildflower addition at base",
+            "palette_shift": "warm morning light shifts moss to golden green",
+            "context_shift": "interior linen wall, morning light context",
+            "camera_shift": "same framing, natural left-side window light"
+          }
+        },
+        {
+          "id": "wreath_threshold_moss_v1_var3",
+          "prompt": "macro close-up of moss wreath surface, preserved moss texture in crisp botanical detail, small wood round slice and lichen patch visible, shallow depth of field, background abstracted to green blur, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "deeply tactile and meditative",
+            "density_shift": "macro amplifies surface texture",
+            "palette_shift": "no change",
+            "context_shift": "abstracted to botanical macro surface",
+            "camera_shift": "macro with shallow depth of field"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_crystalline_frost_v1",
+      "design_name": "Crystalline Frost Ring",
+      "emotion_profile": {
+        "primary": "Cool Elegance",
+        "secondary": "Stillness",
+        "intensity": 6
+      },
+      "subject": "white-painted grapevine ring, 50 percent exposed, icy frosted eucalyptus and cedar crescent from 1 to 5 o'clock, small clear acrylic crystal drops, pale silver ball ornaments, narrow silver-gray chiffon ribbon tail",
+      "style_tags": ["winter minimal luxe", "crystalline", "Scandinavian winter", "quiet luxury"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "crisp, slight softening of background"
+      },
+      "base_environment": {
+        "context": "front door, winter exterior",
+        "background": "white painted door or pale gray door",
+        "lighting": "bright cold winter daylight, crisp and even"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "winter elegance", "style raw"],
+        "notes": "crystal drops should catch light with subtle sparkle; painted vine must read clearly through top-left arc; chiffon ribbon tail drapes naturally"
+      },
+      "hero": {
+        "prompt": "cool elegant 20 inch white-painted grapevine wreath, 50 percent exposed vine at top left, icy frosted eucalyptus and cedar crescent from 1 to 5 o'clock, five small clear acrylic crystal drops clustered near center of crescent, two pale silver ball ornaments, narrow silver-gray chiffon ribbon with long tail falling from 3 o'clock, straight-on eye-level shot on white painted door, bright cold winter daylight, ultra realistic product photography, style raw",
+        "notes": "white vine must be visibly distinct from the white door; use shadow and texture to differentiate; crystal drops should sparkle subtly"
+      },
+      "variations": [
+        {
+          "id": "wreath_crystalline_frost_v1_var1",
+          "prompt": "white-painted grapevine frost wreath on a pale ice-blue door, frosted eucalyptus and crystal drops, silver chiffon tail, more ethereal and dreamlike atmosphere, bright cold light, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "more ethereal and dreamlike",
+            "density_shift": "no change",
+            "palette_shift": "door shifted to pale ice-blue, complementing the cool palette",
+            "context_shift": "door color changed to pale ice blue",
+            "camera_shift": "same framing, slightly cooler color temperature"
+          }
+        },
+        {
+          "id": "wreath_crystalline_frost_v1_var2",
+          "prompt": "winter frost wreath at dusk, frosted eucalyptus and cedar crescent with crystal drops catching last warm light against cooling blue-gray sky, porch exterior context, cinematic atmospheric, ultra realistic lifestyle photography, style raw",
+          "dial": {
+            "emotion_shift": "more cinematic and wistful",
+            "density_shift": "no change",
+            "palette_shift": "warm-cool contrast of dusk light against icy wreath",
+            "context_shift": "expanded to dusk exterior porch setting",
+            "camera_shift": "wider shot with sky and porch visible"
+          }
+        },
+        {
+          "id": "wreath_crystalline_frost_v1_var3",
+          "prompt": "close-up macro of frosted eucalyptus and clear crystal accent drops on a winter wreath, ice crystals and frosted needles in crisp botanical detail, silver ornament barely visible at edge, shallow depth of field, white background abstracted, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "intimate and jewel-like",
+            "density_shift": "macro amplifies frost texture",
+            "palette_shift": "no change",
+            "context_shift": "abstracted to crystal and botanical macro",
+            "camera_shift": "macro with shallow depth of field"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_soft_harvest_arc_v1",
+      "design_name": "Soft Harvest Arc",
+      "emotion_profile": {
+        "primary": "Reflective",
+        "secondary": "Cozy",
+        "intensity": 5
+      },
+      "subject": "muted autumn grapevine wreath, wide light arc across top from 9 to 3 o'clock, eucalyptus and dried wheat stems, three small muted sage and cream pumpkins, taupe bunny tails grass, wide gauze ribbon loosely woven",
+      "style_tags": ["muted autumn", "organic harvest", "soft cottagecore", "reflective fall"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "moderate, wreath sharp, background softly blurred"
+      },
+      "base_environment": {
+        "context": "front door or interior door",
+        "background": "warm taupe or pale wood door",
+        "lighting": "soft warm afternoon light, gentle shadows"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "muted palette", "style raw"],
+        "notes": "pumpkins must be muted sage and cream, not orange; bottom third of wreath should be mostly bare vine; wheat follows ring curve outward"
+      },
+      "hero": {
+        "prompt": "reflective cozy 20 inch grapevine wreath, wide light arc of eucalyptus and dried wheat across top from 9 to 3 o'clock thickest at 11 to 1, three small muted sage and cream faux pumpkins staggered vertically along arc, taupe bunny tails grass tucked between, wide gauze ribbon in warm taupe loosely woven between pumpkins without a bow, bottom third bare vine exposed, straight-on eye-level product shot, warm taupe door background, soft warm afternoon light, ultra realistic product photography, style raw",
+        "notes": "pumpkins must be muted and earthy, not bright orange; loosely woven ribbon has no formal bow"
+      },
+      "variations": [
+        {
+          "id": "wreath_soft_harvest_arc_v1_var1",
+          "prompt": "muted autumn top arc wreath on a sage green door, eucalyptus and wheat with cream and sage pumpkins, gauze ribbon, slightly more color saturation, warm afternoon sun, straight-on product shot, ultra realistic, style raw",
+          "dial": {
+            "emotion_shift": "slightly more cheerful and grounded",
+            "density_shift": "no change",
+            "palette_shift": "sage door complements cream and green tones",
+            "context_shift": "door changed to sage green",
+            "camera_shift": "same framing, slightly warmer exposure"
+          }
+        },
+        {
+          "id": "wreath_soft_harvest_arc_v1_var2",
+          "prompt": "muted harvest arc wreath styled in an interior home setting, hanging on a white wall above a console table with dried grasses and a small pumpkin on the table below, lifestyle vignette, warm ambient interior light, ultra realistic lifestyle photography, style raw",
+          "dial": {
+            "emotion_shift": "more narrative and homey",
+            "density_shift": "no change, seen in room context",
+            "palette_shift": "warm interior light softens palette",
+            "context_shift": "expanded to interior lifestyle vignette",
+            "camera_shift": "wider shot to include table styling below"
+          }
+        },
+        {
+          "id": "wreath_soft_harvest_arc_v1_var3",
+          "prompt": "close-up of the top focal section of a muted harvest arc wreath, dried wheat and eucalyptus in botanical detail, small sage pumpkin and bunny tails grass crisp in foreground, gauze ribbon in soft focus, shallow depth of field, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "intimate and botanical",
+            "density_shift": "macro amplifies texture",
+            "palette_shift": "no change",
+            "context_shift": "abstracted to botanical macro",
+            "camera_shift": "macro with shallow depth of field"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_doorway_of_joy_v1",
+      "design_name": "Doorway of Joy",
+      "emotion_profile": {
+        "primary": "Joyful",
+        "secondary": "Playful",
+        "intensity": 9
+      },
+      "subject": "colorful full-coverage foam or evergreen ring, 20 to 30 multicolor felt balls and pom-poms distributed around ring, three star-shaped ornaments near 2 o'clock, wide white grosgrain ribbon with multicolor polka dots",
+      "style_tags": ["kid-friendly", "playful", "primary colors", "joyful everyday"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "sharp throughout, crisp colors"
+      },
+      "base_environment": {
+        "context": "front door or playroom door",
+        "background": "white or bright yellow door",
+        "lighting": "bright even daylight, clean and cheerful"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "vibrant clean colors", "style raw"],
+        "notes": "no single color should dominate more than 25 percent; pom-poms on outer and mid ring only; inner circle stays relatively clean"
+      },
+      "hero": {
+        "prompt": "joyful playful 18 inch full-coverage wreath with 25 multicolor felt balls and pom-poms in primary colors and pastels evenly distributed around ring, three star-shaped ornaments clustered near 2 o'clock, wide white grosgrain ribbon with multicolor polka dots tied at 2 o'clock, inner circle relatively clean, straight-on eye-level product shot, white door background, bright even daylight, ultra realistic product photography, style raw",
+        "notes": "colors must be evenly distributed; no two same-color pom-poms adjacent; inner circle must stay open"
+      },
+      "variations": [
+        {
+          "id": "wreath_doorway_of_joy_v1_var1",
+          "prompt": "playful multicolor pom-pom wreath on a bright yellow door, same full-coverage ring of felt balls and stars, polka dot ribbon, even more vibrant and energetic atmosphere, bright midday light, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "more intensely energetic and celebratory",
+            "density_shift": "no change",
+            "palette_shift": "yellow door amplifies primary color energy",
+            "context_shift": "door changed to bright yellow",
+            "camera_shift": "same framing, slightly increased brightness"
+          }
+        },
+        {
+          "id": "wreath_doorway_of_joy_v1_var2",
+          "prompt": "pastel version of a playful pom-pom wreath, same full-coverage ring composition with felt balls in soft pastels only, lavender, mint, peach, butter yellow, no primary colors, star ornaments in pale gold, soft pink ribbon, white door, soft diffused studio light, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "gentler and more whimsical",
+            "density_shift": "no change",
+            "palette_shift": "full shift from primary to pastel palette",
+            "context_shift": "same white door, softer light",
+            "camera_shift": "same framing, softer diffused light"
+          }
+        },
+        {
+          "id": "wreath_doorway_of_joy_v1_var3",
+          "prompt": "lifestyle shot of a colorful pom-pom wreath on a front door with a child's hand reaching toward it from the side of frame, playful domestic moment, bright natural light, joyful atmosphere, ultra realistic lifestyle photography, style raw",
+          "dial": {
+            "emotion_shift": "deeply narrative and emotional",
+            "density_shift": "no change, seen in context",
+            "palette_shift": "warm natural light enhances vibrancy",
+            "context_shift": "lifestyle moment with child's hand added",
+            "camera_shift": "wider lifestyle shot with hand at frame edge"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wreath_quiet_entry_minimal_v1",
+      "design_name": "Quiet Entry Minimalist",
+      "emotion_profile": {
+        "primary": "Calm",
+        "secondary": "Orderly",
+        "intensity": 3
+      },
+      "subject": "simple grapevine wreath, 60 to 70 percent exposed vine, compact soft triangle cluster from 4 to 6 o'clock only, short olive or boxwood sprigs, three small beige wooden beads on a loop, two dried bunny tails, thin oatmeal linen band with simple knot",
+      "style_tags": ["everyday neutral", "quiet minimal", "Japandi", "calm domestic"],
+      "base_camera": {
+        "shot_type": "straight-on product shot",
+        "angle": "eye-level, centered",
+        "depth_of_field": "crisp throughout"
+      },
+      "base_environment": {
+        "context": "interior or exterior door, everyday setting",
+        "background": "warm white or natural linen wall",
+        "lighting": "soft even diffused light, no drama"
+      },
+      "base_quality": {
+        "keywords": ["ultra realistic", "product photography", "quiet minimal", "style raw"],
+        "notes": "cluster must not exceed one third of total circumference; all visual weight anchored at bottom; nothing points straight upward"
+      },
+      "hero": {
+        "prompt": "calm orderly 18 inch grapevine wreath, 65 percent exposed natural vine, compact soft triangle cluster from 4 to 6 o'clock only of short olive sprigs, three small beige wooden beads on a tiny loop, two dried bunny tail grass stems, thin oatmeal linen ribbon in simple knot at 5 o'clock with short tails, no stems pointing upward, straight-on eye-level product shot, warm white wall background, soft even diffused light, ultra realistic product photography, style raw",
+        "notes": "restraint is the design; the exposed vine is not negative space to fill but the intentional composition; cluster must stay in bottom third"
+      },
+      "variations": [
+        {
+          "id": "wreath_quiet_entry_minimal_v1_var1",
+          "prompt": "same minimal grapevine wreath with small olive cluster and oatmeal linen knot, styled on a pale sage plaster wall, soft morning light from the left, slightly warmer and more lived-in atmosphere, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "warmer and more domestic",
+            "density_shift": "no change",
+            "palette_shift": "sage plaster wall adds subtle color warmth",
+            "context_shift": "wall changed to pale sage plaster",
+            "camera_shift": "same framing, morning light from left"
+          }
+        },
+        {
+          "id": "wreath_quiet_entry_minimal_v1_var2",
+          "prompt": "minimal grapevine wreath on a raw wood plank door, compact olive cluster at base, oatmeal linen knot, natural textures in harmony, warm diffused light, quiet Japandi aesthetic, ultra realistic product photography, style raw",
+          "dial": {
+            "emotion_shift": "more Japandi and material-focused",
+            "density_shift": "no change",
+            "palette_shift": "warm wood tones of door complement natural vine",
+            "context_shift": "door changed to raw wood plank",
+            "camera_shift": "same framing, warm diffused natural light"
+          }
+        },
+        {
+          "id": "wreath_quiet_entry_minimal_v1_var3",
+          "prompt": "close-up of the base cluster of a minimal grapevine wreath, short olive sprigs, wooden beads, and oatmeal linen knot in crisp botanical detail, shallow depth of field, vine arcs softly out of focus above and below, ultra realistic macro product photography, style raw",
+          "dial": {
+            "emotion_shift": "intimate and meditative",
+            "density_shift": "macro reveals delicate cluster detail",
+            "palette_shift": "no change",
+            "context_shift": "abstracted to botanical macro detail",
+            "camera_shift": "macro with shallow depth of field"
+          }
+        }
+      ]
+    }
+  ]
+}

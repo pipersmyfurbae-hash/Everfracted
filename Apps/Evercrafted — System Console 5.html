@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — System Console P5</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f9f7f3;--sf:#ffffff;--sf2:#f5f1ea;--sf3:#efe9df;
+  --bd:rgba(30,28,24,.08);--bd2:rgba(30,28,24,.14);
+  --gold:#8c7258;--gold2:#b59b7f;--gd:rgba(140,114,88,.12);--gg:rgba(140,114,88,.06);
+  --sage:#5c7353;--saged:rgba(92,115,83,.16);
+  --rose:#c47c6e;--rosed:rgba(196,124,110,.12);
+  --lav:#8b86b0;--lavd:rgba(139,134,176,.12);
+  --amb:#c9a96e;--ambd:rgba(201,169,110,.14);
+  --teal:#5a8a84;--teald:rgba(90,138,132,.12);
+  --cyan:#4a9eb5;--cyand:rgba(74,158,181,.12);
+  --p5:#8c7258;--p5d:rgba(140,114,88,.12);
+  --txt:#1e1c18;--txd:#5c544b;--txm:#8b8278;
+  --fd:'Cormorant Garamond',serif;--fm:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:var(--fm);font-size:13px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.25;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sb{width:236px;min-width:236px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;}
+.sb-logo{padding:22px 20px 14px;border-bottom:1px solid var(--bd);}
+.logo-name{font-family:var(--fd);font-size:22px;font-weight:300;letter-spacing:.12em;color:var(--gold);display:block;line-height:1;}
+.logo-sub{font-size:9px;letter-spacing:.24em;color:var(--txm);margin-top:4px;text-transform:uppercase;display:block;}
+.sb-sec{padding:12px 0 3px;}
+.ssl{font-size:8px;letter-spacing:.28em;color:var(--txm);text-transform:uppercase;padding:0 20px;margin-bottom:4px;}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 20px;cursor:pointer;color:var(--txd);transition:all .14s;border-left:2px solid transparent;font-size:11px;letter-spacing:.02em;}
+.ni:hover{color:var(--txt);background:var(--gg);}
+.ni.active{color:var(--gold);border-left-color:var(--gold);background:var(--gd);}
+.ni.dim{opacity:.35;pointer-events:none;}
+.nic{font-size:12px;opacity:.65;width:14px;text-align:center;}
+.pb{font-size:7px;letter-spacing:.1em;padding:1px 5px;border-radius:1px;margin-left:auto;white-space:nowrap;}
+.pb-live{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.pb-p2{background:var(--lavd);color:var(--lav);border:1px solid rgba(155,142,196,.3);}
+.pb-p3{background:var(--ambd);color:var(--amb);border:1px solid rgba(212,168,67,.3);}
+.pb-p4{background:var(--cyand);color:var(--cyan);border:1px solid rgba(74,158,181,.3);}
+.pb-p5{background:var(--p5d);color:var(--p5);border:1px solid rgba(184,145,106,.4);}
+.sb-foot{margin-top:auto;padding:11px 20px;border-top:1px solid var(--bd);}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:6px;animation:pulse 2.2s infinite;}
+.aidot{width:6px;height:6px;border-radius:50%;background:var(--p5);display:inline-block;margin-right:6px;animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--sf);border-bottom:1px solid var(--bd);padding:11px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-title{font-family:var(--fd);font-size:17px;font-weight:300;letter-spacing:.08em;}
+.tm{display:flex;gap:11px;align-items:center;}
+.mtag{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--txm);background:var(--sf2);border:1px solid var(--bd);padding:3px 7px;border-radius:2px;}
+.mtag.hl{color:var(--gold);border-color:rgba(201,169,110,.3);background:var(--gd);}
+.mtag.p5{color:var(--p5);border-color:rgba(184,145,106,.4);background:var(--p5d);}
+
+/* PANELS */
+.panel{display:none;padding:24px 26px;animation:pIn .26s ease both;}
+.panel.active{display:block;}
+@keyframes pIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* SHARED */
+.sh{font-family:var(--fd);font-size:11.5px;font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sh::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--bd2),transparent);}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gd),transparent);}
+.clbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--txm);margin-bottom:5px;}
+.cval{font-family:var(--fd);font-size:30px;font-weight:300;color:var(--gold);line-height:1;}
+.csub{font-size:10.5px;color:var(--txd);margin-top:3px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px;}
+.btn{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10px;letter-spacing:.12em;padding:7px 12px;cursor:pointer;text-transform:uppercase;transition:all .14s;border-radius:2px;}
+.btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn.primary{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.btn.primary:hover:not(:disabled){background:rgba(201,169,110,.2);}
+.btn.p5ai{border-color:var(--p5);color:var(--p5);background:var(--p5d);}
+.btn.p5ai:hover:not(:disabled){background:rgba(184,145,106,.25);}
+.btn.sage{border-color:var(--sage);color:var(--sage);background:var(--saged);}
+.sel{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10.5px;padding:6px 9px;border-radius:2px;outline:none;cursor:pointer;transition:border-color .14s;}
+.sel:focus{border-color:var(--gold);}
+.sel option{background:var(--sf2);}
+.row{display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.jblock{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;font-size:10.5px;line-height:1.85;color:var(--txd);overflow-x:auto;margin-bottom:18px;position:relative;max-height:360px;overflow-y:auto;}
+.jkey{color:var(--gold);}.jstr{color:var(--sage);}.jnum{color:var(--rose);}.jbool{color:var(--lav);}.jnull{color:var(--txm);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+
+/* ─── SHARED AI COMPONENTS ─── */
+.ai-thinking{display:flex;align-items:center;gap:9px;padding:12px 16px;background:var(--p5d);border:1px solid rgba(184,145,106,.3);border-radius:3px;font-size:10.5px;color:var(--p5);}
+.ai-thinking-dots{display:flex;gap:4px;}
+.ai-thinking-dots span{width:5px;height:5px;border-radius:50%;background:var(--p5);animation:aidot .9s infinite both;}
+.ai-thinking-dots span:nth-child(2){animation-delay:.18s;}
+.ai-thinking-dots span:nth-child(3){animation-delay:.36s;}
+@keyframes aidot{0%,80%,100%{transform:scale(.55);opacity:.3;}40%{transform:scale(1);opacity:1;}}
+.ai-badge{font-size:8px;letter-spacing:.16em;text-transform:uppercase;padding:2px 7px;border-radius:1px;color:var(--p5);background:var(--p5d);border:1px solid rgba(184,145,106,.3);}
+.ai-output{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:16px 20px;font-size:12px;color:var(--txd);line-height:1.85;white-space:pre-wrap;word-break:break-word;}
+.ai-output.streaming::after{content:'▋';color:var(--p5);animation:blink .7s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* ══════════════════════════
+   MEMORY WEAVER STUDIO
+══════════════════════════ */
+.mw-layout{display:flex;gap:14px;margin-bottom:22px;}
+.mw-left{flex:1;display:flex;flex-direction:column;gap:12px;}
+.mw-right{width:310px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+.mw-form{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:18px;}
+.mw-field{margin-bottom:14px;}
+.mw-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.mw-label-req{color:var(--rose);font-size:8px;}
+.mw-input{width:100%;background:var(--sf2);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:11px;padding:8px 11px;border-radius:2px;outline:none;transition:border-color .14s;resize:vertical;}
+.mw-input:focus{border-color:var(--gold);}
+.mw-input::placeholder{color:var(--txm);}
+.mw-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.mw-chip{padding:5px 11px;border:1px solid var(--bd);border-radius:2px;font-size:10px;color:var(--txd);cursor:pointer;transition:all .14s;letter-spacing:.05em;}
+.mw-chip:hover{border-color:var(--gold);color:var(--gold);}
+.mw-chip.active{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.mw-result-panel{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;flex:1;}
+.mw-blueprint-preview{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:9px;}
+.mw-emotion-map{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:12px;}
+.mw-score-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--bd);}
+.mw-score-row:last-child{border-bottom:none;}
+.mw-score-lbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--txm);width:110px;flex-shrink:0;}
+.mw-score-bar{flex:1;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.mw-score-fill{height:100%;border-radius:2px;background:var(--p5);transition:width .8s ease;}
+.mw-score-val{font-size:10px;color:var(--p5);width:34px;text-align:right;}
+.mw-stage{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:10px;color:var(--txm);border-bottom:1px solid var(--bd);}
+.mw-stage:last-child{border-bottom:none;}
+.mw-stage-dot{width:7px;height:7px;border-radius:50%;background:var(--bd2);flex-shrink:0;transition:background .4s;}
+.mw-stage-dot.done{background:var(--sage);}
+.mw-stage-dot.active{background:var(--p5);animation:pulse 1s infinite;}
+.mw-stage-lbl{flex:1;}
+.mw-stage-val{color:var(--txd);font-size:10px;}
+
+/* ══════════════════════════
+   DESIGN DROP GENERATOR
+══════════════════════════ */
+.dd-layout{display:flex;gap:14px;margin-bottom:22px;}
+.dd-left{flex:1;display:flex;flex-direction:column;gap:12px;}
+.dd-right{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+.dd-tabs{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.dd-tab{flex:1;padding:8px 12px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--txd);cursor:pointer;text-align:center;transition:all .14s;border-right:1px solid var(--bd);}
+.dd-tab:last-child{border-right:none;}
+.dd-tab:hover{color:var(--txt);background:var(--gg);}
+.dd-tab.active{color:var(--p5);background:var(--p5d);}
+.dd-content{display:none;}
+.dd-content.active{display:block;}
+.dd-channel{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;margin-bottom:10px;overflow:hidden;}
+.dd-ch-head{padding:10px 14px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--bd);background:var(--sf);}
+.dd-ch-icon{font-size:14px;opacity:.7;}
+.dd-ch-name{font-size:11px;color:var(--txt);}
+.dd-ch-badge{margin-left:auto;font-size:8px;letter-spacing:.13em;text-transform:uppercase;padding:2px 6px;border-radius:1px;}
+.dd-ch-body{padding:12px 14px;font-size:11px;color:var(--txd);line-height:1.8;white-space:pre-wrap;}
+.dd-ch-body.streaming::after{content:'▋';color:var(--p5);animation:blink .7s infinite;}
+.dd-meta{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px;}
+.dd-meta-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:10.5px;}
+.dd-meta-row:last-child{border-bottom:none;}
+.dd-meta-k{color:var(--txm);}
+.dd-meta-v{color:var(--txd);}
+.dd-copy-btn{background:none;border:1px solid var(--bd);color:var(--txm);font-family:var(--fm);font-size:8px;letter-spacing:.14em;padding:3px 8px;cursor:pointer;border-radius:1px;text-transform:uppercase;transition:all .14s;margin-left:auto;}
+.dd-copy-btn:hover{border-color:var(--gold);color:var(--gold);}
+.dd-shopify{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.dd-sh-field{padding:10px 14px;border-bottom:1px solid var(--bd);}
+.dd-sh-field:last-child{border-bottom:none;}
+.dd-sh-label{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:4px;}
+.dd-sh-val{font-size:11px;color:var(--txd);line-height:1.65;}
+
+/* ══════════════════════════
+   BLUEPRINT CHAT
+══════════════════════════ */
+.chat-layout{display:flex;gap:14px;height:calc(100vh - 130px);min-height:480px;}
+.chat-sidebar{width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.chat-main{flex:1;display:flex;flex-direction:column;background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.chat-header{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:9px;}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.chat-msg{display:flex;gap:10px;align-items:flex-start;}
+.chat-msg.user{flex-direction:row-reverse;}
+.chat-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:2px;}
+.avatar-ai{background:var(--p5d);border:1px solid rgba(184,145,106,.4);color:var(--p5);}
+.avatar-user{background:var(--gd);border:1px solid rgba(201,169,110,.3);color:var(--gold);}
+.chat-bubble{max-width:78%;padding:10px 14px;border-radius:3px;font-size:11px;line-height:1.75;color:var(--txd);}
+.bubble-ai{background:var(--sf2);border:1px solid var(--bd);border-bottom-left-radius:0;}
+.bubble-user{background:var(--gd);border:1px solid rgba(201,169,110,.22);color:var(--txt);border-bottom-right-radius:0;}
+.bubble-ai.streaming::after{content:'▋';color:var(--p5);animation:blink .7s infinite;}
+.chat-input-area{border-top:1px solid var(--bd);padding:12px 16px;display:flex;gap:9px;align-items:flex-end;}
+.chat-input{flex:1;background:var(--sf2);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:11px;padding:9px 12px;border-radius:2px;outline:none;resize:none;min-height:38px;max-height:110px;transition:border-color .14s;line-height:1.6;}
+.chat-input:focus{border-color:var(--gold);}
+.chat-input::placeholder{color:var(--txm);}
+.chat-context-card{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px;}
+.chat-ctx-lbl{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:7px;}
+.chat-ctx-item{display:flex;align-items:center;gap:7px;padding:5px 0;font-size:10.5px;color:var(--txd);border-bottom:1px solid var(--bd);}
+.chat-ctx-item:last-child{border-bottom:none;}
+.chat-ctx-dot{width:5px;height:5px;border-radius:50%;background:var(--p5);flex-shrink:0;}
+.chat-suggestion{padding:7px 11px;background:var(--sf2);border:1px solid var(--bd);border-radius:2px;font-size:10px;color:var(--txd);cursor:pointer;transition:all .14s;line-height:1.5;}
+.chat-suggestion:hover{border-color:var(--gold);color:var(--gold);background:var(--gg);}
+.chat-canvas-box{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.system-msg{text-align:center;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--txm);padding:4px 0;}
+
+@media(max-width:900px){
+  .mw-layout,.dd-layout,.chat-layout{flex-direction:column;}
+  .mw-right,.dd-right,.chat-sidebar{width:100%;}
+  .chat-layout{height:auto;}
+  .chat-main{min-height:500px;}
+  .g4{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <span class="logo-name">Evercrafted</span>
+    <span class="logo-sub">System Console · P5 AI Live</span>
+  </div>
+
+  <div class="sb-sec">
+    <div class="ssl">Phase 1–4</div>
+    <div class="ni dim"><span class="nic">◈</span>Dashboard<span class="pb pb-live">P1</span></div>
+    <div class="ni dim"><span class="nic">⬡</span>Formula Explorer<span class="pb pb-live">P1</span></div>
+    <div class="ni dim"><span class="nic">◉</span>Emotion Space<span class="pb pb-live">P1</span></div>
+    <div class="ni dim"><span class="nic">⬜</span>Blueprint Inspector<span class="pb pb-live">P1</span></div>
+    <div class="ni dim"><span class="nic">◧</span>DNA Registry<span class="pb pb-p2">P2</span></div>
+    <div class="ni dim"><span class="nic">⊹</span>Placement Debugger<span class="pb pb-p2">P2</span></div>
+    <div class="ni dim"><span class="nic">▦</span>Inventory Analyzer<span class="pb pb-p2">P2</span></div>
+    <div class="ni dim"><span class="nic">⟳</span>ABC Lab<span class="pb pb-p3">P3</span></div>
+    <div class="ni dim"><span class="nic">◬</span>Genome Dashboard<span class="pb pb-p3">P3</span></div>
+    <div class="ni dim"><span class="nic">⊞</span>Output Studio<span class="pb pb-p3">P3</span></div>
+    <div class="ni dim"><span class="nic">⬡</span>API Center<span class="pb pb-p4">P4</span></div>
+    <div class="ni dim"><span class="nic">◫</span>Schema Registry<span class="pb pb-p4">P4</span></div>
+    <div class="ni dim"><span class="nic">◈</span>Architecture Map<span class="pb pb-p4">P4</span></div>
+  </div>
+
+  <div class="sb-sec">
+    <div class="ssl">Phase 5 — AI Live</div>
+    <div class="ni active" onclick="nav('memory',this)"><span class="nic">✦</span>Memory Weaver<span class="pb pb-p5">P5 AI</span></div>
+    <div class="ni" onclick="nav('drop',this)"><span class="nic">◈</span>Design Drop<span class="pb pb-p5">P5 AI</span></div>
+    <div class="ni" onclick="nav('chat',this)"><span class="nic">◉</span>Blueprint Chat<span class="pb pb-p5">P5 AI</span></div>
+  </div>
+
+  <div class="sb-foot">
+    <div style="margin-bottom:6px;"><span class="sdot"></span><span style="font-size:10px;color:var(--txm);letter-spacing:.1em;">Console v5.0</span></div>
+    <div><span class="aidot"></span><span style="font-size:10px;color:var(--p5);letter-spacing:.1em;">Claude API Live</span></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="topbar">
+  <div class="tb-title" id="topbarTitle">Memory Weaver Studio</div>
+  <div class="tm">
+    <span class="mtag hl">EC_CANON_V1</span>
+    <span class="mtag p5">✦ AI Powered</span>
+    <span class="mtag" id="clk">—</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MEMORY WEAVER STUDIO
+══════════════════════════════════════════ -->
+<div class="panel active" id="panel-memory">
+  <div class="sh">Memory Weaver — Emotion → Blueprint Pipeline</div>
+
+  <div class="g4" style="margin-bottom:22px;">
+    <div class="card"><div class="clbl">Pipeline Stages</div><div class="cval">6</div><div class="csub">Memory → Blueprint</div></div>
+    <div class="card"><div class="clbl">AI Model</div><div class="cval" style="font-size:18px;margin-top:4px;">Sonnet</div><div class="csub">claude-sonnet-4-20250514</div></div>
+    <div class="card"><div class="clbl">Canon Rule</div><div style="font-size:11px;color:var(--p5);margin-top:6px;line-height:1.5;">AI interprets.<br>Geometry places.</div></div>
+    <div class="card"><div class="clbl">Output</div><div class="cval" style="font-size:18px;margin-top:4px;">Blueprint</div><div class="csub">EC_CANON_V1 JSON</div></div>
+  </div>
+
+  <div class="mw-layout">
+    <div class="mw-left">
+      <!-- Input Form -->
+      <div class="mw-form">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;">
+          <div style="font-family:var(--fd);font-size:17px;font-weight:300;color:var(--txt);">Customer Memory Input</div>
+          <div class="ai-badge">AI Interprets</div>
+        </div>
+
+        <div class="mw-field">
+          <div class="mw-label">Memory or Story <span class="mw-label-req">required</span></div>
+          <textarea class="mw-input" id="mwMemory" rows="4" placeholder="Describe a memory, feeling, or story this wreath should capture. Example: My grandmother's garden in early September — the weight of late summer roses just before the first frost, dusty lavender still blooming, everything golden and a little melancholy..."></textarea>
+        </div>
+
+        <div class="mw-field">
+          <div class="mw-label">Occasion / Context</div>
+          <div class="mw-chips" id="mwOccasion">
+            <div class="mw-chip active" data-val="unspecified">No specific occasion</div>
+            <div class="mw-chip" data-val="holiday">Holiday</div>
+            <div class="mw-chip" data-val="memorial">Memorial</div>
+            <div class="mw-chip" data-val="celebration">Celebration</div>
+            <div class="mw-chip" data-val="everyday">Everyday luxury</div>
+            <div class="mw-chip" data-val="gift">Gift</div>
+          </div>
+        </div>
+
+        <div class="mw-field">
+          <div class="mw-label">Color Instinct</div>
+          <div class="mw-chips" id="mwColor">
+            <div class="mw-chip active" data-val="let AI decide">Let AI decide</div>
+            <div class="mw-chip" data-val="warm earthy">Warm & earthy</div>
+            <div class="mw-chip" data-val="cool muted">Cool & muted</div>
+            <div class="mw-chip" data-val="deep dramatic">Deep & dramatic</div>
+            <div class="mw-chip" data-val="soft neutral">Soft & neutral</div>
+          </div>
+        </div>
+
+        <div class="mw-field" style="margin-bottom:0;">
+          <div class="mw-label">Size</div>
+          <div class="mw-chips" id="mwSize">
+            <div class="mw-chip" data-val="18">18"</div>
+            <div class="mw-chip active" data-val="20">20"</div>
+            <div class="mw-chip" data-val="24">24"</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:0;">
+        <button class="btn p5ai" id="mwRunBtn" onclick="runMemoryWeaver()" style="font-size:11px;padding:9px 18px;">✦ Weave Memory → Blueprint</button>
+        <button class="btn" onclick="mwReset()">↺ Reset</button>
+        <button class="btn sage" onclick="mwLoadExample()">⊕ Load Example</button>
+      </div>
+
+      <!-- Pipeline Stages -->
+      <div class="sh" style="margin-top:18px;">Pipeline</div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px;">
+        <div class="mw-stage" id="mws-0"><div class="mw-stage-dot" id="mwsd-0"></div><div class="mw-stage-lbl">Memory Intake — extracting emotional content</div><div class="mw-stage-val" id="mwsv-0">—</div></div>
+        <div class="mw-stage" id="mws-1"><div class="mw-stage-dot" id="mwsd-1"></div><div class="mw-stage-lbl">Emotion Mapping — valence + arousal coordinates</div><div class="mw-stage-val" id="mwsv-1">—</div></div>
+        <div class="mw-stage" id="mws-2"><div class="mw-stage-dot" id="mwsd-2"></div><div class="mw-stage-lbl">Formula Selection — matching composition to emotion</div><div class="mw-stage-val" id="mwsv-2">—</div></div>
+        <div class="mw-stage" id="mws-3"><div class="mw-stage-dot" id="mwsd-3"></div><div class="mw-stage-lbl">DNA Synthesis — deriving wreath genetic profile</div><div class="mw-stage-val" id="mwsv-3">—</div></div>
+        <div class="mw-stage" id="mws-4"><div class="mw-stage-dot" id="mwsd-4"></div><div class="mw-stage-lbl">Blueprint Compilation — assembling EC_CANON object</div><div class="mw-stage-val" id="mwsv-4">—</div></div>
+        <div class="mw-stage" id="mws-5"><div class="mw-stage-dot" id="mwsd-5"></div><div class="mw-stage-lbl">Certification — brand alignment + manufacture check</div><div class="mw-stage-val" id="mwsv-5">—</div></div>
+      </div>
+
+      <!-- AI Interpretation -->
+      <div class="sh">AI Interpretation</div>
+      <div id="mwInterpretation" class="ai-output" style="min-height:80px;color:var(--txm);font-style:italic;">Memory interpretation will appear here after weaving.</div>
+
+      <!-- Blueprint JSON -->
+      <div class="sh">Generated Blueprint JSON</div>
+      <div class="jblock" id="mwBlueprintJSON" style="min-height:80px;"><span style="color:var(--txm);">Blueprint will appear here after weaving.</span></div>
+    </div>
+
+    <div class="mw-right">
+      <!-- Wreath Preview -->
+      <div class="mw-blueprint-preview">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);align-self:flex-start;">Wreath Preview</div>
+        <canvas id="mwCanvas" width="260" height="260"></canvas>
+        <div style="font-size:9px;color:var(--txm);text-align:center;" id="mwPreviewLabel">Generate a blueprint to preview</div>
+      </div>
+
+      <!-- Emotion Map -->
+      <div class="mw-emotion-map">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:9px;">Detected Emotion Space</div>
+        <canvas id="mwEmotionMini" width="260" height="120"></canvas>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+          <div><div style="font-size:8px;letter-spacing:.16em;color:var(--txm);text-transform:uppercase;margin-bottom:3px;">Valence</div><div style="font-family:var(--fd);font-size:18px;font-weight:300;color:var(--p5);" id="mwValence">—</div></div>
+          <div><div style="font-size:8px;letter-spacing:.16em;color:var(--txm);text-transform:uppercase;margin-bottom:3px;">Arousal</div><div style="font-family:var(--fd);font-size:18px;font-weight:300;color:var(--p5);" id="mwArousal">—</div></div>
+          <div><div style="font-size:8px;letter-spacing:.16em;color:var(--txm);text-transform:uppercase;margin-bottom:3px;">Quadrant</div><div style="font-size:11px;color:var(--txd);margin-top:2px;" id="mwQuadrant">—</div></div>
+          <div><div style="font-size:8px;letter-spacing:.16em;color:var(--txm);text-transform:uppercase;margin-bottom:3px;">Formula</div><div style="font-size:11px;color:var(--txd);margin-top:2px;" id="mwFormula">—</div></div>
+        </div>
+      </div>
+
+      <!-- Score Panel -->
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px;">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:10px;">Blueprint Scores</div>
+        <div class="mw-score-row"><div class="mw-score-lbl">Emotion Fit</div><div class="mw-score-bar"><div class="mw-score-fill" id="mwScEF" style="width:0%"></div></div><div class="mw-score-val" id="mwScEFV">—</div></div>
+        <div class="mw-score-row"><div class="mw-score-lbl">DNA Cohesion</div><div class="mw-score-bar"><div class="mw-score-fill" id="mwScDC" style="width:0%"></div></div><div class="mw-score-val" id="mwScDCV">—</div></div>
+        <div class="mw-score-row"><div class="mw-score-lbl">Brand Alignment</div><div class="mw-score-bar"><div class="mw-score-fill" id="mwScBA" style="width:0%"></div></div><div class="mw-score-val" id="mwScBAV">—</div></div>
+        <div class="mw-score-row"><div class="mw-score-lbl">Memory Fidelity</div><div class="mw-score-bar"><div class="mw-score-fill" id="mwScMF" style="width:0%"></div></div><div class="mw-score-val" id="mwScMFV">—</div></div>
+      </div>
+
+      <button class="btn p5ai" id="mwSendDrop" onclick="sendToDrop()" disabled style="width:100%;">→ Send to Design Drop</button>
+      <button class="btn p5ai" id="mwSendChat" onclick="sendToChat()" disabled style="width:100%;">→ Refine in Blueprint Chat</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DESIGN DROP GENERATOR
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-drop">
+  <div class="sh">Design Drop Generator — AI Content Suite</div>
+
+  <div class="g4" style="margin-bottom:18px;">
+    <div class="card"><div class="clbl">Output Channels</div><div class="cval">5</div><div class="csub">All AI-generated</div></div>
+    <div class="card"><div class="clbl">Voice</div><div style="font-size:11px;color:var(--p5);margin-top:6px;line-height:1.5;">Evercrafted<br>Luxury Brand</div></div>
+    <div class="card"><div class="clbl">Blueprint Source</div><div style="font-size:11px;color:var(--txd);margin-top:6px;" id="ddBPSource">No blueprint loaded</div></div>
+    <div class="card"><div class="clbl">Status</div><div style="font-size:11px;color:var(--txd);margin-top:6px;" id="ddStatus">Ready</div></div>
+  </div>
+
+  <div class="dd-layout">
+    <div class="dd-left">
+      <!-- Blueprint Input -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="font-family:var(--fd);font-size:16px;font-weight:300;color:var(--txt);">Blueprint Input</div>
+          <div class="ai-badge">AI Content Engine</div>
+        </div>
+        <div class="row" style="margin-bottom:12px;">
+          <select class="sel" id="ddFormula">
+            <option value="">— Formula —</option>
+            <option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option>
+          </select>
+          <select class="sel" id="ddEmotion">
+            <option value="">— Emotion —</option>
+            <option>Cozy & Calm</option><option>Festive & Bright</option>
+            <option>Dramatic Tension</option><option>Vintage Melancholy</option>
+          </select>
+          <select class="sel" id="ddStyle">
+            <option>Organic Drape</option><option>Editorial Restraint</option>
+            <option>Lush Garden</option><option>Architectural</option><option>Woodland</option>
+          </select>
+        </div>
+        <div class="row" style="margin-bottom:0;">
+          <button class="btn p5ai" id="ddGenBtn" onclick="runDesignDrop()">✦ Generate All Content</button>
+          <button class="btn" onclick="ddReset()">↺ Reset</button>
+          <div style="margin-left:auto;font-size:9px;color:var(--txm);" id="ddProgress"></div>
+        </div>
+      </div>
+
+      <!-- Channel Tabs -->
+      <div class="dd-tabs" id="ddTabs">
+        <div class="dd-tab active" onclick="ddSwitchTab('shopify',this)">Shopify</div>
+        <div class="dd-tab" onclick="ddSwitchTab('instagram',this)">Instagram</div>
+        <div class="dd-tab" onclick="ddSwitchTab('email',this)">Email</div>
+        <div class="dd-tab" onclick="ddSwitchTab('pinterest',this)">Pinterest</div>
+        <div class="dd-tab" onclick="ddSwitchTab('mj',this)">Midjourney</div>
+      </div>
+
+      <!-- Shopify -->
+      <div class="dd-content active" id="dd-shopify">
+        <div class="dd-shopify" id="ddShopifyFields">
+          <div class="dd-sh-field"><div class="dd-sh-label">Product Title</div><div class="dd-sh-val" id="ddSHTitle" style="color:var(--txm);">Generate content first</div></div>
+          <div class="dd-sh-field"><div class="dd-sh-label">Short Description</div><div class="dd-sh-val" id="ddSHShort">—</div></div>
+          <div class="dd-sh-field"><div class="dd-sh-label">Long Description</div><div class="dd-sh-val" id="ddSHLong">—</div></div>
+          <div class="dd-sh-field"><div class="dd-sh-label">Tags</div><div class="dd-sh-val" id="ddSHTags">—</div></div>
+          <div class="dd-sh-field"><div class="dd-sh-label">SEO Meta Description</div><div class="dd-sh-val" id="ddSHMeta">—</div></div>
+        </div>
+      </div>
+
+      <!-- Instagram -->
+      <div class="dd-content" id="dd-instagram">
+        <div class="dd-channel">
+          <div class="dd-ch-head"><span class="dd-ch-icon">◉</span><span class="dd-ch-name">Instagram Caption</span><span class="dd-ch-badge" style="color:var(--p5);background:var(--p5d);border:1px solid rgba(184,145,106,.3);">AI</span><button class="dd-copy-btn" onclick="copyDD('insta')">Copy</button></div>
+          <div class="dd-ch-body" id="ddInsta" style="color:var(--txm);">Generate content to see Instagram caption.</div>
+        </div>
+        <div class="dd-channel">
+          <div class="dd-ch-head"><span class="dd-ch-icon">◈</span><span class="dd-ch-name">Hashtag Set</span><button class="dd-copy-btn" onclick="copyDD('hashtags')">Copy</button></div>
+          <div class="dd-ch-body" id="ddHashtags" style="color:var(--txm);">—</div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="dd-content" id="dd-email">
+        <div class="dd-channel">
+          <div class="dd-ch-head"><span class="dd-ch-icon">⬜</span><span class="dd-ch-name">Email Subject Lines</span><button class="dd-copy-btn" onclick="copyDD('emailSubj')">Copy</button></div>
+          <div class="dd-ch-body" id="ddEmailSubj" style="color:var(--txm);">Generate content to see subject lines.</div>
+        </div>
+        <div class="dd-channel">
+          <div class="dd-ch-head"><span class="dd-ch-icon">◧</span><span class="dd-ch-name">Email Body</span><button class="dd-copy-btn" onclick="copyDD('emailBody')">Copy</button></div>
+          <div class="dd-ch-body" id="ddEmailBody" style="color:var(--txm);">—</div>
+        </div>
+      </div>
+
+      <!-- Pinterest -->
+      <div class="dd-content" id="dd-pinterest">
+        <div class="dd-channel">
+          <div class="dd-ch-head"><span class="dd-ch-icon">◬</span><span class="dd-ch-name">Pinterest Pin Copy</span><button class="dd-copy-btn" onclick="copyDD('pinterest')">Copy</button></div>
+          <div class="dd-ch-body" id="ddPinterest" style="color:var(--txm);">Generate content to see Pinterest copy.</div>
+        </div>
+      </div>
+
+      <!-- Midjourney -->
+      <div class="dd-content" id="dd-mj">
+        <div class="dd-channel">
+          <div class="dd-ch-head"><span class="dd-ch-icon">✦</span><span class="dd-ch-name">Midjourney Render Prompt</span><button class="dd-copy-btn" onclick="copyDD('mj')">Copy</button></div>
+          <div class="dd-ch-body" id="ddMJ" style="color:var(--txm);font-family:var(--fm);">Generate content to see render prompt.</div>
+        </div>
+        <div class="dd-channel">
+          <div class="dd-ch-head"><span class="dd-ch-icon">◉</span><span class="dd-ch-name">Lifestyle Prompt Variant</span><button class="dd-copy-btn" onclick="copyDD('mjLifestyle')">Copy</button></div>
+          <div class="dd-ch-body" id="ddMJLifestyle" style="color:var(--txm);font-family:var(--fm);">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dd-right">
+      <!-- Wreath preview -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);align-self:flex-start;">Preview</div>
+        <canvas id="ddCanvas" width="260" height="260"></canvas>
+      </div>
+
+      <!-- Meta -->
+      <div class="dd-meta">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:9px;">Content Meta</div>
+        <div class="dd-meta-row"><div class="dd-meta-k">Formula</div><div class="dd-meta-v" id="ddMetaFormula">—</div></div>
+        <div class="dd-meta-row"><div class="dd-meta-k">Emotion</div><div class="dd-meta-v" id="ddMetaEmotion">—</div></div>
+        <div class="dd-meta-row"><div class="dd-meta-k">Tone</div><div class="dd-meta-v" id="ddMetaTone">—</div></div>
+        <div class="dd-meta-row"><div class="dd-meta-k">Word Count</div><div class="dd-meta-v" id="ddMetaWC">—</div></div>
+        <div class="dd-meta-row"><div class="dd-meta-k">Channels</div><div class="dd-meta-v" id="ddMetaChannels">0/5</div></div>
+      </div>
+
+      <!-- Export all -->
+      <button class="btn p5ai" id="ddExportAll" onclick="ddExportAll()" disabled style="width:100%;">⊞ Export All Content</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     BLUEPRINT CHAT
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-chat">
+  <div class="sh">Blueprint Chat — Conversational Design Refinement</div>
+
+  <div class="chat-layout">
+    <!-- Sidebar context -->
+    <div class="chat-sidebar">
+      <!-- Active blueprint context -->
+      <div class="chat-context-card">
+        <div class="chat-ctx-lbl">Active Blueprint Context</div>
+        <div class="chat-ctx-item"><div class="chat-ctx-dot"></div><div id="ctxFormula">Formula: —</div></div>
+        <div class="chat-ctx-item"><div class="chat-ctx-dot"></div><div id="ctxEmotion">Emotion: —</div></div>
+        <div class="chat-ctx-item"><div class="chat-ctx-dot"></div><div id="ctxDNA">DNA loaded: —</div></div>
+        <div class="chat-ctx-item"><div class="chat-ctx-dot"></div><div id="ctxScore">Fit score: —</div></div>
+      </div>
+
+      <!-- Live preview -->
+      <div class="chat-canvas-box">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);align-self:flex-start;">Live Preview</div>
+        <canvas id="chatCanvas" width="210" height="210"></canvas>
+        <div style="font-size:9px;color:var(--txm);text-align:center;" id="chatPreviewLabel">—</div>
+      </div>
+
+      <!-- Quick actions -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;">
+        <div class="chat-ctx-lbl">Quick Load</div>
+        <div class="row" style="margin-bottom:8px;flex-direction:column;gap:6px;align-items:stretch;">
+          <select class="sel" id="chatFormulaSel" onchange="chatUpdateContext()"><option value="">— Formula —</option><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+          <select class="sel" id="chatEmotionSel" onchange="chatUpdateContext()"><option value="">— Emotion —</option><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+          <button class="btn p5ai" onclick="chatLoadBlueprint()" style="width:100%;">⊕ Load Blueprint</button>
+        </div>
+        <button class="btn" onclick="chatClear()" style="width:100%;">↺ Clear Chat</button>
+      </div>
+
+      <!-- Suggestions -->
+      <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;">
+        <div class="chat-ctx-lbl">Suggested Questions</div>
+        <div style="display:flex;flex-direction:column;gap:5px;" id="chatSuggestions">
+          <div class="chat-suggestion" onclick="chatSuggest(this)">Make it feel more melancholy — less festive</div>
+          <div class="chat-suggestion" onclick="chatSuggest(this)">What formula would work better for a memorial wreath?</div>
+          <div class="chat-suggestion" onclick="chatSuggest(this)">Increase the negative space and silence arc</div>
+          <div class="chat-suggestion" onclick="chatSuggest(this)">Give this a more editorial, restrained feel</div>
+          <div class="chat-suggestion" onclick="chatSuggest(this)">What DNA traits define this blueprint's personality?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat main -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="avatar-ai chat-avatar" style="width:28px;height:28px;font-size:11px;">✦</div>
+        <div>
+          <div style="font-size:11px;color:var(--txt);letter-spacing:.04em;">Blueprint Design Assistant</div>
+          <div style="font-size:9px;color:var(--txm);letter-spacing:.12em;text-transform:uppercase;">Evercrafted · EC_CANON_V1 · AI Powered</div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:var(--sage);animation:pulse 2s infinite;"></div>
+          <span style="font-size:9px;color:var(--txm);">Live</span>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="system-msg">Evercrafted Blueprint Chat · EC_CANON_V1</div>
+        <div class="chat-msg">
+          <div class="avatar-ai chat-avatar">✦</div>
+          <div class="chat-bubble bubble-ai">I'm your Evercrafted design assistant, fluent in the EC_CANON blueprint system. I can help you refine compositions, explore DNA mutations, interpret memories, translate emotions into formula choices, and explain any aspect of the Evercrafted wreath design system.<br><br>Load a blueprint using the Quick Load panel, or describe what you're designing and I'll help from there.</div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chatInput" rows="1" placeholder="Ask about your blueprint, request changes, or describe a design direction…" onkeydown="chatKeyDown(event)" oninput="chatAutoResize(this)"></textarea>
+        <button class="btn p5ai" id="chatSendBtn" onclick="chatSend()" style="padding:9px 14px;white-space:nowrap;">Send ↵</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// CORE
+// ═══════════════════════════════════
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,10000);
+
+const TITLES={memory:'Memory Weaver Studio',drop:'Design Drop Generator',chat:'Blueprint Chat'};
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbarTitle').textContent=TITLES[id];
+}
+
+const API_BASE = "http://localhost:8787";
+
+// Chip selection
+document.querySelectorAll('.mw-chips').forEach(group=>{
+  group.querySelectorAll('.mw-chip').forEach(chip=>{
+    chip.onclick=()=>{group.querySelectorAll('.mw-chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');};
+  });
+});
+
+async function postJSON(path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body || {})
+  });
+  const data = await res.json();
+  if (!res.ok || !data.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+
+// ═══════════════════════════════════
+// WREATH CANVAS DRAWING (shared)
+// ═══════════════════════════════════
+const FORMULA_IDX = {Crescent:0,'Double Echo':1,'Bottom Heavy':2,'Side Sweep':3,'Open Arc':4,'Full Halo':5,'Split Garden':6,'Focal Burst':7,'Laddered Rhythm':8,'Radial Burst':9,'Bow Anchor':10,'Inventory Salvage':11};
+function drawWreathCanvas(canvasId, formula, density=0.7, label='') {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const ctx = c.getContext('2d'), w = c.width, h = c.height, cx = w/2, cy = h/2, R = Math.min(w,h)/2 - 22;
+  ctx.clearRect(0,0,w,h); ctx.fillStyle='#f5f1ea'; ctx.fillRect(0,0,w,h);
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.strokeStyle='rgba(30,28,24,.2)'; ctx.lineWidth=Math.max(10, R*0.14); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.strokeStyle='rgba(140,114,88,.18)'; ctx.lineWidth=1; ctx.stroke();
+  const gold='#8c7258', sage='#5c7353', rose='#c47c6e';
+  const dm = 0.6 + density * 0.7;
+  function s(a,r2,l,col,w2=1.5){const x=cx+r2*Math.cos(a),y=cy+r2*Math.sin(a),ex=cx+(r2+l)*Math.cos(a),ey=cy+(r2+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w2;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w2+.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+  function cl(sa,ea,n,l,col){for(let i=0;i<=Math.round(n*dm);i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.11;s(a,R-Math.max(5,R*.07),l+Math.random()*(R*.1),col);}}
+  const fi = FORMULA_IDX[formula] ?? 0;
+  const L = R * 0.19, SL = R * 0.14;
+  [[()=>cl(Math.PI*.3,Math.PI*1.7,14,L,gold)],[()=>{cl(-.4,.4,6,L,gold);cl(Math.PI-.4,Math.PI+.4,6,L,sage);}],[()=>cl(Math.PI*.1,Math.PI*.9,16,L*1.1,gold)],[()=>{cl(-.6,.6,9,L,gold);s(0,R,L*1.8,rose,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,10,L,gold);cl(Math.PI*.95,Math.PI*1.85,8,SL,sage);}],[()=>cl(0,Math.PI*2,22,SL,gold)],[()=>{cl(Math.PI*.1,Math.PI*.85,10,L,gold);cl(Math.PI*1.1,Math.PI*1.85,10,L,sage);}],[()=>{for(let i=0;i<Math.round(12*dm);i++){const a=(i/12)*Math.PI*2;s(a,R-R*.08,L*1.3+Math.random()*(R*.15),i%3===0?rose:gold,1.7);}}],[()=>{for(let i=0;i<8;i++){const a=-.3+i*.17;s(a,R-R*.05,SL+i*(R*.025),i%2===0?gold:sage,1.5);}}],[()=>{for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;s(a,R-R*.06,L,gold,1.7);}}],[()=>cl(Math.PI*.6,Math.PI*1.4,12,L,gold)],[()=>{const cs=[gold,sage,rose];for(let i=0;i<Math.round(16*dm);i++){const a=Math.random()*Math.PI*2;s(a,R-R*.08,SL+Math.random()*(L*.9),cs[Math.floor(Math.random()*3)],1.3);}}]][fi][0]();
+  if(label){ctx.font=`8px "DM Sans"`;ctx.fillStyle='rgba(140,114,88,.55)';ctx.textAlign='right';ctx.fillText(label,w-7,h-7);}
+}
+
+// emotion mini map
+function drawEmotionMini(canvasId, valence, arousal) {
+  const c = document.getElementById(canvasId); if(!c) return;
+  const ctx = c.getContext('2d'), w = c.width, h = c.height;
+  ctx.fillStyle='#f3eee6'; ctx.fillRect(0,0,w,h);
+  [{x:w/2,y:0,w:w/2,h:h/2,col:'rgba(92,115,83,.12)'},{x:0,y:0,w:w/2,h:h/2,col:'rgba(139,134,176,.1)'},{x:w/2,y:h/2,w:w/2,h:h/2,col:'rgba(140,114,88,.1)'},{x:0,y:h/2,w:w/2,h:h/2,col:'rgba(196,124,110,.1)'}].forEach(q=>{ctx.fillStyle=q.col;ctx.fillRect(q.x,q.y,q.w,q.h);});
+  ctx.strokeStyle='rgba(30,28,24,.25)';ctx.lineWidth=1;ctx.setLineDash([3,5]);ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.stroke();ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();ctx.setLineDash([]);
+  if (valence !== null && arousal !== null) {
+    const px = ((valence+1)/2)*w, py = ((-arousal+1)/2)*h;
+    const g = ctx.createRadialGradient(px,py,0,px,py,20); g.addColorStop(0,'rgba(140,114,88,.5)'); g.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(px,py,20,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle='#8c7258'; ctx.fill();
+  }
+  ctx.font='8px "DM Sans"'; ctx.fillStyle='rgba(92,84,75,.7)'; ctx.textAlign='center';
+  ctx.fillText('V+',w*.78,10); ctx.fillText('V−',w*.22,10);
+  ctx.fillText('A+',w/2,10); ctx.fillText('A−',w/2,h-3);
+}
+
+function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+function buildBlueprintId() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let id = 'EC-';
+  for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+function deriveCanonDNA(emotionData, colorPref='') {
+  const valence = clamp(Number(emotionData.valence) || 0, -1, 1);
+  const arousal = clamp(Number(emotionData.arousal) || 0, -1, 1);
+  const absA = Math.abs(arousal);
+  const densityProfile = clamp(0.3 + absA * 0.65, 0.3, 0.95);
+  const dist = clamp(Math.hypot(valence, arousal) / Math.sqrt(2), 0, 1);
+  const quadrant = emotionData.quadrant || 'Cozy & Calm';
+  let colorBias = 'neutral';
+  const c = (colorPref || '').toLowerCase();
+  if (c.includes('warm')) colorBias = 'warm';
+  else if (c.includes('cool')) colorBias = 'cool';
+  else if (c.includes('split') || c.includes('contrast')) colorBias = 'split';
+  else if (valence > 0.2) colorBias = 'warm';
+  else if (valence < -0.2) colorBias = 'cool';
+  return {
+    cluster_count: clamp(Math.round(3 + ((valence + 1) / 2) * 5), 3, 8),
+    cluster_weight_distribution: Number(((arousal + 1) / 2).toFixed(2)),
+    cluster_spread_deg: clamp(Math.round(15 + ((valence + 1) / 2) * 75), 15, 90),
+    density_profile: Number(densityProfile.toFixed(2)),
+    greenery_direction: valence > 0.2 ? 'outward' : valence < -0.2 ? 'inward' : 'balanced',
+    silhouette_bias: quadrant === 'Dramatic Tension' ? 'structured' : quadrant === 'Vintage Melancholy' ? 'organic' : 'mixed',
+    greenery_ratio: Number((0.25 + dist * 0.3).toFixed(2)),
+    focal_ratio: Number(clamp(0.38 - densityProfile * 0.3, 0.1, 0.28).toFixed(2)),
+    silence_arc: clamp(Math.round(absA * 60), 0, 60),
+    focal_depth: Number(clamp(0.4 + densityProfile * 0.5, 0.4, 0.9).toFixed(2)),
+    style_signature: quadrant === 'Festive & Bright' ? 'abundant' : quadrant === 'Cozy & Calm' ? 'minimal' : quadrant === 'Dramatic Tension' ? 'editorial' : 'memorial',
+    color_bias: colorBias
+  };
+}
+
+// ═══════════════════════════════════
+// MEMORY WEAVER
+// ═══════════════════════════════════
+let mwBlueprint = null;
+let mwRunning = false;
+
+function getChipVal(groupId) {
+  const active = document.querySelector(`#${groupId} .mw-chip.active`);
+  return active ? active.dataset.val : '';
+}
+
+function mwSetStage(i, state, val='') {
+  const dot = document.getElementById(`mwsd-${i}`);
+  const valEl = document.getElementById(`mwsv-${i}`);
+  dot.className = 'mw-stage-dot ' + state;
+  if (val) valEl.textContent = val;
+}
+
+function mwReset() {
+  for(let i=0;i<6;i++){mwSetStage(i,'','—');}
+  document.getElementById('mwInterpretation').textContent = 'Memory interpretation will appear here after weaving.';
+  document.getElementById('mwInterpretation').className = 'ai-output';
+  document.getElementById('mwBlueprintJSON').innerHTML = '<span style="color:var(--txm);">Blueprint will appear here after weaving.</span>';
+  ['mwValence','mwArousal','mwQuadrant','mwFormula'].forEach(id=>document.getElementById(id).textContent='—');
+  ['mwScEF','mwScDC','mwScBA','mwScMF'].forEach(id=>document.getElementById(id).style.width='0%');
+  ['mwScEFV','mwScDCV','mwScBAV','mwScMFV'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('mwPreviewLabel').textContent='Generate a blueprint to preview';
+  document.getElementById('mwSendDrop').disabled = true;
+  document.getElementById('mwSendChat').disabled = true;
+  drawEmotionMini('mwEmotionMini',null,null);
+  const c = document.getElementById('mwCanvas'); if(c){const ctx=c.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,c.width,c.height);}
+  mwBlueprint = null;
+}
+
+function mwLoadExample() {
+  document.getElementById('mwMemory').value = "My grandmother used to tend a cottage garden in late August — hollyhocks gone to seed, heavy-headed roses just past their peak, lavender turning silver. Everything felt golden and slightly melancholy, the way summer always does when you know autumn is close. She would cut stems and arrange them without thinking, like the flowers already knew where they belonged. I want this wreath to feel like that garden: a little wild, a lot gentle, and deeply, quietly beautiful.";
+  document.querySelector('#mwOccasion .mw-chip[data-val="memorial"]').click();
+  document.querySelector('#mwColor .mw-chip[data-val="warm earthy"]').click();
+}
+
+function mwLoadExample() {
+  document.getElementById('mwMemory').value = "My grandmother used to tend a cottage garden in late August — hollyhocks gone to seed, heavy-headed roses just past their peak, lavender turning silver. Everything felt golden and slightly melancholy, the way summer always does when you know autumn is close. She would cut stems and arrange them without thinking, like the flowers already knew where they belonged. I want this wreath to feel like that garden: a little wild, a lot gentle, and deeply, quietly beautiful.";
+  document.querySelectorAll('#mwOccasion .mw-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('#mwOccasion .mw-chip[data-val="memorial"]').classList.add('active');
+  document.querySelectorAll('#mwColor .mw-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('#mwColor .mw-chip[data-val="warm earthy"]').classList.add('active');
+}
+
+async function runMemoryWeaver() {
+  if (mwRunning) return;
+  const memory = document.getElementById('mwMemory').value.trim();
+  if (!memory) { document.getElementById('mwMemory').style.borderColor='var(--rose)'; setTimeout(()=>document.getElementById('mwMemory').style.borderColor='',1400); return; }
+  mwRunning = true;
+  const btn = document.getElementById('mwRunBtn');
+  btn.disabled = true; btn.textContent = '✦ Weaving…';
+  mwReset();
+  const occasion = getChipVal('mwOccasion');
+  const colorPref = getChipVal('mwColor');
+  const size = getChipVal('mwSize') || '20';
+
+  try {
+    // Stage 0 — memory intake
+    mwSetStage(0,'active','reading…');
+    await delay(400);
+
+    // Stage 1 — emotion mapping via engine
+    mwSetStage(0,'done','complete');
+    mwSetStage(1,'active','mapping…');
+    const mwResp = await postJSON('/memory-weaver', {
+      memory,
+      occasion,
+      color_pref: colorPref,
+      size
+    });
+    const emotionData = mwResp.emotion;
+    mwSetStage(1,'done',emotionData.quadrant);
+
+    // Stage 2 — formula selection
+    mwSetStage(2,'active','selecting…');
+    await delay(300);
+    mwSetStage(2,'done',emotionData.formula);
+
+    // Stage 3 — DNA synthesis
+    mwSetStage(3,'active','synthesizing…');
+    const bp = mwResp.blueprint;
+    const dna = bp.dna || deriveCanonDNA(emotionData, colorPref);
+    const density = dna.density_profile || 0.6;
+    await delay(400);
+    mwSetStage(3,'done','12 traits set');
+
+    // Stage 4 — blueprint compilation
+    mwSetStage(4,'active','compiling…');
+    const scores = bp.scores || {
+      emotion_fit: 0.86,
+      dna_cohesion: 0.9,
+      brand_alignment: 0.9
+    };
+    const memoryFidelity = 0.85;
+    mwBlueprint = bp;
+    await delay(300);
+    mwSetStage(4,'done','EC_CANON_V1');
+
+    // Stage 5 — certification + AI interpretation
+    mwSetStage(5,'active','certifying…');
+    document.getElementById('mwInterpretation').className = 'ai-output';
+    document.getElementById('mwInterpretation').textContent = mwResp.interpretation || 'Interpretation ready.';
+    document.getElementById('mwInterpretation').className = 'ai-output';
+    mwSetStage(5,'done','EC_CERT_V1 ✓');
+
+    // Update UI
+    document.getElementById('mwValence').textContent = emotionData.valence.toFixed(2);
+    document.getElementById('mwArousal').textContent = emotionData.arousal.toFixed(2);
+    document.getElementById('mwQuadrant').textContent = emotionData.quadrant;
+    document.getElementById('mwFormula').textContent = emotionData.formula;
+    document.getElementById('mwPreviewLabel').textContent = `${emotionData.formula} · ${emotionData.quadrant}`;
+
+    // Score bars
+    [['mwScEF','mwScEFV',scores.emotion_fit],['mwScDC','mwScDCV',scores.dna_cohesion],['mwScBA','mwScBAV',scores.brand_alignment],['mwScMF','mwScMFV',memoryFidelity]].forEach(([bar,val,score])=>{
+      document.getElementById(bar).style.width=(score*100)+'%';
+      document.getElementById(val).textContent=(score*100).toFixed(0)+'%';
+    });
+
+    // JSON
+    document.getElementById('mwBlueprintJSON').innerHTML = syntaxHL(JSON.stringify(bp,null,2));
+    drawEmotionMini('mwEmotionMini',emotionData.valence,emotionData.arousal);
+    drawWreathCanvas('mwCanvas',emotionData.formula,density,bp.blueprint_id.slice(-6));
+
+    // Enable downstream buttons
+    document.getElementById('mwSendDrop').disabled = false;
+    document.getElementById('mwSendChat').disabled = false;
+
+    // Store globally for cross-module use
+    window.lastBlueprint = bp;
+
+  } catch(err) {
+    document.getElementById('mwInterpretation').textContent = `Error: ${err.message}`;
+    document.getElementById('mwInterpretation').className = 'ai-output';
+    for(let i=0;i<6;i++) mwSetStage(i,'','error');
+  } finally {
+    mwRunning = false;
+    btn.disabled = false; btn.textContent = '✦ Weave Memory → Blueprint';
+  }
+}
+
+function sendToDrop() {
+  if (!mwBlueprint) return;
+  window.preloadBlueprint = mwBlueprint;
+  nav('drop', document.querySelector('.ni[onclick*="drop"]'));
+  setTimeout(()=>{
+    document.getElementById('ddFormula').value = mwBlueprint.composition.formula;
+    document.getElementById('ddEmotion').value = mwBlueprint.emotion_space.quadrant || mwBlueprint.emotion_space.quadrant_label || '';
+    document.getElementById('ddBPSource').textContent = mwBlueprint.blueprint_id;
+  }, 100);
+}
+function sendToChat() {
+  if (!mwBlueprint) return;
+  window.chatBlueprint = mwBlueprint;
+  nav('chat', document.querySelector('.ni[onclick*="chat"]'));
+  setTimeout(()=>{
+    document.getElementById('chatFormulaSel').value = mwBlueprint.composition.formula;
+    document.getElementById('chatEmotionSel').value = mwBlueprint.emotion_space.quadrant || mwBlueprint.emotion_space.quadrant_label || '';
+    chatUpdateContext();
+    drawWreathCanvas('chatCanvas', mwBlueprint.composition.formula, mwBlueprint.dna.density_profile, mwBlueprint.blueprint_id.slice(-6));
+    document.getElementById('chatPreviewLabel').textContent = mwBlueprint.composition.formula;
+  }, 100);
+}
+
+// ═══════════════════════════════════
+// DESIGN DROP GENERATOR
+// ═══════════════════════════════════
+let ddContent = {};
+let ddRunning = false;
+
+function ddSwitchTab(id, el) {
+  document.querySelectorAll('.dd-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.dd-content').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('dd-'+id).classList.add('active');
+}
+
+function ddReset() {
+  ['ddSHTitle','ddSHShort','ddSHLong','ddSHTags','ddSHMeta'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
+  ['ddInsta','ddHashtags','ddEmailSubj','ddEmailBody','ddPinterest','ddMJ','ddMJLifestyle'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='Generate content first';el.style.color='var(--txm)';}});
+  ['ddMetaFormula','ddMetaEmotion','ddMetaTone','ddMetaWC'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('ddMetaChannels').textContent='0/5';
+  document.getElementById('ddStatus').textContent='Ready';
+  document.getElementById('ddExportAll').disabled=true;
+  ddContent={};
+  const c=document.getElementById('ddCanvas');if(c){const ctx=c.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,c.width,c.height);}
+}
+
+async function runDesignDrop() {
+  if (ddRunning) return;
+  const formula = document.getElementById('ddFormula').value;
+  const emotion = document.getElementById('ddEmotion').value;
+  const style = document.getElementById('ddStyle').value;
+  if (!formula || !emotion) return;
+
+  ddRunning = true;
+  const btn = document.getElementById('ddGenBtn');
+  btn.disabled = true;
+  const prog = document.getElementById('ddProgress');
+  ddReset();
+
+  document.getElementById('ddMetaFormula').textContent = formula;
+  document.getElementById('ddMetaEmotion').textContent = emotion;
+  document.getElementById('ddMetaTone').textContent = style;
+  document.getElementById('ddStatus').textContent = 'Generating…';
+  drawWreathCanvas('ddCanvas', formula, 0.7, '');
+
+  try {
+    prog.textContent = 'Generating (1/5)…';
+    const payload = await postJSON('/design-drop', { formula, emotion, style });
+    const shopify = payload.shopify;
+    document.getElementById('ddSHTitle').textContent = shopify.title || '—';
+    document.getElementById('ddSHShort').textContent = shopify.short_desc || '—';
+    document.getElementById('ddSHLong').textContent = shopify.long_desc || '—';
+    document.getElementById('ddSHTags').textContent = Array.isArray(shopify.tags) ? shopify.tags.join(' · ') : shopify.tags;
+    document.getElementById('ddSHMeta').textContent = shopify.seo_meta || '—';
+    document.getElementById('ddMetaChannels').textContent = '1/5';
+
+    prog.textContent = 'Instagram (2/5)…';
+    const instagram = payload.instagram;
+    const instaEl = document.getElementById('ddInsta');
+    instaEl.textContent = instagram.caption || '—';
+    document.getElementById('ddHashtags').textContent = Array.isArray(instagram.hashtags) ? instagram.hashtags.join(' ') : instagram.hashtags;
+    document.getElementById('ddMetaChannels').textContent = '2/5';
+
+    prog.textContent = 'Email (3/5)…';
+    const email = payload.email;
+    document.getElementById('ddEmailSubj').textContent = Array.isArray(email.subjects) ? email.subjects.map((s,i)=>`${i+1}. ${s}`).join('\n') : email.subjects;
+    document.getElementById('ddEmailBody').textContent = email.body || '—';
+    document.getElementById('ddMetaChannels').textContent = '3/5';
+
+    prog.textContent = 'Pinterest (4/5)…';
+    const pinterest = payload.pinterest;
+    document.getElementById('ddPinterest').style.color = '';
+    document.getElementById('ddPinterest').textContent = `📌 ${pinterest.title}\n\n${pinterest.description}\n\nBoard: ${pinterest.board_suggestion}`;
+    document.getElementById('ddMetaChannels').textContent = '4/5';
+
+    prog.textContent = 'Midjourney (5/5)…';
+    const mj = payload.mj;
+    document.getElementById('ddMJ').textContent = mj.product_prompt || '—';
+    document.getElementById('ddMJLifestyle').textContent = mj.lifestyle_prompt || '—';
+    document.getElementById('ddMetaChannels').textContent = '5/5';
+
+    ddContent = payload;
+    // Final
+    const totalWords = [shopify.long_desc, instagram.caption, email.body, pinterest.description].join(' ').split(/\s+/).length;
+    document.getElementById('ddMetaWC').textContent = `~${totalWords} words`;
+    document.getElementById('ddStatus').textContent = 'Complete';
+    document.getElementById('ddExportAll').disabled = false;
+    prog.textContent = '✓ All channels complete';
+
+  } catch(err) {
+    document.getElementById('ddStatus').textContent = 'Error: '+err.message;
+    prog.textContent = '';
+  } finally {
+    ddRunning = false;
+    btn.disabled = false;
+  }
+}
+
+function copyDD(key) {
+  const elMap = {insta:'ddInsta',hashtags:'ddHashtags',emailSubj:'ddEmailSubj',emailBody:'ddEmailBody',pinterest:'ddPinterest',mj:'ddMJ',mjLifestyle:'ddMJLifestyle'};
+  const el = document.getElementById(elMap[key]);
+  if (el) navigator.clipboard.writeText(el.textContent);
+}
+
+function ddExportAll() {
+  if (!Object.keys(ddContent).length) return;
+  const formula = document.getElementById('ddFormula').value;
+  const emotion = document.getElementById('ddEmotion').value;
+  let out = `EVERCRAFTED DESIGN DROP — ${formula} · ${emotion}\n${'='.repeat(50)}\n\n`;
+  if (ddContent.shopify) out += `SHOPIFY\nTitle: ${ddContent.shopify.title}\nShort: ${ddContent.shopify.short_desc}\nLong:\n${ddContent.shopify.long_desc}\nTags: ${Array.isArray(ddContent.shopify.tags)?ddContent.shopify.tags.join(', '):ddContent.shopify.tags}\nSEO: ${ddContent.shopify.seo_meta}\n\n`;
+  if (ddContent.instagram) out += `INSTAGRAM\nCaption:\n${ddContent.instagram.caption}\nHashtags: ${Array.isArray(ddContent.instagram.hashtags)?ddContent.instagram.hashtags.join(' '):ddContent.instagram.hashtags}\n\n`;
+  if (ddContent.email) out += `EMAIL\nSubjects:\n${Array.isArray(ddContent.email.subjects)?ddContent.email.subjects.map((s,i)=>`${i+1}. ${s}`).join('\n'):ddContent.email.subjects}\nBody:\n${ddContent.email.body}\n\n`;
+  if (ddContent.pinterest) out += `PINTEREST\nTitle: ${ddContent.pinterest.title}\nDesc: ${ddContent.pinterest.description}\n\n`;
+  if (ddContent.mj) out += `MIDJOURNEY\nProduct: ${ddContent.mj.product_prompt}\nLifestyle: ${ddContent.mj.lifestyle_prompt}\n`;
+  const blob = new Blob([out],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ec-drop-${formula.replace(/\s/g,'-')}.txt`;a.click();
+}
+
+// ═══════════════════════════════════
+// BLUEPRINT CHAT
+// ═══════════════════════════════════
+let chatHistory = [];
+let chatBlueprint = null;
+let chatRunning = false;
+
+function chatUpdateContext() {
+  const formula = document.getElementById('chatFormulaSel').value;
+  const emotion = document.getElementById('chatEmotionSel').value;
+  document.getElementById('ctxFormula').textContent = formula ? `Formula: ${formula}` : 'Formula: —';
+  document.getElementById('ctxEmotion').textContent = emotion ? `Emotion: ${emotion}` : 'Emotion: —';
+}
+
+function chatLoadBlueprint() {
+  const formula = document.getElementById('chatFormulaSel').value;
+  const emotion = document.getElementById('chatEmotionSel').value;
+  if (!formula || !emotion) return;
+  const bp = makeMiniBlueprint(formula, emotion);
+  chatBlueprint = bp;
+  window.chatBlueprint = bp;
+  document.getElementById('ctxFormula').textContent = `Formula: ${formula}`;
+  document.getElementById('ctxEmotion').textContent = `Emotion: ${emotion}`;
+  document.getElementById('ctxDNA').textContent = `DNA loaded: 12 traits`;
+  document.getElementById('ctxScore').textContent = `Fit score: ${(bp.scores.emotion_fit*100).toFixed(0)}%`;
+  drawWreathCanvas('chatCanvas', formula, bp.dna.density_profile, bp.blueprint_id.slice(-6));
+  document.getElementById('chatPreviewLabel').textContent = formula;
+  chatAddSystemMsg(`Blueprint loaded: ${formula} · ${emotion} · ${bp.blueprint_id}`);
+}
+
+function makeMiniBlueprint(formula, emotion) {
+  const id='EC-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  const v=emotion==='Cozy & Calm'?0.6:emotion==='Festive & Bright'?0.8:emotion==='Dramatic Tension'?-0.5:-0.7;
+  const a=emotion==='Cozy & Calm'?-0.4:emotion==='Festive & Bright'?0.6:emotion==='Dramatic Tension'?0.5:-0.5;
+  return{blueprint_id:id,composition:{formula},dna:{cluster_count:Math.round(3+Math.random()*5),density_profile:parseFloat((0.4+Math.random()*.5).toFixed(2)),greenery_ratio:parseFloat((0.35+Math.random()*.3).toFixed(2)),focal_ratio:parseFloat((0.12+Math.random()*.2).toFixed(2)),silence_arc:Math.round(Math.random()*60),focal_depth:parseFloat((0.3+Math.random()*.5).toFixed(2))},emotion_space:{valence:v,arousal:a,quadrant:emotion},scores:{emotion_fit:parseFloat((0.82+Math.random()*.15).toFixed(2)),dna_cohesion:parseFloat((0.85+Math.random()*.12).toFixed(2)),brand_alignment:parseFloat((0.88+Math.random()*.1).toFixed(2))}};
+}
+
+function chatAddSystemMsg(txt) {
+  const msgs = document.getElementById('chatMessages');
+  const d = document.createElement('div'); d.className='system-msg'; d.textContent=txt;
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+}
+
+function chatAddMessage(role, text, streaming=false) {
+  const msgs = document.getElementById('chatMessages');
+  const wrap = document.createElement('div'); wrap.className=`chat-msg${role==='user'?' user':''}`;
+  const av = document.createElement('div'); av.className=`chat-avatar ${role==='user'?'avatar-user':'avatar-ai'}`; av.textContent=role==='user'?'B':'✦';
+  const bubble = document.createElement('div'); bubble.className=`chat-bubble ${role==='user'?'bubble-user':'bubble-ai'}${streaming?' streaming':''}`;
+  bubble.textContent=text;
+  wrap.appendChild(av); wrap.appendChild(bubble);
+  msgs.appendChild(wrap); msgs.scrollTop=msgs.scrollHeight;
+  return bubble;
+}
+
+async function chatSend() {
+  if (chatRunning) return;
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  chatRunning = true;
+  input.value = ''; input.style.height='38px';
+  document.getElementById('chatSendBtn').disabled = true;
+
+  chatAddMessage('user', text);
+  chatHistory.push({role:'user', content:text});
+
+  const bubble = chatAddMessage('assistant', '', true);
+
+  const bpContext = chatBlueprint ? JSON.stringify({
+    blueprint_id: chatBlueprint.blueprint_id,
+    formula: chatBlueprint.composition?.formula,
+    emotion_quadrant: chatBlueprint.emotion_space?.quadrant || chatBlueprint.emotion_space?.quadrant_label,
+    dna: chatBlueprint.dna,
+    scores: chatBlueprint.scores
+  }, null, 2) : 'No blueprint loaded.';
+
+  try {
+    const resp = await postJSON('/chat/respond', {
+      message: text,
+      blueprint: chatBlueprint || null
+    });
+    const full = resp.reply || 'No response.';
+    bubble.textContent = full;
+    bubble.classList.remove('streaming');
+    chatHistory.push({role:'assistant', content:full});
+
+    const formulaMatches = full.match(/\b(Crescent|Double Echo|Bottom Heavy|Side Sweep|Open Arc|Full Halo|Split Garden|Focal Burst|Laddered Rhythm|Radial Burst|Bow Anchor|Inventory Salvage)\b/);
+    if (formulaMatches && chatBlueprint) {
+      drawWreathCanvas('chatCanvas', formulaMatches[0], chatBlueprint.dna?.density_profile||0.6, '');
+      document.getElementById('chatPreviewLabel').textContent = formulaMatches[0];
+    }
+  } catch(err) {
+    bubble.textContent = `Error: ${err.message}`;
+    bubble.classList.remove('streaming');
+  } finally {
+    chatRunning = false;
+    document.getElementById('chatSendBtn').disabled = false;
+  }
+}
+
+function chatSuggest(el) {
+  document.getElementById('chatInput').value = el.textContent;
+  document.getElementById('chatInput').focus();
+}
+
+function chatKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatSend(); }
+}
+
+function chatAutoResize(el) {
+  el.style.height='38px'; el.style.height=Math.min(el.scrollHeight,110)+'px';
+}
+
+function chatClear() {
+  chatHistory = [];
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML = '';
+  chatAddSystemMsg('Chat cleared · EC_CANON_V1');
+  chatAddMessage('assistant', 'Chat cleared. Load a blueprint from the Quick Load panel and I\'ll help you refine it.');
+}
+
+// ═══════════════════════════════════
+// UTILS
+// ═══════════════════════════════════
+function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+function syntaxHL(json){return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,m=>{let c='jnum';if(/^"/.test(m))c=/:$/.test(m)?'jkey':'jstr';else if(/true|false/.test(m))c='jbool';else if(/null/.test(m))c='jnull';return`<span class="${c}">${m}</span>`;});}
+
+// Init
+drawEmotionMini('mwEmotionMini',null,null);
+const initCanvas = document.getElementById('mwCanvas');
+if(initCanvas){const ctx=initCanvas.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,initCanvas.width,initCanvas.height);}
+const initDd = document.getElementById('ddCanvas');
+if(initDd){const ctx=initDd.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,initDd.width,initDd.height);}
+const initChat = document.getElementById('chatCanvas');
+if(initChat){const ctx=initChat.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,initChat.width,initChat.height);}
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+
+  .section { margin-bottom: 2rem; }
+  .section-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+
+  /* OPTION CARDS */
+  .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .option-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; background: var(--color-background-primary); }
+  .option-card.recommended { border: 2px solid var(--color-border-info); }
+  .option-label { font-size: 10px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 0.6rem; }
+  .label-rec { background: var(--color-background-info); color: var(--color-text-info); }
+  .label-ok { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .label-no { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .option-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.4rem; }
+  .option-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 0.75rem; }
+  .option-pros-cons { display: flex; flex-direction: column; gap: 4px; }
+  .pro, .con { font-size: 11px; color: var(--color-text-secondary); display: flex; align-items: flex-start; gap: 6px; }
+  .pro-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-success); flex-shrink: 0; margin-top: 4px; }
+  .con-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-danger); flex-shrink: 0; margin-top: 4px; }
+
+  /* RECOMMENDATION BOX */
+  .rec-box { background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 2rem; }
+  .rec-title { font-size: 14px; font-weight: 500; color: var(--color-text-info); margin-bottom: 0.4rem; }
+  .rec-desc { font-size: 13px; color: var(--color-text-info); line-height: 1.6; opacity: 0.85; }
+
+  /* WHAT EACH BLUEPRINT NEEDS */
+  .needs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .needs-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; background: var(--color-background-primary); }
+  .needs-header { display: flex; align-items: center; gap: 8px; margin-bottom: 0.6rem; }
+  .needs-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--color-background-secondary); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .needs-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .needs-items { display: flex; flex-direction: column; gap: 5px; }
+  .needs-item { font-size: 12px; color: var(--color-text-secondary); display: flex; align-items: flex-start; gap: 6px; line-height: 1.5; }
+  .needs-bullet { width: 4px; height: 4px; border-radius: 50%; background: var(--color-border-secondary); flex-shrink: 0; margin-top: 6px; }
+
+  /* CLIENT JOURNEY */
+  .journey-steps { display: flex; flex-direction: column; gap: 0; }
+  .journey-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .journey-step:last-child { border-bottom: none; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--color-background-secondary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: var(--color-text-secondary); flex-shrink: 0; margin-top: 1px; }
+  .step-body { flex: 1; }
+  .step-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .step-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .step-tag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 5px; }
+  .tag-app { background: var(--color-background-success); color: var(--color-text-success); }
+  .tag-client { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .tag-ai { background: var(--color-background-info); color: var(--color-text-info); }
+
+  /* WHAT RENDERS A BLUEPRINT */
+  .render-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .render-table th { text-align: left; font-size: 10px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.07em; text-transform: uppercase; padding: 6px 8px; border-bottom: 0.5px solid var(--color-border-secondary); }
+  .render-table td { padding: 8px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); vertical-align: top; line-height: 1.5; color: var(--color-text-secondary); }
+  .render-table tr:last-child td { border-bottom: none; }
+  .render-table td:first-child { font-weight: 500; color: var(--color-text-primary); white-space: nowrap; }
+  .badge-in { background: var(--color-background-success); color: var(--color-text-success); font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 8px; }
+  .badge-app { background: var(--color-background-info); color: var(--color-text-info); font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 8px; }
+  .badge-mj { background: var(--color-background-warning); color: var(--color-text-warning); font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 8px; }
+
+  @media (max-width: 580px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .needs-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="section">
+  <div class="section-label">Should prompt packs be sold separately or bundled?</div>
+  <div class="options-grid">
+    <div class="option-card">
+      <span class="option-label label-ok">Option A</span>
+      <div class="option-title">Free with every blueprint</div>
+      <div class="option-desc">Every blueprint download includes the prompt pack automatically.</div>
+      <div class="option-pros-cons">
+        <div class="pro"><div class="pro-dot"></div>Zero friction, maximum delight</div>
+        <div class="pro"><div class="pro-dot"></div>Drives Visual Companion adoption</div>
+        <div class="con"><div class="con-dot"></div>Leaves money on the table</div>
+        <div class="con"><div class="con-dot"></div>Reduces perceived value of the pack</div>
+      </div>
+    </div>
+    <div class="option-card recommended">
+      <span class="option-label label-rec">Recommended</span>
+      <div class="option-title">Free preview, full pack via Visual Companion</div>
+      <div class="option-desc">Blueprint download includes the hero prompt only. Full pack (hero + 3 variations + dial metadata + overlay PNG) unlocks with Visual Companion app subscription.</div>
+      <div class="option-pros-cons">
+        <div class="pro"><div class="pro-dot"></div>Hero prompt gives immediate value</div>
+        <div class="pro"><div class="pro-dot"></div>Variations drive Visual Companion upgrades</div>
+        <div class="pro"><div class="pro-dot"></div>Overlay PNG is the high-value exclusive</div>
+        <div class="pro"><div class="pro-dot"></div>Creates a clear upsell trigger</div>
+        <div class="con"><div class="con-dot"></div>Requires gating logic in the app</div>
+      </div>
+    </div>
+    <div class="option-card">
+      <span class="option-label label-no">Skip this</span>
+      <div class="option-title">Sold separately per pack</div>
+      <div class="option-desc">Charge $1.95–2.95 per prompt pack as a standalone add-on purchase.</div>
+      <div class="option-pros-cons">
+        <div class="pro"><div class="pro-dot"></div>Incremental revenue per blueprint</div>
+        <div class="con"><div class="con-dot"></div>Adds purchase friction</div>
+        <div class="con"><div class="con-dot"></div>Hard to justify $2 for a text file</div>
+        <div class="con"><div class="con-dot"></div>Undervalues the subscription model</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rec-box">
+    <div class="rec-title">The move: hero prompt free, full pack behind Visual Companion ($8.95/mo)</div>
+    <div class="rec-desc">Every blueprint buyer gets the hero prompt in their download ZIP so they get immediate MJ value. The variation matrix, emotion sweep, overlay PNG, and dial metadata are Visual Companion exclusives. This makes the $8.95/mo subscription feel obvious — one month pays for itself after 1–2 shoots.</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">What does each blueprint download contain?</div>
+  <table class="render-table">
+    <thead>
+      <tr>
+        <th>File in download ZIP</th>
+        <th>What it is</th>
+        <th>Who uses it</th>
+        <th>Availability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>blueprint.json</td>
+        <td>Full blueprint object — zones, elements, scores, polar coordinates, cluster rules</td>
+        <td>The Evercrafted app renders this into a visual and build guide</td>
+        <td><span class="badge-in">Always included</span></td>
+      </tr>
+      <tr>
+        <td>build_guide.pdf</td>
+        <td>Step-by-step printed production instructions — clock positions, layer order, stem placement</td>
+        <td>The maker at the workbench building the physical wreath</td>
+        <td><span class="badge-in">Always included</span></td>
+      </tr>
+      <tr>
+        <td>materials_list.csv</td>
+        <td>Bill of materials — SKU, quantity, bloom size, role, estimated cost</td>
+        <td>Ordering supplies, tracking inventory, costing a job</td>
+        <td><span class="badge-in">Always included</span></td>
+      </tr>
+      <tr>
+        <td>wreath_preview.svg</td>
+        <td>Geometric top-down SVG rendering of the composition — zones, cluster positions, color palette</td>
+        <td>Client approval, design reference, social sharing</td>
+        <td><span class="badge-in">Always included</span></td>
+      </tr>
+      <tr>
+        <td>hero_prompt.txt</td>
+        <td>Single Midjourney hero prompt ready to paste into Discord</td>
+        <td>Generating a photo-realistic concept image before building</td>
+        <td><span class="badge-in">Always included</span></td>
+      </tr>
+      <tr>
+        <td>prompt_pack.json</td>
+        <td>Full pack — hero + 3 variations + dial metadata + emotion sweep + overlay reference</td>
+        <td>Visual Companion app ingests this for the variation matrix UI</td>
+        <td><span class="badge-app">Visual Companion app</span></td>
+      </tr>
+      <tr>
+        <td>blueprint_overlay.png</td>
+        <td>Line-art structural reference image for MJ — ring silhouette, cluster positions, ribbon anchor</td>
+        <td>Attach to MJ prompt as reference image for compositional accuracy</td>
+        <td><span class="badge-app">Visual Companion app</span></td>
+      </tr>
+      <tr>
+        <td>customization_kit.pdf</td>
+        <td>Step-by-step client personalization instructions — gold tipping, chalk tags, calligraphy petals etc.</td>
+        <td>Client receives this with their finished wreath to add personal touches</td>
+        <td><span class="badge-mj">Custom kit blueprints only</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-label">What does the client do once downloaded?</div>
+  <div class="journey-steps">
+    <div class="journey-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Open blueprint in Evercrafted</div>
+        <div class="step-desc">The blueprint.json loads into their account dashboard automatically. The SVG canvas renders the design — zones, cluster positions, color palette — so they can see exactly what they bought before touching a stem.</div>
+        <span class="step-tag tag-app">In-app</span>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Check inventory against materials list</div>
+        <div class="step-desc">The materials_list.csv loads into Inventory Weaver (if they have it). It flags what they have, what they need, and shows estimated cost. If they're missing items, the app suggests substitutions that fit the formula.</div>
+        <span class="step-tag tag-app">In-app (Inventory Weaver)</span>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Generate a Midjourney concept image</div>
+        <div class="step-desc">They paste the hero_prompt.txt into Midjourney Discord to see a photorealistic render of the finished wreath before building. If they have Visual Companion, they access the full variation matrix — 9 moods, emotion sweep, overlay PNG — to find the exact look they want.</div>
+        <span class="step-tag tag-ai">Midjourney</span>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Optionally customize in Design Studio</div>
+        <div class="step-desc">Studio Pro users can open the blueprint in Design Studio, lock zones they want to keep, adjust cluster positions, swap a flower, or tweak the formula. Every edit is saved as a new version — the original blueprint is never overwritten.</div>
+        <span class="step-tag tag-app">In-app (Design Studio)</span>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Print the build guide and build</div>
+        <div class="step-desc">The build_guide.pdf gives them step-by-step instructions with clock positions ("place eucalyptus base layer, 6:00 to 10:00, stems pointing outward"), layer order (greenery first, then secondary, then focal), and notes for each element. It's designed to be followed at the workbench without a screen.</div>
+        <span class="step-tag tag-client">Physical build</span>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <div class="step-title">Apply client customizations (custom kit blueprints)</div>
+        <div class="step-desc">If they bought a blueprint with a custom kit — like Petal Calligraphy Ring or Galaxy Seed Wreath — the customization_kit.pdf tells them exactly how to personalize it: what paint to use, how to apply it, what to write, which pieces are swappable. This is what they hand to their end customer along with the finished wreath.</div>
+        <span class="step-tag tag-client">Physical customization</span>
+      </div>
+    </div>
+    <div class="journey-step">
+      <div class="step-num">7</div>
+      <div class="step-body">
+        <div class="step-title">Share, sell, and get feedback</div>
+        <div class="step-desc">They photograph the finished wreath and upload it to Visual Companion (if subscribed) as a feedback loop — tagging what matched the blueprint and what they changed. This data feeds the Adaptive Blueprint Composer, which uses it to evolve future designs. The more they build, the smarter their account gets.</div>
+        <span class="step-tag tag-app">In-app (Visual Companion + ABC)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">What does the app need to render each blueprint correctly?</div>
+  <div class="needs-grid">
+    <div class="needs-card">
+      <div class="needs-header"><div class="needs-icon">📐</div><div class="needs-title">Geometry engine</div></div>
+      <div class="needs-items">
+        <div class="needs-item"><div class="needs-bullet"></div>Polar coordinate system (angle + radius_norm)</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Base diameter to scale all elements correctly</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Zone angle ranges to constrain element placement</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Layer (z-index) values for correct overlap rendering</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Scale multipliers per element for size variation</div>
+      </div>
+    </div>
+    <div class="needs-card">
+      <div class="needs-header"><div class="needs-icon">🌸</div><div class="needs-title">Floral asset library</div></div>
+      <div class="needs-items">
+        <div class="needs-item"><div class="needs-bullet"></div>SVG icon per flower/greenery type (keyed by SKU)</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Color variants per asset (blush_pink, sage, cream...)</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Bloom diameter metadata for scale calculation</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Role classification (focal, secondary, filler, greenery)</div>
+      </div>
+    </div>
+    <div class="needs-card">
+      <div class="needs-header"><div class="needs-icon">🎨</div><div class="needs-title">Canvas renderer</div></div>
+      <div class="needs-items">
+        <div class="needs-item"><div class="needs-bullet"></div>1000x1000 SVG canvas (or Canvas API)</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Polar-to-Cartesian coordinate conversion</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Rotation per element (rotation_deg field)</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Base ring SVG (grapevine, foam, wire, straw)</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Cluster grouping for visual coherence</div>
+      </div>
+    </div>
+    <div class="needs-card">
+      <div class="needs-header"><div class="needs-icon">📄</div><div class="needs-title">Export engine</div></div>
+      <div class="needs-items">
+        <div class="needs-item"><div class="needs-bullet"></div>SVG → PDF conversion for build guide</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Build instruction generator from element order + zones</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Materials list aggregator from elements array</div>
+        <div class="needs-item"><div class="needs-bullet"></div>Blueprint overlay PNG generator (line-art version)</div>
+      </div>
+    </div>
+  </div>
+</div>

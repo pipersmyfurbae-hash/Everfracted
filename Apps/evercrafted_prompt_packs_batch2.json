@@ -1,0 +1,548 @@
+{
+  "schema_version": "1.0",
+  "batch": 2,
+  "generated": "2026-03-17",
+  "description": "Evercrafted Visual Companion — Midjourney prompt packs, batch 2 (15 designs with client customizations)",
+  "prompt_packs": [
+    {
+      "id": "wreath_gilded_evergreen_veil_v1",
+      "design_name": "Gilded Evergreen Veil",
+      "emotion_profile": { "primary": "Grounded", "secondary": "Luxurious", "intensity": 6 },
+      "client_customizations": [
+        "Dry-brush tips of select cedar sprigs and pinecone edges with gold metallic acrylic, very sparingly",
+        "Add 3-5 ultra-thin gold wire loops around the outer edge as halo rings",
+        "Optional small gold initial charm wired at 8 o'clock"
+      ],
+      "subject": "22 inch thick fir and cedar evergreen ring, 85 percent full, weight heavier from 7 to 10 o'clock, magnolia leaves and pinecones, select foliage tips and pinecone edges brushed with subtle gold metallic paint, deep green velvet bow at lower left",
+      "style_tags": ["luxurious winter", "heritage holiday", "gold accent", "classic American"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, wreath sharp, door slightly soft" },
+      "base_environment": { "context": "front door styling", "background": "soft textured neutral front door", "lighting": "warm daylight, gentle shadows" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "gold tips should be subtle not garish; deep green velvet ribbon anchors the palette" },
+      "hero": {
+        "prompt": "luxurious grounded winter wreath, 22 inch thick fir and cedar ring 85 percent full, weight slightly heavier on left side, magnolia leaves and pinecones, select foliage tips and pinecone edges brushed with subtle gold metallic paint, deep green velvet bow at lower left, soft textured neutral front door, warm daylight, ultra realistic product photo, style raw",
+        "notes": "hero for main catalog; gold accents must read as refined not decorative"
+      },
+      "variations": [
+        {
+          "id": "wreath_gilded_evergreen_veil_v1_var1",
+          "prompt": "same gilded evergreen wreath on a dark charcoal door, moodier side lighting to make gold tips glow, classic holiday townhouse setting, ultra realistic, style raw",
+          "dial": { "emotion_shift": "more dramatic and refined", "density_shift": "no change", "palette_shift": "dark door amplifies gold glow", "context_shift": "door changed to charcoal", "camera_shift": "same framing, moodier side light" }
+        },
+        {
+          "id": "wreath_gilded_evergreen_veil_v1_var2",
+          "prompt": "close-up of the lower left section of a gilded evergreen wreath showing gold-painted fir tips and deep green velvet ribbon texture, shallow depth of field, editorial macro product photo, style raw",
+          "dial": { "emotion_shift": "intimate and material-focused", "density_shift": "crop amplifies local texture", "palette_shift": "no change", "context_shift": "abstracted to macro detail", "camera_shift": "close-up with shallow depth of field" }
+        },
+        {
+          "id": "wreath_gilded_evergreen_veil_v1_var3",
+          "prompt": "same evergreen wreath but with fewer gold accents and added matte brass bells group at 7 o'clock, warm wood door background, soft overcast daylight, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "warmer and more traditional", "density_shift": "no change", "palette_shift": "warm wood door, brass replaces some gold", "context_shift": "warm wood door, brass bells added", "camera_shift": "same framing, overcast light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_ink_dipped_eucalyptus_v1",
+      "design_name": "Ink-Dipped Eucalyptus Study",
+      "emotion_profile": { "primary": "Calm", "secondary": "Modern", "intensity": 5 },
+      "client_customizations": [
+        "Hand ink-dip ends of 5-7 leaves with deep black fabric paint for ombre tips",
+        "Add 2-3 matte black wood beads on invisible thread hanging inside ring",
+        "Write a tiny word in gold on one leaf — rest, home, breathe"
+      ],
+      "subject": "18 inch grapevine with 50 percent exposed, airy crescent of silver dollar and seeded eucalyptus from 3 to 7 o'clock, select leaf tips ink-dipped in deep black ombre, narrow black linen ribbon tail",
+      "style_tags": ["minimal modern", "ink art", "Scandinavian", "editorial calm"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "sharp throughout, clean background" },
+      "base_environment": { "context": "interior or exterior white wall", "background": "clean white or off-white wall", "lighting": "soft natural light, no hard shadows" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "ink-dipped ombre must read clearly; exposed vine is part of the composition not negative space to fill" },
+      "hero": {
+        "prompt": "minimal modern eucalyptus wreath, 18 inch grapevine with half exposed, airy crescent of silver dollar and seeded eucalyptus from 3 to 7 o'clock, select leaf tips ink-dipped in deep black ombre, narrow black linen ribbon tail, styled on a white wall, soft natural light, ultra realistic, style raw",
+        "notes": "the ink dip ombre is the hero detail; crescent must feel airy and intentional not sparse"
+      },
+      "variations": [
+        {
+          "id": "wreath_ink_dipped_eucalyptus_v1_var1",
+          "prompt": "same ink-dipped eucalyptus wreath on a concrete loft wall, cooler light, urban modern styling, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "cooler and more urban", "density_shift": "no change", "palette_shift": "concrete wall shifts palette to cool gray", "context_shift": "wall changed to concrete", "camera_shift": "same framing, cooler light temperature" }
+        },
+        {
+          "id": "wreath_ink_dipped_eucalyptus_v1_var2",
+          "prompt": "close-up macro of ink-dipped eucalyptus leaves showing gradient transition from green to deep black, shallow depth of field, editorial product photography, style raw",
+          "dial": { "emotion_shift": "intimate and botanical", "density_shift": "macro reveals ombre detail", "palette_shift": "no change", "context_shift": "abstracted to leaf macro", "camera_shift": "macro with shallow depth of field" }
+        },
+        {
+          "id": "wreath_ink_dipped_eucalyptus_v1_var3",
+          "prompt": "same ink-dipped eucalyptus composition with matte black beads hanging inside ring and a tiny gold handwritten word on one leaf, warmer light on a pale beige wall, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more personal and warm", "density_shift": "beads add inner depth", "palette_shift": "warm beige wall, gold word adds warmth", "context_shift": "beige wall, black beads and gold word added", "camera_shift": "same framing, warmer light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_burnished_berry_contour_v1",
+      "design_name": "Burnished Berry Contour",
+      "emotion_profile": { "primary": "Warm", "secondary": "Refined", "intensity": 7 },
+      "client_customizations": [
+        "Clear-gloss coat on some berry clusters, leaving others matte for a mixed finish",
+        "Light copper metallic dry-brushing along edges of a few broad leaves",
+        "3-4 ultra-thin copper wire coils echoing the wreath circle"
+      ],
+      "subject": "20 inch mixed cedar and boxwood ring, medium fullness, extra density from 4 to 8 o'clock, red berries with mix of matte and glossy finishes, subtle copper metallic edges on select leaves, deep red velvet bow at 6 o'clock",
+      "style_tags": ["refined holiday", "copper accent", "warm traditional", "mixed finish"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, wreath sharp, door soft" },
+      "base_environment": { "context": "traditional front door", "background": "classic front door, warm wood or painted", "lighting": "warm evening light" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "mixed matte and gloss berry finish is the key detail; copper must be subtle not dominant" },
+      "hero": {
+        "prompt": "refined holiday wreath, 20 inch mixed cedar and boxwood ring, slightly fuller arc from 4 to 8 o'clock, red berries with a mix of matte and glossy finishes, subtle copper metallic edges on select leaves, deep red velvet bow at 6 o'clock, traditional front door, warm evening light, ultra realistic product photo, style raw",
+        "notes": "the contrast between matte and glossy berries is the signature detail; emphasize this in the render"
+      },
+      "variations": [
+        {
+          "id": "wreath_burnished_berry_contour_v1_var1",
+          "prompt": "same burnished berry wreath on a black door with brass hardware, more dramatic lighting, copper leaf highlights emphasized, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more dramatic and jewel-toned", "density_shift": "no change", "palette_shift": "black door makes copper and red pop", "context_shift": "door changed to black with brass hardware", "camera_shift": "same framing, dramatic directional light" }
+        },
+        {
+          "id": "wreath_burnished_berry_contour_v1_var2",
+          "prompt": "close crop of mixed matte and glossy red berries and copper-brushed foliage on a holiday wreath, shallow depth of field, editorial texture study, style raw",
+          "dial": { "emotion_shift": "intimate and material-focused", "density_shift": "macro amplifies mixed finish contrast", "palette_shift": "no change", "context_shift": "abstracted to berry and leaf macro", "camera_shift": "close-up with shallow depth of field" }
+        },
+        {
+          "id": "wreath_burnished_berry_contour_v1_var3",
+          "prompt": "same wreath design but with burgundy berries and a darker cranberry ribbon, slightly moodier palette, soft overcast daylight on warm door, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "moodier and more autumnal", "density_shift": "no change", "palette_shift": "burgundy and cranberry deepen the palette", "context_shift": "berry and ribbon color shifted to burgundy", "camera_shift": "same framing, overcast light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_frosted_graphite_fern_v1",
+      "design_name": "Frosted Graphite Fern",
+      "emotion_profile": { "primary": "Cool", "secondary": "Still", "intensity": 5 },
+      "client_customizations": [
+        "Silver-gray frost spray misted only on outer tips",
+        "Tiny graphite speckles on select dusty miller leaves",
+        "2-3 small clear quartz points tucked at 2, 6, and 10 o'clock"
+      ],
+      "subject": "18 inch foam ring covered in fine asparagus fern and dusty miller, perfectly round halo, lightly frosted silver-gray outer tips, tiny graphite speckles on a few leaves, small clear quartz points tucked subtly around ring",
+      "style_tags": ["cool mineral", "still winter", "crystal botanical", "muted luxe"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "crisp throughout" },
+      "base_environment": { "context": "interior or exterior, cool setting", "background": "soft gray wall", "lighting": "cool diffused light, no harsh shadows" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "quartz points should catch light subtly; frosted tips must read as organic not painted; halo silhouette must be perfectly round" },
+      "hero": {
+        "prompt": "cool serene wreath, 18 inch ring covered in fine asparagus fern and dusty miller, perfectly round halo with lightly frosted silver-gray tips, tiny graphite speckles on a few leaves, small clear quartz points tucked subtly around ring, soft gray wall background, cool diffused light, ultra realistic, style raw",
+        "notes": "roundness and quiet texture are the design; quartz must feel discovered not displayed"
+      },
+      "variations": [
+        {
+          "id": "wreath_frosted_graphite_fern_v1_var1",
+          "prompt": "same frosted graphite fern wreath on a dark slate wall, more contrast and slightly stronger side lighting, modern winter mood, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more dramatic and mineral", "density_shift": "no change", "palette_shift": "dark slate amplifies silver-gray tones", "context_shift": "wall changed to dark slate", "camera_shift": "same framing, stronger side light" }
+        },
+        {
+          "id": "wreath_frosted_graphite_fern_v1_var2",
+          "prompt": "macro close-up of frosted asparagus fern tips and small quartz crystal point detail on a graphite fern wreath, shallow depth of field, editorial product shot, style raw",
+          "dial": { "emotion_shift": "intimate and crystal-focused", "density_shift": "macro amplifies frost and mineral texture", "palette_shift": "no change", "context_shift": "abstracted to botanical and crystal macro", "camera_shift": "close-up with shallow depth of field" }
+        },
+        {
+          "id": "wreath_frosted_graphite_fern_v1_var3",
+          "prompt": "same fern ring composition with slightly more dusty miller and fewer quartz points for a softer less mystical feel, pale beige background, cool diffused light, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "softer and more domestic", "density_shift": "slightly more dusty miller fullness", "palette_shift": "beige wall warms the cool palette slightly", "context_shift": "background changed to pale beige, fewer quartz", "camera_shift": "same framing, slightly warmer light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_ink_linen_hoop_v1",
+      "design_name": "Ink and Linen Hoop",
+      "emotion_profile": { "primary": "Minimal", "secondary": "Personal", "intensity": 4 },
+      "client_customizations": [
+        "Hand-paint stripes or dots onto linen tail with fabric paint",
+        "Include 3 interchangeable linen tails — plain, striped, abstract — for seasonal swapping",
+        "Tiny handwritten date or house number at ribbon tip"
+      ],
+      "subject": "16 inch brass hoop mostly bare, small crescent of olive and ruscus from 4 to 7 o'clock, single linen ribbon tail hand-painted with subtle stripes",
+      "style_tags": ["Scandinavian minimal", "personalized", "brass hoop", "handcrafted"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "crisp, clean background" },
+      "base_environment": { "context": "clean interior wall or door", "background": "clean white wall", "lighting": "soft natural daylight" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "Scandinavian styling", "style raw"], "notes": "negative space is the design; hand-painted linen detail must feel artisan not printed" },
+      "hero": {
+        "prompt": "minimalist hoop wreath, 16 inch brass ring mostly bare, small crescent of olive and ruscus from 4 to 7 o'clock, single linen ribbon tail hand-painted with subtle stripes, hanging on a clean white wall, Scandinavian-inspired styling, soft daylight, ultra realistic product photo, style raw",
+        "notes": "brass hoop and linen tail are the hero elements; negative space must dominate the composition"
+      },
+      "variations": [
+        {
+          "id": "wreath_ink_linen_hoop_v1_var1",
+          "prompt": "same brass hoop wreath with a polka-dot hand-painted linen tail, styled on a light wood wall, cozy minimal interior, soft warm light, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "warmer and more playful", "density_shift": "no change", "palette_shift": "wood wall adds warmth, dots add playfulness", "context_shift": "wall changed to light wood, ribbon changed to polka dot", "camera_shift": "same framing, warmer light" }
+        },
+        {
+          "id": "wreath_ink_linen_hoop_v1_var2",
+          "prompt": "top-down flat lay of a 16 inch brass hoop wreath and three interchangeable linen ribbon tails arranged beside it, plain, striped, and abstract painted, styling kit concept on a white linen surface, ultra realistic product photography, style raw",
+          "dial": { "emotion_shift": "editorial and product-catalog", "density_shift": "no change, exploded view shows all options", "palette_shift": "white linen surface, neutral tones throughout", "context_shift": "flat lay with all three ribbon options visible", "camera_shift": "top-down flat lay" }
+        },
+        {
+          "id": "wreath_ink_linen_hoop_v1_var3",
+          "prompt": "same minimal brass hoop wreath with plain ribbon tail and a small house number handwritten at the tip in ink, closer crop focusing on the personalization detail at ribbon end, shallow depth of field, style raw",
+          "dial": { "emotion_shift": "more personal and intimate", "density_shift": "no change, closer crop", "palette_shift": "no change", "context_shift": "plain ribbon with handwritten number added", "camera_shift": "closer crop focusing on ribbon tip" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_bronzed_magnolia_edge_v1",
+      "design_name": "Bronzed Magnolia Edge",
+      "emotion_profile": { "primary": "Rich", "secondary": "Classic", "intensity": 7 },
+      "client_customizations": [
+        "Thin bronze metallic paint line along underside brown edges of select leaves",
+        "3-5 small bronze hex nuts or hardware pieces hidden in foliage as discoverable accents",
+        "Optional fragrance sachet hidden behind leaves"
+      ],
+      "subject": "22 inch dense magnolia leaf ring, even but slightly heavier bottom half, glossy green and warm brown magnolia leaves, select underside leaf edges traced in thin bronze metallic paint, tiny bronze hardware accents hidden in foliage",
+      "style_tags": ["classic magnolia", "bronze accent", "architectural", "rich traditional"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, wreath sharp, door soft" },
+      "base_environment": { "context": "traditional or architectural front door", "background": "dark wood door", "lighting": "warm evening light" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "bronze edge lines are the signature detail — thin and precise; hardware accents should feel discovered not obvious" },
+      "hero": {
+        "prompt": "classic magnolia wreath, 22 inch ring of glossy green and warm brown magnolia leaves, dense and full, select underside leaf edges traced in thin bronze metallic paint, tiny bronze hardware accents hidden in foliage, styled on a dark wood door, warm evening light, ultra realistic, style raw",
+        "notes": "the bronze edge lines on the dark brown underside of magnolia leaves is the key detail; hardware must read as intentional not accidental"
+      },
+      "variations": [
+        {
+          "id": "wreath_bronzed_magnolia_edge_v1_var1",
+          "prompt": "same bronzed magnolia wreath on a white door, softer neutral lighting, metallic bronze edges on leaves clearly emphasized, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "lighter and more architectural", "density_shift": "no change", "palette_shift": "white door makes dark leaves and bronze pop", "context_shift": "door changed to white", "camera_shift": "same framing, softer neutral light" }
+        },
+        {
+          "id": "wreath_bronzed_magnolia_edge_v1_var2",
+          "prompt": "close-up shot of bronzed leaf edges and hidden hardware detail on a magnolia wreath, shallow depth of field, editorial texture study, style raw",
+          "dial": { "emotion_shift": "intimate and craft-focused", "density_shift": "macro amplifies bronze edge detail", "palette_shift": "no change", "context_shift": "abstracted to leaf edge and hardware macro", "camera_shift": "close-up with shallow depth of field" }
+        },
+        {
+          "id": "wreath_bronzed_magnolia_edge_v1_var3",
+          "prompt": "same bronzed magnolia design with slightly looser foliage for more negative space between leaves, fragrance sachet tag peeking subtly from the back, warm daylight on a pale door, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more relaxed and sensory", "density_shift": "slightly less dense foliage", "palette_shift": "pale door, warm daylight, softer palette", "context_shift": "looser foliage, fragrance tag added at back", "camera_shift": "same framing, soft daylight" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_petal_calligraphy_ring_v1",
+      "design_name": "Petal Calligraphy Ring",
+      "emotion_profile": { "primary": "Sentimental", "secondary": "Gentle", "intensity": 6 },
+      "client_customizations": [
+        "4-6 blank silk petals or paper leaves for handwritten names, dates, or words",
+        "Metallic pen trio included for petal calligraphy",
+        "Pressed-flower mini kit for adding personal memories"
+      ],
+      "subject": "18 inch neutral vine or wrapped ring, light floral ring with three soft cluster points at 12, 4, and 8 o'clock, silk roses and ranunculus, several blank petals with delicate metallic handwritten names and dates",
+      "style_tags": ["keepsake", "sentimental", "calligraphy", "personalized floral"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, writing in focus" },
+      "base_environment": { "context": "interior wall, home display", "background": "pale warm wall", "lighting": "warm soft light" },
+      "base_quality": { "keywords": ["ultra realistic", "keepsake decor photography", "style raw"], "notes": "handwritten names on petals must be legible but delicate; three cluster points should feel rhythmic not symmetrical" },
+      "hero": {
+        "prompt": "sentimental floral wreath, 18 inch ring with soft silk roses and ranunculus spaced around, three gentle cluster points at 12, 4 and 8, several blank petals with delicate metallic handwritten names and dates, light greenery, styled on a pale wall, warm soft light, ultra realistic keepsake decor, style raw",
+        "notes": "the calligraphy on petals is the emotional hook; names and dates should be rendered clearly enough to read"
+      },
+      "variations": [
+        {
+          "id": "wreath_petal_calligraphy_ring_v1_var1",
+          "prompt": "same calligraphy floral wreath with only one word written on a single petal in metallic ink, the word home, close-up focus on that petal, shallow depth of field, style raw",
+          "dial": { "emotion_shift": "more focused and emotionally direct", "density_shift": "close crop, single word focal", "palette_shift": "no change", "context_shift": "single word petal becomes the composition", "camera_shift": "close-up with shallow depth of field on petal" }
+        },
+        {
+          "id": "wreath_petal_calligraphy_ring_v1_var2",
+          "prompt": "same petal calligraphy wreath photographed flat on a linen surface with metallic pens and pressed flowers arranged artfully around it, storytelling styling shot, warm natural light, ultra realistic product photography, style raw",
+          "dial": { "emotion_shift": "editorial and narrative storytelling", "density_shift": "no change, seen with surrounding props", "palette_shift": "linen surface, pressed flower colors add warmth", "context_shift": "flat lay with pens and flowers as props", "camera_shift": "top-down flat lay with props" }
+        },
+        {
+          "id": "wreath_petal_calligraphy_ring_v1_var3",
+          "prompt": "same floral wreath composition but with cooler light and more negative space between blooms, minimal modern keepsake look on a white wall, fewer petals with writing, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more restrained and gallery-like", "density_shift": "slightly less dense, more negative space", "palette_shift": "cooler light and white wall reduce warmth", "context_shift": "white wall, fewer calligraphy petals", "camera_shift": "same framing, cooler light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_watercolor_herb_threshold_v1",
+      "design_name": "Watercolor Herb Threshold",
+      "emotion_profile": { "primary": "Restorative", "secondary": "Fresh", "intensity": 5 },
+      "client_customizations": [
+        "Diluted watercolor wash dabbed on herb tips in blue-green tones",
+        "Blank mini wooden herb tags for handwritten herb names or personal intentions",
+        "Mini glass bottle charm for dried herbs, salt, or spices"
+      ],
+      "subject": "20 inch grapevine with 40 percent exposed, airy swag of rosemary, thyme, sage and lavender from 2 to 7 o'clock, select herb tips with soft watercolor-like blue-green wash, small handwritten wooden herb tags and tiny glass bottle charm",
+      "style_tags": ["kitchen herb", "restorative", "watercolor accent", "cottage apothecary"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, wreath sharp, door soft" },
+      "base_environment": { "context": "kitchen or pantry door", "background": "kitchen door, natural interior light", "lighting": "natural daylight from nearby window" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "watercolor wash on herb tips must feel hand-applied; wooden tags must be readable; glass bottle charm is a small discovery element" },
+      "hero": {
+        "prompt": "restorative herb wreath, 20 inch grapevine with 40 percent exposed, airy swag of rosemary, thyme, sage and a touch of lavender from 2 to 7 o'clock, select herb tips with soft watercolor-like blue-green wash, small handwritten wooden herb tags and a tiny glass bottle charm, styled on a kitchen door, natural daylight, ultra realistic, style raw",
+        "notes": "watercolor wash on tips is the signature; herbs must feel real and aromatic in the render"
+      },
+      "variations": [
+        {
+          "id": "wreath_watercolor_herb_threshold_v1_var1",
+          "prompt": "same herb wreath on a pantry door, slightly warmer light, rustic kitchen background with countertop and jars softly blurred behind, ultra realistic lifestyle photo, style raw",
+          "dial": { "emotion_shift": "more domestic and warm", "density_shift": "no change", "palette_shift": "warm kitchen light enriches herb greens", "context_shift": "pantry door, kitchen visible in soft background", "camera_shift": "same framing, kitchen in soft background" }
+        },
+        {
+          "id": "wreath_watercolor_herb_threshold_v1_var2",
+          "prompt": "close-up of watercolor-washed herb tips and a small wooden tag on a herb wreath, shallow depth of field, lifestyle product detail shot, style raw",
+          "dial": { "emotion_shift": "intimate and handcrafted", "density_shift": "macro amplifies watercolor and tag detail", "palette_shift": "no change", "context_shift": "abstracted to herb tip and tag macro", "camera_shift": "close-up with shallow depth of field" }
+        },
+        {
+          "id": "wreath_watercolor_herb_threshold_v1_var3",
+          "prompt": "same herb wreath composition with more exposed grapevine and fewer tags for a quieter spa-like herbal look, white wall background, soft diffused light, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more spa-like and serene", "density_shift": "lighter herb placement, more vine exposed", "palette_shift": "white wall and soft light reduce warmth", "context_shift": "white wall, fewer tags, more exposed vine", "camera_shift": "same framing, softer diffused light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_aurora_ribbon_halo_v1",
+      "design_name": "Aurora Ribbon Halo",
+      "emotion_profile": { "primary": "Joyful", "secondary": "Ethereal", "intensity": 7 },
+      "client_customizations": [
+        "Gradient-painted ribbon from deep jewel tones to pale hues that clients can twist to reveal aurora-like color shifts",
+        "2-3 slim metallic threads in gold, silver, and rose gold wrapped like light bands",
+        "Tiny sew-on crystals along ribbon edges"
+      ],
+      "subject": "18 inch full boxwood ring wrapped with a gradient-painted ribbon from deep jewel tones to pale hues, twisted to reveal aurora-like color shifts, slim metallic threads circling the wreath, tiny crystals on ribbon edges",
+      "style_tags": ["aurora borealis", "ethereal holiday", "gradient ribbon", "jewel tones"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, ribbon detail in focus" },
+      "base_environment": { "context": "front door, evening setting", "background": "neutral front door", "lighting": "evening light showing ribbon colors and crystal sparkle" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "gradient ribbon must show clear color transition; metallic threads and crystals should catch light; twist creates aurora depth effect" },
+      "hero": {
+        "prompt": "joyful evergreen wreath, 18 inch full boxwood ring, wrapped with a gradient-painted ribbon from deep jewel tones to pale hues, twisted to reveal aurora-like color shifts, slim metallic threads circling the wreath and tiny crystals on the ribbon edge, styled on a neutral front door, evening light, ultra realistic, style raw",
+        "notes": "the twisted gradient ribbon is the centerpiece; metallic threads and crystals should catch light at different points"
+      },
+      "variations": [
+        {
+          "id": "wreath_aurora_ribbon_halo_v1_var1",
+          "prompt": "same aurora ribbon wreath on a dark door, stronger directional lighting to make metallic threads and crystals sparkle against the deep background, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more dramatic and spectacular", "density_shift": "no change", "palette_shift": "dark door makes ribbon gradient and sparkle pop", "context_shift": "door changed to dark, directional spotlight", "camera_shift": "same framing, spotlight from above-right" }
+        },
+        {
+          "id": "wreath_aurora_ribbon_halo_v1_var2",
+          "prompt": "close-up macro of aurora ribbon gradient and crystal edge detail on an evergreen wreath, shallow depth of field, editorial product macro, style raw",
+          "dial": { "emotion_shift": "intimate and jewel-like", "density_shift": "macro amplifies ribbon and crystal detail", "palette_shift": "no change", "context_shift": "abstracted to ribbon and crystal macro", "camera_shift": "macro with shallow depth of field" }
+        },
+        {
+          "id": "wreath_aurora_ribbon_halo_v1_var3",
+          "prompt": "same aurora halo concept with a cooler blue-green gradient ribbon and silver metallic threads only, modern winter mood on a white wall, bright clean daylight, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "cooler and more modern", "density_shift": "no change", "palette_shift": "blue-green gradient replaces jewel tones, silver only", "context_shift": "white wall, cooler palette throughout", "camera_shift": "same framing, clean daylight" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_chalkboard_cluster_v1",
+      "design_name": "Chalkboard Cluster",
+      "emotion_profile": { "primary": "Playful", "secondary": "Adaptable", "intensity": 6 },
+      "client_customizations": [
+        "2-3 mini chalkboard tags in cluster for rotating messages that change with seasons or moods",
+        "Matte clear sealant option when they want to fix a written word permanently",
+        "Tiny white painted polka dots on neutral pods"
+      ],
+      "subject": "20 inch green ring with fuller cluster from 3 to 5 o'clock, neutral pods and small berries, several tiny chalkboard tags with handwritten messages in white marker, subtle white polka dots painted on pods",
+      "style_tags": ["family-friendly", "customizable", "playful seasonal", "chalkboard art"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, chalkboard tags in focus" },
+      "base_environment": { "context": "family front door or interior", "background": "bright family front door", "lighting": "bright daytime light" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "chalkboard tag messages must be legible; polka dot pods must feel hand-painted; cluster fullness contrasts with rest of ring" },
+      "hero": {
+        "prompt": "playful customizable wreath, 20 inch green ring with a fuller cluster from 3 to 5 o'clock, neutral pods and berries, several tiny chalkboard tags with handwritten messages in white marker, subtle white polka dots painted on pods, styled on a family front door, bright daytime light, ultra realistic, style raw",
+        "notes": "the chalkboard tags are the interactive personality of this wreath; messages should vary in the render"
+      },
+      "variations": [
+        {
+          "id": "wreath_chalkboard_cluster_v1_var1",
+          "prompt": "same chalkboard cluster wreath with the word welcome written on one prominent tag in white chalk, close-up view of the cluster, shallow depth of field, style raw",
+          "dial": { "emotion_shift": "warm and welcoming", "density_shift": "close crop emphasizes cluster", "palette_shift": "no change", "context_shift": "single welcome tag in focus", "camera_shift": "close-up with shallow depth of field on cluster" }
+        },
+        {
+          "id": "wreath_chalkboard_cluster_v1_var2",
+          "prompt": "same chalkboard cluster wreath on an interior mudroom wall, hooks and coats softly blurred in background, family lifestyle scene, bright natural interior light, ultra realistic lifestyle photography, style raw",
+          "dial": { "emotion_shift": "narrative and domestic", "density_shift": "no change, seen in home context", "palette_shift": "warm interior light, home environment colors", "context_shift": "mudroom interior, coats and hooks visible in background", "camera_shift": "wider lifestyle shot with domestic context" }
+        },
+        {
+          "id": "wreath_chalkboard_cluster_v1_var3",
+          "prompt": "same chalkboard cluster wreath with tags blank, chalk marker and eraser placed nearby in the flat lay frame, DIY customization scene on a white surface, ultra realistic product photography, style raw",
+          "dial": { "emotion_shift": "invitation to personalize", "density_shift": "no change, blank tags shown with tools", "palette_shift": "white surface, clean and inviting", "context_shift": "flat lay with chalk marker and eraser as props", "camera_shift": "top-down flat lay with prop tools" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_stained_glass_citrus_v1",
+      "design_name": "Stained-Glass Citrus",
+      "emotion_profile": { "primary": "Bright", "secondary": "Artistic", "intensity": 8 },
+      "client_customizations": [
+        "Back-paint some citrus slices with transparent glass paints in amber, ruby, and teal so they glow like stained glass",
+        "Ultra-thin metallic ring drawn inside some citrus rinds",
+        "Optional backlighting tea-light clip to test glow effect in person"
+      ],
+      "subject": "22 inch evergreen ring with bold citrus crescent from 4 to 9 o'clock, dried orange lemon and lime slices painted on back with transparent jewel-tone glass paints, fine metallic rings drawn inside some rinds",
+      "style_tags": ["artistic winter", "stained glass", "jewel tone citrus", "bold contemporary"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, citrus detail in focus" },
+      "base_environment": { "context": "front door or window with light source behind", "background": "neutral door with light shining through slices", "lighting": "light from behind illuminating painted citrus" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "back-painted citrus glow is the hero detail; jewel tones should be rich and translucent not opaque; metallic rings inside rinds add geometry" },
+      "hero": {
+        "prompt": "artistic winter wreath, 22 inch evergreen ring with a bold citrus crescent from 4 to 9 o'clock, dried orange lemon and lime slices painted on the back with transparent jewel-tone glass paints so they glow like stained glass, fine metallic rings drawn inside some rinds, styled on a neutral door with light shining through slices, ultra realistic, style raw",
+        "notes": "the translucent glow of back-painted citrus is the centerpiece; render must show light passing through"
+      },
+      "variations": [
+        {
+          "id": "wreath_stained_glass_citrus_v1_var1",
+          "prompt": "same stained-glass citrus wreath positioned in a window with strong sunlight illuminating the colored slices from behind, room interior softly blurred, ultra realistic window lifestyle photo, style raw",
+          "dial": { "emotion_shift": "more radiant and cinematic", "density_shift": "no change", "palette_shift": "sunlight intensifies jewel tones through glass paint", "context_shift": "moved to window, sunlight from behind", "camera_shift": "wider shot showing window frame and incoming light" }
+        },
+        {
+          "id": "wreath_stained_glass_citrus_v1_var2",
+          "prompt": "close-up macro of back-painted citrus slices and metallic rings on an evergreen wreath, translucent jewel tones glowing, shallow depth of field, macro product photography, style raw",
+          "dial": { "emotion_shift": "intimate and jewel-like", "density_shift": "macro reveals glass paint and metallic ring detail", "palette_shift": "no change", "context_shift": "abstracted to citrus slice macro", "camera_shift": "macro with shallow depth of field" }
+        },
+        {
+          "id": "wreath_stained_glass_citrus_v1_var3",
+          "prompt": "same citrus crescent wreath with cooler greens and fewer colors in citrus, mostly amber and clear glass paint only, for a more restrained elegant look, neutral door, soft warm daylight, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more restrained and elegant", "density_shift": "no change", "palette_shift": "reduced to amber and clear only, cooler greens", "context_shift": "palette simplified, fewer citrus colors", "camera_shift": "same framing, soft warm daylight" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_galaxy_seed_v1",
+      "design_name": "Galaxy Seed Wreath",
+      "emotion_profile": { "primary": "Mystical", "secondary": "Calm", "intensity": 7 },
+      "client_customizations": [
+        "Metallic silver and midnight blue splatter paint across visible dark vine",
+        "Small constellation stencil to paint a personal star pattern on one section",
+        "Optional micro LED lights woven through like a Milky Way"
+      ],
+      "subject": "18 inch dark grapevine ring with sparse eucalyptus and dark berries, visible vine splattered with tiny metallic silver and midnight blue paint like stars, subtle constellation pattern on one section, thin micro LED lights woven through",
+      "style_tags": ["galaxy", "mystical night sky", "constellation", "dark botanical"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, splatter and lights in focus" },
+      "base_environment": { "context": "interior wall, ambient lighting", "background": "deep navy wall", "lighting": "low ambient light showing LED glow and metallic splatter" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "metallic splatter must read as star-like not messy; micro LEDs create genuine Milky Way effect; dark base vine is essential as canvas" },
+      "hero": {
+        "prompt": "mystical galaxy-inspired wreath, 18 inch dark grapevine ring with sparse eucalyptus and dark berries, visible vine splattered with tiny metallic silver and midnight blue paint like stars, subtle constellation pattern on one section, thin micro LED lights woven through, styled on a deep navy wall, low ambient light, ultra realistic, style raw",
+        "notes": "the galaxy effect is the entire concept; dark vine must show clearly as the canvas for splatter and lights"
+      },
+      "variations": [
+        {
+          "id": "wreath_galaxy_seed_v1_var1",
+          "prompt": "same galaxy wreath on a white wall with lights off, metallic splatter and constellation pattern emphasized in soft daylight, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more graphic and daylight-readable", "density_shift": "no change", "palette_shift": "white wall makes dark vine and silver splatter high contrast", "context_shift": "white wall, lights off, daylight", "camera_shift": "same framing, soft natural light" }
+        },
+        {
+          "id": "wreath_galaxy_seed_v1_var2",
+          "prompt": "close-up macro of splatter-painted dark grapevine and tiny glowing micro LED lights on a galaxy wreath, shallow depth of field, dreamy night-sky effect, style raw",
+          "dial": { "emotion_shift": "intimate and cosmic", "density_shift": "macro amplifies splatter and light detail", "palette_shift": "no change, dark palette intensified in close crop", "context_shift": "abstracted to vine and light macro", "camera_shift": "macro with shallow depth of field" }
+        },
+        {
+          "id": "wreath_galaxy_seed_v1_var3",
+          "prompt": "same galaxy wreath design with only metallic paint splatter and no LED lights for a more subtle celestial daytime look, medium gray background, soft diffused light, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more subtle and graphic", "density_shift": "no change, LED lights removed", "palette_shift": "gray background, lights removed, splatter is primary element", "context_shift": "gray wall, no LEDs, splatter only", "camera_shift": "same framing, diffused light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_ombre_pampas_arc_v1",
+      "design_name": "Ombre Pampas Arc",
+      "emotion_profile": { "primary": "Cozy", "secondary": "Ethereal", "intensity": 6 },
+      "client_customizations": [
+        "Two-step ombre dye or spray on pampas tips — blush to champagne or sand to smoke",
+        "Comb and fluff styling kit with instructions for achieving full plume effect",
+        "3 gold hairpin-style clips for seasonal clip-in accents"
+      ],
+      "subject": "20 inch hoop with soft pampas and bunny tails arc from 8 to 2 o'clock, feathered plumes dyed in gentle ombre from blush to champagne at the tips, light dried florals tucked in",
+      "style_tags": ["pampas", "boho ethereal", "ombre", "feathered texture"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, plume texture in focus" },
+      "base_environment": { "context": "interior wall, warm setting", "background": "warm neutral wall", "lighting": "cozy soft light showing pampas texture" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "ombre gradient in pampas plumes must read clearly; fluffy texture of combed pampas is essential to the appeal; arc composition with negative space in lower half" },
+      "hero": {
+        "prompt": "ethereal pampas grass wreath, 20 inch hoop with a soft pampas and bunny tails arc from 8 to 2 o'clock, feathered plumes dyed in gentle ombre from blush to champagne at the tips, light dried florals tucked in, styled on a warm neutral wall, cozy soft light, ultra realistic, style raw",
+        "notes": "pampas plume texture and ombre dye are the signature elements; fluffy and full plumes not flat"
+      },
+      "variations": [
+        {
+          "id": "wreath_ombre_pampas_arc_v1_var1",
+          "prompt": "same pampas arc wreath with a sand-to-smoke neutral ombre dye, modern minimal interior background, cooler light, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "cooler and more modern", "density_shift": "no change", "palette_shift": "sand to smoke replaces blush to champagne", "context_shift": "modern interior, cooler background and light", "camera_shift": "same framing, cooler light temperature" }
+        },
+        {
+          "id": "wreath_ombre_pampas_arc_v1_var2",
+          "prompt": "close-up lifestyle shot of ombre pampas plume tips being gently combed and fluffed by a hand holding a wide-tooth comb, shallow depth of field, warm light, product detail and care scene, style raw",
+          "dial": { "emotion_shift": "intimate and tactile craft moment", "density_shift": "close crop on plume tips", "palette_shift": "no change", "context_shift": "hand and comb added as lifestyle prop", "camera_shift": "close-up with hand in frame" }
+        },
+        {
+          "id": "wreath_ombre_pampas_arc_v1_var3",
+          "prompt": "same pampas arc wreath with three gold hairpin clips holding small seasonal ornament accents, styled on a white wall for a holiday setting, soft warm light, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more festive and celebratory", "density_shift": "three hairpin accents added", "palette_shift": "gold hairpins add warm metallic detail", "context_shift": "white wall, holiday accent clips added", "camera_shift": "same framing, warm accent light" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_ink_blocked_laurel_v1",
+      "design_name": "Ink-Blocked Laurel",
+      "emotion_profile": { "primary": "Graphic", "secondary": "Confident", "intensity": 7 },
+      "client_customizations": [
+        "Masked sections spray-painted in matte white, charcoal, or a bold color to create geometric bands",
+        "Thin contrasting hand-painted line along inner edge of one band",
+        "Removable center disk for monogram or seasonal insert"
+      ],
+      "subject": "18 inch laurel leaf ring arranged in bands, some sections spray-painted in matte white and charcoal with crisp masked edges, thin hand-painted contrasting line along inner edge of one band, small berries, removable center monogram disk",
+      "style_tags": ["graphic design-led", "bold contemporary", "geometric", "confident modern"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "crisp throughout, clean lines in focus" },
+      "base_environment": { "context": "modern front door or interior wall", "background": "modern front door or white wall", "lighting": "bright clean daylight" },
+      "base_quality": { "keywords": ["ultra realistic", "product photography", "style raw"], "notes": "masked paint edges must be crisp and geometric; contrasting inner line is a fine detail worth rendering clearly; center disk monogram must read" },
+      "hero": {
+        "prompt": "graphic laurel wreath, 18 inch ring with laurel leaves arranged in bands, some sections spray-painted in matte white and charcoal with crisp masked edges, thin hand-painted contrasting line along inner edge of one band, small berries, removable center disk with monogram, styled on a modern front door, bright daylight, ultra realistic, style raw",
+        "notes": "crisp paint band edges are the design signature; geometric masking must feel intentional and precise"
+      },
+      "variations": [
+        {
+          "id": "wreath_ink_blocked_laurel_v1_var1",
+          "prompt": "same ink-blocked laurel wreath with one bold color band in deep teal instead of charcoal, contemporary interior wall styling, white wall, bright natural light, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "bolder and more vibrant", "density_shift": "no change", "palette_shift": "deep teal replaces charcoal in one band", "context_shift": "white wall, one band color changed to teal", "camera_shift": "same framing, bright natural light" }
+        },
+        {
+          "id": "wreath_ink_blocked_laurel_v1_var2",
+          "prompt": "close-up showing the sharp masked paint band edges and thin contrasting inner painted line on a graphic laurel wreath, shallow depth of field, design-focused product shot, style raw",
+          "dial": { "emotion_shift": "precision-focused and craft-detailed", "density_shift": "macro reveals masking edge sharpness", "palette_shift": "no change", "context_shift": "abstracted to paint edge and inner line macro", "camera_shift": "close-up with shallow depth of field" }
+        },
+        {
+          "id": "wreath_ink_blocked_laurel_v1_var3",
+          "prompt": "same ink-blocked laurel wreath with center disk blank, positioned on a work desk with painter tape and small brushes nearby, DIY customization scene, natural light, ultra realistic product photography, style raw",
+          "dial": { "emotion_shift": "invitational and DIY-ready", "density_shift": "no change, blank disk shown with tools", "palette_shift": "warm work surface, craft context", "context_shift": "desk flat lay with tape and brush props, blank disk", "camera_shift": "slight angle showing desk surface and props" }
+        }
+      ]
+    },
+    {
+      "id": "wreath_pressed_story_memory_v1",
+      "design_name": "Pressed-Story Memory Wreath",
+      "emotion_profile": { "primary": "Nostalgic", "secondary": "Tender", "intensity": 8 },
+      "client_customizations": [
+        "Clear acrylic disks that open to hold pressed florals, ticket stubs, or tiny photos, hanging inside the ring",
+        "Mini glass vials for sand, glitter, herbs, or spices with memories attached",
+        "Permanent marker for writing dates and coordinates on the disks"
+      ],
+      "subject": "20 inch light green ring with plenty of negative space, several clear acrylic disks hanging in the center filled with pressed flowers, ticket stubs and tiny photos, mini glass vials with sand and keepsakes, delicate handwritten dates and coordinates on the disks",
+      "style_tags": ["memory keepsake", "nostalgic", "pressed botanical", "personal heirloom"],
+      "base_camera": { "shot_type": "straight-on product shot", "angle": "eye-level, centered", "depth_of_field": "moderate, disk contents in focus" },
+      "base_environment": { "context": "home wall display, interior", "background": "neutral warm wall", "lighting": "warm soft light showing disk contents clearly" },
+      "base_quality": { "keywords": ["ultra realistic", "keepsake product photography", "style raw"], "notes": "contents of acrylic disks must be visible and legible; pressed flowers in disks must look botanical; dates and coordinates must be readable" },
+      "hero": {
+        "prompt": "nostalgic memory wreath, 20 inch light green ring with plenty of negative space, several clear acrylic disks hanging in the center filled with pressed flowers, ticket stubs and tiny photos, mini glass vials with sand and keepsakes, delicate handwritten dates and coordinates on the disks, styled on a neutral wall, warm soft light, ultra realistic, style raw",
+        "notes": "the disk contents are the emotional payload; render each disk with visible pressed botanicals and mementos"
+      },
+      "variations": [
+        {
+          "id": "wreath_pressed_story_memory_v1_var1",
+          "prompt": "same memory wreath with fewer acrylic disks, just one central disk holding a small photo and a handwritten date, closer crop on the ring, shallow depth of field focusing on the disk, style raw",
+          "dial": { "emotion_shift": "more focused and emotionally concentrated", "density_shift": "simplified to single central disk", "palette_shift": "no change", "context_shift": "one disk, one photo, one date as focal point", "camera_shift": "closer crop, disk in sharp focus" }
+        },
+        {
+          "id": "wreath_pressed_story_memory_v1_var2",
+          "prompt": "flat lay of the memory wreath on a table with keepsakes, pressed flowers, small photos, and ticket stubs being arranged into the open acrylic disks, storytelling DIY scene, warm natural light, ultra realistic lifestyle photography, style raw",
+          "dial": { "emotion_shift": "narrative storytelling of creation process", "density_shift": "no change, items shown being assembled", "palette_shift": "warm table surface and scattered keepsakes", "context_shift": "flat lay showing wreath plus scattered memories to be added", "camera_shift": "top-down flat lay with hands and keepsakes" }
+        },
+        {
+          "id": "wreath_pressed_story_memory_v1_var3",
+          "prompt": "same pressed memory wreath with cooler light and more minimal disk contents, clean pressed leaves only no photos, gallery-style memory display on a white wall, ultra realistic product photo, style raw",
+          "dial": { "emotion_shift": "more restrained and gallery-like", "density_shift": "disks hold only pressed leaves, no photos", "palette_shift": "white wall and cool light reduce warmth", "context_shift": "white wall, simplified disk contents, botanical only", "camera_shift": "same framing, cooler light" }
+        }
+      ]
+    }
+  ]
+}

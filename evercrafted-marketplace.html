@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketplace — Evercrafted — Evercrafted</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F8F5EF;--cream2:#F0EBE2;--cream3:#E6DFCF;--white:#FDFCF9;
+  --ink:#1B1916;--ink2:#332F28;--muted:#8A8278;--muted2:#B4AFA8;
+  --sage:#506347;--sage-l:#C4D4BF;--sage-ll:#EBF1E8;--sage-d:#324030;
+  --bark:#8A6E52;--bark-l:#C2A98E;--bark-ll:#EDE5D8;--bark-d:#5A4535;
+  --rule:rgba(27,25,22,.07);--rule2:rgba(27,25,22,.13);--ruledark:rgba(27,25,22,.22)
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;line-height:1.6;overflow-x:hidden}
+.page{display:none}.page.on{display:block}
+
+/* ── NAV ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:54px;background:rgba(248,245,239,.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--rule)}
+.nav-i{max-width:1180px;margin:0 auto;padding:0 32px;height:100%;display:flex;align-items:center}
+.logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;letter-spacing:.06em;color:var(--ink);display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
+.logo-mark{width:20px;height:20px;position:relative;flex-shrink:0}
+.nav-links{display:flex;gap:22px;margin-left:36px}
+.nav-links a{font-size:12px;color:var(--muted);letter-spacing:.03em;cursor:pointer;transition:color .15s;font-weight:400;text-decoration:none}
+.nav-links a:hover,.nav-links a.on{color:var(--ink)}
+.nav-links a.on{font-weight:500}
+.nav-r{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn-ghost{background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.03em;transition:color .15s;padding:6px 8px}
+.btn-ghost:hover{color:var(--ink)}
+.btn-cta{padding:7px 20px;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:500;letter-spacing:.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-cta:hover{background:var(--ink2)}
+.btn-outline{padding:7px 20px;background:transparent;color:var(--ink2);border:1px solid var(--rule2);border-radius:3px;font-size:12px;font-weight:400;letter-spacing:.05em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-outline:hover{background:var(--cream2);border-color:var(--bark-l)}
+
+/* ── SHARED ── */
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+.eyebrow{font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--sage);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--sage)}
+h2.display{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,3.8vw,48px);font-weight:300;line-height:1.1;letter-spacing:-.02em;color:var(--ink)}
+h2.display em{font-style:italic;color:var(--bark)}
+.rule-line{height:1px;background:var(--rule);margin:0}
+
+/* ── PAGE: HOME ── */
+/* HERO */
+.hero{min-height:100vh;padding-top:54px;display:grid;grid-template-columns:2fr 3fr;overflow:hidden;background:var(--white)}
+.hero-l{padding:80px 48px 60px 80px;display:flex;flex-direction:column;justify-content:center}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,4.8vw,66px);font-weight:300;line-height:1.07;letter-spacing:-.025em;color:var(--ink);margin-bottom:16px}
+.hero-h1 em{font-style:italic;color:var(--bark)}
+.hero-sub{font-size:15px;font-weight:300;line-height:1.75;color:var(--muted);max-width:390px;margin-bottom:26px}
+.hero-btns{display:flex;gap:10px;margin-bottom:48px}
+.hero-btn-p{padding:12px 28px;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:13px;font-weight:500;letter-spacing:.06em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.hero-btn-p:hover{background:var(--ink2)}
+.hero-btn-o{padding:12px 22px;background:transparent;color:var(--ink2);border:1px solid var(--rule2);border-radius:3px;font-size:13px;font-weight:400;letter-spacing:.04em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.hero-btn-o:hover{background:var(--cream2);border-color:var(--bark-l)}
+.hero-proof{display:flex;gap:32px}
+.hp-n{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--ink);line-height:1}
+.hp-l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-top:2px}
+
+/* Hero right — product preview */
+
+
+.app-preview{background:rgba(248,245,239,.05);border:1px solid rgba(248,245,239,.12);border-radius:10px;overflow:hidden;width:100%;max-width:480px;position:relative;z-index:2}
+.app-preview-topbar{height:36px;background:rgba(248,245,239,.06);border-bottom:1px solid rgba(248,245,239,.08);display:flex;align-items:center;padding:0 14px;gap:10px}
+.app-tl{font-family:'Cormorant Garamond',serif;font-size:13px;color:rgba(248,245,239,.7);letter-spacing:.04em}
+.app-tl-meta{font-size:10px;color:rgba(248,245,239,.3);margin-left:auto;letter-spacing:.04em}
+.app-body{display:grid;grid-template-columns:164px 1fr;min-height:320px}
+.app-sidebar{border-right:1px solid rgba(248,245,239,.07);padding:12px 8px;display:flex;flex-direction:column;gap:3px}
+.app-nl{font-size:8px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(248,245,239,.2);padding:0 7px;margin:6px 0 2px}
+.app-ni{display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:3px;font-size:10px;color:rgba(248,245,239,.38);font-weight:300}
+.app-ni.on{color:rgba(248,245,239,.82);background:rgba(248,245,239,.07);font-weight:500}
+.app-ni-dot{width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.6}
+.app-main{padding:14px;display:flex;flex-direction:column;gap:10px}
+.app-canvas-area{background:rgba(248,245,239,.04);border-radius:6px;height:180px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px solid rgba(248,245,239,.07)}
+.canvas-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(248,245,239,.2);position:absolute;top:10px;left:12px}
+.app-stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.app-stat{background:rgba(248,245,239,.05);border-radius:4px;padding:7px 9px;border:1px solid rgba(248,245,239,.06)}
+.app-stat-n{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:rgba(248,245,239,.75);line-height:1}
+.app-stat-l{font-size:8px;color:rgba(248,245,239,.3);margin-top:1px;letter-spacing:.04em}
+
+/* PROCESS STEPS */
+.process{padding:88px 0;background:var(--cream2)}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:52px;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--rule)}
+.step{background:var(--white);padding:28px 24px;transition:background .18s}
+.step:hover{background:var(--sage-ll)}
+.step-n{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--cream3);line-height:1;margin-bottom:14px}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--ink);margin-bottom:7px;letter-spacing:-.01em}
+.step-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.7}
+
+/* FEATURES SECTION */
+.features-section{padding:88px 0;background:var(--white)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:8px;overflow:hidden;margin-top:52px}
+.feat{background:var(--white);padding:28px 26px;transition:background .18s}
+.feat:hover{background:var(--sage-ll)}
+.feat-ico{width:34px;height:34px;border-radius:50%;background:var(--sage-ll);display:flex;align-items:center;justify-content:center;margin-bottom:14px;flex-shrink:0}
+.feat-ico svg{width:15px;height:15px;stroke:var(--sage);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.feat-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--ink);margin-bottom:7px;letter-spacing:-.01em}
+.feat-desc{font-size:12px;font-weight:300;color:var(--muted);line-height:1.75}
+
+/* SOCIAL PROOF STRIP */
+.proof-strip{background:var(--ink);padding:28px 0}
+.proof-inner{max-width:1180px;margin:0 auto;padding:0 32px;display:flex;gap:48px;align-items:center;justify-content:center}
+.proof-stat .pn{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:rgba(248,245,239,.85)}
+.proof-stat .pl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(248,245,239,.35)}
+.proof-divider{width:1px;height:40px;background:rgba(248,245,239,.12)}
+
+/* TESTI */
+.testi-section{padding:88px 0;background:var(--cream)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px}
+.testi{background:var(--white);border:1px solid var(--rule);border-radius:8px;padding:26px;transition:box-shadow .18s}
+.testi:hover{box-shadow:0 8px 32px rgba(27,25,22,.06)}
+.testi-stars{letter-spacing:3px;color:var(--sage);font-size:10px;margin-bottom:10px}
+.testi-body{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;line-height:1.65;color:var(--ink);margin-bottom:18px}
+.testi-av{display:flex;align-items:center;gap:9px}
+.tav-circle{width:32px;height:32px;border-radius:50%;background:var(--sage-ll);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--sage-d);flex-shrink:0}
+.tav-name{font-size:12px;font-weight:500;color:var(--ink)}
+.tav-handle{font-size:11px;color:var(--muted2)}
+
+/* ── PAGE: FEATURES ── */
+.features-page{padding:100px 0 80px}
+.feat-page-hero{padding:60px 0 48px;background:var(--white);border-bottom:1px solid var(--rule);margin-top:54px}
+.feat-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding:64px 0;border-bottom:1px solid var(--rule)}
+.feat-detail-grid.flip{direction:rtl}.feat-detail-grid.flip>*{direction:ltr}
+.feat-detail-visual{background:var(--cream2);border-radius:10px;height:300px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.feat-detail-label{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);position:absolute;top:16px;left:18px}
+.feat-detail-tag{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-d);background:var(--sage-ll);padding:3px 9px;border-radius:2px;margin-bottom:10px;display:inline-block}
+.feat-detail-h3{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:12px;letter-spacing:-.01em}
+.feat-detail-h3 em{font-style:italic;color:var(--bark)}
+.feat-detail-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.8;margin-bottom:16px}
+.feat-bullets{list-style:none;display:flex;flex-direction:column;gap:6px}
+.feat-bullets li{font-size:12px;font-weight:300;color:var(--ink2);display:flex;align-items:flex-start;gap:8px}
+.feat-bullets li::before{content:'—';color:var(--sage);font-size:11px;flex-shrink:0;margin-top:1px}
+
+/* ── PAGE: APPS ── */
+.apps-page{margin-top:54px}
+.apps-hero{padding:72px 0 52px;background:var(--white);border-bottom:1px solid var(--rule)}
+.apps-philosophy{max-width:580px;font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;margin-top:14px}
+.apps-section-label{font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);padding:20px 0 12px;border-bottom:1px solid var(--rule);margin-bottom:16px}
+.apps-grid{display:flex;flex-direction:column;gap:2px;margin-bottom:32px}
+.app-card{background:var(--white);border:1px solid var(--rule);border-radius:6px;overflow:hidden;transition:border-color .15s}
+.app-card:hover{border-color:var(--rule2)}
+.app-card.open{border-color:var(--rule2);box-shadow:0 4px 24px rgba(27,25,22,.07)}
+.app-card-header{display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;user-select:none}
+.app-card-header:hover .ach-name{color:var(--sage-d)}
+.ach-left{flex:1;min-width:0}
+.ach-cat{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:3px}
+.ach-name{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:400;color:var(--ink);letter-spacing:-.01em;line-height:1.1;transition:color .15s}
+.ach-tagline{font-size:12px;font-weight:300;color:var(--muted);margin-top:2px}
+.ach-right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.ach-price{font-size:13px;font-weight:400;color:var(--ink2);white-space:nowrap}
+.ach-chevron{width:18px;height:18px;display:flex;align-items:center;justify-content:center;color:var(--muted2);transition:transform .25s;font-size:10px;line-height:1}
+.app-card.open .ach-chevron{transform:rotate(180deg)}
+.app-card-body{display:none;border-top:1px solid var(--rule)}
+.app-card.open .app-card-body{display:block}
+.acb-inner{display:grid;grid-template-columns:1fr 280px}
+.acb-content{padding:24px 28px;border-right:1px solid var(--rule)}
+.acb-visual{padding:18px;background:var(--cream);display:flex;flex-direction:column;gap:10px}
+.acb-desc{font-size:13px;font-weight:300;color:var(--ink2);line-height:1.8;margin-bottom:18px;max-width:560px}
+.acb-sl{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:7px}
+.acb-bullets{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+.acb-bullets li{font-size:12px;font-weight:300;color:var(--ink2);display:flex;align-items:flex-start;gap:8px;line-height:1.55}
+.acb-bullets li::before{content:'—';color:var(--sage);font-size:10px;flex-shrink:0;margin-top:1px}
+.acb-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px}
+.acb-tag{font-size:10px;color:var(--muted);border:1px solid var(--rule);border-radius:2px;padding:2px 8px}
+.acb-tag.hl{color:var(--sage-d);background:var(--sage-ll);border-color:rgba(80,99,71,.18)}
+.acb-footer{display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--rule)}
+.acb-price-big{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--ink);line-height:1}
+.acb-per{font-size:10px;font-weight:300;color:var(--muted)}
+.btn-add{padding:9px 22px;background:var(--sage);color:var(--white);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.06em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-add:hover{background:var(--sage-d)}
+.btn-add.inc{background:var(--sage-ll);color:var(--sage-d);cursor:default}
+.av-label{font-size:8px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);margin-bottom:5px}
+.av-box{background:var(--white);border:1px solid var(--rule);border-radius:5px;padding:10px 12px}
+.av-stat-row{display:flex;gap:5px}
+.av-stat{background:var(--white);border:1px solid var(--rule);border-radius:4px;padding:6px 9px;flex:1;text-align:center}
+.av-sn{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--ink);line-height:1}
+.av-sl{font-size:8px;color:var(--muted2);margin-top:1px}
+.av-sr-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.av-sr-label{font-size:10px;font-weight:300;color:var(--ink2);width:62px;flex-shrink:0}
+.av-sr-track{flex:1;height:2px;background:var(--cream3);border-radius:1px}
+.av-sr-fill{height:100%;border-radius:1px;background:var(--bark-l)}
+.av-sr-val{font-size:9px;color:var(--muted2);width:20px;text-align:right}
+.pairing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:48px}
+.pairing{background:var(--bark-ll);border:1px solid rgba(138,110,82,.15);border-radius:8px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between}
+.pairing-names{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--ink);margin-bottom:3px}
+.pairing-save{font-size:10px;font-weight:500;color:var(--sage-d)}
+.pairing-price{text-align:right}
+.pairing-bundled{font-size:13px;font-weight:500;color:var(--ink2)}
+.pairing-was{font-size:10px;color:var(--muted2);text-decoration:line-through}
+
+/* ── PAGE: PRICING ── */
+.pricing-page{margin-top:54px}
+.pricing-hero{padding:72px 0 52px;background:var(--white);border-bottom:1px solid var(--rule);text-align:center}
+.pricing-sub{font-size:14px;font-weight:300;color:var(--muted);max-width:440px;margin:12px auto 0}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:860px;margin:52px auto 0}
+.plan{background:var(--white);border:1px solid var(--rule2);border-radius:8px;padding:28px;position:relative;transition:box-shadow .18s}
+.plan:hover{box-shadow:0 8px 32px rgba(27,25,22,.08)}
+.plan.featured{background:var(--ink);border-color:var(--ink)}
+.plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;background:var(--sage);color:var(--white);padding:3px 12px;border-radius:2px;white-space:nowrap}
+.plan-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:3px;letter-spacing:-.01em}
+.plan.featured .plan-name{color:rgba(248,245,239,.9)}
+.plan-note{font-size:11px;font-weight:300;color:var(--muted);margin-bottom:20px}
+.plan.featured .plan-note{color:rgba(248,245,239,.4)}
+.plan-price{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;line-height:1;color:var(--ink);margin-bottom:4px}
+.plan.featured .plan-price{color:rgba(248,245,239,.9)}
+.plan-per{font-size:11px;color:var(--muted);margin-bottom:22px;font-weight:300}
+.plan.featured .plan-per{color:rgba(248,245,239,.38)}
+.plan-features{list-style:none;margin-bottom:22px}
+.plan-features li{font-size:12px;font-weight:300;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--rule);display:flex;align-items:flex-start;gap:8px}
+.plan-features li::before{content:'—';color:var(--sage);font-size:10px;flex-shrink:0}
+.plan.featured .plan-features li{color:rgba(248,245,239,.6);border-bottom-color:rgba(248,245,239,.07)}
+.plan-cta{width:100%;padding:10px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:500;border-radius:3px;cursor:pointer;transition:all .15s;border:1px solid var(--rule2);background:transparent;color:var(--ink)}
+.plan-cta:hover{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.plan.featured .plan-cta{background:var(--sage);color:var(--white);border-color:var(--sage)}
+.plan.featured .plan-cta:hover{background:var(--sage-d)}
+.pricing-faq{padding:72px 0;background:var(--cream2)}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:36px;max-width:860px}
+.faq-item{border-top:1px solid var(--rule2);padding-top:18px}
+.faq-q{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--ink);margin-bottom:7px;letter-spacing:-.01em}
+.faq-a{font-size:12px;font-weight:300;color:var(--muted);line-height:1.8}
+
+/* ── PAGE: MARKETPLACE ── */
+.mkt-page{margin-top:54px}
+.mkt-hero{padding:72px 0 48px;background:var(--white);border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+.mkt-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(120deg,rgba(253,252,249,.92),rgba(253,252,249,.55)),url('assets/marketplace/market-01.jpg') center/cover;opacity:.7;z-index:0}
+.mkt-hero .wrap{position:relative;z-index:1}
+.mkt-bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:32px}
+.bp-card{background:var(--white);border:1px solid var(--rule);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s}
+.bp-card:hover{box-shadow:0 4px 24px rgba(27,25,22,.08);transform:translateY(-2px);border-color:var(--rule2)}
+.bp-thumb{height:152px;background:var(--cream2);display:flex;align-items:center;justify-content:center;position:relative}
+.bp-kit{position:absolute;top:10px;left:10px;background:rgba(27,25,22,.72);color:rgba(248,245,239,.85);font-size:9px;text-transform:uppercase;letter-spacing:.08em;padding:2px 7px;border-radius:2px}
+.bp-info{padding:14px 16px}
+.bp-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--ink);margin-bottom:3px;letter-spacing:-.01em}
+.bp-gen{font-size:10px;color:var(--muted2);margin-bottom:6px}
+.bp-meta{display:flex;align-items:center;gap:8px}
+.bp-free{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--sage);border:1px solid var(--sage-l);padding:2px 6px;border-radius:2px}
+.bp-prem{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--bark);border:1px solid var(--bark-l);padding:2px 6px;border-radius:2px}
+.bp-price{font-size:12px;font-weight:500;color:var(--ink2)}
+.mkt-submit{margin-top:40px;border:1px solid var(--rule);border-radius:8px;padding:20px 24px;background:var(--white);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mkt-submit-t{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:6px}
+.mkt-submit-s{font-size:12px;font-weight:300;color:var(--muted)}
+.mkt-submit-btn{padding:9px 20px;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif}
+.mkt-submit-btn:hover{background:var(--ink2)}
+.mkt-submit-btn:active{transform:translateY(1px)}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--white);font-size:12px;padding:8px 14px;border-radius:4px;opacity:0;pointer-events:none;transition:.2s;z-index:500}
+.toast.on{opacity:1}
+
+.fc{padding:4px 10px;border-radius:2px;font-size:10px;cursor:pointer;border:1px solid var(--rule);background:var(--white);color:var(--muted);transition:all .12s;letter-spacing:.03em}.fc:hover{border-color:var(--rule2);color:var(--ink)}.fc.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.price-pill{display:inline-block;padding:3px 8px;border-radius:999px;background:var(--cream2);font-size:11px}
+.muted{color:var(--muted)}
+.hidden{display:none!important}
+/* Standalone page overrides */
+.page{display:block!important}
+body{overflow-x:hidden}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-i">
+    <a class="logo" href="index.html">
+      <svg class="logo-mark" viewBox="0 0 20 20" fill="none">
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(0,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(72,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(144,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".6" transform="rotate(216,10,10)"/>
+        <ellipse cx="10" cy="4.5" rx="3.2" ry="5.5" fill="var(--sage)" opacity=".7" transform="rotate(288,10,10)"/>
+        <circle cx="10" cy="10" r="2.2" fill="var(--bark)"/>
+      </svg>
+      Evercrafted
+    </a>
+    <div class="nav-links">
+      <a id="nl-home" href="index.html">Home</a>
+      <a id="nl-features" href="evercrafted-how-it-works.html">How it works</a>
+      <a id="nl-apps" href="evercrafted-apps.html">Apps</a>
+      <a id="nl-marketplace" href="evercrafted-marketplace.html" class="on">Marketplace</a>
+      <a id="nl-pricing" href="evercrafted-pricing.html">Pricing</a>
+      <a id="nl-moodoor" href="moodoor/moodoor.html" style="color:var(--bark)!important;font-weight:500">Moodoor</a>
+    </div>
+    <div class="nav-r">
+      <a class="btn-ghost" href="evercrafted-auth.html">Sign in</a>
+      <a class="btn-cta" href="evercrafted-waitlist.html">Start free trial</a>
+    </div>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<div class="mkt-page">
+    <div class="mkt-hero">
+      <div class="wrap">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px">
+          <div>
+            <div class="eyebrow">Design Marketplace</div>
+            <h2 class="display" style="max-width:500px">33 ready-made designs. <em>8 completely free.</em><br>Sell yours and keep 70%.</h2>
+            <p style="font-size:13px;font-weight:300;color:var(--muted);max-width:480px;margin-top:12px;line-height:1.75">Every design includes a product photo prompt. Premium designs can include a step-by-step guide for customers who want to make the wreath themselves. Designers set their own prices.</p>
+            <p style="font-size:12px;font-weight:300;color:var(--muted2);max-width:480px;margin-top:8px;line-height:1.7">All marketplace blueprints are generated from either inventory or memory inputs and refined through the Precision Blueprint Engine.</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a class="btn-outline" href="blueprint-quiet_luxury.html">View blueprint sample</a>
+            <button class="btn-cta" onclick="toast('Submit a design — Phase 2')">Submit a design</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:40px 0 72px;background:var(--cream)">
+      <div class="wrap">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center">
+          <input style="padding:5px 11px;border:1px solid var(--rule2);border-radius:3px;font-size:11px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);outline:none;width:160px" placeholder="Search designs…">
+          <span id="mf-all" class="fc on" onclick="mktFilter('all',this)">All</span>
+          <span id="mf-free" class="fc" onclick="mktFilter('free',this)">Free</span>
+          <span id="mf-premium" class="fc" onclick="mktFilter('premium',this)">Premium</span>
+          <span id="mf-kit" class="fc" onclick="mktFilter('kit',this)">Includes step-by-step guide</span>
+          <span id="mf-romantic" class="fc" onclick="mktFilter('romantic',this)">Romantic</span>
+          <span id="mf-calm" class="fc" onclick="mktFilter('calm',this)">Minimal</span>
+        </div>
+        <div class="mkt-bp-grid" id="mkt-grid">
+      <div class="bp-card" onclick="window.location.href='blueprint-grounded_joy.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-01.jpg" alt="Grounded Joy" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Grounded Joy</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Bold · Expressive</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$124</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-quiet_return.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-02.jpg" alt="Quiet Return" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">year</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Quiet Return</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Organic</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$108</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-held_between.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-03.jpg" alt="Held Between Seasons" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Held Between Seasons</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Fresh · Garden</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$116</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-after_rain.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-04.jpg" alt="After the Rain" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">After the Rain</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Fresh · Airy</div>
+          <div class="bp-meta"><span class="bp-free">Free</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-becoming_again.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-05.jpg" alt="Becoming Again" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Becoming Again</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Romantic · Full</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$118</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-held_between_2.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-06.jpg" alt="Held Between Seasons II" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">summer</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Held Between Seasons II</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Serene</div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$124</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-summer_grapevine.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-07.jpg" alt="Summer Grapevine" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">summer</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Summer Grapevine</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Joyful · Summer</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$132</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-quiet_luxury.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-08.jpg" alt="Quiet Luxury" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">year</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Quiet Luxury</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Editorial</div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$138</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-spring_luxe.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-09.jpg" alt="Spring Luxe" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Spring Luxe</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Romantic · Minimal</div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$116</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-ivory_garden.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-10.jpg" alt="Ivory Garden" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">year</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Ivory Garden</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Minimal</div>
+          <div class="bp-meta"><span class="bp-free">Free</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-blush_green.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-11.jpg" alt="Blush & Green" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Blush & Green</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Romantic · Spring</div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$112</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-winter_white.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-12.jpg" alt="Winter White" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">winter</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Winter White</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Pure</div>
+          <div class="bp-meta"><span class="bp-free">Free</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-garden_white.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-13.jpg" alt="Garden White" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Garden White</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Fresh · Minimal</div>
+          <div class="bp-meta"><span class="bp-free">Free</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-ivory_studio.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-14.jpg" alt="Ivory Studio" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">year</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Ivory Studio</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Classic</div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$104</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-quiet_morning.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-15.jpg" alt="Quiet Morning" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">year</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Quiet Morning</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Crescent</div>
+          <div class="bp-meta"><span class="bp-free">Free</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-blue_garden.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-16.jpg" alt="Blue Garden" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">summer</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Blue Garden</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Romantic · Summer</div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$116</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-spring_garden.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-17.jpg" alt="Spring Garden" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Spring Garden</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Fresh · Natural</div>
+          <div class="bp-meta"><span class="bp-free">Free</span></div>
+        </div>
+      </div>
+      <div class="bp-card" onclick="window.location.href='blueprint-soft_return.html'">
+        <div class="bp-thumb" style="background:#1B1916">
+          <img src="assets/marketplace/market-18.jpg" alt="Soft Return" style="width:100%;height:100%;object-fit:cover" decoding="async" loading="lazy">
+          <div class="bp-kit-tag" style="position:absolute;top:8px;left:8px;font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:rgba(27,25,22,.6);color:rgba(248,245,239,.7);padding:2px 7px;border-radius:2px;backdrop-filter:blur(4px)">spring</div>
+        </div>
+        <div class="bp-info">
+          <div class="bp-name">Soft Return</div>
+          <div class="bp-gen">Generated by <a href="app-blueprint.html">Blueprint Generator</a></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Calm · Gentle</div>
+          <div class="bp-meta"><span class="bp-prem">Premium</span><span class="bp-price">$108</span></div>
+        </div>
+      </div></div>
+        <div class="mkt-submit">
+          <div><div class="mkt-submit-t">Share your designs with 2,400 wreath makers.</div><div class="mkt-submit-s">Designers keep 70% of every sale, paid monthly via Stripe Connect.</div></div>
+          <button class="mkt-submit-btn" onclick="toast('Submit flow — Phase 2')">Submit a design →</button>
+        </div>
+      </div>
+    </div>
+    <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools built for wreath makers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a href="evercrafted-how-it-works.html">How it works</a><a href="evercrafted-apps.html">All apps</a><a href="evercrafted-marketplace.html">Marketplace</a><a href="evercrafted-pricing.html">Pricing</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a>Privacy</a><a>Terms</a><a href="contact.html">Contact</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div></div></div></footer>
+  </div>
+
+<script>
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)}
+
+let mktActive='all';// Images loaded statically
+</script>
+</body>
+</html>

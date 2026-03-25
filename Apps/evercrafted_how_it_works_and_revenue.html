@@ -1,0 +1,256 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+
+  .section { margin-bottom: 2.5rem; }
+  .section-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+
+  /* FLOW */
+  .flow-row { display: flex; align-items: center; gap: 0; margin-bottom: 1.5rem; }
+  .flow-node {
+    flex: 1; background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 14px 12px; text-align: center;
+  }
+  .flow-node-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .flow-node-sub { font-size: 11px; color: var(--color-text-secondary); line-height: 1.4; }
+  .flow-arrow { width: 28px; flex-shrink: 0; text-align: center; color: var(--color-text-tertiary); font-size: 16px; }
+  .flow-node.highlight { border-color: var(--color-border-info); background: var(--color-background-info); }
+  .flow-node.highlight .flow-node-label { color: var(--color-text-info); }
+  .flow-node.highlight .flow-node-sub { color: var(--color-text-info); opacity: 0.75; }
+
+  /* REVENUE STREAMS */
+  .rev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .rev-card {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem 1.1rem;
+    background: var(--color-background-primary);
+  }
+  .rev-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+  .rev-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .rev-amount { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+  .rev-amount-label { font-size: 11px; color: var(--color-text-secondary); font-weight: 400; }
+  .rev-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .rev-badge { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; display: inline-block; }
+  .badge-recurring { background: var(--color-background-success); color: var(--color-text-success); }
+  .badge-transactional { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .badge-marketplace { background: var(--color-background-info); color: var(--color-text-info); }
+
+  /* MRR CALC */
+  .mrr-calc {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .mrr-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .mrr-row:last-of-type { border-bottom: none; }
+  .mrr-label { font-size: 13px; color: var(--color-text-secondary); }
+  .mrr-value { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .mrr-total-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 0; margin-top: 6px; border-top: 1px solid var(--color-border-secondary); }
+  .mrr-total-label { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .mrr-total-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .slider-label { font-size: 12px; color: var(--color-text-secondary); min-width: 140px; }
+  .slider-val { font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 36px; text-align: right; }
+
+  .note { font-size: 12px; color: var(--color-text-tertiary); line-height: 1.6; margin-top: 0.5rem; }
+</style>
+
+<div class="section">
+  <div class="section-label">How the platform works — customer journey</div>
+  <div class="flow-row">
+    <div class="flow-node">
+      <div class="flow-node-label">Discovers Evercrafted</div>
+      <div class="flow-node-sub">Landing page, social share, or word of mouth</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-label">Signs up free</div>
+      <div class="flow-node-sub">Seedling plan — no credit card required</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div class="flow-node-label">Hits a limit</div>
+      <div class="flow-node-sub">3 Memory Weavers used, can't export, wants more</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-label">Upgrades to Maker</div>
+      <div class="flow-node-sub">$19/mo — unlocks exports + inventory engine</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-label">Adds ecosystem apps</div>
+      <div class="flow-node-sub">Picks apps that fit their workflow</div>
+    </div>
+  </div>
+
+  <div class="flow-row">
+    <div class="flow-node">
+      <div class="flow-node-label">Uses the platform daily</div>
+      <div class="flow-node-sub">Generates blueprints, manages inventory, exports to clients</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-label">Buys marketplace blueprints</div>
+      <div class="flow-node-sub">One-time purchases, $2.95–$7.95 each</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-label">Submits own designs</div>
+      <div class="flow-node-sub">Earns 70% per sale — becomes a seller too</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div class="flow-node-label">Upgrades to Studio Pro</div>
+      <div class="flow-node-sub">$49/mo — needs design control + API access</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-node-label">Refers others</div>
+      <div class="flow-node-sub">Shares emotional wreath stories — viral loop</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Revenue streams — where every dollar comes from</div>
+  <div class="rev-grid">
+
+    <div class="rev-card">
+      <span class="rev-badge badge-recurring">Recurring</span>
+      <div class="rev-card-top">
+        <div class="rev-name">Platform subscriptions</div>
+        <div><span class="rev-amount">$19–49</span><span class="rev-amount-label">/mo</span></div>
+      </div>
+      <div class="rev-desc">Maker ($19) and Studio Pro ($49) plans. The foundation of MRR. Every subscriber pays whether or not they use it heavily that month.</div>
+    </div>
+
+    <div class="rev-card">
+      <span class="rev-badge badge-recurring">Recurring</span>
+      <div class="rev-card-top">
+        <div class="rev-name">Ecosystem app subscriptions</div>
+        <div><span class="rev-amount">$2.95–19.95</span><span class="rev-amount-label">/mo each</span></div>
+      </div>
+      <div class="rev-desc">Each app added on top of the base plan. A Maker subscriber with 4 apps averages ~$45/mo total. More apps = higher retention because switching cost increases.</div>
+    </div>
+
+    <div class="rev-card">
+      <span class="rev-badge badge-transactional">Transactional</span>
+      <div class="rev-card-top">
+        <div class="rev-name">Blueprint marketplace (Evercrafted designs)</div>
+        <div><span class="rev-amount">$2.95–7.95</span><span class="rev-amount-label">per sale</span></div>
+      </div>
+      <div class="rev-desc">You own 100% of revenue from Evercrafted-created blueprints. Every free user who buys a blueprint converts to a transactional revenue source without upgrading.</div>
+    </div>
+
+    <div class="rev-card">
+      <span class="rev-badge badge-marketplace">Marketplace cut</span>
+      <div class="rev-card-top">
+        <div class="rev-name">Blueprint marketplace (community designs)</div>
+        <div><span class="rev-amount">30%</span><span class="rev-amount-label">of each sale</span></div>
+      </div>
+      <div class="rev-desc">Designers sell their blueprints, you take 30%. As the marketplace grows, this becomes passive income — designers create inventory, you earn on every transaction.</div>
+    </div>
+
+    <div class="rev-card">
+      <span class="rev-badge badge-transactional">Transactional</span>
+      <div class="rev-card-top">
+        <div class="rev-name">Maker+ blueprint unlocks</div>
+        <div><span class="rev-amount">Subscription</span><span class="rev-amount-label"> gate</span></div>
+      </div>
+      <div class="rev-desc">Certain premium blueprints are gated behind a Maker subscription. They don't generate per-sale revenue but they convert free users to paid plans — the unlock is the revenue.</div>
+    </div>
+
+    <div class="rev-card">
+      <span class="rev-badge badge-recurring">Future</span>
+      <div class="rev-card-top">
+        <div class="rev-name">API access (Studio Pro)</div>
+        <div><span class="rev-amount">$49+</span><span class="rev-amount-label">/mo</span></div>
+      </div>
+      <div class="rev-desc">Studio Pro includes API access. As the platform matures, API usage can be metered separately — boutique shops and floral businesses integrating Evercrafted into their own tools.</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">MRR calculator — drag to model your subscriber base</div>
+  <div class="mrr-calc">
+    <div class="slider-row">
+      <label class="slider-label">Maker subscribers</label>
+      <input type="range" min="0" max="500" value="50" step="1" id="maker-count" oninput="calc()" style="flex:1">
+      <span class="slider-val" id="maker-val">50</span>
+    </div>
+    <div class="slider-row">
+      <label class="slider-label">Avg apps per Maker user</label>
+      <input type="range" min="0" max="8" value="2" step="1" id="maker-apps" oninput="calc()" style="flex:1">
+      <span class="slider-val" id="maker-apps-val">2</span>
+    </div>
+    <div class="slider-row">
+      <label class="slider-label">Studio Pro subscribers</label>
+      <input type="range" min="0" max="200" value="10" step="1" id="pro-count" oninput="calc()" style="flex:1">
+      <span class="slider-val" id="pro-val">10</span>
+    </div>
+    <div class="slider-row">
+      <label class="slider-label">Avg apps per Pro user</label>
+      <input type="range" min="0" max="8" value="3" step="1" id="pro-apps" oninput="calc()" style="flex:1">
+      <span class="slider-val" id="pro-apps-val">3</span>
+    </div>
+    <div class="slider-row">
+      <label class="slider-label">Blueprint sales / month</label>
+      <input type="range" min="0" max="500" value="30" step="1" id="bp-sales" oninput="calc()" style="flex:1">
+      <span class="slider-val" id="bp-sales-val">30</span>
+    </div>
+
+    <div style="margin-top:1rem">
+      <div class="mrr-row"><span class="mrr-label">Maker plan revenue</span><span class="mrr-value" id="r-maker">$950</span></div>
+      <div class="mrr-row"><span class="mrr-label">Maker app add-ons</span><span class="mrr-value" id="r-maker-apps">$620</span></div>
+      <div class="mrr-row"><span class="mrr-label">Studio Pro plan revenue</span><span class="mrr-value" id="r-pro">$490</span></div>
+      <div class="mrr-row"><span class="mrr-label">Studio Pro app add-ons</span><span class="mrr-value" id="r-pro-apps">$380</span></div>
+      <div class="mrr-row"><span class="mrr-label">Blueprint marketplace (avg $4.50 × 30%)</span><span class="mrr-value" id="r-bp">$41</span></div>
+      <div class="mrr-total-row">
+        <span class="mrr-total-label">Estimated MRR</span>
+        <span class="mrr-total-value" id="r-total">$2,481</span>
+      </div>
+    </div>
+  </div>
+  <div class="note">Assumes avg app price of $6.20/mo. Blueprint marketplace split: 70% to designer, 30% to Evercrafted. Maker+ gated blueprints drive plan upgrades — counted in subscription revenue above.</div>
+</div>
+
+<script>
+function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+function calc() {
+  const mc = +document.getElementById('maker-count').value;
+  const ma = +document.getElementById('maker-apps').value;
+  const pc = +document.getElementById('pro-count').value;
+  const pa = +document.getElementById('pro-apps').value;
+  const bs = +document.getElementById('bp-sales').value;
+
+  document.getElementById('maker-val').textContent = mc;
+  document.getElementById('maker-apps-val').textContent = ma;
+  document.getElementById('pro-val').textContent = pc;
+  document.getElementById('pro-apps-val').textContent = pa;
+  document.getElementById('bp-sales-val').textContent = bs;
+
+  const rMaker = mc * 19;
+  const rMakerApps = mc * ma * 6.2;
+  const rPro = pc * 49;
+  const rProApps = pc * pa * 6.2;
+  const rBp = bs * 4.5 * 0.30;
+  const total = rMaker + rMakerApps + rPro + rProApps + rBp;
+
+  document.getElementById('r-maker').textContent = fmt(rMaker);
+  document.getElementById('r-maker-apps').textContent = fmt(rMakerApps);
+  document.getElementById('r-pro').textContent = fmt(rPro);
+  document.getElementById('r-pro-apps').textContent = fmt(rProApps);
+  document.getElementById('r-bp').textContent = fmt(rBp);
+  document.getElementById('r-total').textContent = fmt(total);
+}
+calc();
+</script>

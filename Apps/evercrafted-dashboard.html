@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F9F7F3;
+  --white:#FDFCFA;
+  --parch:#EAE4DA;
+  --parch-d:#D5CCBE;
+  --sage:#5C7353;
+  --sage-l:#D8E3D4;
+  --sage-ll:#EEF3EC;
+  --sage-d:#3A4D35;
+  --bark:#8C7258;
+  --bark-l:#C4AD96;
+  --bark-ll:#F0EAE2;
+  --bark-d:#5C4A36;
+  --ink:#1E1C18;
+  --ink-2:#3A3730;
+  --muted:#847B70;
+  --muted-l:#B5AFA8;
+  --rule:rgba(30,28,24,0.08);
+  --rule-m:rgba(30,28,24,0.14);
+  --r:4px;--rl:8px;--rxl:14px
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:13px;line-height:1.5;overflow-x:hidden}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;display:flex;align-items:center;background:rgba(249,247,243,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--rule);padding:0 20px;gap:0}
+.nav-mark{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;letter-spacing:0.06em;color:var(--ink);cursor:pointer;user-select:none;display:flex;align-items:center;gap:7px;flex-shrink:0;text-decoration:none}
+.nav-mark .leaf{width:16px;height:16px;opacity:.7}
+.nav-sep{width:1px;height:16px;background:var(--rule-m);margin:0 16px}
+.nav-crumb{font-size:12px;color:var(--muted);font-weight:300;letter-spacing:0.02em}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.plan-badge{font-size:10px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:3px 10px;border-radius:2px;background:var(--bark-ll);color:var(--bark-d);border:1px solid rgba(140,114,88,0.18);cursor:pointer}
+.av{width:28px;height:28px;border-radius:50%;background:var(--sage-l);color:var(--sage-d);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;letter-spacing:0.04em}
+
+/* SHELL */
+.shell{display:flex;height:100vh;padding-top:52px}
+
+/* SIDEBAR */
+.sb{width:200px;flex-shrink:0;height:calc(100vh - 52px);position:sticky;top:52px;overflow-y:auto;background:var(--white);border-right:1px solid var(--rule);padding:18px 0 20px;display:flex;flex-direction:column}
+.sb-sect{margin-bottom:22px;padding:0 12px}
+.sb-label{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-l);margin-bottom:6px;padding:0 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:var(--r);font-size:12px;font-weight:400;color:var(--muted);cursor:pointer;border:none;background:transparent;width:100%;text-align:left;font-family:'DM Sans',sans-serif;transition:all .12s;letter-spacing:0.01em;line-height:1}
+.ni:hover{color:var(--ink);background:var(--cream)}
+.ni.on{color:var(--sage-d);background:var(--sage-ll);font-weight:500}
+.ni-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;opacity:.5}
+.ni.on .ni-dot{opacity:.8}
+.sb-foot{margin-top:auto;padding:12px 12px 0;border-top:1px solid var(--rule)}
+.sb-plan-name{font-size:11px;font-weight:500;color:var(--ink-2);margin-bottom:1px}
+.sb-plan-apps{font-size:10px;color:var(--muted);margin-bottom:9px;font-weight:300}
+.btn-addapps{width:100%;padding:6px;background:transparent;color:var(--sage-d);border:1px solid var(--sage-l);border-radius:var(--r);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;letter-spacing:0.02em}
+.btn-addapps:hover{background:var(--sage-ll)}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;background:var(--cream)}
+.panel{display:none}
+.panel.on{display:block}
+
+/* BUTTON SYSTEM */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:6px 14px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;border:none;letter-spacing:0.04em;line-height:1}
+.btn-p{background:var(--sage);color:var(--white)}.btn-p:hover{background:var(--sage-d)}
+.btn-o{background:transparent;color:var(--ink-2);border:1px solid var(--rule-m)}.btn-o:hover{background:var(--bark-ll);border-color:var(--bark-l)}
+.btn-ghost{background:transparent;color:var(--muted);border:none;padding:5px 8px}.btn-ghost:hover{color:var(--ink)}
+.btn-sm{padding:5px 11px;font-size:10px}
+
+/* PANEL HEADER */
+.ph{padding:22px 28px 14px;background:var(--white);border-bottom:1px solid var(--rule);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ph-t{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;color:var(--ink);line-height:1;letter-spacing:-0.01em}
+.ph-s{font-size:11px;color:var(--muted);margin-top:4px;font-weight:300;letter-spacing:0.01em}
+.pb{padding:20px 28px}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.stat{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:14px 16px}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--ink);line-height:1}
+.stat-l{font-size:10px;color:var(--muted);margin-top:2px;font-weight:300;letter-spacing:0.03em}
+.stat-d{font-size:10px;color:var(--sage);margin-top:4px}
+
+/* BLUEPRINT GRID */
+.bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
+.bc{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .2s}
+.bc:hover{box-shadow:0 4px 20px rgba(30,28,24,.06);transform:translateY(-1px);border-color:var(--rule-m)}
+.bc-th{height:116px;background:var(--cream);display:flex;align-items:center;justify-content:center}
+.bc-info{padding:9px 11px}
+.bc-name{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px;letter-spacing:0.01em}
+.bc-meta{display:flex;align-items:center;gap:4px}
+.mood-pip{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.bc-sub{font-size:10px;color:var(--muted)}
+.bc-new{background:var(--white);border:1px dashed var(--parch-d);border-radius:var(--rl);height:182px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:all .2s;color:var(--muted-l)}
+.bc-new:hover{border-color:var(--sage);color:var(--sage)}
+.plus-ico{width:24px;height:24px;border:1.5px solid currentColor;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;font-weight:300}
+
+/* ACTIVITY + ACTIONS */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:14px 16px}
+.card-t{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--ink);margin-bottom:10px;letter-spacing:-0.01em}
+.ai-row{display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid var(--rule)}
+.ai-row:last-child{border-bottom:none}
+.ai-pip{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ai-txt{font-size:11px;color:var(--ink-2);line-height:1.5}
+.ai-t{font-size:10px;color:var(--muted-l);margin-top:1px}
+.qa{display:flex;align-items:center;gap:7px;width:100%;padding:6px 7px;border-radius:var(--r);background:transparent;border:1px solid var(--rule);font-size:11px;color:var(--ink-2);cursor:pointer;margin-bottom:4px;font-family:'DM Sans',sans-serif;transition:all .12s;text-align:left;font-weight:300}
+.qa:last-child{margin-bottom:0}.qa:hover{background:var(--cream);border-color:var(--rule-m)}
+.qa-arrow{margin-left:auto;color:var(--muted-l);font-size:13px}
+.row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.section-label{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--ink);letter-spacing:-0.01em}
+
+/* STUDIO */
+.studio{display:grid;grid-template-columns:176px 1fr 208px;height:calc(100vh - 52px)}
+.s-left,.s-right{background:var(--white);padding:12px 9px;overflow-y:auto;display:flex;flex-direction:column;gap:11px}
+.s-left{border-right:1px solid var(--rule)}
+.s-right{border-left:1px solid var(--rule)}
+.s-center{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--cream);padding:16px;gap:10px}
+.plabel{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-l);margin-bottom:3px}
+.tbtn{display:flex;align-items:center;gap:6px;padding:5px 7px;border-radius:var(--r);font-size:11px;font-weight:400;color:var(--muted);background:transparent;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;transition:all .12s}
+.tbtn:hover{color:var(--ink);background:var(--cream)}.tbtn.on{color:var(--sage-d);background:var(--sage-ll);font-weight:500}
+.tbtn-mark{width:18px;height:18px;border:1px solid var(--rule-m);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;color:var(--muted)}
+
+/* Emotion pills — no color, just tonal */
+.ep-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.ep{padding:4px 0;border-radius:2px;font-size:10px;text-align:center;cursor:pointer;border:1px solid var(--rule);color:var(--muted);font-weight:400;transition:all .12s;background:var(--white);letter-spacing:0.02em}
+.ep:hover{border-color:var(--rule-m);color:var(--ink-2)}
+.ep.on{background:var(--ink);color:var(--white);border-color:var(--ink);font-weight:500}
+
+.vtabs{display:flex;background:var(--parch);border-radius:3px;padding:2px;gap:1px}
+.vt{padding:4px 12px;border-radius:2px;font-size:10px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;transition:all .12s;letter-spacing:0.03em}
+.vt.on{background:var(--white);color:var(--ink);font-weight:500}
+.hint{font-size:10px;color:var(--muted-l);letter-spacing:0.01em}
+
+.ht{height:3px;border-radius:2px;background:var(--parch);overflow:hidden;margin-bottom:3px}
+.hf{height:100%;border-radius:2px;background:var(--sage);transition:width .4s}
+.hf.warn{background:var(--bark)}.hf.bad{background:#B85050}
+
+.ms{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.mc{background:var(--cream);border-radius:var(--r);padding:6px 8px}
+.mn{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--ink);line-height:1}
+.mla{font-size:9px;color:var(--muted);margin-top:1px}
+
+.acl{display:flex;flex-direction:column;gap:1px;max-height:95px;overflow-y:auto}
+.ach{display:flex;align-items:center;gap:4px;padding:3px 6px;border-radius:var(--r);background:var(--cream);font-size:10px;color:var(--ink-2)}
+.acd{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.acx{margin-left:auto;cursor:pointer;color:var(--muted-l);font-size:11px;line-height:1}
+.acx:hover{color:var(--ink)}
+
+.sl-row{display:flex;align-items:center;gap:6px}
+.sl-row input[type=range]{flex:1;accent-color:var(--sage);height:2px}
+.sv{font-size:10px;font-weight:500;min-width:22px;text-align:right;color:var(--ink-2)}
+select{font-family:'DM Sans',sans-serif;font-size:11px;padding:4px 7px;border:1px solid var(--rule-m);border-radius:var(--r);background:var(--white);color:var(--ink);width:100%;cursor:pointer}
+select:focus{outline:none;border-color:var(--sage)}
+.upc{margin-top:auto;padding:9px;background:var(--bark-ll);border-radius:var(--rl);border:1px solid rgba(140,114,88,0.15)}
+.upc-t{font-size:10px;font-weight:500;color:var(--bark-d);margin-bottom:1px;letter-spacing:0.03em}
+.upc-s{font-size:9px;color:var(--bark);margin-bottom:6px;font-weight:300}
+.btn-upc{width:100%;padding:5px;background:transparent;color:var(--bark-d);border:1px solid rgba(140,114,88,0.3);border-radius:var(--r);font-size:10px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.04em;transition:all .15s}
+.btn-upc:hover{background:rgba(140,114,88,.08)}
+
+/* COMPOSER */
+.comp{display:grid;grid-template-columns:258px 1fr;height:calc(100vh - 52px)}
+.cs{border-right:1px solid var(--rule);background:var(--white);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.cm{padding:18px;overflow-y:auto;background:var(--cream)}
+.esr{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.esrn{font-size:11px;color:var(--ink-2);width:70px;flex-shrink:0;font-weight:300;letter-spacing:0.01em}
+.esrt{flex:1;height:2px;-webkit-appearance:none;background:var(--parch);border-radius:2px;cursor:pointer;accent-color:var(--bark)}
+.esrv{font-size:9px;color:var(--muted-l);width:22px;text-align:right}
+.chips{display:flex;flex-wrap:wrap;gap:3px}
+.chip{padding:3px 8px;border-radius:2px;font-size:10px;cursor:pointer;font-weight:300;border:1px solid var(--rule);color:var(--muted);background:transparent;transition:all .12s;letter-spacing:0.02em}
+.chip:hover{border-color:var(--rule-m);color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.chip.on-g{background:var(--sage);color:var(--white);border-color:var(--sage)}
+
+.oc{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:13px;margin-bottom:10px}
+.och{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--rule)}
+.ocl{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted-l)}
+.oca{display:flex;gap:3px}
+.ocb{padding:3px 8px;font-size:10px;border:1px solid var(--rule);border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s}
+.ocb:hover{border-color:var(--rule-m);color:var(--ink)}
+.ocb.acc{background:var(--ink);color:var(--white);border-color:var(--ink)}
+
+.eviz{display:flex;gap:4px;align-items:flex-end;height:40px;margin-bottom:2px}
+.evw{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.evb{width:100%;background:var(--bark-l);border-radius:1px 1px 0 0;transition:height .4s ease;min-height:1px}
+.evl{font-size:8px;color:var(--muted-l);letter-spacing:0.04em}
+
+.nout{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:300;line-height:1.7;color:var(--ink);font-style:italic;min-height:60px}
+.mjout{font-family:'DM Mono',monospace;font-size:10px;line-height:1.7;color:var(--bark-d);word-break:break-all;background:var(--cream);padding:9px;border-radius:var(--r);min-height:50px;letter-spacing:0.01em}
+
+.gbtn{width:100%;padding:9px;background:var(--ink);color:var(--white);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;cursor:pointer;transition:all .15s}
+.gbtn:hover{background:var(--ink-2)}
+
+.pr-row{display:flex;gap:4px;flex-wrap:wrap}
+.pr-sel{padding:4px 7px;font-size:10px;font-family:'DM Sans',sans-serif;border:1px solid var(--rule-m);border-radius:var(--r);background:var(--white);color:var(--ink);cursor:pointer}
+
+/* MARKETPLACE */
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:10px}
+.mkt{background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .18s}
+.mkt:hover{box-shadow:0 4px 20px rgba(30,28,24,.06);transform:translateY(-1px);border-color:var(--rule-m)}
+.mkt-th{height:136px;background:var(--cream);display:flex;align-items:center;justify-content:center;position:relative}
+.mkt-i{padding:9px 12px}
+.mkt-n{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;color:var(--ink);margin-bottom:3px;letter-spacing:-0.01em}
+.mkt-m{display:flex;align-items:center;justify-content:space-between}
+.mkt-free{font-size:9px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--sage-d);background:var(--sage-ll);padding:2px 7px;border-radius:2px}
+.mkt-prem{font-size:9px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--bark-d);background:var(--bark-ll);padding:2px 7px;border-radius:2px}
+.mkt-pr{font-size:12px;font-weight:400;color:var(--ink-2)}
+.mkt-kit{position:absolute;top:7px;right:7px;font-size:8px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--sage);color:var(--white);padding:2px 6px;border-radius:2px}
+.fb{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.fc{padding:4px 10px;border-radius:2px;font-size:10px;cursor:pointer;border:1px solid var(--rule);background:var(--white);color:var(--muted);transition:all .12s;letter-spacing:0.03em}
+.fc:hover{border-color:var(--rule-m);color:var(--ink)}
+.fc.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.fs{padding:4px 10px;border:1px solid var(--rule);border-radius:2px;font-size:10px;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);outline:none;width:150px}
+.fs:focus{border-color:var(--rule-m)}
+
+/* MOOD MAP */
+#mm{cursor:crosshair;border-radius:var(--rl);background:var(--cream)}
+
+/* FORMS */
+.fg{margin-bottom:11px}
+.fl{font-size:10px;font-weight:500;color:var(--ink-2);margin-bottom:3px;display:block;letter-spacing:0.04em;text-transform:uppercase}
+.fi{width:100%;padding:7px 9px;border:1px solid var(--rule-m);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--white);transition:border-color .15s}
+.fi:focus{outline:none;border-color:var(--sage)}
+textarea.fi{resize:none;font-weight:300;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.7}
+textarea.fi.mono{font-family:'DM Sans',sans-serif;font-size:12px;font-style:normal;font-weight:300}
+
+/* ANALYTICS */
+.ebar{display:flex;gap:6px;align-items:flex-end;height:64px}
+.ebc{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.ebb{width:100%;border-radius:2px 2px 0 0}
+.ebl{font-size:9px;color:var(--muted-l);letter-spacing:0.02em}
+
+/* OPTIMIZER */
+.lambda-display{text-align:center;font-size:11px;font-weight:500;color:var(--sage-d);margin-top:3px;letter-spacing:0.02em}
+
+/* TOAST */
+.toast{position:fixed;bottom:16px;right:16px;z-index:999;background:var(--ink);color:var(--white);padding:7px 15px;border-radius:var(--r);font-size:11px;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none;letter-spacing:0.02em}
+.toast.on{opacity:1;transform:none}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--parch-d);border-radius:2px}
+@keyframes fin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fin{animation:fin .3s ease both}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-mark" onclick="go('overview')">
+    <svg class="leaf" viewBox="0 0 16 16" fill="none"><path d="M8 2C5 2 2 5 2 9c0 3.3 2.7 5 6 5 3 0 6-1.7 6-5C14 4.5 11.5 2 8 2z" fill="var(--sage)" opacity=".6"/><path d="M8 14C8 14 5 10 5 7M8 14c0 0 3-4 3-7" stroke="var(--sage-d)" stroke-width="1" stroke-linecap="round" fill="none" opacity=".5"/></svg>
+    Evercrafted
+  </a>
+  <div class="nav-sep"></div>
+  <span class="nav-crumb" id="crumb">Overview</span>
+  <div class="nav-r">
+    <div class="plan-badge" onclick="toast('Manage plan')">Studio Pro</div>
+    <div class="av">SB</div>
+  </div>
+</nav>
+
+<div class="shell">
+<aside class="sb">
+  <div class="sb-sect">
+    <div class="sb-label">Workspace</div>
+    <button class="ni on" onclick="go('overview')"><span class="ni-dot"></span>Overview</button>
+    <button class="ni" onclick="go('blueprints')"><span class="ni-dot"></span>My Blueprints</button>
+    <button class="ni" onclick="go('marketplace')"><span class="ni-dot"></span>Marketplace</button>
+  </div>
+  <div class="sb-sect">
+    <div class="sb-label">Design</div>
+    <button class="ni" onclick="go('studio')"><span class="ni-dot"></span>Layout Studio</button>
+    <button class="ni" onclick="go('studio')"><span class="ni-dot"></span>Design Studio</button>
+    <button class="ni" onclick="go('studio')"><span class="ni-dot"></span>Parametric Lab</button>
+    <button class="ni" onclick="go('generator')"><span class="ni-dot"></span>Design Generator</button>
+  </div>
+  <div class="sb-sect">
+    <div class="sb-label">Emotion & AI</div>
+    <button class="ni" onclick="go('memory')"><span class="ni-dot"></span>Memory Weaver</button>
+    <button class="ni" onclick="go('emotion')"><span class="ni-dot"></span>EmotionSync</button>
+    <button class="ni" onclick="go('companion')"><span class="ni-dot"></span>Visual Companion</button>
+  </div>
+  <div class="sb-sect">
+    <div class="sb-label">Production</div>
+    <button class="ni" onclick="go('inventory')"><span class="ni-dot"></span>Inventory Weaver</button>
+    <button class="ni" onclick="go('optimizer')"><span class="ni-dot"></span>Blueprint Optimizer</button>
+  </div>
+  <div class="sb-sect">
+    <div class="sb-label">Reports</div>
+    <button class="ni" onclick="go('analytics')"><span class="ni-dot"></span>Analytics</button>
+    <button class="ni" onclick="go('settings')"><span class="ni-dot"></span>Settings</button>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-plan-name">Studio Pro</div>
+    <div class="sb-plan-apps">8 of 18 apps active</div>
+    <button class="btn-addapps" onclick="go('appstore')">Explore apps</button>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- OVERVIEW -->
+<div class="panel on fin" id="p-overview">
+  <div class="ph"><div><div class="ph-t">Good morning, Sarah</div><div class="ph-s">Tuesday, March 17 &middot; 7 new activity items</div></div><button class="btn btn-p" onclick="go('studio')">New blueprint</button></div>
+  <div class="pb fin">
+    <div class="stats">
+      <div class="stat"><div class="stat-n">24</div><div class="stat-l">Blueprints created</div><div class="stat-d">+4 this week</div></div>
+      <div class="stat"><div class="stat-n">8</div><div class="stat-l">AI fills generated</div><div class="stat-d">+2 this week</div></div>
+      <div class="stat"><div class="stat-n">6</div><div class="stat-l">Exports delivered</div><div class="stat-d">Etsy &amp; client orders</div></div>
+      <div class="stat"><div class="stat-n">$126</div><div class="stat-l">Materials saved</div><div class="stat-d" style="color:var(--bark)">via Blueprint Optimizer</div></div>
+    </div>
+    <div class="row"><div class="section-label">Recent blueprints</div><button class="btn btn-ghost btn-sm" onclick="go('blueprints')">View all &rarr;</button></div>
+    <div class="bg" id="rec-bp" style="margin-bottom:18px"></div>
+    <div class="two">
+      <div class="card">
+        <div class="card-t">Recent activity</div>
+        <div class="ai-row"><div class="ai-pip" style="background:var(--sage)"></div><div><div class="ai-txt">AI fill generated for <strong>Autumn Asymmetric</strong></div><div class="ai-t">2 hours ago</div></div></div>
+        <div class="ai-row"><div class="ai-pip" style="background:var(--bark)"></div><div><div class="ai-txt"><strong>Spring Romantic</strong> created via Memory Weaver</div><div class="ai-t">Yesterday</div></div></div>
+        <div class="ai-row"><div class="ai-pip" style="background:var(--bark-l)"></div><div><div class="ai-txt">Visual Companion prompt exported to Midjourney</div><div class="ai-t">2 days ago</div></div></div>
+        <div class="ai-row"><div class="ai-pip" style="background:var(--sage)"></div><div><div class="ai-txt">Optimizer saved $12.40 on <strong>Winter Luxe</strong></div><div class="ai-t">3 days ago</div></div></div>
+        <div class="ai-row"><div class="ai-pip" style="background:var(--muted-l)"></div><div><div class="ai-txt"><strong>Minimal Calm</strong> submitted to marketplace</div><div class="ai-t">4 days ago</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-t">Open a tool</div>
+        <button class="qa" onclick="go('studio')">Layout Studio<span class="qa-arrow">&rarr;</span></button>
+        <button class="qa" onclick="go('companion')">Compose a Midjourney prompt<span class="qa-arrow">&rarr;</span></button>
+        <button class="qa" onclick="go('memory')">Design from a memory<span class="qa-arrow">&rarr;</span></button>
+        <button class="qa" onclick="go('marketplace')">Browse marketplace<span class="qa-arrow">&rarr;</span></button>
+        <button class="qa" onclick="go('optimizer')">Optimize last blueprint<span class="qa-arrow">&rarr;</span></button>
+        <button class="qa" onclick="go('appstore')" style="color:var(--sage-d)">Explore more apps<span class="qa-arrow">&rarr;</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STUDIO -->
+<div class="panel" id="p-studio">
+  <div class="studio">
+    <div class="s-left">
+      <div><div class="plabel">Tool</div>
+        <button class="tbtn on" data-t="anchor" onclick="setT(this,'anchor')"><span class="tbtn-mark">&#9679;</span>Anchor node</button>
+        <button class="tbtn" data-t="focal" onclick="setT(this,'focal')"><span class="tbtn-mark">&#x2736;</span>Focal cluster</button>
+        <button class="tbtn" data-t="ribbon" onclick="setT(this,'ribbon')"><span class="tbtn-mark">&#8764;</span>Ribbon zone</button>
+        <button class="tbtn" data-t="erase" onclick="setT(this,'erase')"><span class="tbtn-mark">&times;</span>Erase</button>
+      </div>
+      <div><div class="plabel">Anchor type</div><select id="atype"><option value="floral">Floral</option><option value="greenery">Greenery</option><option value="accent">Accent</option><option value="ribbon">Ribbon</option><option value="texture">Texture</option></select></div>
+      <div><div class="plabel">Emotion tag</div>
+        <div class="ep-grid">
+          <div class="ep on" data-e="romantic" onclick="setE(this)">Romantic</div>
+          <div class="ep" data-e="calm" onclick="setE(this)">Calm</div>
+          <div class="ep" data-e="bold" onclick="setE(this)">Bold</div>
+          <div class="ep" data-e="cozy" onclick="setE(this)">Cozy</div>
+          <div class="ep" data-e="festive" onclick="setE(this)">Festive</div>
+          <div class="ep" data-e="wild" onclick="setE(this)">Wild</div>
+        </div>
+      </div>
+      <div><div class="plabel">Visual weight</div><div class="sl-row"><input type="range" id="sw" min="1" max="5" value="3" step="1" oninput="document.getElementById('swv').textContent=this.value"><span class="sv" id="swv">3</span></div></div>
+      <div style="margin-top:auto;display:flex;flex-direction:column;gap:3px">
+        <button class="btn btn-o btn-sm" onclick="loadSkel()" style="width:100%;justify-content:center">Load skeleton</button>
+        <button class="btn btn-o btn-sm" onclick="undoA()" style="width:100%;justify-content:center;color:var(--muted)">Undo</button>
+        <button class="btn btn-o btn-sm" onclick="clearC()" style="width:100%;justify-content:center;color:var(--muted)">Clear</button>
+        <button class="btn btn-p btn-sm" onclick="saveL()" style="width:100%;justify-content:center">Save blueprint</button>
+      </div>
+    </div>
+    <div class="s-center">
+      <div style="display:flex;align-items:center;justify-content:space-between;width:452px">
+        <div class="vtabs"><button class="vt on" onclick="setV(this,'layout')">Layout</button><button class="vt" onclick="setV(this,'preview')">AI Preview</button></div>
+        <div class="hint" id="chint">Click the ring to place an anchor</div>
+      </div>
+      <canvas id="wc" width="452" height="452" style="border-radius:50%;cursor:crosshair"></canvas>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="go('overview')">&larr; Dashboard</button>
+        <button class="btn btn-p" onclick="toast('AI fill triggered &mdash; '+sA.length+' anchors')" style="font-size:11px">Generate AI fill</button>
+        <button class="btn btn-o btn-sm">Export</button>
+      </div>
+    </div>
+    <div class="s-right">
+      <div><div class="plabel">Structure health</div><div class="ht"><div class="hf" id="hf" style="width:0%"></div></div><div style="font-size:9px;color:var(--muted);margin-top:2px" id="hm">Add anchors to begin</div></div>
+      <div class="ms">
+        <div class="mc"><div class="mn" id="sa">0</div><div class="mla">Anchors</div></div>
+        <div class="mc"><div class="mn" id="ss">&#8212;</div><div class="mla">Symmetry</div></div>
+        <div class="mc"><div class="mn" id="sd">&#8212;</div><div class="mla">Density</div></div>
+        <div class="mc"><div class="mn" id="sf">0</div><div class="mla">Focal pts</div></div>
+      </div>
+      <div><div class="plabel">AI control</div><div class="sl-row"><input type="range" id="aic" min="0" max="100" value="70" step="1" oninput="document.getElementById('aicv').textContent=this.value+'%'"><span class="sv" id="aicv">70%</span></div><div style="font-size:9px;color:var(--muted-l);margin-top:1px">Strict &larr; &rarr; Full freedom</div></div>
+      <div><div class="plabel">Anchors placed</div><div class="acl" id="acl"><div style="font-size:9px;color:var(--muted-l);padding:2px 0">None placed yet</div></div></div>
+      <div><div class="plabel">Emotion distribution</div><div style="display:flex;flex-wrap:wrap;gap:2px" id="emap"><span style="font-size:9px;color:var(--muted-l)">Place anchors first</span></div></div>
+      <div class="upc"><div class="upc-t">Generate 3 AI variants</div><div class="upc-s">Requires Variant Branching &mdash; explore in Apps</div><button class="btn-upc" onclick="go('appstore')">Add to plan &rarr;</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- VISUAL COMPANION -->
+<div class="panel" id="p-companion">
+  <div class="comp">
+    <div class="cs">
+      <div><div class="plabel">Emotion weights</div><div id="esliders"></div></div>
+      <div><div class="plabel">Season</div><div class="chips" id="cseason"></div></div>
+      <div><div class="plabel">Design style</div><div class="chips" id="cstyle"></div></div>
+      <div><div class="plabel">Shape</div><div class="chips" id="cshape"></div></div>
+      <div><div class="plabel">Materials</div><div class="chips" id="cmats"></div></div>
+      <div><div class="plabel">Midjourney parameters</div><div class="pr-row"><select class="pr-sel" id="arsel"><option value="--ar 1:1">1:1</option><option value="--ar 4:5">4:5</option><option value="--ar 3:4">3:4</option><option value="--ar 3:2">3:2</option></select><select class="pr-sel" id="stsel"><option value="--style raw">raw</option><option value="--style expressive">expressive</option><option value="">no flag</option></select><select class="pr-sel" id="chsel"><option value="">no chaos</option><option value="--chaos 10">chaos 10</option><option value="--chaos 25">chaos 25</option></select></div></div>
+      <button class="gbtn" onclick="genPrompt()">Generate prompt</button>
+    </div>
+    <div class="cm">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px">
+        <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:-0.01em">Visual Companion</div><div style="font-size:11px;color:var(--muted);font-weight:300;margin-top:3px">Emotion to Midjourney prompt</div></div>
+        <div style="display:flex;gap:4px"><button class="btn btn-o btn-sm" onclick="toast('Preset saved')">Save preset</button><button class="btn btn-p btn-sm" onclick="genPrompt()">Generate</button></div>
+      </div>
+      <div class="oc"><div class="och"><span class="ocl">Emotion profile</span></div><div class="eviz" id="eviz"></div></div>
+      <div class="oc"><div class="och"><span class="ocl">Natural language description</span></div><div class="nout" id="nout" style="color:var(--muted);font-size:14px">Configure emotions and materials, then click Generate.</div></div>
+      <div class="oc"><div class="och"><span class="ocl">Midjourney prompt</span><div class="oca"><button class="ocb" onclick="copyP()">Copy</button><button class="ocb acc" onclick="genPrompt()">Regenerate</button></div></div><div class="mjout" id="mjout" style="color:var(--muted-l)">&ndash;</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MARKETPLACE -->
+<div class="panel" id="p-marketplace">
+  <div class="ph"><div><div class="ph-t">Blueprint Marketplace</div><div class="ph-s">33 blueprints &middot; 8 free &middot; your designs earn 70%</div></div><button class="btn btn-o btn-sm" onclick="toast('Submit blueprint flow &mdash; Phase 2')">Submit a blueprint</button></div>
+  <div class="pb fin">
+    <div class="fb"><input class="fs" type="text" placeholder="Search blueprints&hellip;"><span class="fc on" onclick="this.classList.toggle('on')">All</span><span class="fc" onclick="this.classList.toggle('on')">Free</span><span class="fc" onclick="this.classList.toggle('on')">Premium</span><span class="fc" onclick="this.classList.toggle('on')">With kit</span><span class="fc" onclick="this.classList.toggle('on')">Romantic</span><span class="fc" onclick="this.classList.toggle('on')">Minimal</span></div>
+    <div class="mg" id="mktg"></div>
+  </div>
+</div>
+
+<!-- MY BLUEPRINTS -->
+<div class="panel" id="p-blueprints">
+  <div class="ph"><div><div class="ph-t">My Blueprints</div><div class="ph-s">24 blueprints &middot; last edited today</div></div><button class="btn btn-p btn-sm" onclick="go('studio')">New blueprint</button></div>
+  <div class="pb fin"><div class="bg" id="mybp"></div></div>
+</div>
+
+<!-- MEMORY WEAVER -->
+<div class="panel" id="p-memory">
+  <div class="ph"><div><div class="ph-t">Memory Weaver</div><div class="ph-s">Describe a memory &mdash; a blueprint emerges from it</div></div></div>
+  <div class="pb fin" style="max-width:620px">
+    <div class="oc"><div class="och"><span class="ocl">Your memory</span></div><textarea id="minput" class="fi" style="width:100%;border:none;min-height:85px;padding:0" placeholder="My grandmother's garden in spring. Soft pink roses, white daisies, morning light through the hedge&hellip;"></textarea></div>
+    <div style="display:flex;gap:6px;margin-bottom:14px"><button class="btn btn-p" onclick="runMW()">Weave this memory</button><button class="btn btn-o btn-sm" onclick="toast('Photo reference &mdash; Memory Weaver v2')">Upload photo reference</button></div>
+    <div id="mout" style="display:none">
+      <div class="oc"><div class="och"><span class="ocl">Emotions extracted</span></div><div style="display:flex;gap:5px;flex-wrap:wrap" id="memos"></div></div>
+      <div class="oc"><div class="och"><span class="ocl">Blueprint generated</span></div><div id="mbp" style="font-size:12px;color:var(--ink-2);line-height:1.8"></div><div style="display:flex;gap:5px;margin-top:10px"><button class="btn btn-p btn-sm" onclick="go('studio')">Open in Layout Studio</button><button class="btn btn-o btn-sm" onclick="toast('Blueprint saved')">Save</button></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- EMOTIONSYNC -->
+<div class="panel" id="p-emotion">
+  <div class="ph"><div><div class="ph-t">EmotionSync</div><div class="ph-s">Place your design on the mood map &mdash; composition profile updates in real time</div></div></div>
+  <div class="pb fin" style="max-width:680px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="oc" style="margin-bottom:0"><div class="och"><span class="ocl">Mood map</span></div>
+        <svg id="mm" viewBox="0 0 270 270" width="100%">
+          <line x1="135" y1="10" x2="135" y2="260" stroke="rgba(30,28,24,.06)" stroke-width=".5"/>
+          <line x1="10" y1="135" x2="260" y2="135" stroke="rgba(30,28,24,.06)" stroke-width=".5"/>
+          <text x="135" y="9" text-anchor="middle" font-size="8" fill="rgba(30,28,24,.28)" font-family="DM Sans,sans-serif">Formal</text>
+          <text x="135" y="268" text-anchor="middle" font-size="8" fill="rgba(30,28,24,.28)" font-family="DM Sans,sans-serif">Playful</text>
+          <text x="8" y="138" font-size="8" fill="rgba(30,28,24,.28)" font-family="DM Sans,sans-serif">Calm</text>
+          <text x="224" y="138" font-size="8" fill="rgba(30,28,24,.28)" font-family="DM Sans,sans-serif">Energetic</text>
+          <text x="50" y="54" text-anchor="middle" font-size="9" fill="rgba(30,28,24,.14)" font-family="Cormorant Garamond,serif" font-style="italic">Serene</text>
+          <text x="220" y="54" text-anchor="middle" font-size="9" fill="rgba(30,28,24,.14)" font-family="Cormorant Garamond,serif" font-style="italic">Dramatic</text>
+          <text x="50" y="222" text-anchor="middle" font-size="9" fill="rgba(30,28,24,.14)" font-family="Cormorant Garamond,serif" font-style="italic">Whimsical</text>
+          <text x="220" y="222" text-anchor="middle" font-size="9" fill="rgba(30,28,24,.14)" font-family="Cormorant Garamond,serif" font-style="italic">Festive</text>
+          <circle id="mp" cx="90" cy="85" r="9" fill="var(--sage)" opacity=".75"/>
+          <circle id="mpi" cx="90" cy="85" r="3.5" fill="white"/>
+        </svg>
+      </div>
+      <div>
+        <div class="oc" style="margin-bottom:8px"><div class="och"><span class="ocl">Composition profile</span></div><div id="eprof" style="font-size:11px;color:var(--ink-2)"><div style="color:var(--muted-l)">Move the point to begin.</div></div></div>
+        <div class="oc"><div class="och"><span class="ocl">Presets</span></div><div style="display:flex;flex-wrap:wrap;gap:3px"><span class="chip" onclick="setMP(90,85,'Serene')">Serene</span><span class="chip" onclick="setMP(198,85,'Dramatic')">Dramatic</span><span class="chip" onclick="setMP(90,198,'Whimsical')">Whimsical</span><span class="chip" onclick="setMP(198,198,'Festive')">Festive</span><span class="chip" onclick="setMP(135,135,'Balanced')">Balanced</span><span class="chip" onclick="setMP(70,160,'Romantic')">Romantic</span><span class="chip" onclick="setMP(208,110,'Bold')">Bold</span></div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:12px"><button class="btn btn-p" onclick="go('studio')">Apply to new blueprint</button><button class="btn btn-o btn-sm" onclick="toast('Emotion pinned')">Pin this mood</button></div>
+  </div>
+</div>
+
+<!-- INVENTORY WEAVER -->
+<div class="panel" id="p-inventory">
+  <div class="ph"><div><div class="ph-t">Inventory Weaver</div><div class="ph-s">Design with what you have &mdash; describe your materials in plain language</div></div></div>
+  <div class="pb fin" style="max-width:600px">
+    <div class="oc"><div class="och"><span class="ocl">Your materials</span><span style="font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--sage-d);background:var(--sage-ll);padding:2px 7px;border-radius:2px">v2 &mdash; natural language</span></div><textarea id="iinput" class="fi mono" style="width:100%;border:none;min-height:50px;padding:0" placeholder="e.g. 1 grapevine base, 3 eucalyptus stems, 2.5&quot; red velvet ribbon, white peonies&hellip;"></textarea></div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:12px;cursor:pointer"><input type="checkbox" id="aqty"> Approximate quantities &mdash; I&rsquo;m not sure on exact amounts</label>
+    <button class="btn btn-p" onclick="parseInv()">Parse my materials</button>
+    <div id="ichips" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:10px"></div>
+    <div id="ires" style="display:none;margin-top:12px">
+      <div class="oc"><div class="och"><span class="ocl">Parsed inventory</span></div><div id="iparsed" style="font-size:11px;color:var(--ink-2);line-height:1.9"></div><div style="display:flex;gap:5px;margin-top:9px"><button class="btn btn-p btn-sm" onclick="toast('Generating from your inventory&hellip;')">Design with these materials</button><button class="btn btn-o btn-sm" onclick="toast('Seasonal remainder logic &mdash; v2')">Use seasonal leftovers</button></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BLUEPRINT OPTIMIZER -->
+<div class="panel" id="p-optimizer">
+  <div class="ph"><div><div class="ph-t">Blueprint Optimizer</div><div class="ph-s">Set your design intent and optimize any blueprint in one click</div></div></div>
+  <div class="pb fin" style="max-width:600px">
+    <div class="oc"><div class="och"><span class="ocl">Blueprint</span></div><select><option>Autumn Asymmetric &mdash; 14 anchors &middot; $68.40</option><option>Spring Romantic &mdash; 9 anchors &middot; $52.20</option><option>Winter Luxe &mdash; 18 anchors &middot; $94.80</option></select></div>
+    <div class="oc">
+      <div class="och"><span class="ocl">Design intent &mdash; &lambda;</span></div>
+      <div class="sl-row" style="margin-bottom:3px"><span style="font-size:10px;color:var(--muted);min-width:88px">Pure emotion</span><input type="range" id="lslider" min="0" max="100" value="70" step="1" oninput="updL(this.value)" style="flex:1;accent-color:var(--sage)"><span style="font-size:10px;color:var(--muted);min-width:88px;text-align:right">Pure efficiency</span></div>
+      <div class="lambda-display" id="ldisplay">&lambda; = 0.70 &mdash; emotion-leaning</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+      <div class="stat"><div class="stat-n" id="oemo">84</div><div class="stat-l">Emotional</div></div>
+      <div class="stat"><div class="stat-n" id="oeff">61</div><div class="stat-l">Efficiency</div></div>
+      <div class="stat"><div class="stat-n" id="ofit">76</div><div class="stat-l">Fitness</div></div>
+      <div class="stat"><div class="stat-n" style="color:var(--sage)" id="osav">&mdash;</div><div class="stat-l">Saved</div></div>
+    </div>
+    <button class="btn btn-p" onclick="runOpt()">Optimize blueprint</button>
+    <div id="ochg" style="display:none;margin-top:12px"><div class="oc"><div class="och"><span class="ocl">Changes made</span></div><div id="ochgl" style="font-size:11px;color:var(--ink-2);line-height:1.9"></div></div></div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="panel" id="p-analytics">
+  <div class="ph"><div><div class="ph-t">Analytics</div><div class="ph-s">Design activity, emotions, export performance</div></div></div>
+  <div class="pb fin">
+    <div class="stats" style="margin-bottom:18px">
+      <div class="stat"><div class="stat-n">24</div><div class="stat-l">Blueprints this month</div><div class="stat-d">+6 vs last month</div></div>
+      <div class="stat"><div class="stat-n">12</div><div class="stat-l">AI fills generated</div><div class="stat-d">+4 vs last</div></div>
+      <div class="stat"><div class="stat-n">8</div><div class="stat-l">Exports delivered</div><div class="stat-d">6 Etsy &middot; 2 client</div></div>
+      <div class="stat"><div class="stat-n">$126</div><div class="stat-l">Materials saved</div><div class="stat-d" style="color:var(--bark)">via Optimizer</div></div>
+    </div>
+    <div class="card" style="max-width:480px">
+      <div class="card-t" style="margin-bottom:12px">Most used emotions</div>
+      <div class="ebar" style="margin-bottom:8px">
+        <div class="ebc"><div class="ebb" style="height:62px;background:var(--bark-l)"></div><div class="ebl">Romantic</div></div>
+        <div class="ebc"><div class="ebb" style="height:48px;background:var(--sage-l)"></div><div class="ebl">Calm</div></div>
+        <div class="ebc"><div class="ebb" style="height:40px;background:var(--parch-d)"></div><div class="ebl">Festive</div></div>
+        <div class="ebc"><div class="ebb" style="height:30px;background:var(--bark-l)" style="opacity:.7"></div><div class="ebl">Cozy</div></div>
+        <div class="ebc"><div class="ebb" style="height:20px;background:var(--parch-d)"></div><div class="ebl">Bold</div></div>
+        <div class="ebc"><div class="ebb" style="height:14px;background:var(--sage-l)"></div><div class="ebl">Wild</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="panel" id="p-settings">
+  <div class="ph"><div><div class="ph-t">Settings</div><div class="ph-s">Account, billing, and preferences</div></div></div>
+  <div class="pb fin" style="max-width:460px">
+    <div class="oc" style="margin-bottom:8px"><div class="och"><span class="ocl">Account</span></div><div class="fg"><div class="fl">Full name</div><input class="fi" value="Sarah Bloom" type="text"></div><div class="fg" style="margin-bottom:9px"><div class="fl">Email</div><input class="fi" value="sarah@bloomstudio.co" type="email"></div><button class="btn btn-p btn-sm" onclick="toast('Changes saved')">Save changes</button></div>
+    <div class="oc" style="margin-bottom:8px"><div class="och"><span class="ocl">Plan</span></div><div style="font-size:12px;color:var(--ink-2);margin-bottom:8px;font-weight:300">Studio Pro &mdash; 8 apps active &middot; renews April 17</div><button class="btn btn-o btn-sm" onclick="toast('Billing portal &mdash; Phase 2')">Manage billing</button></div>
+    <div class="oc"><div class="och"><span class="ocl">Preferences</span></div><label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);margin-bottom:6px;cursor:pointer;font-weight:300"><input type="checkbox" checked> Show emotion bars in Visual Companion</label><label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2);cursor:pointer;font-weight:300"><input type="checkbox" checked> Auto-save blueprints while designing</label></div>
+  </div>
+</div>
+
+<!-- APP STORE -->
+<div class="panel" id="p-appstore">
+  <div class="ph"><div><div class="ph-t">Explore Apps</div><div class="ph-s">Add capabilities to your Studio Pro plan &mdash; cancel any app anytime</div></div></div>
+  <div class="pb fin">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px" id="app-store-grid"></div>
+  </div>
+</div>
+
+<!-- DESIGN GENERATOR -->
+<div class="panel" id="p-generator">
+  <div class="ph">
+    <div>
+      <div class="ph-t">Design Generator</div>
+      <div class="ph-s">Pick your materials and mood — get a complete placement map back.</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div id="gen-inv-status" style="font-size:10px;color:var(--sage-d);background:var(--sage-ll);padding:3px 10px;border-radius:2px;display:none">Using your inventory</div>
+      <button class="btn btn-o btn-sm" onclick="genExportCSV()">Download CSV</button>
+      <button class="btn btn-p btn-sm" onclick="runGenerator()">Generate design</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 52px - 57px)">
+    <!-- Sidebar controls -->
+    <div style="background:var(--white);border-right:1px solid var(--rule);padding:16px 14px;overflow-y:auto;display:flex;flex-direction:column;gap:14px">
+
+      <!-- Inventory notice -->
+      <div id="gen-inv-notice" style="display:none;background:var(--sage-ll);border:1px solid rgba(80,99,71,.2);border-radius:var(--rl);padding:9px 11px">
+        <div style="font-size:10px;font-weight:500;color:var(--sage-d);margin-bottom:2px">Inventory connected</div>
+        <div style="font-size:10px;font-weight:300;color:var(--sage-d)" id="gen-inv-summary">Loading your materials…</div>
+        <button class="btn btn-o btn-sm" onclick="go('inventory')" style="margin-top:7px;width:100%;justify-content:center;font-size:9px">Update inventory →</button>
+      </div>
+      <div id="gen-no-inv-notice" style="background:var(--bark-ll);border:1px solid rgba(140,114,88,.18);border-radius:var(--rl);padding:9px 11px">
+        <div style="font-size:10px;font-weight:500;color:var(--bark-d);margin-bottom:2px">No inventory set</div>
+        <div style="font-size:10px;font-weight:300;color:var(--bark-d);margin-bottom:7px">Add your stock in Inventory Weaver and the dropdowns below will only show what you actually have.</div>
+        <button class="btn btn-o btn-sm" onclick="go('inventory')" style="width:100%;justify-content:center;font-size:9px">Set up inventory →</button>
+      </div>
+
+      <div>
+        <div class="plabel">Design name</div>
+        <input id="gen-name" class="fi" type="text" placeholder="e.g. Spring Romantic 18&quot;" style="font-size:12px;padding:6px 9px">
+      </div>
+
+      <div>
+        <div class="plabel">Wreath size</div>
+        <select id="gen-size" style="font-size:11px;padding:5px 8px">
+          <option value="small">12 inch — tabletop or gift</option>
+          <option value="medium" selected>18 inch — standard door</option>
+          <option value="large">24 inch — statement piece</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="plabel">Mood</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px" id="gen-mood-chips">
+          <span class="chip on" data-mood="romantic" onclick="genSetMood(this)">Romantic</span>
+          <span class="chip" data-mood="rustic" onclick="genSetMood(this)">Rustic</span>
+          <span class="chip" data-mood="modern" onclick="genSetMood(this)">Modern</span>
+          <span class="chip" data-mood="classic" onclick="genSetMood(this)">Classic</span>
+          <span class="chip" data-mood="wild" onclick="genSetMood(this)">Wild</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="plabel">Season</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px" id="gen-season-chips">
+          <span class="chip" data-season="spring" onclick="genSetSeason(this)">Spring</span>
+          <span class="chip on" data-season="summer" onclick="genSetSeason(this)">Summer</span>
+          <span class="chip" data-season="autumn" onclick="genSetSeason(this)">Autumn</span>
+          <span class="chip" data-season="winter" onclick="genSetSeason(this)">Winter</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="plabel" style="display:flex;align-items:center;justify-content:space-between">
+          Main flower
+          <span id="gen-focal-inv-tag" style="display:none;font-size:8px;color:var(--sage-d);background:var(--sage-ll);padding:1px 6px;border-radius:2px">from your stock</span>
+        </div>
+        <select id="gen-focal" style="font-size:11px;padding:5px 8px"></select>
+      </div>
+
+      <div>
+        <div class="plabel" style="display:flex;align-items:center;justify-content:space-between">
+          Supporting flower
+          <span id="gen-sec-inv-tag" style="display:none;font-size:8px;color:var(--sage-d);background:var(--sage-ll);padding:1px 6px;border-radius:2px">from your stock</span>
+        </div>
+        <select id="gen-sec" style="font-size:11px;padding:5px 8px"></select>
+      </div>
+
+      <div>
+        <div class="plabel" style="display:flex;align-items:center;justify-content:space-between">
+          Greenery
+          <span id="gen-green-inv-tag" style="display:none;font-size:8px;color:var(--sage-d);background:var(--sage-ll);padding:1px 6px;border-radius:2px">from your stock</span>
+        </div>
+        <select id="gen-green" style="font-size:11px;padding:5px 8px"></select>
+      </div>
+
+      <div>
+        <div class="plabel" style="display:flex;align-items:center;justify-content:space-between">
+          Accent / filler
+          <span id="gen-acc-inv-tag" style="display:none;font-size:8px;color:var(--sage-d);background:var(--sage-ll);padding:1px 6px;border-radius:2px">from your stock</span>
+        </div>
+        <select id="gen-acc" style="font-size:11px;padding:5px 8px"></select>
+      </div>
+
+      <div>
+        <div class="plabel">Wreath base</div>
+        <select id="gen-base" style="font-size:11px;padding:5px 8px">
+          <option value="grapevine">Grapevine</option>
+          <option value="foam">Foam ring</option>
+          <option value="wire">Wire frame</option>
+          <option value="twig">Twig bundle</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="plabel">Number of focal points</div>
+        <select id="gen-focal-count" style="font-size:11px;padding:5px 8px">
+          <option value="1">1 — strong single focal</option>
+          <option value="3" selected>3 — balanced triangle</option>
+          <option value="5">5 — full and abundant</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="plabel">Stem flow direction</div>
+        <select id="gen-flow" style="font-size:11px;padding:5px 8px">
+          <option value="clockwise">Clockwise</option>
+          <option value="counter">Counter-clockwise</option>
+          <option value="radial">Radial (outward)</option>
+        </select>
+      </div>
+
+      <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:4px" onclick="runGenerator()">Generate placement map</button>
+    </div>
+
+    <!-- Output area -->
+    <div style="padding:20px 24px;overflow-y:auto;background:var(--cream)">
+      <!-- Empty state -->
+      <div id="gen-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--muted)">
+        <div style="font-size:32px;opacity:.3">◎</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--muted)">Your placement map will appear here</div>
+        <div style="font-size:12px;font-weight:300">Set your materials and click Generate placement map</div>
+      </div>
+
+      <!-- Output -->
+      <div id="gen-output" style="display:none;flex-direction:column;gap:16px">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--ink)" id="gen-out-title">—</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px" id="gen-out-meta">—</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="gen-stats"></div>
+
+        <!-- Canvas + table side by side -->
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start">
+          <div style="background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px">
+            <canvas id="gen-canvas" width="320" height="320" style="border-radius:50%"></canvas>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center" id="gen-legend"></div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--rule);border-radius:var(--rl);overflow:hidden">
+            <div style="padding:10px 14px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)">Placement map</span>
+              <span style="font-size:9px;color:var(--muted2)">angle = degrees clockwise from 12 o'clock</span>
+            </div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-size:11px" id="gen-table">
+                <thead>
+                  <tr style="background:var(--cream)">
+                    <th style="text-align:left;padding:7px 12px;font-weight:500;color:var(--muted);font-size:10px;letter-spacing:.06em;border-bottom:1px solid var(--rule)">Element</th>
+                    <th style="text-align:left;padding:7px 12px;font-weight:500;color:var(--muted);font-size:10px;letter-spacing:.06em;border-bottom:1px solid var(--rule)">Layer</th>
+                    <th style="text-align:left;padding:7px 12px;font-weight:500;color:var(--muted);font-size:10px;letter-spacing:.06em;border-bottom:1px solid var(--rule)">Angle</th>
+                    <th style="text-align:left;padding:7px 12px;font-weight:500;color:var(--muted);font-size:10px;letter-spacing:.06em;border-bottom:1px solid var(--rule)">Radius</th>
+                    <th style="text-align:left;padding:7px 12px;font-weight:500;color:var(--muted);font-size:10px;letter-spacing:.06em;border-bottom:1px solid var(--rule)">Stems</th>
+                    <th style="text-align:left;padding:7px 12px;font-weight:500;color:var(--muted);font-size:10px;letter-spacing:.06em;border-bottom:1px solid var(--rule)">Direction</th>
+                  </tr>
+                </thead>
+                <tbody id="gen-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save to blueprints -->
+        <div style="display:flex;gap:8px;padding-top:4px">
+          <button class="btn btn-p" onclick="toast('Design saved to your library')">Save to my library</button>
+          <button class="btn btn-o btn-sm" onclick="genExportCSV()">Download as CSV</button>
+          <button class="btn btn-o btn-sm" onclick="window.print()">Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+const TITLES={overview:'Overview',blueprints:'My Blueprints',marketplace:'Marketplace',studio:'Layout Studio',companion:'Visual Companion',memory:'Memory Weaver',emotion:'EmotionSync',inventory:'Inventory Weaver',optimizer:'Blueprint Optimizer',analytics:'Analytics',settings:'Settings',appstore:'Explore Apps'};
+function go(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  const el=document.getElementById('p-'+id);if(!el)return;
+  el.classList.add('on');
+  document.querySelectorAll('.ni').forEach(b=>{b.classList.remove('on');const o=b.getAttribute('onclick')||'';if(o.includes("'"+id+"'"))b.classList.add('on');});
+  document.getElementById('crumb').textContent=TITLES[id]||id;
+  window.scrollTo(0,0);
+  if(id==='studio')initS();
+  if(id==='companion')initC();
+  if(id==='generator')initGenerator();
+  if(id==='overview')drawRec();
+  if(id==='marketplace')drawMkt();
+  if(id==='blueprints')drawMy();
+  if(id==='appstore')drawAppStore();
+}
+function toast(msg){const t=document.getElementById('tst');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400);}
+
+// CANVAS
+const EMOC={romantic:'#C4746A',calm:'#5C7353',bold:'#5A6E8A',cozy:'#A0826A',festive:'#A8893A',wild:'#8A6AA0'};
+const EMOF={romantic:'rgba(212,150,144,.18)',calm:'rgba(150,180,144,.18)',bold:'rgba(140,160,190,.18)',cozy:'rgba(185,158,136,.18)',festive:'rgba(185,170,112,.18)',wild:'rgba(185,160,210,.18)'};
+let sT='anchor',sE='romantic',sV='layout',sA=[],sH=[],sAnim=null,sPO=0;
+function initS(){const c=document.getElementById('wc');if(!c||c._i)return;c._i=true;c.addEventListener('click',onCC);renderC();}
+function setT(btn,t){sT=t;document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');const h={anchor:'Click the ring to place an anchor',focal:'Place a focal cluster',ribbon:'Add a ribbon zone',erase:'Click an anchor to remove'};document.getElementById('chint').textContent=h[t];}
+function setE(el){sE=el.dataset.e;document.querySelectorAll('.ep').forEach(e=>e.classList.remove('on'));el.classList.add('on');}
+function setV(btn,v){sV=v;document.querySelectorAll('.vt').forEach((t,i)=>t.classList.toggle('on',(i===0&&v==='layout')||(i===1&&v==='preview')));if(v==='preview')animP();else{if(sAnim)cancelAnimationFrame(sAnim);renderC();}}
+function onCC(e){const c=document.getElementById('wc');const rect=c.getBoundingClientRect();const sx=c.width/rect.width,sy=c.height/rect.height;const mx=(e.clientX-rect.left)*sx,my=(e.clientY-rect.top)*sy;const CX=226,CY=226,RO=195,RI=118,RM=157;const dx=mx-CX,dy=my-CY,d=Math.sqrt(dx*dx+dy*dy);if(d<RI-12||d>RO+12)return;if(sT==='erase'){const i=sA.findIndex(a=>{const d2x=a.px-mx,d2y=a.py-my;return Math.sqrt(d2x*d2x+d2y*d2y)<20;});if(i>=0){sH.push(JSON.parse(JSON.stringify(sA)));sA.splice(i,1);updS();}return;}const ang=Math.atan2(dy,dx);sH.push(JSON.parse(JSON.stringify(sA)));sA.push({id:Date.now()+Math.random(),angle:(ang*180/Math.PI+360)%360,px:CX+RM*Math.cos(ang),py:CY+RM*Math.sin(ang),sw:parseInt(document.getElementById('sw').value),type:document.getElementById('atype').value,emotion:sE,role:sT==='focal'?'focal':sT==='ribbon'?'ribbon':'std'});updS();}
+function renderC(){const c=document.getElementById('wc');if(!c)return;const ctx=c.getContext('2d'),CX=226,CY=226,RO=195,RI=118,RM=157;ctx.clearRect(0,0,452,452);ctx.beginPath();ctx.arc(CX,CY,RO,0,Math.PI*2);ctx.arc(CX,CY,RI,0,Math.PI*2,true);ctx.fillStyle='rgba(92,115,83,.04)';ctx.fill();ctx.beginPath();ctx.arc(CX,CY,RO,0,Math.PI*2);ctx.strokeStyle='rgba(92,115,83,.14)';ctx.lineWidth=1.5;ctx.stroke();ctx.beginPath();ctx.arc(CX,CY,RI,0,Math.PI*2);ctx.strokeStyle='rgba(92,115,83,.08)';ctx.lineWidth=1;ctx.stroke();ctx.beginPath();ctx.arc(CX,CY,RM,0,Math.PI*2);ctx.strokeStyle='rgba(92,115,83,.05)';ctx.setLineDash([3,8]);ctx.stroke();ctx.setLineDash([]);for(let a=0;a<360;a+=30){const r=a*Math.PI/180;ctx.beginPath();ctx.moveTo(CX+RI*Math.cos(r),CY+RI*Math.sin(r));ctx.lineTo(CX+RO*Math.cos(r),CY+RO*Math.sin(r));ctx.strokeStyle='rgba(30,28,24,.025)';ctx.lineWidth=.5;ctx.stroke();}sA.forEach(a=>sV==='preview'?drawF(ctx,a):drawN(ctx,a));}
+function drawN(ctx,a){const col=EMOC[a.emotion]||EMOC.calm,fill=EMOF[a.emotion]||EMOF.calm,sz=5+a.sw*2.2;if(a.role==='focal'){ctx.beginPath();ctx.arc(a.px,a.py,sz+7,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();}ctx.beginPath();ctx.arc(a.px,a.py,sz,0,Math.PI*2);ctx.fillStyle=col;ctx.globalAlpha=.75;ctx.fill();ctx.globalAlpha=1;}
+function drawF(ctx,a){const col=EMOC[a.emotion]||EMOC.calm,fill=EMOF[a.emotion]||EMOF.calm,sz=7+a.sw*2.8,p=a.type==='floral'?6:5;ctx.save();ctx.translate(a.px,a.py);ctx.rotate((a.angle+sPO*.35)*Math.PI/180);for(let i=0;i<p;i++){const ang=(i/p)*Math.PI*2;ctx.beginPath();ctx.ellipse(Math.cos(ang)*sz*.5,Math.sin(ang)*sz*.5,sz*.38,sz*.22,ang,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=.7;ctx.globalAlpha=.6;ctx.stroke();ctx.globalAlpha=1;}ctx.beginPath();ctx.arc(0,0,sz*.22,0,Math.PI*2);ctx.fillStyle=col;ctx.globalAlpha=.85;ctx.fill();ctx.globalAlpha=1;ctx.restore();}
+function animP(){if(sV!=='preview')return;sPO+=.3;renderC();sAnim=requestAnimationFrame(animP);}
+function updS(){renderC();const q=[0,0,0,0];sA.forEach(a=>{const qi=Math.floor(a.angle/90);q[Math.min(qi,3)]++;});const mn=Math.min(...q),mx2=Math.max(...q);const score=sA.length===0?0:sA.length<3?20:mn===0?35:Math.min(100,Math.max(0,100-(mx2-mn)*12));const f=document.getElementById('hf');f.style.width=score+'%';f.className='hf'+(score<40?' bad':score<65?' warn':'');const msgs=['Add anchors to begin','Add more for balance','Decent start','Looking balanced','Great structure','Strong composition'];document.getElementById('hm').textContent=msgs[Math.min(Math.floor(score/20),5)];document.getElementById('sa').textContent=sA.length;document.getElementById('ss').textContent=sA.length<2?'—':mn===0?'Weak':(mx2-mn)<=2?'Strong':'Medium';document.getElementById('sd').textContent=sA.length<4?'Sparse':sA.length<10?'Medium':'Dense';document.getElementById('sf').textContent=sA.filter(a=>a.role==='focal').length;const acl=document.getElementById('acl');acl.innerHTML=sA.length===0?'<div style="font-size:9px;color:var(--muted-l);padding:2px 0">None placed yet</div>':sA.map((a,i)=>`<div class="ach"><span class="acd" style="background:${EMOC[a.emotion]||'#888'}"></span><span style="flex:1">${a.type} &middot; ${Math.round(a.angle)}&deg;</span><span class="acx" onclick="rmA(${i})">&times;</span></div>`).join('');const cnt={};sA.forEach(a=>{cnt[a.emotion]=(cnt[a.emotion]||0)+1;});const em=document.getElementById('emap');em.innerHTML=Object.keys(cnt).length===0?'<span style="font-size:9px;color:var(--muted-l)">Place anchors first</span>':Object.entries(cnt).map(([e,n])=>`<span style="font-size:9px;font-weight:500;padding:1px 6px;border-radius:2px;background:${EMOF[e]||'#eee'};color:${EMOC[e]||'#888'};border:1px solid ${EMOC[e]||'#ccc'}30">${e}&times;${n}</span>`).join('');}
+function rmA(i){sH.push(JSON.parse(JSON.stringify(sA)));sA.splice(i,1);updS();}
+function undoA(){if(sH.length>0){sA=sH.pop();updS();}}
+function clearC(){if(sA.length>0){sH.push(JSON.parse(JSON.stringify(sA)));sA=[];updS();}}
+function saveL(){if(sA.length===0){toast('Add some anchors first');return;}toast('Blueprint saved — '+sA.length+' anchors');}
+function loadSkel(){sH.push(JSON.parse(JSON.stringify(sA)));const CX=226,CY=226,RM=157;[{a:30,t:'floral',e:'romantic',r:'focal',w:5},{a:65,t:'greenery',e:'calm',r:'std',w:3},{a:95,t:'accent',e:'calm',r:'std',w:2},{a:130,t:'floral',e:'romantic',r:'std',w:4},{a:165,t:'greenery',e:'calm',r:'std',w:3},{a:205,t:'ribbon',e:'cozy',r:'ribbon',w:3},{a:245,t:'floral',e:'bold',r:'focal',w:4},{a:285,t:'greenery',e:'calm',r:'std',w:2},{a:325,t:'accent',e:'festive',r:'std',w:3},{a:355,t:'floral',e:'romantic',r:'std',w:4}].forEach(s=>{const rad=s.a*Math.PI/180;sA.push({id:Date.now()+Math.random(),angle:s.a,px:CX+RM*Math.cos(rad),py:CY+RM*Math.sin(rad),sw:s.w,type:s.t,emotion:s.e,role:s.r});});updS();}
+
+// VISUAL COMPANION
+const EVC=[{id:'gratitude',label:'Gratitude',phrase:'gentle gratitude',colors:'muted amber and warm neutrals',accent:'soft cream',texture:'natural dried textures, aged ribbon'},{id:'calm',label:'Calm',phrase:'soothing calm',colors:'sage green and muted ivory',accent:'dusty blue',texture:'airy wispy sprigs, fine tendrils'},{id:'joy',label:'Joy',phrase:'joyful celebration',colors:'warm coral and sunlit gold',accent:'fresh white',texture:'lush fullness, bold blooms'},{id:'nostalgia',label:'Nostalgia',phrase:'nostalgic warmth',colors:'faded rose and aged ivory',accent:'dusty mauve',texture:'aged greenery, worn ribbon'},{id:'serenity',label:'Serenity',phrase:'serene calm',colors:'soft grey-green and white',accent:'pale sage',texture:'minimal botanical, quiet spacing'},{id:'hope',label:'Hope',phrase:'fragile hope',colors:'pale blush and soft gold',accent:'ivory white',texture:'gentle mixed blooms, light layering'}];
+let CV={emo:{gratitude:.9,calm:.6,joy:0,nostalgia:0,serenity:0,hope:0},season:'Autumn',style:'Farmhouse',shape:'Circular',mats:['Eucalyptus','Linen ribbon']};
+function initC(){bldSliders();bldS(['Spring','Summer','Autumn','Winter'],'cseason','season','on-g');bldS(['Farmhouse','Luxe','Minimalist','Wild','Vintage'],'cstyle','style','');bldS(['Circular','Asymmetrical','Trailing','Loose'],'cshape','shape','');bldM(["Eucalyptus","Dried florals","Pine","Lamb's ear","Berry clusters","Linen ribbon","Cotton bolls","Wildflowers"],'cmats');updV();}
+function bldSliders(){document.getElementById('esliders').innerHTML=EVC.map(e=>`<div class="esr"><span class="esrn">${e.label}</span><input class="esrt" type="range" min="0" max="10" step="1" value="${Math.round(CV.emo[e.id]*10)}" oninput="CV.emo['${e.id}']=this.value/10;updV();document.getElementById('ev${e.id}').textContent=(this.value/10).toFixed(1)"><span class="esrv" id="ev${e.id}">${CV.emo[e.id].toFixed(1)}</span></div>`).join('');}
+function bldS(arr,cid,key,cls){document.getElementById(cid).innerHTML=arr.map(v=>`<span class="chip ${CV[key]===v?cls||'on':''}" onclick="CV['${key}']='${v}';bldS(${JSON.stringify(arr)},'${cid}','${key}','${cls||''}')">${v}</span>`).join('');}
+function bldM(arr,cid){document.getElementById(cid).innerHTML=arr.map(v=>`<span class="chip ${CV.mats.includes(v)?'on':''}" onclick="tM('${v}',${JSON.stringify(arr)},'${cid}')">${v}</span>`).join('');}
+function tM(v,arr,cid){const i=CV.mats.indexOf(v);if(i>-1)CV.mats.splice(i,1);else CV.mats.push(v);bldM(arr,cid);}
+function updV(){const viz=document.getElementById('eviz');if(!viz)return;viz.innerHTML=EVC.map(e=>`<div class="evw"><div class="evb" style="height:${Math.round(CV.emo[e.id]*38)}px;opacity:${.3+CV.emo[e.id]*.7}"></div><span class="evl">${e.label.slice(0,4)}</span></div>`).join('');}
+function genPrompt(){const top=Object.entries(CV.emo).filter(([,v])=>v>0).sort(([,a],[,b])=>b-a).slice(0,3);if(!top.length){toast('Set at least one emotion');return;}const[tId]=top[0];const emo=EVC.find(e=>e.id===tId);const mats=CV.mats.length?CV.mats.join(', ').toLowerCase():'eucalyptus';const natural=`A handcrafted ${CV.season.toLowerCase()} wreath with ${mats}, ${emo.colors} palette, ${emo.accent} accents, ${emo.texture}. The ${CV.shape.toLowerCase()} composition carries a ${CV.style.toLowerCase()} sensibility, captured in warm natural light.`;const ec=top.map(([id,v])=>`${EVC.find(e=>e.id===id)?.phrase}::${(.75+v*.75).toFixed(1)}`).join(' ');const ar=document.getElementById('arsel').value,st=document.getElementById('stsel').value,ch=document.getElementById('chsel').value;const params=[ar,st,ch].filter(Boolean).join(' ');const mj=`handcrafted ${CV.season.toLowerCase()} ${mats} wreath, ${emo.colors}, ${emo.accent} accents, ${emo.texture}, ${CV.shape.toLowerCase()} form, ${CV.style.toLowerCase()} setting::1.6 ${ec} editorial product photography::1.0 ${params}`.trim();document.getElementById('nout').textContent=natural;document.getElementById('mjout').textContent=mj;document.getElementById('nout').style.color='';document.getElementById('mjout').style.color='';updV();toast('Prompt generated');}
+function copyP(){const t=document.getElementById('mjout').textContent;if(t==='–'||t==='\u2013'){toast('Generate first');return;}navigator.clipboard?.writeText(t).then(()=>toast('Copied to clipboard'));}
+
+// THUMBNAILS
+const TD=[{name:'Autumn Asymmetric',mood:'festive',anchors:[{a:30,e:'festive'},{a:70,e:'festive'},{a:120,e:'calm'},{a:170,e:'festive'},{a:220,e:'cozy'},{a:270,e:'festive'},{a:320,e:'calm'},{a:10,e:'festive'}]},{name:'Spring Romantic',mood:'romantic',anchors:[{a:20,e:'romantic'},{a:70,e:'romantic'},{a:120,e:'calm'},{a:180,e:'romantic'},{a:240,e:'calm'},{a:300,e:'romantic'},{a:350,e:'romantic'}]},{name:'Minimal Calm',mood:'calm',anchors:[{a:30,e:'calm'},{a:120,e:'calm'},{a:210,e:'calm'},{a:300,e:'calm'},{a:60,e:'calm'}]},{name:'Winter Luxe',mood:'bold',anchors:[{a:15,e:'bold'},{a:60,e:'festive'},{a:110,e:'bold'},{a:160,e:'festive'},{a:210,e:'bold'},{a:260,e:'festive'},{a:310,e:'bold'},{a:355,e:'festive'}]}];
+function drawTh(canvas,anchors){const ctx=canvas.getContext('2d'),cx=70,cy=52,ro=42,ri=25,rm=33.5;ctx.clearRect(0,0,140,104);ctx.beginPath();ctx.arc(cx,cy,ro,0,Math.PI*2);ctx.arc(cx,cy,ri,0,Math.PI*2,true);ctx.fillStyle='rgba(92,115,83,.04)';ctx.fill();ctx.beginPath();ctx.arc(cx,cy,ro,0,Math.PI*2);ctx.strokeStyle='rgba(92,115,83,.13)';ctx.lineWidth=.8;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,ri,0,Math.PI*2);ctx.strokeStyle='rgba(92,115,83,.07)';ctx.stroke();anchors.forEach(a=>{const r=a.a*Math.PI/180;ctx.beginPath();ctx.arc(cx+rm*Math.cos(r),cy+rm*Math.sin(r),3,0,Math.PI*2);ctx.fillStyle=EMOC[a.e]||'#888';ctx.globalAlpha=.7;ctx.fill();ctx.globalAlpha=1;});}
+function drawRec(){const g=document.getElementById('rec-bp');if(!g)return;g.innerHTML=TD.map((d,i)=>`<div class="bc" onclick="go('studio')"><div class="bc-th"><canvas id="th${i}" width="140" height="104"></canvas></div><div class="bc-info"><div class="bc-name">${d.name}</div><div class="bc-meta"><span class="mood-pip" style="background:${EMOC[d.mood]}"></span><span class="bc-sub">${d.anchors.length} anchors &middot; ${d.mood}</span></div></div></div>`).join('')+`<div class="bc-new" onclick="go('studio')"><div class="plus-ico">+</div><span style="font-size:10px;letter-spacing:.04em">New blueprint</span></div>`;TD.forEach((d,i)=>{const c=document.getElementById('th'+i);if(c)drawTh(c,d.anchors);});}
+function drawMy(){const g=document.getElementById('mybp');if(!g)return;const all=[...TD,{name:'Coastal Summer',mood:'wild',anchors:[{a:40,e:'wild'},{a:100,e:'calm'},{a:160,e:'wild'},{a:220,e:'calm'},{a:280,e:'wild'},{a:340,e:'calm'}]},{name:'Festive Red',mood:'festive',anchors:[{a:20,e:'festive'},{a:80,e:'festive'},{a:140,e:'festive'},{a:200,e:'festive'},{a:260,e:'festive'},{a:320,e:'festive'}]}];g.innerHTML=all.map((d,i)=>`<div class="bc" onclick="go('studio')"><div class="bc-th"><canvas id="mth${i}" width="140" height="104"></canvas></div><div class="bc-info"><div class="bc-name">${d.name}</div><div class="bc-meta"><span class="mood-pip" style="background:${EMOC[d.mood]}"></span><span class="bc-sub">${d.anchors.length} anchors &middot; ${d.mood}</span></div></div></div>`).join('')+`<div class="bc-new" onclick="go('studio')"><div class="plus-ico">+</div><span style="font-size:10px;letter-spacing:.04em">New blueprint</span></div>`;all.forEach((d,i)=>{const c=document.getElementById('mth'+i);if(c)drawTh(c,d.anchors);});}
+
+// MARKETPLACE
+const MKT=[{name:"Grandmother's Garden",mood:'romantic',tier:'free',kit:false},{name:'Autumn Hearth',mood:'festive',tier:'prem',price:'$4.95',kit:true},{name:'Coastal Drift',mood:'calm',tier:'prem',price:'$3.95',kit:false},{name:'Grief to Growth',mood:'calm',tier:'free',kit:true},{name:'Winter Solstice',mood:'bold',tier:'prem',price:'$5.95',kit:true},{name:'Spring Awakening',mood:'romantic',tier:'free',kit:false},{name:'Wild Prairie',mood:'wild',tier:'prem',price:'$4.95',kit:true},{name:'Quiet Morning',mood:'calm',tier:'prem',price:'$3.95',kit:false},{name:'Copper & Sage',mood:'festive',tier:'prem',price:'$5.95',kit:true},{name:'Japandi Minimal',mood:'calm',tier:'free',kit:false},{name:'Festive Cascade',mood:'festive',tier:'prem',price:'$6.95',kit:true},{name:'Blush & Ivory',mood:'romantic',tier:'prem',price:'$4.95',kit:false}];
+const MA={romantic:[{a:30,e:'romantic'},{a:90,e:'calm'},{a:150,e:'romantic'},{a:210,e:'romantic'},{a:270,e:'calm'},{a:330,e:'romantic'}],festive:[{a:20,e:'festive'},{a:80,e:'festive'},{a:140,e:'cozy'},{a:200,e:'festive'},{a:260,e:'festive'},{a:320,e:'cozy'}],calm:[{a:45,e:'calm'},{a:135,e:'calm'},{a:225,e:'calm'},{a:315,e:'calm'}],bold:[{a:30,e:'bold'},{a:90,e:'festive'},{a:150,e:'bold'},{a:210,e:'festive'},{a:270,e:'bold'},{a:330,e:'festive'}],wild:[{a:20,e:'wild'},{a:70,e:'calm'},{a:130,e:'wild'},{a:200,e:'wild'},{a:270,e:'calm'},{a:340,e:'wild'}]};
+function drawMkt(){const g=document.getElementById('mktg');if(!g)return;g.innerHTML=MKT.map((b,i)=>`<div class="mkt" onclick="toast('Blueprint preview — Phase 2')"><div class="mkt-th"><canvas id="mk${i}" width="140" height="104"></canvas>${b.kit?'<span class="mkt-kit">Custom kit</span>':''}</div><div class="mkt-i"><div class="mkt-n">${b.name}</div><div class="mkt-m">${b.tier==='free'?'<span class="mkt-free">Free</span>':`<span class="mkt-pr">${b.price}</span><span class="mkt-prem">Premium</span>`}</div></div></div>`).join('');MKT.forEach((b,i)=>{const c=document.getElementById('mk'+i);if(c)drawTh(c,MA[b.mood]||MA.calm);});}
+
+// APP STORE
+const APPS=[{name:'Structural Balance',desc:'Physics-based balance scoring with hang orientation checks',price:'$7.95',cat:'Production'},{name:'Blueprint Echo',desc:'Extract emotional DNA and generate parallel variants',price:'$9.95',cat:'Scaling'},{name:'Variant Branching',desc:'Design lineage trees with delta-only branching',price:'$11.95',cat:'Scaling'},{name:'Visual Companion Pro',desc:'Any blueprint to any AI target — image, copy, or system',price:'$12.95',cat:'AI'},{name:'Fusion Engine',desc:'Blend multiple blueprint DNA with psychographic personas',price:'$13.95',cat:'Scaling'},{name:'Blueprint Intel Pro',desc:'Design DNA, emotion sliders, versioning, predictive tuning',price:'$14.95',cat:'Intelligence'},{name:'Adaptive Composer',desc:'Self-learning engine with fitness scoring and evolution timeline',price:'$19.95',cat:'Intelligence'}];
+function drawAppStore(){const g=document.getElementById('app-store-grid');if(!g)return;g.innerHTML=APPS.map(a=>`<div class="oc" style="margin-bottom:0;cursor:pointer" onclick="toast('Added ${a.name} to plan — Phase 2')"><div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-l);margin-bottom:4px">${a.cat}</div><div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--ink);margin-bottom:3px;letter-spacing:-.01em">${a.name}</div><div style="font-size:10px;color:var(--muted);font-weight:300;margin-bottom:10px;line-height:1.5">${a.desc}</div><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--ink-2)">${a.price}/mo</span><button class="btn btn-o btn-sm" onclick="event.stopPropagation();toast('Added ${a.name}')">Add to plan</button></div></div>`).join('');}
+
+// MEMORY WEAVER
+function runMW(){const inp=document.getElementById('minput').value;if(!inp.trim()){toast('Describe a memory first');return;}const emos=[{e:'Serenity 0.81',col:'var(--sage-d)',bg:'var(--sage-ll)'},{e:'Warmth 0.72',col:'var(--bark-d)',bg:'var(--bark-ll)'},{e:'Nostalgia 0.68',col:'#6B530F',bg:var(--bark-ll)}];document.getElementById('memos').innerHTML=[{e:'Serenity 0.81',col:'var(--sage-d)',bg:'var(--sage-ll)'},{e:'Warmth 0.72',col:'var(--bark-d)',bg:'var(--bark-ll)'},{e:'Nostalgia 0.68',col:'#6B530F',bg:'#F5EDD4'}].map(e=>`<span style="font-size:10px;font-weight:500;letter-spacing:.04em;padding:3px 8px;border-radius:2px;background:${e.bg};color:${e.col}">${e.e}</span>`).join('');document.getElementById('mbp').innerHTML=`<strong>Formula:</strong> Crescent &mdash; high negative space, serenity-dominant<br><strong>Palette:</strong> Soft pink, cream, sage green<br><strong>Focal:</strong> Single rose cluster at 5 o&rsquo;clock<br><strong>Greenery:</strong> Flowing eucalyptus, daisy accents<br><strong>Blueprint ID:</strong> bp_${Date.now().toString(36).slice(-4)} &mdash; 11 elements, balance 0.87`;document.getElementById('mout').style.display='block';toast('Blueprint woven from your memory');}
+
+// EMOTIONSYNC
+function setMP(x,y,lbl){['mp','mpi'].forEach(id=>{document.getElementById(id).setAttribute('cx',x);document.getElementById(id).setAttribute('cy',y);});updEP(x,y,lbl);}
+const mmEl=document.getElementById('mm');
+if(mmEl){mmEl.addEventListener('click',function(e){const r=this.getBoundingClientRect();setMP(Math.round((e.clientX-r.left)*270/r.width),Math.round((e.clientY-r.top)*270/r.height),null);});}
+function updEP(x,y,lbl){const energy=Math.round((x-10)/250*100),playful=Math.round((y-10)/250*100);const name=lbl||(energy>50&&playful>50?'Festive':energy>50?'Dramatic':playful>50?'Whimsical':'Serene');const density=energy>60?'Dense, layered':energy>30?'Medium fullness':'Airy, sparse';const sym=playful<40?'High symmetry':playful<70?'Soft asymmetry':'Free-form';const shape=energy<30&&playful<30?'Full circle, even':'Soft ellipse or crescent';document.getElementById('eprof').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px"><div style="background:var(--cream);border-radius:var(--r);padding:5px 7px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400">${name}</div><div style="font-size:9px;color:var(--muted-l);margin-top:1px">Mood character</div></div><div style="background:var(--cream);border-radius:var(--r);padding:5px 7px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400">${energy}%</div><div style="font-size:9px;color:var(--muted-l);margin-top:1px">Energy</div></div></div><div style="font-size:10px;color:var(--ink-2);display:flex;flex-direction:column;gap:2px;font-weight:300"><span>Shape &rarr; ${shape}</span><span>Density &rarr; ${density}</span><span>Symmetry &rarr; ${sym}</span></div>`;}
+
+// INVENTORY
+function parseInv(){const inp=document.getElementById('iinput').value;if(!inp.trim()){toast('Describe your materials first');return;}const items=inp.split(/,|\n/).map(s=>s.trim()).filter(Boolean);document.getElementById('ichips').innerHTML=items.map(it=>`<span style="font-size:10px;padding:3px 9px;border-radius:2px;background:var(--sage-ll);color:var(--sage-d);border:1px solid rgba(92,115,83,.2)">${it}</span>`).join('');document.getElementById('iparsed').innerHTML=items.map(it=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--rule)"><span>${it}</span><span style="color:var(--muted-l);font-size:10px">identified</span></div>`).join('');document.getElementById('ires').style.display='block';toast(items.length+' items parsed');}
+
+// OPTIMIZER
+function updL(val){const lam=(val/100).toFixed(2);const lbl=lam>.7?'emotion-leaning':lam<.4?'efficiency-leaning':'balanced';document.getElementById('ldisplay').textContent=`\u03BB = ${lam} \u2014 ${lbl}`;document.getElementById('ofit').textContent=Math.round(84*parseFloat(lam)+61*(1-parseFloat(lam)));}
+function runOpt(){document.getElementById('oeff').textContent='75';document.getElementById('ofit').textContent='80';document.getElementById('osav').textContent='$3.80';document.getElementById('ochgl').innerHTML=["Swapped rose stem at 7 o'clock for seeded eucalyptus — saves $2.40","Rotated cluster at 210° by +5° toward symmetry axis — symmetry score +8","Reduced outer orbit density between 180°–220° — density score +12","Emotional profile unchanged — locked placements respected throughout"].map(c=>`<div style="display:flex;gap:7px;padding:3px 0;border-bottom:1px solid var(--rule)"><span style="color:var(--sage);font-size:12px">&#10003;</span><span>${c}</span></div>`).join('');document.getElementById('ochg').style.display='block';toast('Blueprint optimized — $3.80 saved');}
+
+// INIT
+drawRec();
+setTimeout(()=>updEP(90,85,'Serene'),60);
+</script>
+</body>
+</html>

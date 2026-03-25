@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — System Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0907;--sf:#110f0c;--sf2:#1a1714;--sf3:#221f1b;
+  --bd:#2a2520;--bd2:#3a342d;
+  --gold:#c9a96e;--gold2:#e8c98a;--gd:rgba(201,169,110,.12);--gg:rgba(201,169,110,.06);
+  --sage:#7a9e7e;--saged:rgba(122,158,126,.15);
+  --rose:#c47c6e;--rosed:rgba(196,124,110,.15);
+  --lav:#9b8ec4;--lavd:rgba(155,142,196,.15);
+  --amb:#d4a843;--ambd:rgba(212,168,67,.15);
+  --teal:#5a8a84;--teald:rgba(90,138,132,.15);
+  --cyan:#4a9eb5;--cyand:rgba(74,158,181,.15);
+  --txt:#e8e0d4;--txd:#8a7d6e;--txm:#4a4038;
+  --fd:'Cormorant Garamond',serif;--fm:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:var(--fm);font-size:13px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5;}
+
+body.light{
+  --bg:#f9f7f3;--sf:#ffffff;--sf2:#f5f1ea;--sf3:#efe9df;
+  --bd:rgba(30,28,24,0.08);--bd2:rgba(30,28,24,0.14);
+  --gold:#8c7258;--gold2:#b59b7f;--gd:rgba(140,114,88,0.12);--gg:rgba(140,114,88,0.06);
+  --sage:#5c7353;--saged:rgba(92,115,83,0.16);
+  --rose:#c47c6e;--rosed:rgba(196,124,110,0.12);
+  --lav:#8b86b0;--lavd:rgba(139,134,176,0.12);
+  --amb:#c9a96e;--ambd:rgba(201,169,110,0.14);
+  --teal:#5a8a84;--teald:rgba(90,138,132,0.12);
+  --cyan:#4a9eb5;--cyand:rgba(74,158,181,0.12);
+  --txt:#1e1c18;--txd:#5c544b;--txm:#8b8278;
+  --fm:'DM Sans',sans-serif;
+}
+body.light::before{opacity:.25;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sb{width:232px;min-width:232px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;}
+.sb-logo{padding:22px 20px 14px;border-bottom:1px solid var(--bd);flex-shrink:0;}
+.logo-name{font-family:var(--fd);font-size:22px;font-weight:300;letter-spacing:.12em;color:var(--gold);display:block;line-height:1;}
+.logo-sub{font-size:9px;letter-spacing:.24em;color:var(--txm);margin-top:4px;text-transform:uppercase;display:block;}
+.sb-sec{padding:13px 0 3px;flex-shrink:0;}
+.ssl{font-size:8px;letter-spacing:.28em;color:var(--txm);text-transform:uppercase;padding:0 20px;margin-bottom:4px;}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 20px;cursor:pointer;color:var(--txd);transition:all .14s;border-left:2px solid transparent;font-size:11px;letter-spacing:.02em;}
+.ni:hover{color:var(--txt);background:var(--gg);}
+.ni.active{color:var(--gold);border-left-color:var(--gold);background:var(--gd);}
+.ni.locked{opacity:.22;pointer-events:none;}
+.nic{font-size:12px;opacity:.65;width:14px;text-align:center;}
+.pb{font-size:7px;letter-spacing:.11em;padding:1px 5px;border-radius:1px;margin-left:auto;white-space:nowrap;}
+.pb-live{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.pb-p2{background:var(--lavd);color:var(--lav);border:1px solid rgba(155,142,196,.3);}
+.pb-p3{background:var(--ambd);color:var(--amb);border:1px solid rgba(212,168,67,.3);}
+.pb-p4{background:var(--cyand);color:var(--cyan);border:1px solid rgba(74,158,181,.3);}
+.sb-foot{margin-top:auto;padding:11px 20px;border-top:1px solid var(--bd);flex-shrink:0;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:6px;animation:pulse 2.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--sf);border-bottom:1px solid var(--bd);padding:11px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-title{font-family:var(--fd);font-size:17px;font-weight:300;letter-spacing:.08em;}
+.tm{display:flex;gap:12px;align-items:center;}
+.mtag{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);background:var(--sf2);border:1px solid var(--bd);padding:3px 7px;border-radius:2px;}
+.mtag.hl{color:var(--gold);border-color:rgba(201,169,110,.3);background:var(--gd);}
+.mtag.p4{color:var(--cyan);border-color:rgba(74,158,181,.3);background:var(--cyand);}
+
+/* PANELS */
+.panel{display:none;padding:24px 26px;animation:pIn .26s ease both;}
+.panel.active{display:block;}
+@keyframes pIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+/* SHARED */
+.sh{font-family:var(--fd);font-size:11.5px;font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.sh::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--bd2),transparent);}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gd),transparent);}
+.clbl{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--txm);margin-bottom:5px;}
+.cval{font-family:var(--fd);font-size:30px;font-weight:300;color:var(--gold);line-height:1;}
+.csub{font-size:10.5px;color:var(--txd);margin-top:3px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px;}
+.btn{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10px;letter-spacing:.12em;padding:7px 12px;cursor:pointer;text-transform:uppercase;transition:all .14s;border-radius:2px;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn.primary{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.btn.primary:hover{background:rgba(201,169,110,.2);}
+.btn.cyan{border-color:var(--cyan);color:var(--cyan);background:var(--cyand);}
+.btn.sage{border-color:var(--sage);color:var(--sage);background:var(--saged);}
+.sel{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10.5px;padding:6px 9px;border-radius:2px;outline:none;cursor:pointer;transition:border-color .14s;}
+.sel:focus{border-color:var(--gold);}
+.sel option{background:var(--sf2);}
+.row{display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.jblock{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;font-size:10.5px;line-height:1.85;color:var(--txd);overflow-x:auto;margin-bottom:18px;position:relative;max-height:360px;overflow-y:auto;}
+.jkey{color:var(--gold);}.jstr{color:var(--sage);}.jnum{color:var(--rose);}.jbool{color:var(--lav);}.jnull{color:var(--txm);}
+.cpbtn{position:sticky;float:right;top:0;background:var(--sf);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:9px;letter-spacing:.13em;padding:3px 7px;cursor:pointer;text-transform:uppercase;transition:all .14s;border-radius:2px;margin-bottom:5px;}
+.cpbtn:hover{border-color:var(--gold);color:var(--gold);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+input[type=range]{-webkit-appearance:none;height:2px;background:var(--bd2);border-radius:2px;outline:none;cursor:pointer;flex:1;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);cursor:pointer;transition:transform .12s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3);}
+.slrow{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.sllbl{font-size:9px;letter-spacing:.12em;color:var(--txd);width:100px;text-transform:uppercase;}
+.slval{font-size:10px;color:var(--gold);width:32px;text-align:right;}
+.dbar{display:flex;align-items:center;gap:7px;padding:7px 11px;background:var(--sf2);border:1px solid var(--bd);border-radius:2px;}
+.dblbl{font-size:9px;letter-spacing:.14em;color:var(--txm);text-transform:uppercase;width:115px;flex-shrink:0;}
+.dbtrack{flex:1;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.dbfill{height:100%;border-radius:2px;background:linear-gradient(to right,var(--gold),var(--gold2));transition:width .5s ease;}
+.dbval{font-size:10px;color:var(--txd);width:30px;text-align:right;}
+
+/* ── P1 legacy helpers ── */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.fc{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px;cursor:pointer;transition:all .14s;position:relative;overflow:hidden;}
+.fc:hover{border-color:var(--gold);background:var(--gg);}
+.fc.sel2{border-color:var(--gold);background:var(--gd);}
+.fc.sel2::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);}
+.fn{font-family:var(--fd);font-size:14px;font-weight:400;color:var(--txt);margin-bottom:3px;}
+.fd2{font-size:10px;color:var(--txd);line-height:1.5;}
+.fnum{position:absolute;top:8px;right:10px;font-size:9px;color:var(--txm);letter-spacing:.14em;}
+.drow{display:flex;gap:6px;margin-bottom:6px;align-items:baseline;}
+.dk{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);width:115px;flex-shrink:0;}
+.dv{font-size:11px;color:var(--txd);}
+.etbar{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px 18px;margin-bottom:20px;display:flex;gap:22px;align-items:center;flex-wrap:wrap;}
+.ri{display:flex;flex-direction:column;gap:3px;}
+.rl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);}
+.rv{font-family:var(--fd);font-size:22px;font-weight:300;color:var(--gold);}
+.et{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.tbar{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:9px 11px;}
+.tn{font-size:9px;letter-spacing:.15em;color:var(--txm);text-transform:uppercase;margin-bottom:6px;}
+.bt{height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.bf{height:100%;border-radius:2px;transition:width .4s ease;background:var(--gold);}
+.tv{font-size:10px;color:var(--txd);margin-top:4px;}
+.dna-rg{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px;}
+.dpc{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px;cursor:pointer;transition:all .14s;}
+.dpc:hover{border-color:var(--gold);background:var(--gg);}
+.dpc.sel2{border-color:var(--gold);background:var(--gd);}
+.dpn{font-family:var(--fd);font-size:15px;font-weight:400;color:var(--txt);margin-bottom:2px;}
+.dpf{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:8px;}
+.mbr{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.mbl{font-size:8px;letter-spacing:.09em;color:var(--txm);width:74px;text-transform:uppercase;}
+.mbt{flex:1;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden;}
+.mbf{height:100%;border-radius:1px;}
+.gr{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd);}
+.gr:last-child{border-bottom:none;}
+.gn{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--txm);width:135px;flex-shrink:0;}
+.gbt{flex:1;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.gbf{height:100%;border-radius:2px;transition:width .5s ease;}
+.gv{font-size:10px;color:var(--txd);width:34px;text-align:right;}
+.gh{font-size:8px;letter-spacing:.11em;padding:2px 5px;border-radius:1px;color:var(--rose);background:var(--rosed);border:1px solid rgba(196,124,110,.3);}
+.gs{font-size:8px;letter-spacing:.11em;padding:2px 5px;border-radius:1px;color:var(--sage);background:var(--saged);border:1px solid rgba(122,158,126,.3);}
+.pcb{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:12px;}
+.pcbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:8px;}
+.slog{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:11px;font-size:10px;line-height:1.75;color:var(--txd);max-height:150px;overflow-y:auto;margin-bottom:18px;}
+.le{display:flex;gap:6px;padding:2px 0;border-bottom:1px solid var(--bd);}
+.lid{color:var(--gold);width:44px;flex-shrink:0;}
+.lang{color:var(--sage);width:50px;}
+.lrad{color:var(--rose);width:50px;}
+.lrol{color:var(--lav);flex:1;}
+.ldep{color:var(--txm);}
+.inv-t{width:100%;border-collapse:collapse;margin-bottom:18px;}
+.inv-t th{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);padding:6px 9px;text-align:left;border-bottom:1px solid var(--bd);background:var(--sf);}
+.inv-t td{font-size:10.5px;color:var(--txd);padding:7px 9px;border-bottom:1px solid var(--bd);transition:background .12s;}
+.inv-t tr:hover td{background:var(--gg);}
+.irole{font-size:8px;letter-spacing:.11em;text-transform:uppercase;padding:2px 5px;border-radius:1px;}
+.rf{background:var(--rosed);color:var(--rose);border:1px solid rgba(196,124,110,.3);}
+.rs{background:var(--gd);color:var(--gold);border:1px solid rgba(201,169,110,.3);}
+.rfi{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.rg{background:rgba(42,37,32,.7);color:var(--txm);border:1px solid var(--bd);}
+.ibar{display:flex;align-items:center;gap:5px;}
+.ibt{width:50px;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.ibf{height:100%;border-radius:2px;background:var(--gold);}
+.ic{font-size:9px;letter-spacing:.09em;text-transform:uppercase;}
+.ich{color:var(--sage);}.icm{color:var(--gold);}.icl{color:var(--rose);}
+.fbtn{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:9px;letter-spacing:.14em;padding:5px 10px;cursor:pointer;text-transform:uppercase;transition:all .14s;border-radius:2px;}
+.fbtn:hover{border-color:var(--bd2);color:var(--txt);}
+.fbtn.active{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.frow2{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--bd);}
+.frow2:last-child{border-bottom:none;}
+.ff2{font-size:11px;color:var(--txt);flex:1;}
+.fscore{font-family:var(--fd);font-size:17px;font-weight:300;}
+.fsh{color:var(--sage);}.fsm{color:var(--gold);}.fsl{color:var(--rose);}
+.fbt{width:65px;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;}
+.fbf{height:100%;border-radius:2px;}
+/* P3 helpers */
+.abc-layout{display:flex;gap:13px;margin-bottom:20px;}
+.abc-left{flex:1;display:flex;flex-direction:column;gap:11px;}
+.abc-right{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.abc-cb{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;display:flex;flex-direction:column;align-items:center;gap:9px;}
+.abc-lin{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px;flex:1;}
+.lin-node{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;background:var(--sf);border:1px solid var(--bd);border-radius:2px;font-size:10px;color:var(--txd);cursor:pointer;transition:all .14s;}
+.lin-node:hover{border-color:var(--gold);color:var(--gold);}
+.lin-node.active{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.lin-node.parent{border-color:var(--sage);color:var(--sage);background:var(--saged);}
+.abc-met{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.abc-mc{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:9px 11px;}
+.abc-ml{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:4px;}
+.abc-mv{font-family:var(--fd);font-size:20px;font-weight:300;color:var(--gold);}
+.mut-log{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:11px;max-height:130px;overflow-y:auto;}
+.mut-e{display:flex;gap:7px;padding:3px 0;border-bottom:1px solid var(--bd);font-size:10px;}
+.mut-e:last-child{border-bottom:none;}
+.mut-g{color:var(--gold);width:115px;flex-shrink:0;}
+.mut-f{color:var(--rose);}.mut-t{color:var(--sage);}.mut-tp{color:var(--lav);margin-left:auto;font-size:9px;}
+.genome-layout{display:flex;gap:13px;margin-bottom:20px;}
+.genome-tree{width:260px;flex-shrink:0;background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;}
+.genome-detail{flex:1;display:flex;flex-direction:column;gap:11px;}
+.tree-node{padding:7px 11px;border:1px solid var(--bd);border-radius:2px;cursor:pointer;transition:all .14s;margin-bottom:5px;position:relative;}
+.tree-node:hover{border-color:var(--gold);background:var(--gg);}
+.tree-node.active{border-color:var(--gold);background:var(--gd);}
+.tree-node.child{margin-left:20px;}
+.tree-node.child::before,.tree-node.grandchild::before{content:'└';position:absolute;left:-14px;top:7px;color:var(--txm);font-size:10px;}
+.tree-node.grandchild{margin-left:40px;}
+.tn-name{font-family:var(--fd);font-size:13px;font-weight:400;color:var(--txt);margin-bottom:1px;}
+.tn-id{font-size:9px;letter-spacing:.13em;color:var(--txm);}
+.tn-score{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-family:var(--fd);font-size:15px;font-weight:300;color:var(--gold);}
+.genome-rb{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px;display:flex;flex-direction:column;align-items:center;}
+.genome-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.gs2{background:var(--sf2);border:1px solid var(--bd);border-radius:2px;padding:9px 11px;}
+.gs2l{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:3px;}
+.gs2v{font-family:var(--fd);font-size:18px;font-weight:300;color:var(--gold);}
+.cg-wrap{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px;}
+.cg-row{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid var(--bd);font-size:10px;}
+.cg-row:last-child{border-bottom:none;}
+.cg-gene{color:var(--txd);width:125px;flex-shrink:0;}
+.cg-f{color:var(--rose);}.cg-t{color:var(--sage);}
+.dup{color:var(--sage);font-size:10px;}.ddn{color:var(--rose);font-size:10px;}
+.out-layout{display:flex;gap:13px;margin-bottom:20px;}
+.out-l{flex:1;display:flex;flex-direction:column;gap:11px;}
+.out-r{width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;}
+.cut-list{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.cl-head{display:grid;grid-template-columns:1fr 55px 75px 70px;background:var(--sf);border-bottom:1px solid var(--bd);}
+.cl-head div{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);padding:6px 10px;}
+.cl-row{display:grid;grid-template-columns:1fr 55px 75px 70px;border-bottom:1px solid var(--bd);transition:background .12s;}
+.cl-row:last-child{border-bottom:none;}
+.cl-row:hover{background:var(--gg);}
+.cl-row div{font-size:10.5px;color:var(--txd);padding:7px 10px;}
+.bs-row{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:10.5px;color:var(--txd);align-items:flex-start;}
+.bs-row:last-child{border-bottom:none;}
+.bs-num{width:18px;height:18px;border-radius:50%;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--txm);flex-shrink:0;margin-top:1px;}
+.bs-num.done{border-color:var(--sage);color:var(--sage);background:var(--saged);}
+.out-prev{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:9px;}
+.exp-btn{background:var(--sf2);border:1px solid var(--bd);color:var(--txd);font-family:var(--fm);font-size:10px;letter-spacing:.12em;padding:9px 13px;cursor:pointer;text-transform:uppercase;transition:all .14s;border-radius:2px;display:flex;align-items:center;gap:7px;width:100%;margin-bottom:7px;}
+.exp-btn:hover{border-color:var(--gold);color:var(--gold);}
+.exp-btn.active{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.an{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px;font-size:10.5px;color:var(--txd);line-height:1.75;}
+
+/* ══════════════════════════════════════════
+   PHASE 4 STYLES
+══════════════════════════════════════════ */
+
+/* API CENTER */
+.api-layout{display:flex;gap:13px;margin-bottom:20px;}
+.api-sidebar-panel{width:220px;flex-shrink:0;background:var(--sf);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.api-ep-item{padding:9px 14px;border-bottom:1px solid var(--bd);cursor:pointer;transition:all .14s;}
+.api-ep-item:hover{background:var(--gg);}
+.api-ep-item.active{background:var(--gd);border-left:2px solid var(--gold);}
+.api-ep-item:last-child{border-bottom:none;}
+.ep-method{font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:2px 6px;border-radius:1px;margin-bottom:4px;display:inline-block;}
+.ep-get{background:rgba(122,158,126,.2);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.ep-post{background:rgba(201,169,110,.2);color:var(--gold);border:1px solid rgba(201,169,110,.3);}
+.ep-put{background:rgba(155,142,196,.2);color:var(--lav);border:1px solid rgba(155,142,196,.3);}
+.ep-del{background:rgba(196,124,110,.2);color:var(--rose);border:1px solid rgba(196,124,110,.3);}
+.ep-path{font-size:10.5px;color:var(--txt);}
+.ep-desc{font-size:9px;color:var(--txm);margin-top:2px;}
+.api-detail{flex:1;display:flex;flex-direction:column;gap:11px;}
+.api-detail-header{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px 18px;}
+.api-params{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.api-params-head{display:grid;grid-template-columns:1fr 80px 80px 2fr;background:var(--sf);border-bottom:1px solid var(--bd);}
+.api-params-head div{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);padding:6px 10px;}
+.api-param-row{display:grid;grid-template-columns:1fr 80px 80px 2fr;border-bottom:1px solid var(--bd);transition:background .12s;}
+.api-param-row:last-child{border-bottom:none;}
+.api-param-row:hover{background:var(--gg);}
+.api-param-row div{font-size:10.5px;color:var(--txd);padding:7px 10px;}
+.api-param-name{color:var(--gold);}
+.api-required{color:var(--rose);font-size:9px;letter-spacing:.1em;}
+.api-optional{color:var(--txm);font-size:9px;letter-spacing:.1em;}
+.api-tryit{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px;}
+.api-input{background:var(--sf);border:1px solid var(--bd);color:var(--txt);font-family:var(--fm);font-size:11px;padding:7px 10px;border-radius:2px;outline:none;width:100%;transition:border-color .14s;margin-bottom:8px;}
+.api-input:focus{border-color:var(--gold);}
+.api-response{background:var(--sf);border:1px solid var(--bd);border-radius:2px;padding:12px;font-size:10.5px;line-height:1.8;color:var(--txd);max-height:200px;overflow-y:auto;font-family:var(--fm);}
+.status-badge{display:inline-block;font-size:9px;letter-spacing:.14em;padding:3px 8px;border-radius:2px;margin-right:8px;}
+.s200{background:rgba(122,158,126,.2);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.s400{background:rgba(196,124,110,.2);color:var(--rose);border:1px solid rgba(196,124,110,.3);}
+.s500{background:rgba(155,142,196,.2);color:var(--lav);border:1px solid rgba(155,142,196,.3);}
+
+/* SCHEMA REGISTRY */
+.schema-layout{display:flex;gap:13px;margin-bottom:20px;}
+.schema-nav{width:200px;flex-shrink:0;}
+.schema-nav-item{padding:8px 13px;border:1px solid var(--bd);border-radius:2px;cursor:pointer;margin-bottom:5px;transition:all .14s;}
+.schema-nav-item:hover{border-color:var(--gold);background:var(--gg);}
+.schema-nav-item.active{border-color:var(--cyan);background:var(--cyand);}
+.schema-nav-name{font-size:11px;color:var(--txt);margin-bottom:2px;}
+.schema-nav-version{font-size:9px;letter-spacing:.14em;color:var(--txm);}
+.schema-detail{flex:1;display:flex;flex-direction:column;gap:11px;}
+.schema-header{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px 18px;}
+.schema-fields{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;overflow:hidden;}
+.sf-head{display:grid;grid-template-columns:1.2fr .6fr .6fr 1fr 1.8fr;background:var(--sf);border-bottom:1px solid var(--bd);}
+.sf-head div{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);padding:6px 10px;}
+.sf-row{display:grid;grid-template-columns:1.2fr .6fr .6fr 1fr 1.8fr;border-bottom:1px solid var(--bd);transition:background .12s;}
+.sf-row:last-child{border-bottom:none;}
+.sf-row:hover{background:var(--gg);}
+.sf-row div{font-size:10px;color:var(--txd);padding:7px 10px;}
+.sf-name{color:var(--gold);font-size:10.5px;}
+.sf-type{color:var(--cyan);}
+.sf-req{color:var(--rose);font-size:9px;}.sf-opt{color:var(--txm);font-size:9px;}
+.sf-canon{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 5px;border-radius:1px;}
+.sf-hard{background:var(--rosed);color:var(--rose);border:1px solid rgba(196,124,110,.3);}
+.sf-soft{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.sf-comp{background:var(--cyand);color:var(--cyan);border:1px solid rgba(74,158,181,.3);}
+.schema-versions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:20px;}
+.ver-badge{padding:5px 12px;border:1px solid var(--bd);border-radius:2px;font-size:10px;color:var(--txd);cursor:pointer;transition:all .14s;}
+.ver-badge:hover{border-color:var(--gold);}
+.ver-badge.current{border-color:var(--cyan);color:var(--cyan);background:var(--cyand);}
+
+/* ARCHITECTURE MAP */
+.arch-canvas-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;margin-bottom:20px;overflow:hidden;position:relative;}
+#archCanvas{display:block;border-radius:2px;}
+.arch-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+.arch-legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--txd);}
+.arch-leg-dot{width:10px;height:10px;border-radius:50%;}
+.arch-detail{display:flex;gap:13px;margin-bottom:20px;}
+.arch-node-info{background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;flex:1;}
+.arch-connections{background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:14px;width:260px;flex-shrink:0;}
+.conn-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:10.5px;}
+.conn-row:last-child{border-bottom:none;}
+.conn-from{color:var(--txd);flex:1;}
+.conn-type{font-size:8px;letter-spacing:.12em;text-transform:uppercase;padding:2px 5px;border-radius:1px;}
+.ct-data{background:var(--cyand);color:var(--cyan);border:1px solid rgba(74,158,181,.3);}
+.ct-event{background:var(--ambd);color:var(--amb);border:1px solid rgba(212,168,67,.3);}
+.ct-sync{background:var(--saged);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.ct-async{background:var(--lavd);color:var(--lav);border:1px solid rgba(155,142,196,.3);}
+.conn-to{color:var(--gold);flex:1;text-align:right;}
+.arch-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;}
+
+@media(max-width:960px){
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .fg,.et{grid-template-columns:repeat(2,1fr);}
+  .dna-rg,.abc-met,.genome-stats{grid-template-columns:1fr;}
+  .abc-layout,.genome-layout,.out-layout,.api-layout,.schema-layout,.arch-detail{flex-direction:column;}
+  .abc-right,.genome-tree,.out-r,.api-sidebar-panel,.schema-nav,.arch-connections{width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <span class="logo-name">Evercrafted</span>
+    <span class="logo-sub">System Console · Complete</span>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 1</div>
+    <div class="ni active" onclick="nav('dashboard',this)"><span class="nic">◈</span>Dashboard<span class="pb pb-live">Live</span></div>
+    <div class="ni" onclick="nav('formula',this)"><span class="nic">⬡</span>Formula Explorer<span class="pb pb-live">Live</span></div>
+    <div class="ni" onclick="nav('emotion',this)"><span class="nic">◉</span>Emotion Space<span class="pb pb-live">Live</span></div>
+    <div class="ni" onclick="nav('blueprint',this)"><span class="nic">⬜</span>Blueprint Inspector<span class="pb pb-live">Live</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 2</div>
+    <div class="ni" onclick="nav('dna',this)"><span class="nic">◧</span>DNA Registry<span class="pb pb-p2">P2</span></div>
+    <div class="ni" onclick="nav('placement',this)"><span class="nic">⊹</span>Placement Debugger<span class="pb pb-p2">P2</span></div>
+    <div class="ni" onclick="nav('inventory',this)"><span class="nic">▦</span>Inventory Analyzer<span class="pb pb-p2">P2</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 3</div>
+    <div class="ni" onclick="nav('abc',this)"><span class="nic">⟳</span>ABC Lab<span class="pb pb-p3">P3</span></div>
+    <div class="ni" onclick="nav('genome',this)"><span class="nic">◬</span>Genome Dashboard<span class="pb pb-p3">P3</span></div>
+    <div class="ni" onclick="nav('output',this)"><span class="nic">⊞</span>Output Studio<span class="pb pb-p3">P3</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="ssl">Phase 4</div>
+    <div class="ni" onclick="nav('api',this)"><span class="nic">⬡</span>API Center<span class="pb pb-p4">P4</span></div>
+    <div class="ni" onclick="nav('schema',this)"><span class="nic">◫</span>Schema Registry<span class="pb pb-p4">P4</span></div>
+    <div class="ni" onclick="nav('arch',this)"><span class="nic">◈</span>Architecture Map<span class="pb pb-p4">P4</span></div>
+  </div>
+  <div class="sb-foot">
+    <span class="sdot"></span><span style="font-size:10px;color:var(--txm);letter-spacing:.1em;">Console v4.0 · Complete</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="topbar">
+  <div class="tb-title" id="topbarTitle">System Dashboard</div>
+  <div class="tm">
+    <span class="mtag hl">EC_CANON_V1</span>
+    <span class="mtag p4" id="p4tag" style="display:none;">PHASE 4</span>
+    <span class="mtag" id="clk">—</span>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="panel active" id="panel-dashboard">
+  <div class="sh">Platform State</div>
+  <div class="g4">
+    <div class="card"><div class="clbl">Console Modules</div><div class="cval">13</div><div class="csub">P1 through P4 complete</div></div>
+    <div class="card"><div class="clbl">API Endpoints</div><div class="cval">12</div><div class="csub">Documented & testable</div></div>
+    <div class="card"><div class="clbl">Schema Versions</div><div class="cval">4</div><div class="csub">EC_CANON versioned</div></div>
+    <div class="card"><div class="clbl">Architecture Nodes</div><div class="cval">14</div><div class="csub">Full system mapped</div></div>
+  </div>
+  <div class="sh">Module Status</div>
+  <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:20px;" id="dashMods"></div>
+  <div class="sh">Architecture Spine</div>
+  <div style="display:flex;gap:0;align-items:center;flex-wrap:wrap;margin-bottom:20px;" id="spineRow"></div>
+  <div class="sh">Canon Rule</div>
+  <div class="card">
+    <div class="clbl">Core Philosophy</div>
+    <div style="font-family:var(--fd);font-size:18px;font-weight:300;color:var(--txt);margin:8px 0 5px;letter-spacing:.04em;">AI interprets. Geometry places.</div>
+    <div style="font-size:11px;color:var(--txd);line-height:1.75;">AI handles memory interpretation, style direction, and variant evolution. Stem placement is entirely deterministic — governed by polar coordinates and formula rules. This is Evercrafted's primary technical moat.</div>
+  </div>
+</div>
+
+<!-- ══ FORMULA EXPLORER ══ -->
+<div class="panel" id="panel-formula">
+  <div class="sh">12 Canonical Composition Formulas</div>
+  <div class="fg" id="formulaGrid"></div>
+  <div class="sh">Formula Detail</div>
+  <div style="display:flex;gap:12px;margin-bottom:20px;">
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;flex:1;display:flex;align-items:center;justify-content:center;min-height:240px;"><canvas id="formulaCanvas" width="240" height="240"></canvas></div>
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:16px;flex:1;">
+      <div style="font-family:var(--fd);font-size:20px;font-weight:300;color:var(--gold);margin-bottom:11px;" id="fdName">Select a Formula</div>
+      <div style="font-size:11px;color:var(--txd);line-height:1.7;margin-bottom:14px;" id="fdDesc">Click any formula card.</div>
+      <div id="fdRows"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EMOTION SPACE ══ -->
+<div class="panel" id="panel-emotion">
+  <div class="sh">Valence–Arousal Emotion Map</div>
+  <div style="display:flex;justify-content:center;margin-bottom:20px;"><canvas id="emotionCanvas" width="460" height="460" style="cursor:crosshair;border:1px solid var(--bd);border-radius:3px;max-width:100%;"></canvas></div>
+  <div class="sh">Emotional Readout</div>
+  <div class="etbar">
+    <div class="ri"><div class="rl">Valence</div><div class="rv" id="valV">—</div><div style="font-size:11px;color:var(--txd);" id="valTxt">Hover map</div></div>
+    <div class="ri"><div class="rl">Arousal</div><div class="rv" id="aroV">—</div><div style="font-size:11px;color:var(--txd);" id="aroTxt"></div></div>
+    <div class="ri"><div class="rl">Quadrant</div><div style="font-family:var(--fd);font-size:17px;font-weight:300;color:var(--txt);margin-top:3px;" id="emoLabel">—</div></div>
+    <div class="ri" style="flex:1;"><div class="rl">Design Direction</div><div style="font-size:11px;color:var(--txd);line-height:1.7;margin-top:3px;" id="emoDir">Move cursor on the map.</div></div>
+  </div>
+  <div class="sh">Derived Design Traits</div>
+  <div class="et">
+    <div class="tbar"><div class="tn">Saturation</div><div class="bt"><div class="bf" id="trSat" style="width:50%"></div></div><div class="tv" id="trSatV">—</div></div>
+    <div class="tbar"><div class="tn">Density</div><div class="bt"><div class="bf" id="trDen" style="width:50%"></div></div><div class="tv" id="trDenV">—</div></div>
+    <div class="tbar"><div class="tn">Contrast</div><div class="bt"><div class="bf" id="trCon" style="width:50%"></div></div><div class="tv" id="trConV">—</div></div>
+    <div class="tbar"><div class="tn">Symmetry</div><div class="bt"><div class="bf" id="trSym" style="width:50%"></div></div><div class="tv" id="trSymV">—</div></div>
+    <div class="tbar"><div class="tn">Accent Intensity</div><div class="bt"><div class="bf" id="trAcc" style="width:50%"></div></div><div class="tv" id="trAccV">—</div></div>
+    <div class="tbar"><div class="tn">Material Softness</div><div class="bt"><div class="bf" id="trSof" style="width:50%"></div></div><div class="tv" id="trSofV">—</div></div>
+  </div>
+</div>
+
+<!-- ══ BLUEPRINT INSPECTOR ══ -->
+<div class="panel" id="panel-blueprint">
+  <div class="sh">Blueprint Generator</div>
+  <div class="row">
+    <select class="sel" id="bpF"><option value="">— Formula —</option><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+    <select class="sel" id="bpE"><option value="">— Emotion —</option><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+    <select class="sel" id="bpS"><option value="">— Style —</option><option>Organic Drape</option><option>Editorial Restraint</option><option>Lush Garden</option><option>Architectural</option><option>Woodland</option></select>
+    <button class="btn primary" onclick="generateBP()">⊕ Generate</button>
+    <button class="btn" onclick="copyBP()">⊞ Copy JSON</button>
+  </div>
+  <div class="sh">Blueprint JSON</div>
+  <div class="jblock" id="bpJson"><button class="cpbtn" onclick="copyBP()">Copy</button><div id="jsonContent" style="white-space:pre;">Generate a blueprint to inspect the canonical object.</div></div>
+  <div class="sh">Wreath DNA Profile</div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:20px;" id="dnaGrid"></div>
+</div>
+
+<!-- ══ DNA REGISTRY ══ -->
+<div class="panel" id="panel-dna">
+  <div class="sh">Wreath DNA Registry</div>
+  <div class="dna-rg" id="dnaRegGrid"></div>
+  <div class="sh">DNA Inspector</div>
+  <div style="display:flex;gap:12px;margin-bottom:20px;">
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><canvas id="radarCanvas" width="230" height="230"></canvas></div>
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:14px;flex:1;" id="dnaInspPanel">
+      <div style="font-family:var(--fd);font-size:18px;font-weight:300;color:var(--gold);margin-bottom:2px;" id="dnaInspName">Select a Profile</div>
+      <div style="font-size:9px;letter-spacing:.18em;color:var(--txm);text-transform:uppercase;margin-bottom:12px;" id="dnaInspForm">—</div>
+      <div id="dnaGeneRows"></div>
+    </div>
+  </div>
+  <div class="sh">Boundary Classification</div>
+  <div class="g2">
+    <div class="card"><div class="clbl">Hard Boundaries</div><div style="font-size:11px;color:var(--txd);line-height:1.8;margin-top:6px;">Identity traits — cannot be mutated:<br><span style="color:var(--rose)">style_signature · ec_certified · formula_index · brand_alignment</span></div></div>
+    <div class="card"><div class="clbl">Soft Boundaries</div><div style="font-size:11px;color:var(--txd);line-height:1.8;margin-top:6px;">Traits ABC can evolve within ranges:<br><span style="color:var(--sage)">cluster_count · density_profile · greenery_ratio · silence_arc · focal_depth</span></div></div>
+  </div>
+</div>
+
+<!-- ══ PLACEMENT DEBUGGER ══ -->
+<div class="panel" id="panel-placement">
+  <div class="sh">Placement Engine Debugger</div>
+  <div style="display:flex;gap:12px;margin-bottom:20px;">
+    <div style="background:var(--sf);border:1px solid var(--bd);border-radius:3px;padding:12px;flex-shrink:0;"><canvas id="placementCanvas" width="350" height="350"></canvas></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:9px;">
+      <div class="pcb"><div class="pcbl">Composition</div>
+        <div class="slrow"><div class="sllbl">Stem Count</div><input type="range" id="slSC" min="6" max="48" value="24" oninput="runPlacement()"><div class="slval" id="slSCV">24</div></div>
+        <div class="slrow"><div class="sllbl">Cluster Count</div><input type="range" id="slCC" min="1" max="9" value="4" oninput="runPlacement()"><div class="slval" id="slCCV">4</div></div>
+        <div class="slrow"><div class="sllbl">Spread °</div><input type="range" id="slSP" min="10" max="180" value="60" oninput="runPlacement()"><div class="slval" id="slSPV">60°</div></div>
+        <div class="slrow"><div class="sllbl">Silence Arc °</div><input type="range" id="slSA" min="0" max="120" value="30" oninput="runPlacement()"><div class="slval" id="slSAV">30°</div></div>
+      </div>
+      <div class="pcb"><div class="pcbl">Depth & Role</div>
+        <div class="slrow"><div class="sllbl">Focal Depth</div><input type="range" id="slFD" min="1" max="10" value="5" oninput="runPlacement()"><div class="slval" id="slFDV">0.5</div></div>
+        <div class="slrow"><div class="sllbl">Greenery Ratio</div><input type="range" id="slGR" min="0" max="100" value="40" oninput="runPlacement()"><div class="slval" id="slGRV">0.40</div></div>
+        <div class="slrow"><div class="sllbl">Focal Ratio</div><input type="range" id="slFR" min="0" max="40" value="15" oninput="runPlacement()"><div class="slval" id="slFRV">0.15</div></div>
+      </div>
+      <div class="pcb"><div class="pcbl">Formula</div>
+        <select class="sel" id="plF" onchange="runPlacement()" style="width:100%;"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Focal Burst</option><option>Radial Burst</option></select>
+      </div>
+      <button class="btn primary" onclick="runPlacement()" style="width:100%;">⟳ Re-solve</button>
+    </div>
+  </div>
+  <div class="sh">Stem Log</div>
+  <div class="slog">
+    <div style="display:flex;gap:6px;padding:2px 0;margin-bottom:3px;border-bottom:1px solid var(--bd2);font-size:8px;letter-spacing:.16em;color:var(--txm);">
+      <div style="width:44px;">ID</div><div style="width:50px;">ANGLE°</div><div style="width:50px;">RADIUS</div><div style="flex:1;">ROLE</div><div>DEPTH</div>
+    </div>
+    <div id="stemLog"></div>
+  </div>
+</div>
+
+<!-- ══ INVENTORY ANALYZER ══ -->
+<div class="panel" id="panel-inventory">
+  <div class="sh">Inventory Summary</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;" id="invStats"></div>
+  <div class="sh">Inventory Items</div>
+  <div class="row">
+    <button class="fbtn active" onclick="filterInv('all',this)">All</button>
+    <button class="fbtn" onclick="filterInv('focal',this)">Focal</button>
+    <button class="fbtn" onclick="filterInv('supporting',this)">Supporting</button>
+    <button class="fbtn" onclick="filterInv('filler',this)">Filler</button>
+    <button class="fbtn" onclick="filterInv('greenery',this)">Greenery</button>
+    <button class="fbtn" onclick="filterInv('low',this)">⚠ Low Stock</button>
+  </div>
+  <table class="inv-t"><thead><tr><th>Item</th><th>Role</th><th>Color</th><th>Stock</th><th>Formulas</th><th>Compat</th></tr></thead><tbody id="invBody"></tbody></table>
+  <div class="sh">Formula Feasibility</div>
+  <div class="card" id="feasCard"></div>
+</div>
+
+<!-- ══ ABC LAB ══ -->
+<div class="panel" id="panel-abc">
+  <div class="sh">Adaptive Blueprint Composer — ABC Lab</div>
+  <div class="abc-layout">
+    <div class="abc-left">
+      <div class="row" style="margin-bottom:0;">
+        <select class="sel" id="abcF"><option>Crescent</option><option>Full Halo</option><option>Focal Burst</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option></select>
+        <select class="sel" id="abcE"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+        <button class="btn primary" onclick="abcSeed()">⊕ Seed</button>
+        <button class="btn sage" onclick="abcMutate()">⟳ Mutate DNA</button>
+        <button class="btn" onclick="abcReset()">↺ Reset</button>
+      </div>
+      <div class="abc-met" id="abcMetrics">
+        <div class="abc-mc"><div class="abc-ml">Emotion Fit</div><div class="abc-mv" id="abcEF">—</div></div>
+        <div class="abc-mc"><div class="abc-ml">DNA Cohesion</div><div class="abc-mv" id="abcDC">—</div></div>
+        <div class="abc-mc"><div class="abc-ml">Generation</div><div class="abc-mv" id="abcGen">0</div></div>
+        <div class="abc-mc"><div class="abc-ml">Brand Alignment</div><div class="abc-mv" id="abcBA">—</div></div>
+        <div class="abc-mc"><div class="abc-ml">Mutations</div><div class="abc-mv" id="abcMC">0</div></div>
+        <div class="abc-mc"><div class="abc-ml">Fitness</div><div class="abc-mv" id="abcFS">—</div></div>
+      </div>
+      <div class="sh">Mutation Log</div>
+      <div class="mut-log" id="mutLog"><div style="color:var(--txm);font-size:10px;">Seed then mutate to track changes.</div></div>
+      <div class="sh">DNA State</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;" id="abcDNABars"></div>
+    </div>
+    <div class="abc-right">
+      <div class="abc-cb">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);align-self:flex-start;">Live Preview</div>
+        <canvas id="abcCanvas" width="260" height="260"></canvas>
+      </div>
+      <div class="abc-lin">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:8px;">Lineage</div>
+        <div id="abcLineage" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;"><div style="color:var(--txm);font-size:10px;">No lineage yet.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GENOME DASHBOARD ══ -->
+<div class="panel" id="panel-genome">
+  <div class="sh">Wreath Genome Dashboard</div>
+  <div class="genome-layout">
+    <div class="genome-tree">
+      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:9px;">Blueprint Family Tree</div>
+      <div id="genomeTree"></div>
+    </div>
+    <div class="genome-detail">
+      <div class="genome-rb">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:7px;align-self:flex-start;">DNA Radar</div>
+        <canvas id="genomeRadar" width="320" height="220"></canvas>
+      </div>
+      <div class="sh">Genome Statistics</div>
+      <div class="genome-stats" id="genomeStats"></div>
+      <div class="sh">Changed Genes vs. Parent</div>
+      <div class="cg-wrap" id="changedGenes"><div style="color:var(--txm);font-size:11px;padding:6px 0;">Select a blueprint in the family tree.</div></div>
+    </div>
+  </div>
+  <div class="sh">Adaptive Status</div>
+  <div class="g3" id="adaptiveStatus"></div>
+</div>
+
+<!-- ══ OUTPUT STUDIO ══ -->
+<div class="panel" id="panel-output">
+  <div class="sh">Blueprint Output Studio</div>
+  <div class="out-layout">
+    <div class="out-l">
+      <div class="row" style="margin-bottom:4px;">
+        <select class="sel" id="outF"><option>Crescent</option><option>Full Halo</option><option>Focal Burst</option><option>Double Echo</option><option>Bottom Heavy</option><option>Radial Burst</option></select>
+        <select class="sel" id="outE"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+        <button class="btn primary" onclick="generateOutput()">⊕ Compile</button>
+      </div>
+      <div class="sh">Cut List</div>
+      <div class="cut-list"><div class="cl-head"><div>Item</div><div>Count</div><div>Role</div><div>Length</div></div><div id="cutListBody" style="padding:9px;color:var(--txm);font-size:10.5px;">Generate a blueprint first.</div></div>
+      <div class="sh">Build Steps</div>
+      <div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:13px;" id="buildSteps"><div style="color:var(--txm);font-size:10.5px;">Generate a blueprint first.</div></div>
+    </div>
+    <div class="out-r">
+      <div class="out-prev">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);align-self:flex-start;">Preview</div>
+        <canvas id="outputCanvas" width="250" height="250"></canvas>
+      </div>
+      <div class="an" id="assemblyNotes"><div style="font-family:var(--fd);font-size:13px;font-weight:400;color:var(--txt);margin-bottom:6px;">Assembly Notes</div><div style="color:var(--txm);">Generate a blueprint to see notes.</div></div>
+      <div class="sh">Export</div>
+      <div>
+        <button class="exp-btn" onclick="exportOut('json')" id="expJSON"><span style="opacity:.7;">{ }</span> Blueprint JSON</button>
+        <button class="exp-btn" onclick="exportOut('csv')" id="expCSV"><span style="opacity:.7;">≡</span> Cut List CSV</button>
+        <button class="exp-btn" onclick="exportOut('pdf')" id="expPDF"><span style="opacity:.7;">□</span> Build Guide</button>
+        <button class="exp-btn" onclick="exportOut('mj')" id="expMJ"><span style="opacity:.7;">✦</span> Midjourney Prompt</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PHASE 4: API CENTER
+══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-api">
+  <div class="sh">Evercrafted API — Documentation & Sandbox</div>
+  <div class="g4" style="margin-bottom:20px;">
+    <div class="card"><div class="clbl">Total Endpoints</div><div class="cval">12</div><div class="csub">REST · JSON</div></div>
+    <div class="card"><div class="clbl">Auth Method</div><div class="cval" style="font-size:18px;margin-top:4px;">Bearer</div><div class="csub">API key via header</div></div>
+    <div class="card"><div class="clbl">Base URL</div><div style="font-size:11px;color:var(--cyan);margin-top:6px;font-family:var(--fm);">api.evercrafted.io/v1</div></div>
+    <div class="card"><div class="clbl">Version</div><div class="cval">v1</div><div class="csub">EC_CANON_V1 schema</div></div>
+  </div>
+  <div class="api-layout">
+    <div class="api-sidebar-panel" id="apiEpList"></div>
+    <div class="api-detail">
+      <div class="api-detail-header" id="apiDetailHeader">
+        <div style="font-family:var(--fd);font-size:20px;font-weight:300;color:var(--txt);margin-bottom:5px;" id="apiEndpointName">Select an endpoint</div>
+        <div style="font-size:11px;color:var(--txd);line-height:1.65;" id="apiEndpointDesc">Choose an endpoint from the list to view documentation and test it.</div>
+      </div>
+      <div class="sh">Parameters</div>
+      <div class="api-params" id="apiParamsTable">
+        <div class="api-params-head"><div>Parameter</div><div>Type</div><div>Required</div><div>Description</div></div>
+        <div id="apiParamRows" style="padding:10px;color:var(--txm);font-size:10.5px;">Select an endpoint to view parameters.</div>
+      </div>
+      <div class="sh">Try It</div>
+      <div class="api-tryit">
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:8px;">Request Body / Params</div>
+        <textarea class="api-input" id="apiReqBody" rows="4" placeholder='{ "formula": "Crescent", "emotion": "Cozy & Calm", "style": "Organic Drape" }'></textarea>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+          <button class="btn cyan" onclick="fireAPICall()">▶ Send Request</button>
+          <button class="btn" onclick="clearAPIResponse()">✕ Clear</button>
+          <span id="apiStatusBadge" style="margin-left:4px;"></span>
+          <span style="font-size:9px;color:var(--txm);margin-left:auto;" id="apiLatency"></span>
+        </div>
+        <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:6px;">Response</div>
+        <div class="api-response" id="apiResponse"><span style="color:var(--txm);">No request sent yet.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PHASE 4: SCHEMA REGISTRY
+══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-schema">
+  <div class="sh">Schema Registry — EC_CANON Versioning</div>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
+    <div style="font-size:11px;color:var(--txd);">Current Version:</div>
+    <div class="ver-badge current">EC_CANON_V1</div>
+    <div class="ver-badge">EC_CANON_V0.9</div>
+    <div class="ver-badge">EC_CANON_V0.8</div>
+    <div class="ver-badge">EC_CANON_V0.7</div>
+    <div style="margin-left:auto;" id="schemaDiffBtn"><button class="btn cyan" onclick="showSchemaDiff()">↕ Diff V1 vs V0.9</button></div>
+  </div>
+  <div class="schema-layout">
+    <div class="schema-nav" id="schemNavList"></div>
+    <div class="schema-detail">
+      <div class="schema-header" id="schemaHeader">
+        <div style="font-family:var(--fd);font-size:20px;font-weight:300;color:var(--txt);margin-bottom:5px;" id="schemaName">Select a schema object</div>
+        <div style="font-size:11px;color:var(--txd);" id="schemaDesc">Choose an object from the registry to inspect its field definitions.</div>
+      </div>
+      <div class="sh">Field Definitions</div>
+      <div class="schema-fields" id="schemaFieldsTable">
+        <div class="sf-head"><div>Field</div><div>Type</div><div>Required</div><div>Canon</div><div>Description</div></div>
+        <div id="schemaFieldRows" style="padding:10px;color:var(--txm);font-size:10.5px;">Select a schema object.</div>
+      </div>
+      <div class="sh">Schema JSON</div>
+      <div class="jblock" id="schemaJSON"><button class="cpbtn" onclick="copySchemaJSON()">Copy</button><div id="schemaJSONContent" style="white-space:pre;">Select a schema object to view its JSON definition.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PHASE 4: ARCHITECTURE MAP
+══════════════════════════════════════════════════════ -->
+<div class="panel" id="panel-arch">
+  <div class="sh">Evercrafted Architecture Map</div>
+  <div class="arch-stats" id="archStats" style="margin-bottom:20px;"></div>
+  <div class="arch-legend" id="archLegend"></div>
+  <div class="arch-canvas-wrap">
+    <canvas id="archCanvas" width="900" height="480" style="max-width:100%;cursor:pointer;"></canvas>
+  </div>
+  <div class="arch-detail">
+    <div class="arch-node-info" id="archNodeInfo">
+      <div style="font-family:var(--fd);font-size:18px;font-weight:300;color:var(--gold);margin-bottom:4px;" id="archNodeName">Click a node on the map</div>
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:10px;" id="archNodeLayer">—</div>
+      <div style="font-size:11px;color:var(--txd);line-height:1.75;" id="archNodeDesc">Select any node on the architecture map above to inspect its role, connections, and technical details.</div>
+      <div style="margin-top:12px;" id="archNodeMeta"></div>
+    </div>
+    <div class="arch-connections">
+      <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:9px;">System Connections</div>
+      <div id="archConnections"><div style="color:var(--txm);font-size:10.5px;">Select a node to see connections.</div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CORE UTILITIES
+// ═══════════════════════════════════════════════
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,10000);
+function clamp(v,mn=0,mx=1){return Math.max(mn,Math.min(mx,v));}
+function rnd(mn,mx,dp=2){return parseFloat((Math.random()*(mx-mn)+mn).toFixed(dp));}
+function syntaxHL(json){return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,m=>{let c='jnum';if(/^"/.test(m))c=/:$/.test(m)?'jkey':'jstr';else if(/true|false/.test(m))c='jbool';else if(/null/.test(m))c='jnull';return`<span class="${c}">${m}</span>`;});}
+
+const API_BASE = "http://localhost:8787";
+
+const TITLES={dashboard:'System Dashboard',formula:'Formula Explorer',emotion:'Emotion Space Explorer',blueprint:'Blueprint Inspector',dna:'Wreath DNA Registry',placement:'Placement Debugger',inventory:'Inventory Analyzer',abc:'ABC Lab',genome:'Genome Dashboard',output:'Output Studio',api:'API Center',schema:'Schema Registry',arch:'Architecture Map'};
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbarTitle').textContent=TITLES[id];
+  document.getElementById('p4tag').style.display=['api','schema','arch'].includes(id)?'block':'none';
+  if(id==='emotion')initEmotion();
+  if(id==='placement')runPlacement();
+  if(id==='genome')buildGenomeTree();
+  if(id==='arch')drawArchMap();
+}
+
+// spine
+(()=>{['Emotion Space','Formula Engine','Wreath DNA','Placement Engine','Blueprint Engine','Genome Dashboard','Blueprint Outputs'].forEach((s,i,a)=>{const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;';d.innerHTML=`<div style="background:var(--sf2);border:1px solid var(--bd);padding:5px 10px;font-size:9px;letter-spacing:.12em;color:var(--txd);white-space:nowrap;border-radius:2px;">${s}</div>${i<a.length-1?'<span style="color:var(--gold);padding:0 4px;font-size:10px;opacity:.35;">→</span>':''}`;document.getElementById('spineRow').appendChild(d);});})();
+
+// dashboard modules
+(()=>{const mods=[{n:'Memory Weaver',p:'P1',s:'dev'},{n:'Inventory Weaver',p:'P1',s:'dev'},{n:'Design Studio',p:'P1',s:'dev'},{n:'Adaptive Blueprint Composer',p:'P3',s:'p3'},{n:'Wreath Genome Dashboard',p:'P3',s:'p3'},{n:'Blueprint Output Studio',p:'P3',s:'p3'},{n:'API Center',p:'P4',s:'p4'},{n:'Schema Registry',p:'P4',s:'p4'},{n:'Architecture Map',p:'P4',s:'p4'}];
+const cls={dev:['#c9a96e','In Dev'],p3:['#d4a843','P3 Live'],p4:['#4a9eb5','P4 Live']};
+document.getElementById('dashMods').innerHTML=mods.map(m=>{const[c,t]=cls[m.s]||['#4a4038','Planned'];return`<div style="background:var(--sf2);border:1px solid var(--bd);padding:9px 13px;display:flex;align-items:center;gap:10px;border-radius:2px;"><div style="width:6px;height:6px;border-radius:50%;background:${c};box-shadow:0 0 5px ${c}80;flex-shrink:0;"></div><div style="font-size:11px;color:var(--txt);flex:1;">${m.n}</div><div style="font-size:10px;color:var(--txm);letter-spacing:.12em;">${m.p}</div><div style="font-size:8px;letter-spacing:.14em;text-transform:uppercase;padding:2px 6px;border-radius:1px;background:${c}20;color:${c};border:1px solid ${c}44;">${t}</div></div>`;}).join('');})();
+
+// ═══════════════════════════════════════════════
+// FORMULA EXPLORER
+// ═══════════════════════════════════════════════
+const DEFAULT_FORMULAS=[{name:'Crescent',desc:'Asymmetric arc along lower curve. Clear negative space at top.',style:'Organic',focal:'Low-Center',density:'Medium',dna:['asymmetry','negative space arc','low focal']},{name:'Double Echo',desc:'Two mirrored clusters from opposite quadrants creating resonance.',style:'Structured',focal:'Dual',density:'High',dna:['bilateral rhythm','echo clustering']},{name:'Bottom Heavy',desc:'Mass concentrated below center. Grounded visual weight.',style:'Grounded',focal:'Bottom',density:'High',dna:['gravity pull','base anchoring']},{name:'Side Sweep',desc:'Directional movement. Trailing greenery extends beyond base.',style:'Dynamic',focal:'Side',density:'Medium',dna:['directional flow','trailing gesture']},{name:'Open Arc',desc:'Structured arc with intentional silence. Architectural.',style:'Editorial',focal:'Center',density:'Low',dna:['silence arc','architectural restraint']},{name:'Full Halo',desc:'Even distribution around entire form. Complete circle.',style:'Classic',focal:'Radial',density:'Full',dna:['full coverage','radial balance']},{name:'Split Garden',desc:'Two distinct material sections divided by silence zone.',style:'Botanical',focal:'Split',density:'High',dna:['zone division','material contrast']},{name:'Focal Burst',desc:'Single explosive focal point radiating from a defined center.',style:'Dramatic',focal:'Single',density:'High',dna:['radial burst','focal dominance']},{name:'Laddered Rhythm',desc:'Sequential staggered placements creating visual cadence.',style:'Rhythmic',focal:'Staggered',density:'Medium',dna:['sequential beat','stagger depth']},{name:'Radial Burst',desc:'Geometric radiating stems from center. Precise.',style:'Geometric',focal:'Center',density:'Medium',dna:['polar geometry','equal radius']},{name:'Bow Anchor',desc:'Accent element as structural anchor at base or focal.',style:'Decorative',focal:'Bow',density:'Medium',dna:['bow anchor','accent frame']},{name:'Inventory Salvage',desc:'Adaptive composition for available materials. No waste.',style:'Adaptive',focal:'Variable',density:'Variable',dna:['inventory-fit','adaptive layout']},];
+let FORMULAS=[];
+
+function populateFormulaSelect(id, withPlaceholder){
+  const sel=document.getElementById(id);
+  if(!sel) return;
+  const current=sel.value;
+  sel.innerHTML=(withPlaceholder?'<option value="">— Formula —</option>':'')+FORMULAS.map(f=>`<option>${f.name}</option>`).join('');
+  if(current && FORMULAS.some(f=>f.name===current)) sel.value=current;
+  if(!sel.value && FORMULAS.length) sel.value=FORMULAS[0].name;
+}
+
+async function loadFormulas(){
+  try{
+    const res=await fetch(`${API_BASE}/formulas`);
+    const json=await res.json();
+    if(res.ok && json.ok && Array.isArray(json.formulas)) FORMULAS=json.formulas;
+    else FORMULAS=DEFAULT_FORMULAS;
+  }catch(e){FORMULAS=DEFAULT_FORMULAS;}
+  populateFormulaSelect('bpF', true);
+  populateFormulaSelect('plF', false);
+  populateFormulaSelect('abcF', false);
+  populateFormulaSelect('outF', false);
+}
+
+function initFormulaGrid(){
+  const g=document.getElementById('formulaGrid');
+  if(!g) return;
+  g.innerHTML='';
+  FORMULAS.forEach((f,i)=>{const c=document.createElement('div');c.className='fc';c.innerHTML=`<div class="fnum">F${String(i+1).padStart(2,'0')}</div><div class="fn">${f.name}</div><div class="fd2">${f.desc}</div>`;c.onclick=()=>{document.querySelectorAll('.fc').forEach(x=>x.classList.remove('sel2'));c.classList.add('sel2');selectFormula(i);};g.appendChild(c);});
+}
+function selectFormula(i){const f=FORMULAS[i];document.getElementById('fdName').textContent=f.name;document.getElementById('fdDesc').textContent=f.desc;document.getElementById('fdRows').innerHTML=[['Style',f.style],['Focal',f.focal],['Density',f.density],['DNA Signals',f.dna.join(' · ')],['Index',`F${String(i+1).padStart(2,'0')}`]].map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${v}</div></div>`).join('');drawFormulaPreview(i);}
+function drawFormulaPreview(idx){const c=document.getElementById('formulaCanvas');if(!c)return;const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=88;ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(30,28,24,.2)';ctx.lineWidth=14;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(140,114,88,.18)';ctx.lineWidth=1;ctx.stroke();const g='#8c7258',sg='#5c7353',r='#c47c6e';function s(a,r2,l,col,w2=1.5){const x=cx+r2*Math.cos(a),y=cy+r2*Math.sin(a),ex=cx+(r2+l)*Math.cos(a),ey=cy+(r2+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w2;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w2+.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}function cl(sa,ea,n,l,col){for(let i=0;i<=n;i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.1;s(a,R-6,l+Math.random()*8,col);}}[[()=>cl(Math.PI*.3,Math.PI*1.7,15,16,g)],[()=>{cl(-.4,.4,6,18,g);cl(Math.PI-.4,Math.PI+.4,6,18,sg);}],[()=>cl(Math.PI*.1,Math.PI*.9,17,20,g)],[()=>{cl(-.6,.6,9,18,g);s(0,R,32,r,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,11,16,g);cl(Math.PI*.95,Math.PI*1.85,8,11,sg);}],[()=>cl(0,Math.PI*2,24,14,g)],[()=>{cl(Math.PI*.1,Math.PI*.85,11,18,g);cl(Math.PI*1.1,Math.PI*1.85,11,18,sg);}],[()=>{for(let i=0;i<13;i++){const a=(i/13)*Math.PI*2;s(a,R-7,22+Math.random()*12,i%3===0?r:g,1.7);}}],[()=>{for(let i=0;i<8;i++){const a=-.3+i*.17;s(a,R-4,11+i*2,i%2===0?g:sg,1.5);}}],[()=>{for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;s(a,R-5,18,g,1.7);}}],[()=>{cl(Math.PI*.6,Math.PI*1.4,13,14,g);ctx.beginPath();ctx.ellipse(cx,cy+R,13,7,0,0,Math.PI*2);ctx.strokeStyle=r;ctx.lineWidth=2;ctx.stroke();}],[()=>{const cs=[g,sg,r];for(let i=0;i<17;i++){const a=Math.random()*Math.PI*2;s(a,R-6,8+Math.random()*18,cs[Math.floor(Math.random()*3)],1.3);}}]][idx][0]();}
+
+// ═══════════════════════════════════════════════
+// EMOTION SPACE
+// ═══════════════════════════════════════════════
+let eCtx,eW,eH,eReady=false;
+function initEmotion(){const c=document.getElementById('emotionCanvas');if(!c||eReady)return;eReady=true;eCtx=c.getContext('2d');eW=c.width;eH=c.height;drawEmo();c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();updEmo((e.clientX-r.left)*(eW/r.width),(e.clientY-r.top)*(eH/r.height));});c.addEventListener('click',e=>{const r=c.getBoundingClientRect();updEmo((e.clientX-r.left)*(eW/r.width),(e.clientY-r.top)*(eH/r.height));});}
+function drawEmo(px,py){const ctx=eCtx,w=eW,h=eH;ctx.fillStyle='#f3eee6';ctx.fillRect(0,0,w,h);[{x:w/2,y:0,w:w/2,h:h/2,c:'rgba(92,115,83,.12)'},{x:0,y:0,w:w/2,h:h/2,c:'rgba(139,134,176,.1)'},{x:w/2,y:h/2,w:w/2,h:h/2,c:'rgba(140,114,88,.1)'},{x:0,y:h/2,w:w/2,h:h/2,c:'rgba(196,124,110,.1)'}].forEach(q=>{ctx.fillStyle=q.c;ctx.fillRect(q.x,q.y,q.w,q.h);});ctx.strokeStyle='rgba(30,28,24,.25)';ctx.lineWidth=1;ctx.setLineDash([4,7]);ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.stroke();ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();ctx.setLineDash([]);ctx.font='9px "DM Sans"';ctx.fillStyle='rgba(92,84,75,.9)';ctx.textAlign='center';ctx.fillText('AROUSAL +',w/2,11);ctx.fillText('AROUSAL −',w/2,h-4);ctx.save();ctx.translate(9,h/2);ctx.rotate(-Math.PI/2);ctx.fillText('VALENCE −',0,0);ctx.restore();ctx.save();ctx.translate(w-9,h/2);ctx.rotate(Math.PI/2);ctx.fillText('VALENCE +',0,0);ctx.restore();ctx.font='11px "Cormorant Garamond"';ctx.fillStyle='rgba(30,28,24,.35)';ctx.textAlign='center';['Festive & Bright','Dramatic Tension','Cozy & Calm','Vintage Melancholy'].forEach((l,i)=>{ctx.fillText(l,i<2?[w*.75,w*.25][i]:[w*.75,w*.25][i-2],i<2?h*.16:h*.85);});if(px!==undefined){const gr=ctx.createRadialGradient(px,py,0,px,py,22);gr.addColorStop(0,'rgba(140,114,88,.44)');gr.addColorStop(1,'rgba(201,169,110,0)');ctx.beginPath();ctx.arc(px,py,22,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fillStyle='#8c7258';ctx.fill();ctx.strokeStyle='rgba(140,114,88,.2)';ctx.lineWidth=1;ctx.setLineDash([3,5]);ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,h);ctx.stroke();ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(w,py);ctx.stroke();ctx.setLineDash([]);}}
+function updEmo(px,py){drawEmo(px,py);const v=parseFloat(((px/eW)*2-1).toFixed(2)),a=parseFloat((-(py/eH)*2+1).toFixed(2));document.getElementById('valV').textContent=v.toFixed(2);document.getElementById('aroV').textContent=a.toFixed(2);const q=v>0&&a>0?'Festive & Bright':v<0&&a>0?'Dramatic Tension':v>0?'Cozy & Calm':'Vintage Melancholy';const dirs={'Festive & Bright':'High saturation · dense mass · warm contrast · burst energy','Dramatic Tension':'Deep contrast · rough textures · sparse silence arcs · bold focal','Cozy & Calm':'Warm muted tones · soft textures · generous negative space','Vintage Melancholy':'Desaturated · heavy greenery · low accent · downward weight'};document.getElementById('emoLabel').textContent=q;document.getElementById('emoDir').textContent=dirs[q];document.getElementById('valTxt').textContent=v>0?'Positive':'Negative';document.getElementById('aroTxt').textContent=a>0?'Energized':'Subdued';const sat=clamp((v+1)/2*.6+(a+1)/2*.4),den=clamp((a+1)/2*.7+.15),con=clamp(Math.abs(v)*.5+Math.abs(a)*.5),sym=clamp(1-Math.abs(v)*.4-Math.abs(a)*.2),acc=clamp((a+1)/2*.6+Math.abs(v)*.3),sof=clamp((v+1)/2*.5+(1-(a+1)/2)*.4);[sat,den,con,sym,acc,sof].forEach((val,i)=>{const ids=['Sat','Den','Con','Sym','Acc','Sof'];document.getElementById('tr'+ids[i]).style.width=(val*100)+'%';document.getElementById('tr'+ids[i]+'V').textContent=val.toFixed(2);});}
+
+// ═══════════════════════════════════════════════
+// BLUEPRINT INSPECTOR
+// ═══════════════════════════════════════════════
+(()=>{const keys=['cluster_count','cluster_weight_distribution','cluster_spread_deg','density_profile','greenery_direction','silhouette_bias','greenery_ratio','focal_ratio','silence_arc','focal_depth','style_signature','color_bias'];const g=document.getElementById('dnaGrid');keys.forEach(k=>{const r=document.createElement('div');r.className='dbar';r.dataset.key=k;r.innerHTML=`<div class="dblbl">${k.replace(/_/g,' ')}</div><div class="dbtrack"><div class="dbfill" style="width:0%"></div></div><div class="dbval">—</div>`;g.appendChild(r);});})();
+let lastBP=null;
+async function fetchBlueprint(formula,emotion,style){
+  try{
+    const res=await fetch(`${API_BASE}/blueprints/generate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({formula,emotion,style})});
+    const json=await res.json();
+    if(res.ok && json.ok && json.blueprint) return json.blueprint;
+  }catch(e){}
+  return makeBP(formula,emotion,style);
+}
+function makeBP(formula,emotion,style){const id='EC-'+Date.now().toString(36).toUpperCase();const dna={cluster_count:Math.floor(rnd(3,9,0)),cluster_weight_distribution:rnd(.3,.9),cluster_spread_deg:Math.floor(rnd(20,120,0)),density_profile:rnd(.3,1),greenery_direction:rnd(-1,1),silhouette_bias:rnd(-.5,.5),greenery_ratio:rnd(.3,.7),focal_ratio:rnd(.1,.4),silence_arc:rnd(0,90,0),focal_depth:rnd(.2,.8),style_signature:style,color_bias:rnd(-.5,.5)};const eMap={'Cozy & Calm':{v:rnd(.1,.9),a:rnd(-.9,-.1)},'Festive & Bright':{v:rnd(.1,.9),a:rnd(.1,.9)},'Dramatic Tension':{v:rnd(-.9,-.1),a:rnd(.1,.9)},'Vintage Melancholy':{v:rnd(-.9,-.1),a:rnd(-.9,-.1)}};const emo=eMap[emotion]||{v:0,a:0};return{blueprint_id:id,base:{form:'circular',diameter_inches:[18,20,24][Math.floor(Math.random()*3)],frame_type:'wire_wreath_frame'},composition:{formula,formula_index:FORMULAS.findIndex(f=>f.name===formula)+1,zone_count:dna.cluster_count},dna,emotion_space:{valence:emo.v,arousal:emo.a,quadrant_label:emotion,palette_bias:emo.v>0?'warm':'cool'},zones:Array.from({length:dna.cluster_count},(_,i)=>({zone_id:`Z${i+1}`,angle_start:Math.floor((i/dna.cluster_count)*360),angle_end:Math.floor(((i+1)/dna.cluster_count)*360),type:i===0?'focal':i%3===0?'silence':'fill'})),anchors:[{anchor_id:'A1',angle:0,radius:1,role:'focal_primary'}],elements:[{role:'focal',count:Math.floor(rnd(1,4,0)),tier:'T1'},{role:'supporting',count:Math.floor(rnd(4,10,0)),tier:'T2'},{role:'filler',count:Math.floor(rnd(8,20,0)),tier:'T3'},{role:'greenery',count:Math.floor(rnd(12,30,0)),tier:'base'}],scores:{emotion_fit:rnd(.7,.99),dna_cohesion:rnd(.75,.99),brand_alignment:rnd(.8,.99),ec_certified:true},versioning:{schema:'EC_CANON_V1',generated:new Date().toISOString(),formula_engine:'deterministic_v1'}};}
+async function generateBP(){const formula=document.getElementById('bpF').value||'Crescent';const emotion=document.getElementById('bpE').value||'Cozy & Calm';const style=document.getElementById('bpS').value||'Organic Drape';const bp=await fetchBlueprint(formula,emotion,style);lastBP=bp;document.getElementById('jsonContent').innerHTML=syntaxHL(JSON.stringify(bp,null,2));updDNABars(bp.dna,'dnaGrid');}
+function updDNABars(dna,gid){const keys=Object.keys(dna);document.querySelectorAll(`#${gid} .dbar`).forEach((r,i)=>{if(!keys[i])return;const val=dna[keys[i]];const num=typeof val==='number'?val:null;const fill=r.querySelector('.dbfill');const ve=r.querySelector('.dbval');if(num!==null){const k=keys[i];let pct=k==='cluster_count'?((num-1)/9)*100:k==='cluster_spread_deg'?(num/120)*100:k==='silence_arc'?(num/90)*100:((num+1)/2)*100;fill.style.width=clamp(pct/100)*100+'%';ve.textContent=Number.isInteger(num)?num:num.toFixed(2);}else{fill.style.width='55%';ve.textContent=val;}});}
+function copyBP(){const txt=document.getElementById('jsonContent').textContent;navigator.clipboard.writeText(txt).then(()=>{const b=document.querySelector('.cpbtn');if(b){b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1400);}});}
+
+// ═══════════════════════════════════════════════
+// DNA REGISTRY
+// ═══════════════════════════════════════════════
+const DEFAULT_DNA_PROFILES=[{name:'Crescent Classic',formula:'Crescent',genes:{cluster_count:.45,cluster_weight:.7,cluster_spread:.5,density:.55,greenery_ratio:.4,focal_ratio:.2,silence_arc:.65,focal_depth:.45,silhouette_bias:.2,color_bias:.2,symmetry:.15,accent:.3}},{name:'Halo Luxe',formula:'Full Halo',genes:{cluster_count:.9,cluster_weight:.5,cluster_spread:.9,density:.9,greenery_ratio:.5,focal_ratio:.25,silence_arc:.04,focal_depth:.6,silhouette_bias:0,color_bias:.1,symmetry:.9,accent:.5}},{name:'Focal Burst Drama',formula:'Focal Burst',genes:{cluster_count:.3,cluster_weight:.9,cluster_spread:.2,density:.8,greenery_ratio:.25,focal_ratio:.4,silence_arc:.1,focal_depth:.9,silhouette_bias:.1,color_bias:.2,symmetry:.08,accent:.9}},{name:'Woodland Sweep',formula:'Side Sweep',genes:{cluster_count:.5,cluster_weight:.6,cluster_spread:.55,density:.5,greenery_ratio:.7,focal_ratio:.15,silence_arc:.3,focal_depth:.3,silhouette_bias:.4,color_bias:.3,symmetry:.2,accent:.25}},];
+let DNA_PROFILES=[];
+const DCOLS=['#c9a96e','#7a9e7e','#c47c6e','#9b8ec4'];
+
+async function loadDNAProfiles(){
+  try{
+    const res=await fetch(`${API_BASE}/dna-profiles`);
+    const json=await res.json();
+    if(res.ok && json.ok && Array.isArray(json.profiles)) DNA_PROFILES=json.profiles;
+    else DNA_PROFILES=DEFAULT_DNA_PROFILES;
+  }catch(e){DNA_PROFILES=DEFAULT_DNA_PROFILES;}
+}
+
+function buildDNARegistry(){
+  const g=document.getElementById('dnaRegGrid');
+  if(!g) return;
+  g.innerHTML='';
+  DNA_PROFILES.forEach((p,i)=>{const c=document.createElement('div');c.className='dpc';const bkeys=['cluster_count','cluster_weight','cluster_spread','density','greenery_ratio','focal_ratio'];const bars=bkeys.map(k=>`<div class="mbr"><div class="mbl">${k.replace(/_/g,' ')}</div><div class="mbt"><div class="mbf" style="width:${(p.genes[k]||0)*100}%;background:${DCOLS[i]};"></div></div></div>`).join('');c.innerHTML=`<div class="dpn">${p.name}</div><div class="dpf">${p.formula}</div>${bars}`;c.onclick=()=>{document.querySelectorAll('.dpc').forEach(x=>x.classList.remove('sel2'));c.classList.add('sel2');selectDNA(i);};g.appendChild(c);});
+}
+function selectDNA(i){const p=DNA_PROFILES[i];document.getElementById('dnaInspName').textContent=p.name;document.getElementById('dnaInspForm').textContent=p.formula;const hard=['style_signature','ec_certified','brand_alignment'];document.getElementById('dnaGeneRows').innerHTML=Object.entries(p.genes).map(([k,v])=>`<div class="gr"><div class="gn">${k.replace(/_/g,' ')}</div><div class="gbt"><div class="gbf" style="width:${v*100}%;background:${DCOLS[i]||'#c9a96e'};"></div></div><div class="gv">${v.toFixed(2)}</div><div class="${hard.includes(k)?'gh':'gs'}">${hard.includes(k)?'HARD':'SOFT'}</div></div>`).join('');drawRadar(p,document.getElementById('radarCanvas'),230,230);}
+function drawRadar(profile,canvas,cw,ch){if(!canvas)return;const ctx=canvas.getContext('2d'),w=cw||canvas.width,h=ch||canvas.height,cx=w/2,cy=h/2,R=Math.min(w,h)/2-26;ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);const keys=Object.keys(profile.genes);const n=Math.min(keys.length,8);[.25,.5,.75,1].forEach(r=>{ctx.beginPath();for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;const x=cx+R*r*Math.cos(a),y=cy+R*r*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.strokeStyle=`rgba(30,28,24,${r===1?.25:.18})`;ctx.lineWidth=1;ctx.stroke();});for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));ctx.strokeStyle='rgba(30,28,24,.2)';ctx.lineWidth=1;ctx.stroke();const lx=cx+(R+12)*Math.cos(a),ly=cy+(R+12)*Math.sin(a);ctx.font='7px "DM Sans"';ctx.fillStyle='rgba(92,84,75,.9)';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(keys[i].replace(/_/g,' ').substring(0,10),lx,ly);}const vals=Object.values(profile.genes).slice(0,n);ctx.beginPath();vals.forEach((v,i)=>{const a=(i/n)*Math.PI*2-Math.PI/2;const x=cx+R*v*Math.cos(a),y=cy+R*v*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.closePath();const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,R);grd.addColorStop(0,'rgba(140,114,88,.2)');grd.addColorStop(1,'rgba(140,114,88,.04)');ctx.fillStyle=grd;ctx.fill();ctx.strokeStyle='rgba(140,114,88,.7)';ctx.lineWidth=1.4;ctx.stroke();vals.forEach((v,i)=>{const a=(i/n)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.arc(cx+R*v*Math.cos(a),cy+R*v*Math.sin(a),2.5,0,Math.PI*2);ctx.fillStyle='#8c7258';ctx.fill();});}
+
+// ═══════════════════════════════════════════════
+// PLACEMENT DEBUGGER
+// ═══════════════════════════════════════════════
+function runPlacementLocal(){const SC=+document.getElementById('slSC').value,CC=+document.getElementById('slCC').value,SP=+document.getElementById('slSP').value,SA=+document.getElementById('slSA').value,FD=+document.getElementById('slFD').value/10,GR=+document.getElementById('slGR').value/100,FR=+document.getElementById('slFR').value/100,formula=document.getElementById('plF').value;document.getElementById('slSCV').textContent=SC;document.getElementById('slCCV').textContent=CC;document.getElementById('slSPV').textContent=SP+'°';document.getElementById('slSAV').textContent=SA+'°';document.getElementById('slFDV').textContent=FD.toFixed(1);document.getElementById('slGRV').textContent=GR.toFixed(2);document.getElementById('slFRV').textContent=FR.toFixed(2);const stems=solvePlacement(SC,CC,SP,SA,FD,GR,FR,formula);drawPlacementC(stems,SA);renderStemLog(stems);}
+async function runPlacement(){const SC=+document.getElementById('slSC').value,CC=+document.getElementById('slCC').value,SP=+document.getElementById('slSP').value,SA=+document.getElementById('slSA').value,FD=+document.getElementById('slFD').value/10,GR=+document.getElementById('slGR').value/100,FR=+document.getElementById('slFR').value/100,formula=document.getElementById('plF').value;document.getElementById('slSCV').textContent=SC;document.getElementById('slCCV').textContent=CC;document.getElementById('slSPV').textContent=SP+'°';document.getElementById('slSAV').textContent=SA+'°';document.getElementById('slFDV').textContent=FD.toFixed(1);document.getElementById('slGRV').textContent=GR.toFixed(2);document.getElementById('slFRV').textContent=FR.toFixed(2);try{const res=await fetch(`${API_BASE}/placement/generate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stemCount:SC,clusterCount:CC,spreadDeg:SP,silenceDeg:SA,focalDepth:FD,greeneryRatio:GR,focalRatio:FR,formula})});const json=await res.json();if(res.ok&&json.ok&&Array.isArray(json.stems)){drawPlacementC(json.stems,SA);renderStemLog(json.stems);return;}}catch(e){}runPlacementLocal();}
+function solvePlacement(SC,CC,SP,SA,FD,GR,FR,formula){const stems=[],silS=(270-SA/2)*Math.PI/180,silE=(270+SA/2)*Math.PI/180,gc=Math.floor(SC*GR),fc=Math.max(1,Math.floor(SC*FR)),filc=SC-gc-fc;function getA(total){const a=[];if(formula==='Full Halo'){for(let i=0;i<total;i++)a.push((i/total)*Math.PI*2);}else if(formula==='Crescent'){const sp=Math.PI*1.4,off=Math.PI*.3;for(let i=0;i<total;i++)a.push(off+sp*(i/(total-1||1)));}else if(formula==='Bottom Heavy'){for(let i=0;i<total;i++)a.push(Math.PI*.1+Math.PI*.8*(i/(total-1||1))+(Math.random()-.5)*.18);}else if(formula==='Side Sweep'){for(let i=0;i<total;i++)a.push(-.5+i*(1/total)+(Math.random()-.5)*.13);}else if(formula==='Radial Burst'){for(let i=0;i<total;i++)a.push((i/total)*Math.PI*2);}else if(formula==='Focal Burst'){for(let i=0;i<total;i++)a.push((i/total)*Math.PI*2+(Math.random()-.5)*.27);}else{for(let c=0;c<CC;c++){const cA=(c/CC)*Math.PI*2,pc=Math.ceil(total/CC);for(let j=0;j<pc&&a.length<total;j++)a.push(cA+(j-pc/2)*(SP*Math.PI/180/pc)+(Math.random()-.5)*.07);}}return a.slice(0,total);}let sid=1;[['greenery',gc],['filler',filc],['focal',fc]].forEach(([role,count])=>{getA(count).forEach(a=>{const normA=((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2);if(SA>0&&normA>silS&&normA<silE&&formula!=='Full Halo')return;const radius=role==='focal'?1-FD*.3:.85+Math.random()*.17,depth=role==='focal'?FD:role==='greenery'?.1+Math.random()*.2:.3+Math.random()*.4;stems.push({id:`S${String(sid++).padStart(3,'0')}`,angle:Math.round(((a*180/Math.PI)%360+360)%360),radius:+radius.toFixed(2),role,depth:+depth.toFixed(2)});});});return stems;}
+function drawPlacementC(stems,SA){const c=document.getElementById('placementCanvas');if(!c)return;const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=125;ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);if(SA>0){ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R+16,(270-SA/2)*Math.PI/180,(270+SA/2)*Math.PI/180);ctx.closePath();ctx.fillStyle='rgba(196,124,110,.08)';ctx.fill();ctx.beginPath();ctx.arc(cx,cy,R+16,(270-SA/2)*Math.PI/180,(270+SA/2)*Math.PI/180);ctx.strokeStyle='rgba(196,124,110,.25)';ctx.lineWidth=1;ctx.setLineDash([3,5]);ctx.stroke();ctx.setLineDash([]);}ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(30,28,24,.2)';ctx.lineWidth=16;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(140,114,88,.18)';ctx.lineWidth=1;ctx.stroke();ctx.strokeStyle='rgba(30,28,24,.18)';ctx.lineWidth=1;ctx.setLineDash([2,6]);ctx.beginPath();ctx.moveTo(cx-R-16,cy);ctx.lineTo(cx+R+16,cy);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,cy-R-16);ctx.lineTo(cx,cy+R+16);ctx.stroke();ctx.setLineDash([]);const rc={'focal':'#c47c6e','filler':'#8c7258','greenery':'#5c7353'},rs={'focal':4,'filler':2.8,'greenery':2.1};stems.forEach(s=>{const a=s.angle*Math.PI/180,r=R*s.radius,sl=s.role==='focal'?15:s.role==='greenery'?8:11,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a),ex=cx+(r+sl)*Math.cos(a),ey=cy+(r+sl)*Math.sin(a);ctx.globalAlpha=s.role==='greenery'?.6:1;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=rc[s.role];ctx.lineWidth=s.role==='focal'?1.7:1.1;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,rs[s.role],0,Math.PI*2);ctx.fillStyle=rc[s.role];ctx.fill();ctx.globalAlpha=1;});[['focal','Focal','#c47c6e'],['filler','Filler','#8c7258'],['greenery','Greenery','#5c7353']].forEach(([,l,col],i)=>{ctx.beginPath();ctx.arc(12,h-44+i*14,3,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();ctx.font='8px "DM Sans"';ctx.fillStyle='rgba(92,84,75,.8)';ctx.textAlign='left';ctx.fillText(l,19,h-41+i*14);});}
+function renderStemLog(stems){document.getElementById('stemLog').innerHTML=stems.slice(0,50).map(s=>`<div class="le"><div class="lid">${s.id}</div><div class="lang">${s.angle}°</div><div class="lrad">${s.radius}</div><div class="lrol">${s.role}</div><div class="ldep">${s.depth}</div></div>`).join('');}
+
+// ═══════════════════════════════════════════════
+// INVENTORY
+// ═══════════════════════════════════════════════
+const DEFAULT_INV=[{name:'Ivory Garden Rose',role:'focal',color:'Ivory',stock:12,max:24,formulas:['Full Halo','Crescent','Focal Burst'],compat:'high'},{name:'Dusty Mauve Peony',role:'focal',color:'Mauve',stock:6,max:24,formulas:['Crescent','Double Echo'],compat:'high'},{name:'Dried Wheat Bundle',role:'supporting',color:'Tan',stock:34,max:60,formulas:['Bottom Heavy','Crescent'],compat:'med'},{name:'Burgundy Ranunculus',role:'focal',color:'Burgundy',stock:3,max:24,formulas:['Focal Burst'],compat:'low'},{name:'Silver Dollar Eucalyptus',role:'greenery',color:'Silver/Green',stock:48,max:80,formulas:['All'],compat:'high'},{name:'Bleached Lunaria',role:'filler',color:'White',stock:28,max:50,formulas:['Open Arc','Crescent'],compat:'high'},{name:'Rust Anemone',role:'supporting',color:'Rust',stock:18,max:40,formulas:['Full Halo','Focal Burst'],compat:'high'},{name:'Navy Thistle',role:'supporting',color:'Navy',stock:9,max:40,formulas:['Split Garden'],compat:'med'},{name:'Sage Bundle',role:'greenery',color:'Green',stock:55,max:80,formulas:['All'],compat:'high'},{name:'Champagne Amaranthus',role:'filler',color:'Champagne',stock:22,max:50,formulas:['Crescent','Full Halo'],compat:'high'},{name:'Terracotta Berry',role:'filler',color:'Terracotta',stock:31,max:60,formulas:['Bottom Heavy'],compat:'med'},{name:'Black Protea',role:'focal',color:'Black',stock:2,max:16,formulas:['Focal Burst'],compat:'low'},{name:'Cotton Stem',role:'filler',color:'White',stock:44,max:60,formulas:['Full Halo'],compat:'high'},{name:'Lavender Bunch',role:'greenery',color:'Lavender',stock:38,max:80,formulas:['Crescent','Full Halo'],compat:'high'},{name:'Golden Banksia',role:'supporting',color:'Gold',stock:7,max:30,formulas:['Focal Burst','Radial Burst'],compat:'med'},];
+let INV=[];
+let invFilter='all';
+async function loadInventory(){
+  try{
+    const res=await fetch(`${API_BASE}/inventory`);
+    const json=await res.json();
+    if(res.ok && json.ok && Array.isArray(json.items)) INV=json.items;
+    else INV=DEFAULT_INV;
+  }catch(e){INV=DEFAULT_INV;}
+}
+function buildInventory(){
+  const total=INV.length,stock=INV.reduce((s,i)=>s+i.stock,0),low=INV.filter(i=>i.stock/i.max<.3).length,hi=INV.filter(i=>i.compat==='high').length;
+  document.getElementById('invStats').innerHTML=[['SKUs',total,'Catalogued'],['Stock',stock,'Units'],['Low Stock',low,'< 30%'],['Hi-Compat',hi,'Formula fit']].map(([l,v,s])=>`<div style="background:var(--sf2);border:1px solid var(--bd);border-radius:3px;padding:11px 13px;"><div style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--txm);margin-bottom:4px;">${l}</div><div style="font-family:var(--fd);font-size:24px;font-weight:300;color:var(--gold);">${v}</div><div style="font-size:10px;color:var(--txm);margin-top:2px;">${s}</div></div>`).join('');
+  renderInv();renderFeas();
+}
+function filterInv(f,btn){invFilter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderInv();}
+function renderInv(){let items=INV;if(invFilter==='low')items=items.filter(i=>i.stock/i.max<.3);else if(invFilter!=='all')items=items.filter(i=>i.role===invFilter);const rc={focal:'rf',supporting:'rs',filler:'rfi',greenery:'rg'},cc={high:'ich',med:'icm',low:'icl'};document.getElementById('invBody').innerHTML=items.map(i=>`<tr><td style="color:var(--txt);font-size:11px;">${i.name}</td><td><span class="irole ${rc[i.role]}">${i.role}</span></td><td>${i.color}</td><td><div class="ibar"><div class="ibt"><div class="ibf" style="width:${Math.min(100,(i.stock/i.max)*100)}%;${i.stock/i.max<.3?'background:var(--rose);':''}"></div></div><span style="font-size:10px;color:${i.stock/i.max<.3?'var(--rose)':i.stock/i.max<.6?'var(--gold)':'var(--txd)'};">${i.stock}/${i.max}</span></div></td><td style="font-size:10px;">${Array.isArray(i.formulas)?i.formulas.slice(0,2).join(', '):i.formulas}</td><td class="ic ${cc[i.compat]}">${i.compat.toUpperCase()}</td></tr>`).join('');}
+function renderFeas(){const formulas=['Crescent','Full Halo','Focal Burst','Bottom Heavy','Side Sweep','Double Echo','Open Arc','Split Garden'];document.getElementById('feasCard').innerHTML=formulas.map(f=>{const ci=INV.filter(i=>Array.isArray(i.formulas)&&(i.formulas.includes(f)||i.formulas.includes('All')));const av=ci.filter(i=>i.stock>3).length;const score=Math.min(1,av/(ci.length||1));const lvl=score>.7?'high':score>.4?'med':'low';const col=lvl==='high'?'var(--sage)':lvl==='med'?'var(--amb)':'var(--rose)';return`<div class="frow2"><div class="ff2">${f}</div><div class="fbt"><div class="fbf" style="width:${score*100}%;background:${col};"></div></div><div class="fscore fs${lvl}">${Math.round(score*100)}%</div><div style="font-size:8px;letter-spacing:.11em;text-transform:uppercase;color:${col};padding:2px 5px;border-radius:1px;background:${col}1a;border:1px solid ${col}44;">${lvl.toUpperCase()}</div></div>`;}).join('');}
+
+// ═══════════════════════════════════════════════
+// ABC LAB
+// ═══════════════════════════════════════════════
+let abcState={dna:null,gen:0,lineage:[],totalMutations:0};
+const SOFT_GENES=['cluster_count','density_profile','greenery_ratio','silence_arc','focal_depth','cluster_weight_distribution','cluster_spread_deg'];
+(()=>{const g=document.getElementById('abcDNABars');['cluster_count','cluster_weight_distribution','cluster_spread_deg','density_profile','greenery_direction','silhouette_bias','greenery_ratio','focal_ratio','silence_arc','focal_depth','style_signature','color_bias'].forEach(k=>{const r=document.createElement('div');r.className='dbar';r.dataset.key=k;r.innerHTML=`<div class="dblbl">${k.replace(/_/g,' ')}</div><div class="dbtrack"><div class="dbfill" style="width:0%"></div></div><div class="dbval">—</div>`;g.appendChild(r);});})();
+async function abcSeed(){const formula=document.getElementById('abcF').value,emotion=document.getElementById('abcE').value,bp=await fetchBlueprint(formula,emotion,'Organic Drape'),id='EC-'+Math.random().toString(36).substr(2,5).toUpperCase();abcState={dna:{...bp.dna},gen:0,lineage:[{id,label:'Seed',scores:bp.scores,gen:0}],totalMutations:0};updABC(bp.scores);renderABCLin();updDNABars(abcState.dna,'abcDNABars');drawABCPreview(formula);document.getElementById('mutLog').innerHTML='<div style="color:var(--txm);font-size:10px;">Seeded. Mutate to evolve.</div>';}
+function abcMutate(){if(!abcState.dna){abcSeed();return;}const softKeys=SOFT_GENES.filter(k=>typeof abcState.dna[k]==='number'),numMuts=Math.floor(Math.random()*3)+1,mlog=[];for(let i=0;i<numMuts;i++){const key=softKeys[Math.floor(Math.random()*softKeys.length)],oldVal=abcState.dna[key];let newVal;if(key==='cluster_count')newVal=Math.max(1,Math.min(9,Math.round(oldVal+(Math.random()>.5?1:-1))));else if(key==='cluster_spread_deg')newVal=Math.max(10,Math.min(120,Math.round(oldVal+(Math.random()-.5)*20)));else if(key==='silence_arc')newVal=Math.max(0,Math.min(90,Math.round(oldVal+(Math.random()-.5)*15)));else newVal=parseFloat(clamp(oldVal+(Math.random()-.5)*.25).toFixed(2));abcState.dna[key]=newVal;mlog.push({gene:key,from:typeof oldVal==='number'&&!Number.isInteger(oldVal)?oldVal.toFixed(2):oldVal,to:typeof newVal==='number'&&!Number.isInteger(newVal)?newVal.toFixed(2):newVal});}abcState.gen++;abcState.totalMutations+=numMuts;const nid='EC-'+Math.random().toString(36).substr(2,5).toUpperCase(),nscores={emotion_fit:clamp(rnd(.7,.99)),dna_cohesion:clamp(rnd(.78,.99)),brand_alignment:clamp(rnd(.82,.99))};abcState.lineage.push({id:nid,label:`Gen ${abcState.gen}`,scores:nscores,gen:abcState.gen});updABC(nscores);renderABCLin();updDNABars(abcState.dna,'abcDNABars');drawABCPreview(document.getElementById('abcF').value);const ml=document.getElementById('mutLog');ml.innerHTML=`<div style="font-size:8px;letter-spacing:.16em;color:var(--txm);padding-bottom:3px;border-bottom:1px solid var(--bd);margin-bottom:3px;">GEN ${abcState.gen} · ${mlog.length} MUTATION${mlog.length>1?'S':''}</div>`+mlog.map(m=>`<div class="mut-e"><div class="mut-g">${m.gene.replace(/_/g,' ')}</div><div class="mut-f">${m.from}</div><span style="color:var(--txm);margin:0 3px;">→</span><div class="mut-t">${m.to}</div><div class="mut-tp">SOFT</div></div>`).join('')+ml.innerHTML;}
+function abcReset(){abcState={dna:null,gen:0,lineage:[],totalMutations:0};document.getElementById('abcLineage').innerHTML='<div style="color:var(--txm);font-size:10px;">No lineage yet.</div>';document.getElementById('mutLog').innerHTML='<div style="color:var(--txm);font-size:10px;">Seed then mutate.</div>';['abcEF','abcDC','abcBA','abcFS'].forEach(id=>document.getElementById(id).textContent='—');document.getElementById('abcGen').textContent='0';document.getElementById('abcMC').textContent='0';const c=document.getElementById('abcCanvas');if(c){const ctx=c.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,c.width,c.height);}document.querySelectorAll('#abcDNABars .dbfill').forEach(f=>f.style.width='0%');document.querySelectorAll('#abcDNABars .dbval').forEach(v=>v.textContent='—');}
+function updABC(s){document.getElementById('abcEF').textContent=(s.emotion_fit*100).toFixed(0)+'%';document.getElementById('abcDC').textContent=(s.dna_cohesion*100).toFixed(0)+'%';document.getElementById('abcBA').textContent=(s.brand_alignment*100).toFixed(0)+'%';document.getElementById('abcGen').textContent=abcState.gen;document.getElementById('abcMC').textContent=abcState.totalMutations;document.getElementById('abcFS').textContent=((s.emotion_fit+s.dna_cohesion+s.brand_alignment)/3*100).toFixed(0)+'%';}
+function renderABCLin(){const lin=abcState.lineage;document.getElementById('abcLineage').innerHTML=lin.map((n,i)=>`${i>0?'<span style="color:var(--txm);font-size:11px;margin:0 2px;">→</span>':''}<div class="lin-node ${i===0?'parent':i===lin.length-1?'active':''}">${n.label}</div>`).join('');}
+function drawABCPreview(formula){const c=document.getElementById('abcCanvas');if(!c)return;const fi=FORMULAS.findIndex(f=>f.name===formula);if(fi<0)return;const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=92;ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(30,28,24,.2)';ctx.lineWidth=15;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(140,114,88,.18)';ctx.lineWidth=1;ctx.stroke();const g='#8c7258',sg='#5c7353',r='#c47c6e';const dm=abcState.dna?(.7+(abcState.dna.density_profile||.6)*.6):1;function s(a,r2,l,col,w2=1.5){const x=cx+r2*Math.cos(a),y=cy+r2*Math.sin(a),ex=cx+(r2+l)*Math.cos(a),ey=cy+(r2+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w2;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w2+.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}function cl(sa,ea,n,l,col){for(let i=0;i<=Math.round(n*dm);i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.11;s(a,R-6,l+Math.random()*9,col);}}[[()=>cl(Math.PI*.3,Math.PI*1.7,15,16,g)],[()=>{cl(-.4,.4,6,18,g);cl(Math.PI-.4,Math.PI+.4,6,18,sg);}],[()=>cl(Math.PI*.1,Math.PI*.9,17,20,g)],[()=>{cl(-.6,.6,9,18,g);s(0,R,32,r,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,11,16,g);}],[()=>cl(0,Math.PI*2,24,14,g)],[()=>{cl(Math.PI*.1,Math.PI*.85,11,18,g);cl(Math.PI*1.1,Math.PI*1.85,11,18,sg);}],[()=>{for(let i=0;i<Math.round(13*dm);i++){const a=(i/13)*Math.PI*2;s(a,R-7,22+Math.random()*12,i%3===0?r:g,1.7);}}],[()=>{for(let i=0;i<8;i++){const a=-.3+i*.17;s(a,R-4,11+i*2,i%2===0?g:sg,1.5);}}],[()=>{for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;s(a,R-5,18,g,1.7);}}],[()=>cl(Math.PI*.6,Math.PI*1.4,13,14,g)],[()=>{const cs=[g,sg,r];for(let i=0;i<Math.round(17*dm);i++){const a=Math.random()*Math.PI*2;s(a,R-6,8+Math.random()*18,cs[Math.floor(Math.random()*3)],1.3);}}]][fi][0]();ctx.font='8px "DM Sans"';ctx.fillStyle='rgba(140,114,88,.55)';ctx.textAlign='right';ctx.fillText(`GEN ${abcState.gen}`,w-7,h-7);}
+
+// ═══════════════════════════════════════════════
+// GENOME DASHBOARD
+// ═══════════════════════════════════════════════
+const GENOME_FAMILY=[{id:'EC-A001',name:'Halo Luxe',formula:'Full Halo',gen:0,parent:null,genes:{cluster_count:.9,cluster_weight:.5,density:.9,greenery_ratio:.5,focal_ratio:.25,silence_arc:.04,focal_depth:.6,symmetry:.9},scores:{ef:.91,dc:.95,ba:.93}},{id:'EC-A002',name:'Halo Soft',formula:'Full Halo',gen:1,parent:'EC-A001',genes:{cluster_count:.8,cluster_weight:.55,density:.78,greenery_ratio:.55,focal_ratio:.22,silence_arc:.1,focal_depth:.5,symmetry:.85},scores:{ef:.88,dc:.91,ba:.9}},{id:'EC-A003',name:'Halo Open',formula:'Full Halo',gen:2,parent:'EC-A002',genes:{cluster_count:.7,cluster_weight:.48,density:.65,greenery_ratio:.6,focal_ratio:.18,silence_arc:.22,focal_depth:.42,symmetry:.75},scores:{ef:.84,dc:.87,ba:.88}},{id:'EC-B001',name:'Crescent Base',formula:'Crescent',gen:0,parent:null,genes:{cluster_count:.45,cluster_weight:.7,density:.55,greenery_ratio:.4,focal_ratio:.2,silence_arc:.65,focal_depth:.45,symmetry:.15},scores:{ef:.89,dc:.92,ba:.91}},{id:'EC-B002',name:'Crescent Deep',formula:'Crescent',gen:1,parent:'EC-B001',genes:{cluster_count:.4,cluster_weight:.75,density:.62,greenery_ratio:.38,focal_ratio:.28,silence_arc:.58,focal_depth:.6,symmetry:.12},scores:{ef:.86,dc:.9,ba:.89}},];
+function buildGenomeTree(){const tree=document.getElementById('genomeTree');tree.innerHTML='';GENOME_FAMILY.forEach(bp=>{const d=document.createElement('div');const isChild=bp.parent!==null,isGrand=bp.gen===2;d.className=`tree-node${isGrand?' grandchild':isChild?' child':''}`;d.innerHTML=`<div class="tn-name">${bp.name}</div><div class="tn-id">${bp.id} · Gen ${bp.gen}</div><div class="tn-score">${(bp.scores.ef*100).toFixed(0)}%</div>`;d.onclick=()=>{document.querySelectorAll('.tree-node').forEach(n=>n.classList.remove('active'));d.classList.add('active');selectGenomeBP(bp);};tree.appendChild(d);});selectGenomeBP(GENOME_FAMILY[0]);document.querySelector('.tree-node').classList.add('active');}
+function selectGenomeBP(bp){drawRadar({genes:bp.genes},document.getElementById('genomeRadar'),320,220);document.getElementById('genomeStats').innerHTML=[['Emotion Fit',(bp.scores.ef*100).toFixed(0)+'%'],['DNA Cohesion',(bp.scores.dc*100).toFixed(0)+'%'],['Brand Align',(bp.scores.ba*100).toFixed(0)+'%'],['Generation',`Gen ${bp.gen}`],['Fitness',((bp.scores.ef+bp.scores.dc+bp.scores.ba)/3*100).toFixed(0)+'%'],['Formula',bp.formula]].map(([l,v])=>`<div class="gs2"><div class="gs2l">${l}</div><div class="gs2v">${v}</div></div>`).join('');const parent=GENOME_FAMILY.find(b=>b.id===bp.parent);if(parent){const changes=Object.entries(bp.genes).filter(([k,v])=>typeof v==='number'&&Math.abs(v-(parent.genes[k]||0))>.02).map(([k,v])=>{const pv=parent.genes[k]||0,delta=v-pv;return`<div class="cg-row"><div class="cg-gene">${k.replace(/_/g,' ')}</div><div class="cg-f">${pv.toFixed(2)}</div><span style="color:var(--txm);margin:0 5px;">→</span><div class="cg-t">${v.toFixed(2)}</div><div style="margin-left:auto;"><span class="${delta>0?'dup':'ddn'}">${delta>0?'↑':'↓'} ${Math.abs(delta).toFixed(2)}</span></div></div>`;}).join('');document.getElementById('changedGenes').innerHTML=changes||'<div style="color:var(--txm);font-size:11px;padding:5px 0;">No significant drift from parent.</div>';}else document.getElementById('changedGenes').innerHTML='<div style="color:var(--txm);font-size:11px;padding:5px 0;">Root blueprint (Gen 0) — no parent to compare.</div>';document.getElementById('adaptiveStatus').innerHTML=[{l:'Trend Bias',v:bp.gen>0?'Adaptive':'Seeded'},{l:'ABC Status',v:bp.scores.dc>.9?'Optimized':'Active'},{l:'Brand Protection',v:bp.scores.ba>.88?'Protected':'Review'}].map(o=>`<div class="card"><div class="clbl">${o.l}</div><div style="font-family:var(--fd);font-size:18px;font-weight:300;color:var(--gold);margin:5px 0 2px;">${o.v}</div></div>`).join('');}
+
+// ═══════════════════════════════════════════════
+// OUTPUT STUDIO
+// ═══════════════════════════════════════════════
+let currentOutput=null;
+async function generateOutput(){const formula=document.getElementById('outF').value,emotion=document.getElementById('outE').value,bp=await fetchBlueprint(formula,emotion,'Organic Drape');currentOutput={bp,formula,emotion};const invItems=[['Ivory Garden Rose','focal'],['Rust Anemone','supporting'],['Champagne Amaranthus','filler'],['Silver Dollar Eucalyptus','greenery'],['Dried Wheat Bundle','supporting'],['Bleached Lunaria','filler'],['Sage Bundle','greenery']];const roles=[{role:'focal',count:bp.elements[0].count,len:'4–6"'},{role:'supporting',count:bp.elements[1].count,len:'6–9"'},{role:'filler',count:bp.elements[2].count,len:'3–5"'},{role:'greenery',count:bp.elements[3].count,len:'8–14"'}];const rows=roles.flatMap(r=>{const m=invItems.filter(([,role])=>role===r.role).slice(0,r.role==='greenery'?2:1);return m.map(([name])=>`<div class="cl-row"><div style="color:var(--txt);font-size:11px;">${name}</div><div>${Math.ceil(r.count/m.length)}</div><div><span class="irole ${r.role==='focal'?'rf':r.role==='supporting'?'rs':r.role==='filler'?'rfi':'rg'}">${r.role}</span></div><div>${r.len}</div></div>`);});document.getElementById('cutListBody').innerHTML=rows.join('');document.getElementById('buildSteps').innerHTML=[{n:1,done:true,txt:'Attach greenery base evenly around wire frame, varying angles 15–30°.'},{n:2,done:true,txt:`Apply ${formula} formula. Establish zone anchor points.`},{n:3,done:false,txt:'Place focal stems at A1, deepest depth layer. Angle 20–35° outward.'},{n:4,done:false,txt:'Add supporting stems to secondary zones per DNA cluster_weight profile.'},{n:5,done:false,txt:`Fill filler layer. ${emotion==='Festive & Bright'?'Layer densely.':emotion==='Vintage Melancholy'?'Leave deliberate gaps.':'Balance evenly.'}`},{n:6,done:false,txt:'Verify silence arc. Ensure negative space zones are clear and intentional.'},{n:7,done:false,txt:'Final inspection: check formula spec alignment. Export blueprint JSON.'}].map(s=>`<div class="bs-row"><div class="bs-num${s.done?' done':''}">${s.done?'✓':s.n}</div><div style="flex:1;line-height:1.65;">${s.txt}</div></div>`).join('');document.getElementById('assemblyNotes').innerHTML=`<div style="font-family:var(--fd);font-size:13px;color:var(--txt);margin-bottom:6px;">${formula} · ${emotion}</div><div style="font-size:11px;color:var(--txd);line-height:1.75;">Frame: <strong style="color:var(--txt)">${bp.base.diameter_inches}"</strong> wire · <strong style="color:var(--gold)">${bp.dna.cluster_count}</strong> clusters<br>Greenery: <strong style="color:var(--gold)">${(bp.dna.greenery_ratio*100).toFixed(0)}%</strong> · Silence arc: <strong style="color:var(--gold)">${bp.dna.silence_arc}°</strong><br><span style="font-size:9px;color:var(--txm);">${bp.blueprint_id} · EC_CERT_V1</span></div>`;drawOPrev(formula);document.querySelectorAll('.exp-btn').forEach(b=>b.classList.add('active'));}
+function drawOPrev(formula){const c=document.getElementById('outputCanvas');if(!c)return;const fi=FORMULAS.findIndex(f=>f.name===formula);if(fi<0)return;const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=85;ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(30,28,24,.2)';ctx.lineWidth=14;ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(140,114,88,.18)';ctx.lineWidth=1;ctx.stroke();const g='#8c7258',sg='#5c7353',r='#c47c6e';function s(a,r2,l,col,w2=1.5){const x=cx+r2*Math.cos(a),y=cy+r2*Math.sin(a),ex=cx+(r2+l)*Math.cos(a),ey=cy+(r2+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w2;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w2+.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}function cl(sa,ea,n,l,col){for(let i=0;i<=n;i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.1;s(a,R-5,l+Math.random()*8,col);}}[[()=>cl(Math.PI*.3,Math.PI*1.7,15,15,g)],[()=>{cl(-.4,.4,6,17,g);cl(Math.PI-.4,Math.PI+.4,6,17,sg);}],[()=>cl(Math.PI*.1,Math.PI*.9,17,19,g)],[()=>{cl(-.6,.6,9,17,g);s(0,R,30,r,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,11,15,g);}],[()=>cl(0,Math.PI*2,24,13,g)],[()=>{cl(Math.PI*.1,Math.PI*.85,11,17,g);cl(Math.PI*1.1,Math.PI*1.85,11,17,sg);}],[()=>{for(let i=0;i<13;i++){const a=(i/13)*Math.PI*2;s(a,R-7,21+Math.random()*11,i%3===0?r:g,1.7);}}],[()=>{for(let i=0;i<8;i++){const a=-.3+i*.17;s(a,R-4,10+i*2,i%2===0?g:sg,1.5);}}],[()=>{for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;s(a,R-4,17,g,1.7);}}],[()=>cl(Math.PI*.6,Math.PI*1.4,13,13,g)],[()=>{const cs=[g,sg,r];for(let i=0;i<17;i++){const a=Math.random()*Math.PI*2;s(a,R-6,8+Math.random()*17,cs[Math.floor(Math.random()*3)],1.3);}}]][fi][0]();ctx.font='8px "DM Sans"';ctx.fillStyle='rgba(140,114,88,.55)';ctx.textAlign='right';ctx.fillText(formula.toUpperCase(),w-7,h-7);}
+function exportOut(type){if(!currentOutput){return;}const{bp,formula,emotion}=currentOutput;const content={json:()=>JSON.stringify(bp,null,2),csv:()=>`Item,Count,Role,Length\nIvory Garden Rose,${bp.elements[0].count},focal,4-6in\nRust Anemone,${bp.elements[1].count},supporting,6-9in\nChampage Amaranthus,${bp.elements[2].count},filler,3-5in\nSilver Eucalyptus,${bp.elements[3].count},greenery,8-14in`,pdf:()=>`EVERCRAFTED BUILD GUIDE\n${bp.blueprint_id}\nFormula: ${formula}\nEmotion: ${emotion}\nDiameter: ${bp.base.diameter_inches}"\n\n${Object.entries(bp.dna).map(([k,v])=>`${k}: ${v}`).join('\n')}\n\nEC_CERT_MFGSAFE_V1`,mj:()=>`/imagine prompt: luxury faux botanical wreath, ${formula.toLowerCase()} composition, ${emotion.toLowerCase()} emotional tone, ${bp.dna.style_signature} style, asymmetric, matte finish, no ribbons, editorial product photography, black background, soft side lighting, 8k --ar 1:1 --v 6`};const exts={json:'json',csv:'csv',pdf:'txt',mj:'txt'};const blob=new Blob([content[type]()],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ec-${type}-${bp.blueprint_id}.${exts[type]}`;a.click();const btn=document.getElementById('exp'+type.toUpperCase());btn.style.borderColor='var(--sage)';btn.style.color='var(--sage)';setTimeout(()=>{btn.style.borderColor='';btn.style.color='';},1600);}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 4: API CENTER
+// ═══════════════════════════════════════════════════════
+const API_ENDPOINTS=[
+  {method:'POST',path:'/blueprints/generate',name:'Generate Blueprint',desc:'Generate a canonical blueprint object from formula, emotion quadrant, and style signature. Returns the full EC_CANON_V1 blueprint JSON with DNA, zones, anchors, and scores.',params:[{name:'formula',type:'string',req:true,desc:'One of the 12 canonical composition formulas'},{name:'emotion',type:'string',req:true,desc:'Emotion quadrant: Cozy & Calm | Festive & Bright | Dramatic Tension | Vintage Melancholy'},{name:'style',type:'string',req:false,desc:'Style signature: Organic Drape | Editorial Restraint | Lush Garden | Architectural | Woodland'},{name:'diameter',type:'integer',req:false,desc:'Frame diameter in inches: 18 | 20 | 24'}],sample:'{\n  "formula": "Crescent",\n  "emotion": "Cozy & Calm",\n  "style": "Organic Drape",\n  "diameter": 20\n}'},
+  {method:'GET',path:'/blueprints/{id}',name:'Get Blueprint',desc:'Retrieve a stored blueprint by its ID. Returns the full canonical blueprint object including all DNA traits, zones, emotion space coordinates, and version metadata.',params:[{name:'id',type:'string',req:true,desc:'Blueprint ID (format: EC-XXXXXXXX)'}],sample:'GET /blueprints/EC-A1B2C3D4'},
+  {method:'POST',path:'/blueprints/{id}/mutate',name:'Mutate Blueprint (ABC)',desc:'Trigger the Adaptive Blueprint Composer to mutate soft DNA genes. Returns a new blueprint as a child of the source blueprint, with mutation log and updated fitness scores.',params:[{name:'id',type:'string',req:true,desc:'Source blueprint ID'},{name:'target_emotion_fit',type:'float',req:false,desc:'Target emotion fit score 0.0–1.0'},{name:'mutation_rate',type:'float',req:false,desc:'Mutation intensity 0.0–1.0 (default: 0.3)'},{name:'preserve_hard_boundaries',type:'boolean',req:false,desc:'Enforce hard DNA boundary constraints (default: true)'}],sample:'{\n  "target_emotion_fit": 0.92,\n  "mutation_rate": 0.25,\n  "preserve_hard_boundaries": true\n}'},
+  {method:'GET',path:'/blueprints/{id}/lineage',name:'Get Lineage',desc:'Return the full evolutionary lineage of a blueprint, from its root Gen 0 seed through all child mutations. Includes gene diff data between each generation.',params:[{name:'id',type:'string',req:true,desc:'Blueprint ID to trace lineage for'},{name:'depth',type:'integer',req:false,desc:'Max generation depth to return (default: all)'}],sample:'GET /blueprints/EC-B002/lineage?depth=5'},
+  {method:'POST',path:'/placement/solve',name:'Solve Placement',desc:'Run the deterministic placement engine for a given formula and DNA profile. Returns a complete stem log with polar coordinates for every stem instance.',params:[{name:'formula',type:'string',req:true,desc:'Composition formula name'},{name:'dna',type:'object',req:true,desc:'Wreath DNA object with at minimum: cluster_count, density_profile, greenery_ratio, focal_ratio, silence_arc'},{name:'stem_count',type:'integer',req:false,desc:'Total stems to place (default: auto from DNA)'}],sample:'{\n  "formula": "Full Halo",\n  "dna": {\n    "cluster_count": 6,\n    "density_profile": 0.85,\n    "greenery_ratio": 0.45,\n    "focal_ratio": 0.15,\n    "silence_arc": 0\n  }\n}'},
+  {method:'GET',path:'/formulas',name:'List Formulas',desc:'Return all 12 canonical composition formulas with their metadata, DNA signal tags, style properties, and focal position types.',params:[],sample:'GET /formulas'},
+  {method:'GET',path:'/formulas/{name}',name:'Get Formula',desc:'Return a single formula definition by name. Includes geometry rules, recommended DNA ranges, and example blueprints.',params:[{name:'name',type:'string',req:true,desc:'Formula name (e.g. Crescent, Full Halo, Focal Burst)'}],sample:'GET /formulas/Crescent'},
+  {method:'POST',path:'/inventory/analyze',name:'Analyze Inventory',desc:'Submit an inventory array and receive formula feasibility scores, compatibility ratings, and substitution suggestions.',params:[{name:'items',type:'array',req:true,desc:'Array of inventory items with name, role, stock, max_stock fields'},{name:'formula',type:'string',req:false,desc:'Score only against a specific formula'}],sample:'{\n  "items": [\n    {"name": "Ivory Rose", "role": "focal", "stock": 12, "max_stock": 24},\n    {"name": "Eucalyptus", "role": "greenery", "stock": 48, "max_stock": 80}\n  ]\n}'},
+  {method:'POST',path:'/blueprints/{id}/export',name:'Export Blueprint',desc:'Generate export artifacts from a blueprint: cut list CSV, build guide PDF, blueprint JSON, or Midjourney render prompt.',params:[{name:'id',type:'string',req:true,desc:'Blueprint ID to export'},{name:'format',type:'string',req:true,desc:'Export format: json | csv | pdf | midjourney'},{name:'include_build_steps',type:'boolean',req:false,desc:'Include assembly build steps in PDF (default: true)'}],sample:'{\n  "format": "pdf",\n  "include_build_steps": true\n}'},
+  {method:'GET',path:'/emotion/map',name:'Emotion Space Query',desc:'Return design directives for a given valence/arousal coordinate. Returns quadrant label, palette bias, and all 6 derived design trait scores.',params:[{name:'valence',type:'float',req:true,desc:'Valence axis: -1.0 (negative) to 1.0 (positive)'},{name:'arousal',type:'float',req:true,desc:'Arousal axis: -1.0 (subdued) to 1.0 (energized)'}],sample:'GET /emotion/map?valence=0.6&arousal=-0.3'},
+  {method:'GET',path:'/schemas',name:'List Schemas',desc:'Return all registered EC_CANON schema versions with their field counts, change logs, and compatibility matrices.',params:[],sample:'GET /schemas'},
+  {method:'DELETE',path:'/blueprints/{id}',name:'Delete Blueprint',desc:'Permanently delete a blueprint from the registry. Will fail if the blueprint has child mutations — use force=true to cascade delete the lineage.',params:[{name:'id',type:'string',req:true,desc:'Blueprint ID to delete'},{name:'force',type:'boolean',req:false,desc:'Cascade delete all child mutations (default: false)'}],sample:'DELETE /blueprints/EC-A1B2C3D4?force=false'},
+];
+let selEP=null;
+(()=>{
+  const list=document.getElementById('apiEpList');
+  API_ENDPOINTS.forEach((ep,i)=>{
+    const d=document.createElement('div');d.className='api-ep-item';
+    const mc={GET:'ep-get',POST:'ep-post',PUT:'ep-put',DELETE:'ep-del'}[ep.method]||'ep-get';
+    d.innerHTML=`<div class="ep-method ${mc}">${ep.method}</div><div class="ep-path">${ep.path}</div><div class="ep-desc">${ep.name}</div>`;
+    d.onclick=()=>{document.querySelectorAll('.api-ep-item').forEach(x=>x.classList.remove('active'));d.classList.add('active');selectEP(i);};
+    list.appendChild(d);
+  });
+})();
+function selectEP(i){
+  selEP=i;const ep=API_ENDPOINTS[i];
+  const mc={GET:'ep-get',POST:'ep-post',PUT:'ep-put',DELETE:'ep-del'}[ep.method]||'ep-get';
+  document.getElementById('apiEndpointName').innerHTML=`<span class="ep-method ${mc}" style="font-size:11px;margin-right:10px;">${ep.method}</span>${ep.path}`;
+  document.getElementById('apiEndpointDesc').textContent=ep.desc;
+  document.getElementById('apiParamRows').innerHTML=ep.params.length?ep.params.map(p=>`<div class="api-param-row"><div class="api-param-name">${p.name}</div><div style="color:var(--cyan);font-size:10px;">${p.type}</div><div class="${p.req?'api-required':'api-optional'}">${p.req?'REQUIRED':'optional'}</div><div>${p.desc}</div></div>`).join(''):'<div style="padding:9px;color:var(--txm);font-size:10.5px;">No parameters required.</div>';
+  document.getElementById('apiReqBody').value=ep.sample||'';
+  document.getElementById('apiResponse').innerHTML='<span style="color:var(--txm);">Press ▶ Send Request to test this endpoint.</span>';
+  document.getElementById('apiStatusBadge').innerHTML='';
+  document.getElementById('apiLatency').textContent='';
+}
+function fireAPICall(){
+  if(selEP===null)return;
+  const ep=API_ENDPOINTS[selEP];
+  const start=Date.now();
+  document.getElementById('apiResponse').innerHTML='<span style="color:var(--txm);">Sending request…</span>';
+  document.getElementById('apiStatusBadge').innerHTML='';
+  const rawBody=document.getElementById('apiReqBody').value;
+  let bodyObj=null;
+  try{bodyObj=rawBody?JSON.parse(rawBody):null;}catch(e){bodyObj=null;}
+  let path=ep.path.replace('{id}','EC-TEST01').replace('{name}','Crescent');
+  let url=`${API_BASE}${path}`;
+  if(ep.path==='/emotion/map'){
+    const v=(bodyObj&&typeof bodyObj.valence==='number')?bodyObj.valence:0.6;
+    const a=(bodyObj&&typeof bodyObj.arousal==='number')?bodyObj.arousal:-0.3;
+    url=`${API_BASE}/emotion/map?valence=${encodeURIComponent(v)}&arousal=${encodeURIComponent(a)}`;
+  }
+  const fetchOpts={method:ep.method,headers:{'Content-Type':'application/json'}};
+  if(ep.method!=='GET' && ep.method!=='DELETE' && bodyObj) fetchOpts.body=JSON.stringify(bodyObj);
+
+  fetch(url,fetchOpts)
+    .then(res=>res.json().then(data=>({ok:res.ok,status:res.status,data})))
+    .then(({ok,status,data})=>{
+      const latency=Math.floor((Date.now()-start));
+      document.getElementById('apiResponse').innerHTML=syntaxHL(JSON.stringify(data,null,2));
+      document.getElementById('apiStatusBadge').innerHTML=`<span class="status-badge ${ok?'s200':'s400'}">${status} ${ok?'OK':'ERR'}</span>`;
+      document.getElementById('apiLatency').textContent=`${latency}ms`;
+    })
+    .catch(()=>{
+      const latency=Math.floor((Date.now()-start));
+      const formula=document.getElementById('bpF').value||'Crescent';
+      const emotion=document.getElementById('bpE').value||'Cozy & Calm';
+      const bp=makeBP(formula,emotion,'Organic Drape');
+      document.getElementById('apiResponse').innerHTML=syntaxHL(JSON.stringify({error:'Endpoint unavailable',fallback:bp},null,2));
+      document.getElementById('apiStatusBadge').innerHTML=`<span class="status-badge s400">ERROR</span>`;
+      document.getElementById('apiLatency').textContent=`${latency}ms`;
+    });
+}
+function clearAPIResponse(){document.getElementById('apiResponse').innerHTML='<span style="color:var(--txm);">Cleared.</span>';document.getElementById('apiStatusBadge').innerHTML='';document.getElementById('apiLatency').textContent='';}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 4: SCHEMA REGISTRY
+// ═══════════════════════════════════════════════════════
+const SCHEMAS=[
+  {name:'Blueprint',version:'V1',desc:'The canonical blueprint object. Central contract for UI, backend, render engine, and export pipeline.',fields:[{name:'blueprint_id',type:'string',req:true,canon:'comp',desc:'Unique blueprint identifier (EC-XXXXXXXX)'},{name:'base.form',type:'string',req:true,canon:'hard',desc:'Wreath form type (circular | oval | square)'},{name:'base.diameter_inches',type:'integer',req:true,canon:'hard',desc:'Frame diameter: 18 | 20 | 24 inches'},{name:'base.frame_type',type:'string',req:true,canon:'hard',desc:'Wire frame type specification'},{name:'composition.formula',type:'string',req:true,canon:'hard',desc:'One of 12 canonical composition formula names'},{name:'composition.formula_index',type:'integer',req:true,canon:'comp',desc:'Formula index F01–F12'},{name:'composition.zone_count',type:'integer',req:true,canon:'comp',desc:'Number of active zones in composition'},{name:'dna',type:'object',req:true,canon:'comp',desc:'Full Wreath DNA object (12 traits)'},{name:'emotion_space',type:'object',req:true,canon:'comp',desc:'Valence/arousal coordinates and derived properties'},{name:'zones',type:'array',req:true,canon:'comp',desc:'Zone definitions with angle ranges and weights'},{name:'anchors',type:'array',req:true,canon:'comp',desc:'Anchor point definitions with polar coordinates'},{name:'elements',type:'array',req:true,canon:'comp',desc:'Stem role counts by tier'},{name:'scores',type:'object',req:true,canon:'comp',desc:'Emotion fit, DNA cohesion, brand alignment scores'},{name:'versioning',type:'object',req:true,canon:'hard',desc:'Schema version, cert, and generation metadata'},]},
+  {name:'Wreath DNA',version:'V1',desc:'The design genetics profile. Defines personality on top of formula skeleton. Split into hard (brand-protected) and soft (ABC-mutable) boundaries.',fields:[{name:'cluster_count',type:'integer',req:true,canon:'soft',desc:'Number of floral clusters (1–9)'},{name:'cluster_weight_distribution',type:'float',req:true,canon:'soft',desc:'Weight distribution across clusters 0.0–1.0'},{name:'cluster_spread_deg',type:'integer',req:true,canon:'soft',desc:'Angular spread of clusters in degrees (10–120)'},{name:'density_profile',type:'float',req:true,canon:'soft',desc:'Overall composition density 0.0–1.0'},{name:'greenery_direction',type:'float',req:true,canon:'soft',desc:'Greenery flow direction vector -1.0–1.0'},{name:'silhouette_bias',type:'float',req:true,canon:'soft',desc:'Silhouette lean direction -0.5–0.5'},{name:'greenery_ratio',type:'float',req:true,canon:'soft',desc:'Proportion of stems assigned to greenery'},{name:'focal_ratio',type:'float',req:true,canon:'soft',desc:'Proportion of stems assigned to focal role'},{name:'silence_arc',type:'float',req:true,canon:'soft',desc:'Degrees of intentional empty arc (0–90)'},{name:'focal_depth',type:'float',req:true,canon:'soft',desc:'Focal stem depth layer position 0.0–1.0'},{name:'style_signature',type:'string',req:true,canon:'hard',desc:'Brand style signature — HARD boundary, not mutable'},{name:'color_bias',type:'float',req:true,canon:'soft',desc:'Warm/cool color lean -0.5–0.5'},]},
+  {name:'Emotion Space',version:'V1',desc:'The valence–arousal emotional coordinate system. Drives palette, density, texture, and composition directives.',fields:[{name:'valence',type:'float',req:true,canon:'comp',desc:'Positive/negative affect axis: -1.0 to 1.0'},{name:'arousal',type:'float',req:true,canon:'comp',desc:'Energy/calm axis: -1.0 to 1.0'},{name:'quadrant_label',type:'string',req:true,canon:'comp',desc:'Human-readable quadrant: Cozy & Calm | Festive & Bright | etc.'},{name:'palette_bias',type:'string',req:true,canon:'comp',desc:'Derived palette direction: warm | cool | neutral'},{name:'saturation_bias',type:'float',req:true,canon:'comp',desc:'Derived saturation intensity 0.0–1.0'},{name:'density_bias',type:'float',req:false,canon:'comp',desc:'Derived density recommendation 0.0–1.0'},{name:'symmetry_bias',type:'float',req:false,canon:'comp',desc:'Derived symmetry preference 0.0–1.0'},]},
+  {name:'Stem Instance',version:'V1',desc:'A single placed stem in the deterministic placement log. Generated by the polar coordinate placement engine — never by AI.',fields:[{name:'stem_id',type:'string',req:true,canon:'comp',desc:'Unique stem ID (S001–S999)'},{name:'angle',type:'float',req:true,canon:'comp',desc:'Polar angle in degrees (0–360)'},{name:'radius',type:'float',req:true,canon:'comp',desc:'Normalized radius from center (0.0–1.2)'},{name:'rotation',type:'float',req:false,canon:'comp',desc:'Stem rotation vector in degrees'},{name:'scale',type:'float',req:false,canon:'comp',desc:'Stem scale multiplier'},{name:'depth',type:'float',req:true,canon:'comp',desc:'Z-layer depth 0.0–1.0'},{name:'role',type:'string',req:true,canon:'hard',desc:'Stem role: focal | supporting | filler | greenery'},{name:'cluster_id',type:'integer',req:true,canon:'comp',desc:'Parent cluster assignment'},{name:'direction_vector',type:'object',req:false,canon:'comp',desc:'XY direction vector for visual flow'},]},
+];
+let selSchema=null;
+(()=>{
+  const nav=document.getElementById('schemNavList');
+  SCHEMAS.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='schema-nav-item';
+    d.innerHTML=`<div class="schema-nav-name">${s.name}</div><div class="schema-nav-version">EC_CANON_${s.version}</div>`;
+    d.onclick=()=>{document.querySelectorAll('.schema-nav-item').forEach(x=>x.classList.remove('active'));d.classList.add('active');selectSchema(i);};
+    nav.appendChild(d);
+  });
+})();
+function selectSchema(i){
+  selSchema=i;const s=SCHEMAS[i];
+  document.getElementById('schemaName').textContent=s.name+' Object';
+  document.getElementById('schemaDesc').textContent=s.desc;
+  document.getElementById('schemaFieldRows').innerHTML=s.fields.map(f=>{
+    const cc={hard:'sf-hard',soft:'sf-soft',comp:'sf-comp'}[f.canon]||'sf-comp';
+    const cl={hard:'HARD',soft:'SOFT',comp:'COMPUTED'}[f.canon]||'—';
+    return`<div class="sf-row"><div class="sf-name">${f.name}</div><div class="sf-type">${f.type}</div><div class="${f.req?'sf-req':'sf-opt'}">${f.req?'REQ':'opt'}</div><div><span class="sf-canon ${cc}">${cl}</span></div><div>${f.desc}</div></div>`;
+  }).join('');
+  const schemaObj={$schema:'https://evercrafted.io/schemas/EC_CANON_V1',title:s.name,version:'EC_CANON_V1',description:s.desc,properties:Object.fromEntries(s.fields.map(f=>[f.name,{type:f.type,required:f.req,canon:f.canon,description:f.desc}]))};
+  document.getElementById('schemaJSONContent').innerHTML=syntaxHL(JSON.stringify(schemaObj,null,2));
+}
+function copySchemaJSON(){const txt=document.getElementById('schemaJSONContent').textContent;navigator.clipboard.writeText(txt).then(()=>{const b=document.querySelector('.cpbtn');if(b){b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1400);}});}
+function showSchemaDiff(){const diff={added:['dna.cluster_count','emotion_space.saturation_bias','scores.brand_alignment','versioning.cert'],removed:['base.material_type'],changed:['composition.zone_count → now derived from dna.cluster_count','scores.emotion_fit → now normalized 0.0–1.0'],breaking:false};document.getElementById('schemaJSONContent').innerHTML=syntaxHL(JSON.stringify(diff,null,2));document.getElementById('schemaName').textContent='Schema Diff: V1 vs V0.9';document.getElementById('schemaDesc').textContent='Changes between EC_CANON_V1 and EC_CANON_V0.9. Non-breaking upgrade — V0.9 blueprints can be migrated automatically.';}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 4: ARCHITECTURE MAP
+// ═══════════════════════════════════════════════════════
+const ARCH_NODES=[
+  {id:'memory_weaver',label:'Memory Weaver',layer:'Input',x:.08,y:.18,color:'#c9a96e',desc:'Converts emotional memories and customer prompts into design intent. Outputs emotion profile, palette direction, formula suggestion, and initial blueprint seed.',tech:'FastAPI · Claude API · Emotion Engine',connections:[{to:'emotion_engine',type:'data'},{to:'blueprint_engine',type:'async'}]},
+  {id:'emotion_engine',label:'Emotion Engine',layer:'Core',x:.26,y:.12,color:'#9b8ec4',desc:'The valence–arousal coordinate system. Translates emotional input into quantitative design directives: palette bias, saturation, density, symmetry, and material softness.',tech:'Python · NumPy · Custom emotion model',connections:[{to:'formula_selector',type:'data'},{to:'blueprint_engine',type:'data'}]},
+  {id:'formula_selector',label:'Formula Selector',layer:'Core',x:.44,y:.08,color:'#d4a843',desc:'Matches emotion profile to the optimal composition formula from the 12 canonical set. Uses rule-based scoring — no AI in formula selection.',tech:'Python · Rule engine',connections:[{to:'placement_engine',type:'data'},{to:'blueprint_engine',type:'data'}]},
+  {id:'inventory_weaver',label:'Inventory Weaver',layer:'Input',x:.08,y:.44,color:'#c9a96e',desc:'Generates wreath designs constrained by available materials. Analyzes inventory stock, runs feasibility scoring, and routes to Inventory Salvage formula when needed.',tech:'FastAPI · PostgreSQL',connections:[{to:'placement_engine',type:'data'},{to:'inventory_db',type:'sync'}]},
+  {id:'inventory_db',label:'Inventory DB',layer:'Data',x:.08,y:.68,color:'#5a8a84',desc:'PostgreSQL database storing the full inventory catalog with role, stock levels, color metadata, formula compatibility, and emotional affinities for 560+ items.',tech:'PostgreSQL · Prisma ORM',connections:[{to:'blueprint_engine',type:'async'}]},
+  {id:'placement_engine',label:'Placement Engine',layer:'Core',x:.44,y:.34,color:'#d4a843',desc:'The deterministic stem placement engine. Uses polar coordinates to solve exact positions for every stem. Eight internal layers: Anchor Generator, Zone Field Generator, Stem Allocation, Position Solver, Direction Vector Engine, Depth Layering, Silence Arc Enforcer, Repair Engine.',tech:'Python · NumPy · Polar geometry',connections:[{to:'blueprint_engine',type:'data'},{to:'dna_engine',type:'sync'}]},
+  {id:'dna_engine',label:'DNA Engine',layer:'Core',x:.62,y:.2,color:'#d4a843',desc:'Manages the 12-trait Wreath DNA profile. Classifies traits as hard (brand-protected) or soft (ABC-mutable). Validates all mutations against boundary constraints before acceptance.',tech:'Python · Schema validation',connections:[{to:'abc_engine',type:'data'},{to:'blueprint_engine',type:'data'}]},
+  {id:'blueprint_engine',label:'Blueprint Engine',layer:'Core',x:.62,y:.44,color:'#c9a96e',desc:'The central canonical object compiler. Assembles all upstream outputs into the EC_CANON_V1 blueprint JSON. Enforces schema validation, scores emotion fit and brand alignment, and certifies manufacture-safe blueprints.',tech:'Python · FastAPI · Pydantic',connections:[{to:'abc_engine',type:'data'},{to:'genome_dashboard',type:'event'},{to:'output_engine',type:'data'},{to:'blueprint_db',type:'sync'}]},
+  {id:'abc_engine',label:'ABC Engine',layer:'Intelligence',x:.80,y:.28,color:'#7a9e7e',desc:'Adaptive Blueprint Composer. Mutates soft DNA genes to evolve blueprints while staying within brand DNA constraints. Tracks lineage, fitness scores, and mutation deltas. Never bypasses hard boundaries.',tech:'Python · Genetic algorithm · FastAPI',connections:[{to:'blueprint_engine',type:'async'},{to:'genome_dashboard',type:'event'}]},
+  {id:'blueprint_db',label:'Blueprint DB',layer:'Data',x:.80,y:.56,color:'#5a8a84',desc:'PostgreSQL database storing all generated blueprints, lineage trees, DNA profiles, and version history. Primary source of truth for blueprint retrieval and genome queries.',tech:'PostgreSQL · Redis cache',connections:[{to:'api_gateway',type:'sync'}]},
+  {id:'genome_dashboard',label:'Genome Dashboard',layer:'Interface',x:.62,y:.68,color:'#c47c6e',desc:'Visual command center exposing blueprint genetics. Renders DNA radar charts, lineage trees, gene diffs between generations, adaptive status, and brand protection status.',tech:'Next.js · React · Canvas API',connections:[{to:'api_gateway',type:'data'}]},
+  {id:'output_engine',label:'Output Engine',layer:'Export',x:.44,y:.68,color:'#c47c6e',desc:'Compiles blueprint into manufacture-ready outputs: cut list CSV, assembly build guide PDF, blueprint JSON export, and Midjourney render prompt. The product delivery layer.',tech:'Python · WeasyPrint · Jinja2',connections:[{to:'api_gateway',type:'data'}]},
+  {id:'design_studio',label:'Design Studio',layer:'Interface',x:.26,y:.78,color:'#c47c6e',desc:'Professional manual editing interface. Formula selection, DNA inspection, genome visualization, manual blueprint refinement, and export prep. Built for power users and designers.',tech:'Next.js · React · TypeScript',connections:[{to:'api_gateway',type:'data'},{to:'blueprint_engine',type:'async'}]},
+  {id:'api_gateway',label:'API Gateway',layer:'Gateway',x:.26,y:.52,color:'#4a9eb5',desc:'The unified REST API layer. Routes all client requests to the appropriate service, handles authentication, rate limiting, and response serialization. 12 documented endpoints on EC_CANON_V1 schema.',tech:'FastAPI · JWT auth · Redis rate limit',connections:[{to:'blueprint_engine',type:'data'},{to:'placement_engine',type:'data'},{to:'inventory_weaver',type:'data'}]},
+];
+const LAYER_COLORS={Input:'#c9a96e',Core:'#d4a843',Intelligence:'#7a9e7e',Data:'#5a8a84',Interface:'#c47c6e',Export:'#c47c6e',Gateway:'#4a9eb5'};
+let archW=0,archH=0,archCtx,archReady=false,selArchNode=null,archHover=null;
+function drawArchMap(){
+  const c=document.getElementById('archCanvas');if(!c)return;
+  archCtx=c.getContext('2d');
+  const wrap=c.parentElement;
+  archW=Math.min(900,wrap.clientWidth-32);archH=480;
+  c.width=archW;c.height=archH;
+  // Stats
+  document.getElementById('archStats').innerHTML=[['Nodes',ARCH_NODES.length,'System components'],['Connections',ARCH_NODES.reduce((s,n)=>s+n.connections.length,0),'Active data flows'],['Layers',Object.keys(LAYER_COLORS).length,'Architecture tiers'],['Core Spine',4,'Critical path nodes']].map(([l,v,s])=>`<div class="card"><div class="clbl">${l}</div><div class="cval">${v}</div><div class="csub">${s}</div></div>`).join('');
+  // Legend
+  document.getElementById('archLegend').innerHTML=[['DATA','#4a9eb5'],['EVENT','#d4a843'],['SYNC','#7a9e7e'],['ASYNC','#9b8ec4']].map(([l,c2])=>`<div class="arch-legend-item"><div style="width:24px;height:2px;background:${c2};border-radius:1px;margin-right:4px;"></div>${l}</div>`).join('')+Object.entries(LAYER_COLORS).map(([l,c2])=>`<div class="arch-legend-item"><div class="arch-leg-dot" style="background:${c2};"></div>${l}</div>`).join('');
+  renderArchMap();
+  if(!archReady){
+    archReady=true;
+    c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect(),mx=(e.clientX-r.left)*(archW/r.width),my=(e.clientY-r.top)*(archH/r.height);archHover=ARCH_NODES.findIndex(n=>Math.hypot(n.x*archW-mx,n.y*archH-my)<18);renderArchMap();c.style.cursor=archHover>=0?'pointer':'default';});
+    c.addEventListener('click',e=>{const r=c.getBoundingClientRect(),mx=(e.clientX-r.left)*(archW/r.width),my=(e.clientY-r.top)*(archH/r.height);const hit=ARCH_NODES.findIndex(n=>Math.hypot(n.x*archW-mx,n.y*archH-my)<18);if(hit>=0){selArchNode=hit;renderArchMap();showArchNode(hit);}});
+  }
+}
+function renderArchMap(){
+  if(!archCtx)return;
+  const ctx=archCtx,w=archW,h=archH;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);
+  // Grid
+  ctx.strokeStyle='rgba(42,37,32,.4)';ctx.lineWidth=1;
+  for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  // Connection type colors
+  const ctcol={data:'#4a9eb5',event:'#d4a843',sync:'#7a9e7e',async:'#9b8ec4'};
+  // Draw edges
+  ARCH_NODES.forEach(node=>{
+    const x1=node.x*w,y1=node.y*h;
+    node.connections.forEach(conn=>{
+      const target=ARCH_NODES.find(n=>n.id===conn.to);if(!target)return;
+      const x2=target.x*w,y2=target.y*h;
+      const col=ctcol[conn.type]||'#4a9eb5';
+      ctx.beginPath();
+      const mx=(x1+x2)/2,my=(y1+y2)/2;
+      ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx+(y2-y1)*.15,my-(x2-x1)*.15,x2,y2);
+      ctx.strokeStyle=`${col}55`;ctx.lineWidth=1.5;
+      if(selArchNode!==null&&(ARCH_NODES[selArchNode].id===node.id||ARCH_NODES[selArchNode].id===target.id)){ctx.strokeStyle=`${col}cc`;ctx.lineWidth=2;}
+      ctx.stroke();
+      // Arrow
+      const angle=Math.atan2(y2-y1,x2-x1);const aLen=16,aX=x2-aLen*Math.cos(angle),aY=y2-aLen*Math.sin(angle);
+      ctx.beginPath();ctx.moveTo(x2-16*Math.cos(angle),y2-16*Math.sin(angle));ctx.lineTo(x2-22*Math.cos(angle-.3),y2-22*Math.sin(angle-.3));ctx.moveTo(x2-16*Math.cos(angle),y2-16*Math.sin(angle));ctx.lineTo(x2-22*Math.cos(angle+.3),y2-22*Math.sin(angle+.3));
+      ctx.strokeStyle=`${col}88`;ctx.lineWidth=1.2;ctx.stroke();
+    });
+  });
+  // Draw nodes
+  ARCH_NODES.forEach((node,i)=>{
+    const x=node.x*w,y=node.y*h;
+    const isSel=selArchNode===i,isHov=archHover===i;
+    const r=isSel?16:isHov?15:13;
+    // Glow
+    if(isSel||isHov){const g=ctx.createRadialGradient(x,y,0,x,y,r+10);g.addColorStop(0,node.color+'44');g.addColorStop(1,'transparent');ctx.beginPath();ctx.arc(x,y,r+10,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();}
+    // Node circle
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=isSel?node.color:node.color+'33';ctx.fill();ctx.strokeStyle=isSel?node.color:isHov?node.color+'cc':node.color+'66';ctx.lineWidth=isSel?2:1.5;ctx.stroke();
+    // Label
+    ctx.font=`${isSel?'500 ':''10px "DM Mono"`;ctx.fillStyle=isSel?'#e8e0d4':'#8a7d6e';ctx.textAlign='center';ctx.textBaseline='top';const words=node.label.split(' ');if(words.length>1&&words[0].length<10){ctx.fillText(words[0],x,y+r+3);ctx.fillText(words.slice(1).join(' '),x,y+r+13);}else{ctx.fillText(node.label,x,y+r+4);}
+  });
+}
+function showArchNode(i){
+  const node=ARCH_NODES[i];
+  document.getElementById('archNodeName').textContent=node.label;
+  document.getElementById('archNodeLayer').textContent=node.layer+' Layer';
+  document.getElementById('archNodeDesc').textContent=node.desc;
+  document.getElementById('archNodeMeta').innerHTML=`<div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--txm);margin-bottom:4px;">Tech Stack</div><div style="font-size:11px;color:var(--txd);">${node.tech}</div>`;
+  document.getElementById('archConnections').innerHTML=node.connections.length?node.connections.map(conn=>{const target=ARCH_NODES.find(n=>n.id===conn.to);const ctcls={data:'ct-data',event:'ct-event',sync:'ct-sync',async:'ct-async'};return`<div class="conn-row"><div class="conn-from">${node.label}</div><div class="conn-type ${ctcls[conn.type]||'ct-data'}">${conn.type}</div><div class="conn-to">${target?target.label:conn.to}</div></div>`;}).join(''):'<div style="color:var(--txm);font-size:10.5px;">No outbound connections.</div>';
+}
+
+// ── THEME ──
+(() => {
+  document.body.classList.add('light');
+})();
+
+// Boot engine data
+loadFormulas().then(initFormulaGrid);
+loadDNAProfiles().then(buildDNARegistry);
+loadInventory().then(buildInventory);
+runPlacement();
+
+// Init
+selectEP(0);
+selectSchema(0);
+document.querySelector('.api-ep-item').classList.add('active');
+document.querySelector('.schema-nav-item').classList.add('active');
+</script>
+</body>
+</html>

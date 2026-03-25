@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted Studio — SaaS Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ec-white:        #FFFFFF;
+  --ec-off-white:    #F9F7F4;
+  --ec-paper:        #F2EFE9;
+  --ec-black:        #1A1A1A;
+  --ec-charcoal:     #2E2E2E;
+  --ec-ink:          #4A4A4A;
+  --ec-green:        #4A6741;
+  --ec-green-light:  #6B8F67;
+  --ec-green-pale:   #EEF2ED;
+  --ec-green-dim:    rgba(74, 103, 65, 0.12);
+  --ec-gray-100:     #F5F5F5;
+  --ec-gray-200:     #E8E8E8;
+  --ec-gray-300:     #D0D0D0;
+  --ec-gray-400:     #A8A8A8;
+  --ec-gray-500:     #787878;
+  --ec-warning:      #C4922A;
+  --ec-error:        #B94040;
+  --ec-info:         #4A6785;
+  --ec-surface:      var(--ec-white);
+  --ec-surface-alt:  var(--ec-off-white);
+  --ec-surface-warm: var(--ec-paper);
+  --ec-border:       var(--ec-gray-200);
+  --ec-border-dark:  var(--ec-gray-300);
+  --ec-text:         var(--ec-black);
+  --ec-text-muted:   var(--ec-ink);
+  --ec-text-faint:   var(--ec-gray-500);
+  --ec-font-serif:   'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+  --ec-font-sans:    'Inter', system-ui, sans-serif;
+  --ec-font-script:  'Dancing Script', cursive;
+  --ec-text-xs:    0.6875rem;
+  --ec-text-sm:    0.8125rem;
+  --ec-text-base:  1rem;
+  --ec-text-lg:    1.125rem;
+  --ec-text-xl:    1.375rem;
+  --ec-text-2xl:   1.75rem;
+  --ec-text-3xl:   2.25rem;
+  --ec-text-4xl:   3rem;
+  --ec-space-1:  0.25rem;
+  --ec-space-2:  0.5rem;
+  --ec-space-3:  0.75rem;
+  --ec-space-4:  1rem;
+  --ec-space-5:  1.5rem;
+  --ec-space-6:  2rem;
+  --ec-space-8:  2.5rem;
+  --ec-space-10: 3rem;
+  --ec-space-12: 4rem;
+  --ec-radius-sm:   4px;
+  --ec-radius-md:   8px;
+  --ec-radius-lg:   14px;
+  --ec-radius-xl:   20px;
+  --ec-radius-full: 9999px;
+  --ec-shadow-sm:  0 1px 3px rgba(0,0,0,0.06);
+  --ec-shadow-md:  0 4px 16px rgba(0,0,0,0.08);
+  --ec-shadow-lg:  0 8px 32px rgba(0,0,0,0.10);
+  --ec-shadow-card:0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px var(--ec-border);
+  --ec-transition: 200ms ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--ec-font-sans);
+  background: var(--ec-off-white);
+  color: var(--ec-text);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* ── SIDEBAR NAV ── */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--ec-white);
+  border-right: 1px solid var(--ec-border);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  padding: var(--ec-space-6) 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+.sidebar-brand {
+  padding: 0 var(--ec-space-5) var(--ec-space-5);
+  border-bottom: 1px solid var(--ec-border);
+  margin-bottom: var(--ec-space-4);
+}
+.sidebar-brand .script { font-family: var(--ec-font-script); font-size: 1.4rem; color: var(--ec-green); display: block; }
+.sidebar-brand .sub { font-family: var(--ec-font-sans); font-size: var(--ec-text-xs); color: var(--ec-text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+.sidebar-label {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ec-text-faint);
+  padding: var(--ec-space-3) var(--ec-space-5);
+  margin-top: var(--ec-space-3);
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+  padding: 10px var(--ec-space-5);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+  color: var(--ec-text-muted);
+  transition: all var(--ec-transition);
+  border-left: 2px solid transparent;
+  line-height: 1.35;
+}
+.nav-item:hover { background: var(--ec-gray-100); color: var(--ec-text); }
+.nav-item.active { background: var(--ec-green-pale); color: var(--ec-green); border-left-color: var(--ec-green); font-weight: 500; }
+.nav-item .nav-num {
+  font-family: var(--ec-font-mono, monospace);
+  font-size: var(--ec-text-xs);
+  color: var(--ec-gray-400);
+  min-width: 18px;
+}
+.nav-item.active .nav-num { color: var(--ec-green-light); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 260px;
+  flex: 1;
+  min-height: 100vh;
+}
+.section-page {
+  display: none;
+  padding: var(--ec-space-10) var(--ec-space-8);
+  max-width: 820px;
+}
+.section-page.active { display: block; }
+
+/* ── COVER ── */
+.cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--ec-space-12) var(--ec-space-8);
+  max-width: 820px;
+  position: relative;
+}
+.cover-eyebrow {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  margin-bottom: var(--ec-space-4);
+}
+.cover-title {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ec-text);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--ec-space-4);
+}
+.cover-sub {
+  font-family: var(--ec-font-serif);
+  font-style: italic;
+  font-size: var(--ec-text-xl);
+  color: var(--ec-text-muted);
+  margin-bottom: var(--ec-space-8);
+  line-height: 1.4;
+}
+.cover-meta {
+  display: flex;
+  gap: var(--ec-space-5);
+  flex-wrap: wrap;
+}
+.cover-meta-item {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+  color: var(--ec-text-faint);
+}
+.cover-meta-item strong { color: var(--ec-text-muted); font-weight: 500; }
+.cover-arc {
+  position: absolute;
+  top: var(--ec-space-8);
+  right: var(--ec-space-8);
+  opacity: 0.08;
+}
+.cover-toc {
+  margin-top: var(--ec-space-10);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ec-space-3);
+}
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+  padding: var(--ec-space-3) var(--ec-space-4);
+  background: var(--ec-white);
+  border-radius: var(--ec-radius-md);
+  border: 1px solid var(--ec-border);
+  cursor: pointer;
+  transition: all var(--ec-transition);
+  text-decoration: none;
+}
+.toc-item:hover { border-color: var(--ec-green); background: var(--ec-green-pale); }
+.toc-num { font-size: var(--ec-text-xs); color: var(--ec-gray-400); font-weight: 600; min-width: 20px; }
+.toc-label { font-size: var(--ec-text-sm); color: var(--ec-text-muted); font-family: var(--ec-font-sans); line-height: 1.3; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  margin-bottom: var(--ec-space-8);
+  padding-bottom: var(--ec-space-6);
+  border-bottom: 1px solid var(--ec-border);
+}
+.section-eyebrow {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  margin-bottom: var(--ec-space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-2);
+}
+.section-title {
+  font-family: var(--ec-font-serif);
+  font-size: var(--ec-text-3xl);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--ec-text);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--ec-space-3);
+}
+.section-desc {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-base);
+  color: var(--ec-text-muted);
+  line-height: 1.7;
+  max-width: 620px;
+}
+
+/* ── CARDS & LAYOUT ── */
+.ec-card {
+  background: var(--ec-white);
+  border-radius: var(--ec-radius-lg);
+  box-shadow: var(--ec-shadow-card);
+  padding: var(--ec-space-6);
+  margin-bottom: var(--ec-space-5);
+}
+.ec-card--green { background: var(--ec-green-pale); border: 1px solid var(--ec-green-dim); }
+.ec-card--warm { background: var(--ec-paper); }
+.ec-card--dark { background: var(--ec-black); color: var(--ec-white); }
+
+.card-label {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ec-text-faint);
+  margin-bottom: var(--ec-space-3);
+}
+.ec-card--dark .card-label { color: rgba(255,255,255,0.4); }
+
+.card-title {
+  font-family: var(--ec-font-serif);
+  font-size: var(--ec-text-xl);
+  font-weight: 600;
+  color: var(--ec-text);
+  margin-bottom: var(--ec-space-3);
+  line-height: 1.3;
+}
+.ec-card--dark .card-title { color: var(--ec-white); }
+
+.card-body {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-base);
+  color: var(--ec-text-muted);
+  line-height: 1.7;
+}
+.ec-card--dark .card-body { color: rgba(255,255,255,0.65); }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ec-space-4); }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--ec-space-4); }
+
+/* ── TABLE ── */
+.ec-table-wrap { overflow-x: auto; margin-bottom: var(--ec-space-5); }
+.ec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+}
+.ec-table th {
+  background: var(--ec-black);
+  color: var(--ec-white);
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.ec-table th:first-child { border-radius: var(--ec-radius-sm) 0 0 var(--ec-radius-sm); }
+.ec-table th:last-child { border-radius: 0 var(--ec-radius-sm) var(--ec-radius-sm) 0; }
+.ec-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ec-border);
+  color: var(--ec-text-muted);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.ec-table tr:last-child td { border-bottom: none; }
+.ec-table tr:hover td { background: var(--ec-gray-100); }
+.ec-table .td-strong { font-weight: 600; color: var(--ec-text); }
+
+/* ── TIER BADGES ── */
+.ec-tier {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: var(--ec-radius-full);
+}
+.tier-bloom   { background: #EEF2ED; color: var(--ec-green); }
+.tier-craft   { background: #EEF4F9; color: #4A6785; }
+.tier-studio  { background: #F5EEF4; color: #7A4A85; }
+.tier-atelier { background: #1A1A1A; color: #F2EFE9; }
+.tier-all     { background: var(--ec-gray-100); color: var(--ec-gray-500); }
+
+/* ── STAT BLOCKS ── */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ec-space-4); margin-bottom: var(--ec-space-6); }
+.stat-card {
+  background: var(--ec-white);
+  border-radius: var(--ec-radius-lg);
+  box-shadow: var(--ec-shadow-card);
+  padding: var(--ec-space-5);
+  text-align: center;
+}
+.stat-value {
+  font-family: var(--ec-font-serif);
+  font-size: var(--ec-text-3xl);
+  font-weight: 600;
+  color: var(--ec-green);
+  line-height: 1;
+  margin-bottom: var(--ec-space-2);
+}
+.stat-label {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-xs);
+  color: var(--ec-text-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── FEATURE LIST ── */
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: var(--ec-space-3); }
+.feature-item {
+  display: flex;
+  gap: var(--ec-space-3);
+  padding: var(--ec-space-4);
+  background: var(--ec-white);
+  border-radius: var(--ec-radius-md);
+  border: 1px solid var(--ec-border);
+}
+.feature-icon {
+  width: 32px; height: 32px;
+  border-radius: var(--ec-radius-sm);
+  background: var(--ec-green-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.feature-content {}
+.feature-title {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+  font-weight: 600;
+  color: var(--ec-text);
+  margin-bottom: 3px;
+}
+.feature-desc {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+  color: var(--ec-text-muted);
+  line-height: 1.55;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  display: flex;
+  gap: var(--ec-space-4);
+  padding: var(--ec-space-5);
+  border-radius: var(--ec-radius-lg);
+  margin-bottom: var(--ec-space-5);
+  border-left: 3px solid;
+}
+.callout-green { background: var(--ec-green-pale); border-color: var(--ec-green); }
+.callout-warm  { background: var(--ec-paper); border-color: var(--ec-warning); }
+.callout-title {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+  font-weight: 600;
+  color: var(--ec-text);
+  margin-bottom: var(--ec-space-1);
+}
+.callout-body {
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+  color: var(--ec-text-muted);
+  line-height: 1.6;
+}
+
+/* ── DIVIDER ── */
+.ec-divider {
+  display: flex; align-items: center; gap: var(--ec-space-4);
+  margin: var(--ec-space-8) 0;
+  color: var(--ec-gray-300);
+  font-size: 1rem;
+}
+.ec-divider::before, .ec-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--ec-border);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-row { margin-bottom: var(--ec-space-4); }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: var(--ec-space-2); }
+.progress-label { font-size: var(--ec-text-sm); font-weight: 500; color: var(--ec-text); }
+.progress-value { font-size: var(--ec-text-sm); color: var(--ec-text-faint); }
+.progress-bar { height: 6px; background: var(--ec-gray-200); border-radius: var(--ec-radius-full); overflow: hidden; }
+.progress-fill { height: 100%; background: var(--ec-green); border-radius: var(--ec-radius-full); }
+
+/* ── NAV FOOTER ── */
+.section-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--ec-space-10);
+  padding-top: var(--ec-space-6);
+  border-top: 1px solid var(--ec-border);
+}
+.nav-btn {
+  display: inline-flex; align-items: center; gap: var(--ec-space-2);
+  padding: 10px var(--ec-space-5);
+  border-radius: var(--ec-radius-md);
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--ec-border-dark);
+  background: var(--ec-white);
+  color: var(--ec-text);
+  transition: all var(--ec-transition);
+}
+.nav-btn:hover { background: var(--ec-black); color: var(--ec-white); border-color: var(--ec-black); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn-primary {
+  background: var(--ec-green);
+  color: var(--ec-white);
+  border-color: var(--ec-green);
+}
+.nav-btn-primary:hover { background: var(--ec-green-light); border-color: var(--ec-green-light); }
+
+/* ── CONFIDENCE BADGE ── */
+.confidence {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--ec-font-sans);
+  font-size: var(--ec-text-xs);
+  font-weight: 600;
+  color: var(--ec-green);
+  background: var(--ec-green-pale);
+  padding: 3px 10px;
+  border-radius: var(--ec-radius-full);
+  margin-left: var(--ec-space-3);
+}
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .cover-toc { grid-template-columns: 1fr; }
+  .section-page { padding: var(--ec-space-6) var(--ec-space-4); }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <span class="script">Evercrafted</span>
+    <span class="sub">SaaS Proposal · 2026</span>
+  </div>
+  <div class="sidebar-label">Overview</div>
+  <button class="nav-item active" onclick="showSection('cover', this)">
+    <span class="nav-num">00</span>Cover & Contents
+  </button>
+  <div class="sidebar-label">Proposal Sections</div>
+  <button class="nav-item" onclick="showSection('problem', this)">
+    <span class="nav-num">01</span>The Problem
+  </button>
+  <button class="nav-item" onclick="showSection('solution', this)">
+    <span class="nav-num">02</span>The Solution
+  </button>
+  <button class="nav-item" onclick="showSection('revenue', this)">
+    <span class="nav-num">03</span>Revenue Models
+  </button>
+  <button class="nav-item" onclick="showSection('features', this)">
+    <span class="nav-num">04</span>Key Features
+  </button>
+  <button class="nav-item" onclick="showSection('engagement', this)">
+    <span class="nav-num">05</span>User Engagement
+  </button>
+  <button class="nav-item" onclick="showSection('tutorials', this)">
+    <span class="nav-num">06</span>Tutorial System
+  </button>
+  <button class="nav-item" onclick="showSection('sourcing', this)">
+    <span class="nav-num">07</span>Materials Sourcing
+  </button>
+  <button class="nav-item" onclick="showSection('defensibility', this)">
+    <span class="nav-num">08</span>Defensibility
+  </button>
+  <button class="nav-item" onclick="showSection('tam', this)">
+    <span class="nav-num">09</span>Market Opportunity
+  </button>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- 00 COVER -->
+  <div id="cover" class="section-page active cover">
+    <svg class="cover-arc" width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="150" cy="150" r="120" stroke="#4A6741" stroke-width="1"/>
+      <circle cx="150" cy="150" r="90" stroke="#4A6741" stroke-width="0.5" stroke-dasharray="4 4"/>
+      <circle cx="150" cy="150" r="60" stroke="#4A6741" stroke-width="0.5"/>
+      <path d="M150 30 C150 30 160 60 150 90" stroke="#4A6741" stroke-width="1.5" fill="none"/>
+      <path d="M150 90 C145 85 140 80 135 78" stroke="#4A6741" stroke-width="1" fill="none"/>
+      <path d="M150 70 C155 65 162 62 165 60" stroke="#4A6741" stroke-width="1" fill="none"/>
+      <ellipse cx="150" cy="28" rx="4" ry="6" fill="#4A6741" opacity="0.6"/>
+    </svg>
+    <div class="cover-eyebrow">Product Proposal · Confidential</div>
+    <h1 class="cover-title">Evercrafted Studio</h1>
+    <p class="cover-sub">A vertically integrated SaaS platform for professional and hobbyist wreath makers — from design intent to manufacturable blueprint.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><strong>Category:</strong> Home Decor / Craft SaaS</div>
+      <div class="cover-meta-item"><strong>Model:</strong> B2B Subscription + Consumer Layer</div>
+      <div class="cover-meta-item"><strong>Stage:</strong> Active Development</div>
+      <div class="cover-meta-item"><strong>Confidence:</strong> 92%</div>
+    </div>
+    <div class="ec-divider">✦</div>
+    <div style="font-family: var(--ec-font-sans); font-size: var(--ec-text-sm); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ec-text-faint); margin-bottom: var(--ec-space-4);">Document Contents</div>
+    <div class="cover-toc">
+      <div class="toc-item" onclick="showSection('problem', document.querySelector('[onclick*=problem]'))">
+        <span class="toc-num">01</span><span class="toc-label">The Problem</span>
+      </div>
+      <div class="toc-item" onclick="showSection('solution', document.querySelector('[onclick*=solution]'))">
+        <span class="toc-num">02</span><span class="toc-label">The Solution</span>
+      </div>
+      <div class="toc-item" onclick="showSection('revenue', document.querySelector('[onclick*=revenue]'))">
+        <span class="toc-num">03</span><span class="toc-label">Revenue Models</span>
+      </div>
+      <div class="toc-item" onclick="showSection('features', document.querySelector('[onclick*=features]'))">
+        <span class="toc-num">04</span><span class="toc-label">Key Features</span>
+      </div>
+      <div class="toc-item" onclick="showSection('engagement', document.querySelector('[onclick*=engagement]'))">
+        <span class="toc-num">05</span><span class="toc-label">User Engagement</span>
+      </div>
+      <div class="toc-item" onclick="showSection('tutorials', document.querySelector('[onclick*=tutorials]'))">
+        <span class="toc-num">06</span><span class="toc-label">Tutorial System</span>
+      </div>
+      <div class="toc-item" onclick="showSection('sourcing', document.querySelector('[onclick*=sourcing]'))">
+        <span class="toc-num">07</span><span class="toc-label">Materials Sourcing</span>
+      </div>
+      <div class="toc-item" onclick="showSection('defensibility', document.querySelector('[onclick*=defensibility]'))">
+        <span class="toc-num">08</span><span class="toc-label">Defensibility</span>
+      </div>
+      <div class="toc-item" onclick="showSection('tam', document.querySelector('[onclick*=tam]'))">
+        <span class="toc-num">09</span><span class="toc-label">Market Opportunity</span>
+      </div>
+    </div>
+    <div class="section-nav">
+      <button class="nav-btn" disabled>← Previous</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('problem', document.querySelector('[onclick*=problem]'))">01 — The Problem →</button>
+    </div>
+  </div>
+
+  <!-- 01 PROBLEM -->
+  <div id="problem" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 01</div>
+      <h2 class="section-title">The Problem</h2>
+      <p class="section-desc">Home decor enthusiasts and professional wreath makers operate in a fragmented, analog world. The gap between creative intent and finished product is wide — and expensive.</p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value">6+</div>
+        <div class="stat-label">Vendor sites per order</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">~40%</div>
+        <div class="stat-label">Materials wasted on misbuys</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Dominant SaaS tools for this niche</div>
+      </div>
+    </div>
+
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-icon">🗺️</div>
+        <div class="feature-content">
+          <div class="feature-title">Fragmented Sourcing</div>
+          <div class="feature-desc">Makers source stems, ribbons, bases, and wire from 6+ separate vendors — Afloral, Amazon, Michael's, Save-On-Crafts, Etsy suppliers, local wholesalers. There is no unified purchasing hub or compatibility engine.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">🧠</div>
+        <div class="feature-content">
+          <div class="feature-title">Designs Live in Their Heads</div>
+          <div class="feature-desc">Experienced wreath makers carry layout knowledge intuitively. This knowledge cannot be systematized, shared with an assistant, handed to a student, or replicated at scale without a structured design system.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">💸</div>
+        <div class="feature-content">
+          <div class="feature-title">No Pricing Intelligence</div>
+          <div class="feature-desc">Most craft sellers underprice their work. Without a tool that accounts for materials cost, labor hours, overhead, and market positioning, profit margins are estimated — usually badly.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">👁️</div>
+        <div class="feature-content">
+          <div class="feature-title">Zero Pre-Build Visualization</div>
+          <div class="feature-desc">There is no way to see a finished wreath before purchasing materials. Every design is a financial bet. Mismatched color palettes and proportional errors aren't discovered until after materials are wired and irreversible.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">📆</div>
+        <div class="feature-content">
+          <div class="feature-title">Seasonal Timing is Reactive, Not Planned</div>
+          <div class="feature-desc">Holiday wreaths require 6–8 weeks of lead time for design, sourcing, and construction. Most makers start too late, purchase reactively, and miss the peak sales window. No tool exists to systematize seasonal planning.</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="callout callout-green" style="margin-top: var(--ec-space-6);">
+      <div>
+        <div class="callout-title">The Opportunity in Plain Terms</div>
+        <div class="callout-body">No SaaS product owns the wreath-making category. The tools that exist (Cricut Design Space, Canva, Pinterest) are generic. None speak the language of FFLGA classification, polar coordinate placement, or stem-count-to-diameter ratios. The domain moat is real and unoccupied.</div>
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('cover', document.querySelector('[onclick*=cover]'))">← Cover</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('solution', document.querySelector('[onclick*=solution]'))">02 — The Solution →</button>
+    </div>
+  </div>
+
+  <!-- 02 SOLUTION -->
+  <div id="solution" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 02</div>
+      <h2 class="section-title">The Solution</h2>
+      <p class="section-desc">Evercrafted Studio is a modular, subscription-based SaaS platform that turns wreath making from intuitive craft into a repeatable, scalable, and profitable design practice.</p>
+    </div>
+
+    <div class="ec-card ec-card--dark" style="margin-bottom: var(--ec-space-5);">
+      <div class="card-label">Platform Architecture</div>
+      <div class="card-title">Two Audiences, One Engine</div>
+      <div class="card-body">Evercrafted Studio (B2B/prosumer) and Moodoor (consumer) share the same blueprint engine, design logic, and materials database — but present entirely different interfaces tuned to each audience's sophistication and intent.</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="ec-card">
+        <div class="card-label">Product A</div>
+        <div class="card-title">Evercrafted Studio</div>
+        <div class="card-body">A professional tool suite for serious hobbyists and working wreath makers. Modular apps purchased individually or as part of a subscription tier. Designed for people who sell, teach, or produce at volume.</div>
+        <div style="margin-top: var(--ec-space-4); display: flex; gap: var(--ec-space-2); flex-wrap: wrap;">
+          <span class="ec-tier tier-bloom">Bloom</span>
+          <span class="ec-tier tier-craft">Craft</span>
+          <span class="ec-tier tier-studio">Studio</span>
+          <span class="ec-tier tier-atelier">Atelier</span>
+        </div>
+      </div>
+      <div class="ec-card ec-card--green">
+        <div class="card-label">Product B</div>
+        <div class="card-title">Moodoor</div>
+        <div class="card-body">A consumer-facing, mood-driven door décor experience. Users answer a few emotional prompts and receive a curated wreath design with a materials list. Gateway into the Studio ecosystem.</div>
+        <div style="margin-top: var(--ec-space-4);">
+          <span class="ec-tier" style="background: var(--ec-green); color: white;">Freemium → $4.99/mo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ec-divider">✦</div>
+
+    <div class="section-header" style="border: none; margin-bottom: var(--ec-space-5); padding-bottom: 0;">
+      <h3 style="font-family: var(--ec-font-serif); font-size: var(--ec-text-2xl); font-weight: 600; margin-bottom: var(--ec-space-3);">The Four-Tier Subscription Structure</h3>
+    </div>
+
+    <div class="ec-table-wrap">
+      <table class="ec-table">
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Target User</th>
+            <th>Included Apps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="ec-tier tier-bloom">1</span></td>
+            <td class="td-strong">Bloom</td>
+            <td>~$9/mo</td>
+            <td>Curious hobbyist, just starting</td>
+            <td>Tutorial guides, seasonal lookbook</td>
+          </tr>
+          <tr>
+            <td><span class="ec-tier tier-craft">2</span></td>
+            <td class="td-strong">Craft</td>
+            <td>~$19/mo</td>
+            <td>Regular maker, sells occasionally</td>
+            <td>+ Inventory tracker, pricing calculator</td>
+          </tr>
+          <tr>
+            <td><span class="ec-tier tier-studio">3</span></td>
+            <td class="td-strong">Studio</td>
+            <td>~$39/mo</td>
+            <td>Part-time pro, small business</td>
+            <td>+ Blueprint generator, collection builder</td>
+          </tr>
+          <tr>
+            <td><span class="ec-tier tier-atelier">4</span></td>
+            <td class="td-strong">Atelier</td>
+            <td>~$79/mo</td>
+            <td>Full-time designer, sells at scale</td>
+            <td>+ AI visualizer, prompt creator, all future apps</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-warm">
+      <div>
+        <div class="callout-title">Pricing Benchmark Note — Confidence 80%</div>
+        <div class="callout-body">These price points are proposals derived from comparable craft SaaS benchmarks: Cricut Design Space ($9.99/mo), Canva Pro ($15/mo), and Flodesk ($38/mo). Final pricing should be validated against willingness-to-pay research with actual wreath makers before launch.</div>
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('problem', document.querySelector('[onclick*=problem]'))">← 01 Problem</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('revenue', document.querySelector('[onclick*=revenue]'))">03 — Revenue Models →</button>
+    </div>
+  </div>
+
+  <!-- 03 REVENUE -->
+  <div id="revenue" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 03</div>
+      <h2 class="section-title">Revenue Models</h2>
+      <p class="section-desc">Five distinct revenue streams stack across the platform — from predictable subscription MRR to high-margin marketplace commissions.</p>
+    </div>
+
+    <div class="ec-card" style="margin-bottom: var(--ec-space-5);">
+      <div class="card-label">Revenue Stream 01 · Primary</div>
+      <div class="card-title">Tiered Subscription</div>
+      <div class="card-body" style="margin-bottom: var(--ec-space-4);">The core revenue engine. Monthly recurring revenue from four tier levels. Annual billing offered at a 20% discount to improve cash flow predictability and reduce churn. Upgrade paths are surfaced via locked feature previews — users always see what they're missing, never hit a blank wall.</div>
+      <div style="display: flex; gap: var(--ec-space-3); flex-wrap: wrap;">
+        <div style="background: var(--ec-green-pale); padding: var(--ec-space-3) var(--ec-space-4); border-radius: var(--ec-radius-md); flex: 1; min-width: 140px;">
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Target ARPU</div>
+          <div style="font-family: var(--ec-font-serif); font-size: var(--ec-text-xl); font-weight: 600; color: var(--ec-green);">$19/mo</div>
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint);">blended across tiers</div>
+        </div>
+        <div style="background: var(--ec-green-pale); padding: var(--ec-space-3) var(--ec-space-4); border-radius: var(--ec-radius-md); flex: 1; min-width: 140px;">
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Annual Discount</div>
+          <div style="font-family: var(--ec-font-serif); font-size: var(--ec-text-xl); font-weight: 600; color: var(--ec-green);">20%</div>
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint);">to incentivize annual plans</div>
+        </div>
+        <div style="background: var(--ec-green-pale); padding: var(--ec-space-3) var(--ec-space-4); border-radius: var(--ec-radius-md); flex: 1; min-width: 140px;">
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;">Churn Target</div>
+          <div style="font-family: var(--ec-font-serif); font-size: var(--ec-text-xl); font-weight: 600; color: var(--ec-green);">&lt; 5%</div>
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint);">monthly, seasonal tool dependency</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ec-card" style="margin-bottom: var(--ec-space-5);">
+      <div class="card-label">Revenue Stream 02 · Expansion</div>
+      <div class="card-title">À La Carte App Purchases</div>
+      <div class="card-body" style="margin-bottom: var(--ec-space-4);">Individual apps purchased outside a subscription tier. Lowers the acquisition barrier for hesitant buyers and creates natural upsell paths. Once a user buys 2–3 apps, the subscription math is obvious.</div>
+      <div class="ec-table-wrap">
+        <table class="ec-table">
+          <thead><tr><th>App</th><th>Type</th><th>Price</th></tr></thead>
+          <tbody>
+            <tr><td class="td-strong">Blueprint Generator</td><td>One-time purchase</td><td>$14</td></tr>
+            <tr><td class="td-strong">Pricing Calculator</td><td>One-time purchase</td><td>$9</td></tr>
+            <tr><td class="td-strong">AI Visualizer</td><td>30-day access</td><td>$12</td></tr>
+            <tr><td class="td-strong">Seasonal Collection Builder</td><td>One-time purchase</td><td>$11</td></tr>
+            <tr><td class="td-strong">Bundle: Blueprint + Pricing</td><td>Bundle (20% off)</td><td>$18</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ec-card" style="margin-bottom: var(--ec-space-5);">
+      <div class="card-label">Revenue Stream 03 · High Margin</div>
+      <div class="card-title">Materials Marketplace</div>
+      <div class="card-body" style="margin-bottom: var(--ec-space-4);">An affiliate or white-label marketplace embedded inside the platform. Every blueprint generates a shopping list — every line item is a potential purchase. This monetizes the exact moment of design intent, the highest-conversion touchpoint in the product.</div>
+      <div class="grid-3">
+        <div style="background: var(--ec-paper); border-radius: var(--ec-radius-md); padding: var(--ec-space-4);">
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Affiliate</div>
+          <div style="font-family: var(--ec-font-serif); font-size: var(--ec-text-xl); font-weight: 600; color: var(--ec-text);">4–8%</div>
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); margin-top: 4px;">commission on Amazon, Afloral, Save-On-Crafts links</div>
+        </div>
+        <div style="background: var(--ec-paper); border-radius: var(--ec-radius-md); padding: var(--ec-space-4);">
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Preferred Vendors</div>
+          <div style="font-family: var(--ec-font-serif); font-size: var(--ec-text-xl); font-weight: 600; color: var(--ec-text);">$99–499</div>
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); margin-top: 4px;">monthly supplier listing & preferred placement fee</div>
+        </div>
+        <div style="background: var(--ec-paper); border-radius: var(--ec-radius-md); padding: var(--ec-space-4);">
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Private Label</div>
+          <div style="font-family: var(--ec-font-serif); font-size: var(--ec-text-xl); font-weight: 600; color: var(--ec-text);">TBD</div>
+          <div style="font-size: var(--ec-text-xs); color: var(--ec-text-faint); margin-top: 4px;">Evercrafted-branded seasonal supply bundles</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="ec-card">
+        <div class="card-label">Revenue Stream 04 · Volume</div>
+        <div class="card-title">Moodoor Consumer Layer</div>
+        <div class="card-body">Freemium consumer product with a $4.99/mo or $39/yr paid tier. Lower price point drives volume; qualified users convert upward into Studio subscriptions. Moodoor acts as both a product and a paid acquisition channel.</div>
+      </div>
+      <div class="ec-card">
+        <div class="card-label">Revenue Stream 05 · Passive</div>
+        <div class="card-title">Digital Product Sales</div>
+        <div class="card-body">Downloadable blueprint packs ($7–15), builder instruction PDFs, floriography guides, and Midjourney prompt packs for AI-rendered wreath previews. Zero marginal cost after creation. Sold via the platform and Gumroad/Etsy for additional reach.</div>
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('solution', document.querySelector('[onclick*=solution]'))">← 02 Solution</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('features', document.querySelector('[onclick*=features]'))">04 — Key Features →</button>
+    </div>
+  </div>
+
+  <!-- 04 FEATURES -->
+  <div id="features" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 04</div>
+      <h2 class="section-title">Key Features</h2>
+      <p class="section-desc">Each module is a distinct app — purchasable individually, or included in a subscription tier. Every app speaks the language of wreath making.</p>
+    </div>
+
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-icon">🔵</div>
+        <div class="feature-content">
+          <div class="feature-title" style="display:flex; align-items:center; gap:8px;">Blueprint Generator <span class="ec-tier tier-studio">Studio</span></div>
+          <div class="feature-desc">Mathematically structured wreath layouts generated from design inputs. Uses polar coordinate placement, golden angle stem distribution, and FFLGA (Focal / Filler / Line / Greenery / Accent) classification to output a balanced radial blueprint with exact stem positions, quantities, and optical balance score. Output is a printable canvas layout with layering order and construction sequence.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">✨</div>
+        <div class="feature-content">
+          <div class="feature-title" style="display:flex; align-items:center; gap:8px;">AI Design Visualizer <span class="ec-tier tier-atelier">Atelier</span></div>
+          <div class="feature-desc">Pre-build visualization of the finished wreath from blueprint data. Generates a photorealistic render using AI image generation, alongside a Midjourney-ready prompt compiled from the design's color palette, stem types, style profile, and base type. Reduces materials waste and dramatically increases buyer confidence for commissioned pieces.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">📦</div>
+        <div class="feature-content">
+          <div class="feature-title" style="display:flex; align-items:center; gap:8px;">Inventory Intelligence Engine <span class="ec-tier tier-craft">Craft</span></div>
+          <div class="feature-desc">Users input on-hand materials — stems, ribbons, bases, wire gauges, accents. The engine maps available inventory to compatible blueprint templates, filters designs by what's achievable with current stock, and flags what needs to be sourced before building. Design sessions start with reality, not wishful thinking.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">💰</div>
+        <div class="feature-content">
+          <div class="feature-title" style="display:flex; align-items:center; gap:8px;">Pricing Calculator <span class="ec-tier tier-craft">Craft</span></div>
+          <div class="feature-desc">Inputs: total materials cost, labor hours, overhead percentage, target margin, and market positioning (budget / mid / luxury). Outputs: retail price, wholesale price, Etsy listing price, and per-unit profit. Adjusts dynamically as inputs change. Includes a price-check against comparable Etsy listings (via affiliate data) to validate competitiveness.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">🌿</div>
+        <div class="feature-content">
+          <div class="feature-title" style="display:flex; align-items:center; gap:8px;">Seasonal Collection Builder <span class="ec-tier tier-studio">Studio</span></div>
+          <div class="feature-desc">A constrained design workspace for building cohesive seasonal product lines. Users define a palette, style profile, and target holiday or season — the builder generates 3–6 complementary blueprint variants that share visual DNA. Output is a full collection package: blueprints, materials list, pricing sheet, and an Etsy listing draft.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">📋</div>
+        <div class="feature-content">
+          <div class="feature-title" style="display:flex; align-items:center; gap:8px;">Builder Instructions Generator <span class="ec-tier tier-all">All Tiers</span></div>
+          <div class="feature-desc">Converts any blueprint into plain-language, layer-by-layer construction steps. Shareable with an assistant, a student, a wholesale buyer's production team, or a DIY kit customer. Output includes wire attachment methods, placement sequence, and finishing instructions specific to the base type (grapevine vs. pine, foam, wire).</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('revenue', document.querySelector('[onclick*=revenue]'))">← 03 Revenue</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('engagement', document.querySelector('[onclick*=engagement]'))">05 — Engagement →</button>
+    </div>
+  </div>
+
+  <!-- 05 ENGAGEMENT -->
+  <div id="engagement" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 05</div>
+      <h2 class="section-title">User Engagement</h2>
+      <p class="section-desc">Engagement tools are designed to make Evercrafted part of a maker's regular creative routine — not just a tool they open once and forget.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: var(--ec-space-5);">
+      <div class="ec-card">
+        <div class="card-label">Engagement Tool 01</div>
+        <div class="card-title">Design Journal</div>
+        <div class="card-body">A private portfolio log for every completed wreath. Each entry captures: photo upload, materials used (pulled from Inventory Engine), sell price, customer notes, and a quality rating. Over time the journal becomes a personal business intelligence dashboard — average margin per piece, most-purchased stems, best-performing seasonal styles.</div>
+      </div>
+      <div class="ec-card">
+        <div class="card-label">Engagement Tool 02</div>
+        <div class="card-title">Seasonal Calendar</div>
+        <div class="card-body">Prompts users 6–8 weeks before each major holiday with curated design ideas, trending style lookbooks, a materials checklist, and a countdown to peak sales window. Reduces the reactive scramble that causes late sourcing, rushed builds, and missed revenue.</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: var(--ec-space-5);">
+      <div class="ec-card">
+        <div class="card-label">Engagement Tool 03</div>
+        <div class="card-title">Community Lookbook</div>
+        <div class="card-body">An opt-in gallery where subscribers share finished designs. Filtered by season, style, base type, or skill level. Drives retention through social validation, generates aspirational content, and surfaces organic upgrade motivation when users see what Studio or Atelier tier produces.</div>
+      </div>
+      <div class="ec-card ec-card--green">
+        <div class="card-label">Engagement Tool 04</div>
+        <div class="card-title">Skill Progression Tracker</div>
+        <div class="card-body">A gamified mastery system built on the four tier names as progression milestones: Bloom → Craft → Studio → Atelier. Users earn progress by completing tutorials, logging designs, and hitting business milestones (first sale, first collection, first wholesale order). Milestone celebrations include shareable achievement cards and personalized upgrade prompts.</div>
+      </div>
+    </div>
+
+    <div class="ec-card ec-card--warm">
+      <div class="card-label">Retention Strategy</div>
+      <div class="card-title">Why Churn Will Be Low</div>
+      <div class="card-body">Seasonal tools create natural re-engagement cycles — users who churn in February return in September for Christmas prep. Design Journal history and saved blueprints create switching costs (your designs live here). The Inventory Engine, once populated with a maker's full stock, is painful to abandon. These three vectors together create sticky, habitual platform use — not just occasional visits.</div>
+    </div>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('features', document.querySelector('[onclick*=features]'))">← 04 Features</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('tutorials', document.querySelector('[onclick*=tutorials]'))">06 — Tutorials →</button>
+    </div>
+  </div>
+
+  <!-- 06 TUTORIALS -->
+  <div id="tutorials" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 06</div>
+      <h2 class="section-title">Tutorial System</h2>
+      <p class="section-desc">Structured as a learning path, not a content dump. Every lesson is tied to a tier, a skill level, and a real output — not just theory.</p>
+    </div>
+
+    <div class="callout callout-green" style="margin-bottom: var(--ec-space-6);">
+      <div>
+        <div class="callout-title">Design Principle</div>
+        <div class="callout-body">Tutorials are gated by tier — lower tiers see lesson previews with a lock + upgrade CTA, never a blank page. The preview shows the lesson title, learning outcome, and a blurred screenshot. This creates aspiration, not frustration.</div>
+      </div>
+    </div>
+
+    <div class="ec-table-wrap">
+      <table class="ec-table">
+        <thead>
+          <tr><th>Track</th><th>Tier</th><th>Topics Covered</th><th>Outcome</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-strong">Foundations</td>
+            <td><span class="ec-tier tier-bloom">Bloom</span></td>
+            <td>Base types (grapevine, pine, wire, foam), greenery layering fundamentals, focal flower placement, proportion basics, seasonal color theory</td>
+            <td>User can build a structurally sound, proportionally balanced wreath from any base</td>
+          </tr>
+          <tr>
+            <td class="td-strong">Construction</td>
+            <td><span class="ec-tier tier-craft">Craft</span></td>
+            <td>Wire gauges and attachment methods, stem prepping, hot glue vs. wire techniques, structural integrity testing, finishing and grooming, stem insertion order</td>
+            <td>User can build professional-quality wreaths with correct attachment methods for each stem type</td>
+          </tr>
+          <tr>
+            <td class="td-strong">Design</td>
+            <td><span class="ec-tier tier-studio">Studio</span></td>
+            <td>Color theory for wreath palettes, optical balance (even vs. asymmetric distribution), rhythm and repetition, FFLGA layering strategy, texture contrast, floriography and symbolism</td>
+            <td>User can create intentional, emotionally resonant designs that photograph well and sell consistently</td>
+          </tr>
+          <tr>
+            <td class="td-strong">Business</td>
+            <td><span class="ec-tier tier-atelier">Atelier</span></td>
+            <td>Pricing strategy and margin targets, product photography fundamentals, Etsy SEO and listing optimization, wholesale pitch structure, seasonal production planning, scaling from solo to assisted production</td>
+            <td>User can operate a profitable wreath-making business with defensible pricing and a repeatable sales system</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ec-divider">✦</div>
+
+    <div class="section-header" style="border: none; padding-bottom: 0; margin-bottom: var(--ec-space-4);">
+      <h3 style="font-family: var(--ec-font-serif); font-size: var(--ec-text-2xl); font-weight: 600;">Tutorial Format Standards</h3>
+    </div>
+
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-icon">🎬</div>
+        <div class="feature-content">
+          <div class="feature-title">Video + Annotated Blueprint</div>
+          <div class="feature-desc">Every construction tutorial ships with both a short video demonstrating the technique and an annotated blueprint PDF showing exactly where each element is placed. Users can pause the video and refer to the blueprint simultaneously.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">🧪</div>
+        <div class="feature-content">
+          <div class="feature-title">Practice Projects</div>
+          <div class="feature-desc">Each track ends with a guided practice project — a specific wreath design to build, with a materials list, step-by-step instructions, and a photo submission prompt. Completed projects earn Skill Tracker progress.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">📥</div>
+        <div class="feature-content">
+          <div class="feature-title">Downloadable Reference Sheets</div>
+          <div class="feature-desc">Every lesson includes a 1-page downloadable reference sheet: stem type cheat sheets, proportion ratio tables, color wheel overlays for seasonal palettes, and construction sequence quick-reference cards. Designed to be printed and kept at the workbench.</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('engagement', document.querySelector('[onclick*=engagement]'))">← 05 Engagement</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('sourcing', document.querySelector('[onclick*=sourcing]'))">07 — Sourcing →</button>
+    </div>
+  </div>
+
+  <!-- 07 SOURCING -->
+  <div id="sourcing" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 07</div>
+      <h2 class="section-title">Materials Sourcing</h2>
+      <p class="section-desc">Sourcing integration is the bridge between design intent and physical execution. It also represents one of the highest-margin, lowest-effort revenue streams on the platform.</p>
+    </div>
+
+    <div class="ec-card ec-card--dark" style="margin-bottom: var(--ec-space-5);">
+      <div class="card-label">Core Concept</div>
+      <div class="card-title">The Blueprint-to-Cart Pipeline</div>
+      <div class="card-body">Every blueprint generated contains a full materials list: stem types, quantities, base type, wire gauge, and ribbon yardage. That list should be one click away from a purchase. The platform's sourcing layer converts design output into a shoppable cart — capturing purchase intent at its peak.</div>
+    </div>
+
+    <ul class="feature-list" style="margin-bottom: var(--ec-space-6);">
+      <li class="feature-item">
+        <div class="feature-icon">📋</div>
+        <div class="feature-content">
+          <div class="feature-title">Auto-Generated Shopping Lists</div>
+          <div class="feature-desc">Blueprint output includes a formatted shopping list with estimated cost per item, total materials cost, and direct purchase links to preferred supplier partners. Users can export as PDF, share the list, or send directly to a procurement assistant.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">🏪</div>
+        <div class="feature-content">
+          <div class="feature-title">Curated Supplier Directory</div>
+          <div class="feature-desc">A rated directory of vetted suppliers organized by category (stems, bases, ribbon, wire, tools) and quality tier (budget, mid, premium). Each supplier entry includes: average ship time, minimum order, quality rating from verified buyers, and seasonal availability notes. Updated quarterly.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">📦</div>
+        <div class="feature-content">
+          <div class="feature-title">Bulk Order Calculator</div>
+          <div class="feature-desc">For production-volume makers building 20+ wreaths per season. Enter a design and target quantity — the calculator outputs total materials needed, optimal order quantities to hit supplier minimums, estimated unit cost at volume, and projected total spend. Integrates directly with the Pricing Calculator.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">🔔</div>
+        <div class="feature-content">
+          <div class="feature-title">Seasonal Availability Alerts</div>
+          <div class="feature-desc">Push and email alerts when key seasonal materials come back in stock or reach peak availability — dried pampas grass, fresh eucalyptus, preserved magnolia leaves, velvet ribbon restocks. Users can set watch lists for specific SKUs or material categories. Reduces the reactive sourcing scramble before major holidays.</div>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-icon">🔄</div>
+        <div class="feature-content">
+          <div class="feature-title">Inventory Auto-Deduct</div>
+          <div class="feature-desc">When a user marks a blueprint as "built," the Inventory Intelligence Engine automatically deducts used materials from their on-hand stock. The system flags when a material drops below a user-set reorder threshold and surfaces a one-click reorder to their preferred supplier.</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="callout callout-green">
+      <div>
+        <div class="callout-title">Long-Term Opportunity — Confidence 70%</div>
+        <div class="callout-body">If supplier relationships scale, the platform could negotiate exclusive wholesale pricing for Atelier-tier subscribers — giving professional makers a cost advantage unavailable anywhere else. This would be a meaningful tier differentiator and a strong retention lever for the top subscription level.</div>
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('tutorials', document.querySelector('[onclick*=tutorials]'))">← 06 Tutorials</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('defensibility', document.querySelector('[onclick*=defensibility]'))">08 — Defensibility →</button>
+    </div>
+  </div>
+
+  <!-- 08 DEFENSIBILITY -->
+  <div id="defensibility" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 08</div>
+      <h2 class="section-title">Defensibility</h2>
+      <p class="section-desc">What makes Evercrafted hard to replicate — and why a well-funded generic competitor can't simply copy-paste this into existence.</p>
+    </div>
+
+    <div class="ec-table-wrap" style="margin-bottom: var(--ec-space-6);">
+      <table class="ec-table">
+        <thead>
+          <tr><th>Moat</th><th>What It Is</th><th>Why It's Hard to Copy</th><th>Confidence</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-strong">Domain Specificity</td>
+            <td>FFLGA classification, polar coordinate stem placement, golden angle distribution, floriography layer</td>
+            <td>Requires genuine wreath-making expertise to build correctly. A generic design tool built by non-makers will get the logic wrong — and experienced users will notice immediately.</td>
+            <td><span style="color: var(--ec-green); font-weight: 600;">High</span></td>
+          </tr>
+          <tr>
+            <td class="td-strong">Dual-Market Flywheel</td>
+            <td>Moodoor feeds consumer demand → Studio upgrades; Studio blueprints power Moodoor's design library</td>
+            <td>Requires simultaneously building and maintaining two distinct products that cross-feed each other. Single-product competitors capture only half the funnel.</td>
+            <td><span style="color: var(--ec-green); font-weight: 600;">High</span></td>
+          </tr>
+          <tr>
+            <td class="td-strong">Data Network Effects</td>
+            <td>Every blueprint, inventory input, and pricing calculation makes the recommendation engine smarter</td>
+            <td>Data advantage compounds over time. A competitor starting from zero has no aggregate signal about what designs work, what materials are commonly paired, or what price points clear in which markets.</td>
+            <td><span style="color: var(--ec-warning); font-weight: 600;">Medium</span></td>
+          </tr>
+          <tr>
+            <td class="td-strong">Switching Costs</td>
+            <td>Design Journal history, saved blueprints, populated inventory data</td>
+            <td>Once a maker has 50 saved blueprints, 200 inventory items, and a full seasonal journal, migrating to a competitor means starting over. That's not a software problem — it's a sunk cost problem.</td>
+            <td><span style="color: var(--ec-green); font-weight: 600;">High</span></td>
+          </tr>
+          <tr>
+            <td class="td-strong">Brand Identity</td>
+            <td>Premium craft aesthetic, botanical visual system, Cormorant Garamond / Inter typography, brand green #4A6741</td>
+            <td>Generic SaaS tools signal "enterprise software." Evercrafted signals "high-end florist's studio." The brand itself is a feature — it attracts makers who care about aesthetics, which is exactly the target user.</td>
+            <td><span style="color: var(--ec-green); font-weight: 600;">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ec-card ec-card--green">
+      <div class="card-label">The 30-Second Competitor Analysis</div>
+      <div class="card-title">Why Existing Tools Can't Fill This Gap</div>
+      <div class="card-body">
+        <strong>Cricut Design Space</strong> — SVG-based cutting machine software. Doesn't model 3D floral placement, FFLGA logic, or stem counts. Wreath makers use it for bow templates only.<br><br>
+        <strong>Canva</strong> — 2D graphic design. Beautiful for Etsy mockups, useless for construction blueprints or inventory management.<br><br>
+        <strong>Pinterest</strong> — Pure inspiration, zero execution. No tools, no commerce, no structure.<br><br>
+        <strong>Florist SaaS (BloomNation, Hana POS)</strong> — Designed for retail floral shops, not artisan wreath makers. Overkill on POS features, completely missing on design and blueprint tools.
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('sourcing', document.querySelector('[onclick*=sourcing]'))">← 07 Sourcing</button>
+      <button class="nav-btn-primary nav-btn" onclick="showSection('tam', document.querySelector('[onclick*=tam]'))">09 — Market →</button>
+    </div>
+  </div>
+
+  <!-- 09 TAM -->
+  <div id="tam" class="section-page">
+    <div class="section-header">
+      <div class="section-eyebrow">Section 09</div>
+      <h2 class="section-title">Market Opportunity</h2>
+      <p class="section-desc">Directional market sizing based on industry reports and comparable SaaS benchmarks. Not audited — treat as order-of-magnitude estimates.
+        <span class="confidence">Confidence: 75%</span>
+      </p>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value">$44B</div>
+        <div class="stat-label">US craft industry revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">~$3B</div>
+        <div class="stat-label">Floral/wreath segment est.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">18%</div>
+        <div class="stat-label">YoY growth, craft SaaS & digital tools</div>
+      </div>
+    </div>
+
+    <div class="ec-card" style="margin-bottom: var(--ec-space-5);">
+      <div class="card-label">ARR Scenarios</div>
+      <div class="card-title">What Modest Penetration Looks Like</div>
+      <div class="card-body" style="margin-bottom: var(--ec-space-4);">Target addressable segment: serious hobbyists + small wreath businesses in the US. Estimated 800K–1.5M users. Blended ARPU assumption: $19/mo ($228/yr).</div>
+
+      <div class="progress-row">
+        <div class="progress-header">
+          <span class="progress-label">0.5% penetration of low estimate (4,000 users)</span>
+          <span class="progress-value">$912K ARR</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 30%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-header">
+          <span class="progress-label">0.5% penetration of high estimate (7,500 users)</span>
+          <span class="progress-value">$1.7M ARR</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 50%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-header">
+          <span class="progress-label">1% penetration of high estimate (15,000 users)</span>
+          <span class="progress-value">$3.4M ARR</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-header">
+          <span class="progress-label">2% penetration of high estimate (30,000 users)</span>
+          <span class="progress-value">$6.8M ARR</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+      </div>
+    </div>
+
+    <div class="callout callout-green" style="margin-bottom: var(--ec-space-5);">
+      <div>
+        <div class="callout-title">Why These Numbers Are Achievable</div>
+        <div class="callout-body">Cricut has over 6 million subscribers for a cutting machine ecosystem. The craft SaaS audience is proven and willing to pay for tools that meaningfully improve their practice. Evercrafted's domain specificity reduces acquisition cost — targeted SEO, wreath-making communities, and seasonal Pinterest traffic are high-intent, low-cost channels.</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="ec-card">
+        <div class="card-label">Primary Acquisition Channels</div>
+        <div class="card-title">How We Get Users</div>
+        <div class="card-body">Seasonal Pinterest traffic (peak: Sept–Nov), wreath-making Facebook groups (300K+ combined members), YouTube tutorial presence, Etsy seller community, craft fair and trade show presence, and Moodoor as a paid acquisition flywheel at consumer scale.</div>
+      </div>
+      <div class="ec-card ec-card--warm">
+        <div class="card-label">Next Steps</div>
+        <div class="card-title">Validation Before Scaling</div>
+        <div class="card-body">Price sensitivity research with 50 target users. Waitlist email sequence launch. MVP with Blueprint Generator + Pricing Calculator at Craft tier. Moodoor beta to consumer segment. Developer handoff for auth flow and subscription logic.</div>
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="nav-btn" onclick="showSection('defensibility', document.querySelector('[onclick*=defensibility]'))">← 08 Defensibility</button>
+      <button class="nav-btn" onclick="showSection('cover', document.querySelector('[onclick*=cover]'))">↑ Back to Top</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const sectionOrder = ['cover','problem','solution','revenue','features','engagement','tutorials','sourcing','defensibility','tam'];
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const page = document.getElementById(id);
+  if (page) { page.classList.add('active'); page.scrollIntoView? window.scrollTo(0,0) : null; }
+  if (btn && btn.classList && btn.classList.contains('nav-item')) btn.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) n.classList.add('active');
+    });
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --blush: #D4897A; --blush-light: #EDD5CF; --blush-dark: #A05E51;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--dark); }
+
+  /* HEADER */
+  .header { padding: 2rem 2rem 1rem; max-width: 1100px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .header-left {}
+  .h-eyebrow { font-size: 11px; font-weight: 500; color: var(--sage-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .h-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--dark); line-height: 1.05; }
+  .h-title em { font-style: italic; color: var(--blush-dark); }
+  .h-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .h-stat { text-align: right; }
+  .h-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .h-stat-label { font-size: 10px; color: var(--text-muted); font-weight: 300; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* PLATFORM TABS */
+  .platform-tabs { max-width: 1100px; margin: 0 auto; padding: 0 2rem 1rem; display: flex; gap: 8px; }
+  .ptab { font-size: 12px; font-weight: 500; padding: 6px 16px; border-radius: 20px; cursor: pointer; border: 0.5px solid var(--border-med); background: var(--warm-white); color: var(--text-muted); transition: all 0.2s; }
+  .ptab.active { background: var(--dark); color: var(--cream); border-color: var(--dark); }
+
+  /* SECTION LABELS */
+  .section-wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem 2rem; }
+  .section-group { margin-bottom: 2rem; }
+  .sg-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .sg-label { font-size: 11px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .sg-line { flex: 1; height: 0.5px; background: var(--border-med); }
+  .sg-count { font-size: 11px; color: var(--text-muted); font-weight: 300; }
+
+  /* APP GRID */
+  .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .app-tile { background: var(--warm-white); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1rem; position: relative; transition: border-color 0.2s, transform 0.15s; cursor: default; }
+  .app-tile:hover { border-color: var(--sage); transform: translateY(-2px); }
+  .app-tile.free-engine { border-style: dashed; }
+  .app-tile.v2-update { opacity: 0.75; }
+
+  .tile-platform { position: absolute; top: 8px; right: 8px; display: flex; gap: 3px; }
+  .tp-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .tp-studio { background: var(--sage-dark); }
+  .tp-moodoor { background: var(--blush-dark); }
+  .tp-both { background: linear-gradient(135deg, var(--sage-dark) 50%, var(--blush-dark) 50%); }
+
+  .tile-icon { font-size: 20px; margin-bottom: 6px; }
+  .tile-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 500; color: var(--dark); margin-bottom: 3px; line-height: 1.2; }
+  .tile-role { font-size: 11px; color: var(--text-muted); font-weight: 300; line-height: 1.4; margin-bottom: 8px; }
+  .tile-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 0.5px solid var(--border); }
+  .tile-price { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; color: var(--dark); }
+  .tile-price.free { font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500; color: var(--sage-dark); }
+  .tile-price.platform { font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500; color: #4A3F9E; }
+  .tile-pairing { font-size: 9px; color: var(--text-muted); font-weight: 300; }
+  .tile-badge { font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 8px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .badge-auto { background: var(--sage-light); color: var(--sage-dark); }
+  .badge-v2 { background: rgba(42,37,32,0.08); color: var(--text-muted); }
+  .badge-engine { background: #E8F4F0; color: #2A6B45; }
+  .badge-studio { background: #E8EEF4; color: #2E4A6A; }
+  .badge-spec { background: #F0EBF8; color: #4E1E6A; }
+
+  /* PAIRING MAP */
+  .pairing-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 2rem; }
+  .pairing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .pairing-card { background: var(--warm-white); border: 0.5px solid var(--border-med); border-radius: 12px; padding: 0.85rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .pair-apps { display: flex; align-items: center; gap: 6px; flex: 1; flex-wrap: wrap; }
+  .pair-app { font-size: 11px; font-weight: 500; color: var(--dark); background: var(--cream); border: 0.5px solid var(--border-med); padding: 3px 8px; border-radius: 8px; }
+  .pair-sep { font-size: 11px; color: var(--text-muted); }
+  .pair-saving { text-align: right; }
+  .pair-price { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--dark); }
+  .pair-was { font-size: 10px; color: var(--text-muted); text-decoration: line-through; }
+
+  /* PLATFORM LEGEND */
+  .legend { max-width: 1100px; margin: 0 auto; padding: 0 2rem 1rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* MOODOOR SECTION */
+  .moodoor-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 2rem; }
+  .moodoor-header { background: var(--dark); border-radius: 14px; padding: 1.5rem; margin-bottom: 1rem; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .moodoor-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--cream); }
+  .moodoor-title em { font-style: italic; color: var(--blush-light); }
+  .moodoor-desc { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 300; max-width: 400px; line-height: 1.6; }
+  .moodoor-tag { font-size: 10px; font-weight: 500; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); padding: 4px 12px; border-radius: 20px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .moodoor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .moodoor-tile { background: var(--warm-white); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1rem; }
+  .mt-label { font-size: 10px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
+  .mt-label.powered { color: var(--sage-dark); }
+  .mt-label.native { color: var(--blush-dark); }
+  .mt-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 500; color: var(--dark); margin-bottom: 3px; }
+  .mt-desc { font-size: 11px; color: var(--text-muted); font-weight: 300; line-height: 1.4; }
+
+  /* V2 BACKLOG */
+  .backlog-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 3rem; }
+  .backlog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .backlog-card { background: var(--warm-white); border: 0.5px solid var(--border); border-radius: 12px; padding: 0.85rem 1rem; opacity: 0.7; }
+  .bc-title { font-size: 12px; font-weight: 500; color: var(--dark); margin-bottom: 3px; }
+  .bc-desc { font-size: 11px; color: var(--text-muted); font-weight: 300; line-height: 1.4; }
+  .bc-tag { font-size: 9px; color: var(--text-muted); margin-top: 5px; background: rgba(42,37,32,0.06); padding: 2px 7px; border-radius: 6px; display: inline-block; }
+
+  @media (max-width: 600px) { .app-grid { grid-template-columns: 1fr 1fr; } .moodoor-grid { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="h-eyebrow">Evercrafted + Moodoor</div>
+    <div class="h-title">Full ecosystem <em>master overview</em></div>
+  </div>
+  <div class="h-stats">
+    <div class="h-stat"><div class="h-stat-num">18</div><div class="h-stat-label">Paid apps</div></div>
+    <div class="h-stat"><div class="h-stat-num">8</div><div class="h-stat-label">Pairing discounts</div></div>
+    <div class="h-stat"><div class="h-stat-num">2</div><div class="h-stat-label">Platforms</div></div>
+    <div class="h-stat"><div class="h-stat-num">33</div><div class="h-stat-label">Blueprints</div></div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--sage-dark)"></div>Evercrafted Studio only</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--blush-dark)"></div>Moodoor only</div>
+  <div class="legend-item"><div class="legend-dot" style="background:linear-gradient(135deg,var(--sage-dark) 50%,var(--blush-dark) 50%)"></div>Both platforms</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--border-med);border:1px dashed rgba(42,37,32,0.3)"></div>Free / engine upgrade</div>
+</div>
+
+<div class="section-wrap">
+
+  <!-- FOUNDATION -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">Foundation</div><div class="sg-line"></div><div class="sg-count">1 app</div></div>
+    <div class="app-grid">
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-both" title="Both platforms"></div></div>
+        <div class="tile-icon">📐</div>
+        <div class="tile-name">Formula Registry</div>
+        <div class="tile-role">12 composition formulas — powers every app on the platform</div>
+        <div class="tile-footer"><div class="tile-price">$2.95</div><span class="tile-badge badge-auto">Auto-included on paid plans</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTRY POINT APPS -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">Entry point apps</div><div class="sg-line"></div><div class="sg-count">2 apps · $4.95 each</div></div>
+    <div class="app-grid">
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-both"></div></div>
+        <div class="tile-icon">🌸</div>
+        <div class="tile-name">Memory Weaver</div>
+        <div class="tile-role">Text memory → emotion profile → full blueprint. Emotional entry point for all users.</div>
+        <div class="tile-footer"><div class="tile-price">$4.95</div><div class="tile-pairing">Paired: EmotionSync $3.95</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-both"></div></div>
+        <div class="tile-icon">🌿</div>
+        <div class="tile-name">Inventory Weaver</div>
+        <div class="tile-role">Design with what you own. Constraint-based generation, cost tracking, seasonal remainder logic.</div>
+        <div class="tile-footer"><div class="tile-price">$4.95</div><div class="tile-pairing">Paired: Blueprint Optimizer $3.95, SBO $4.95</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTION TOOLS -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">Production tools</div><div class="sg-line"></div><div class="sg-count">3 apps · $5.95–$7.95</div></div>
+    <div class="app-grid">
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-both"></div></div>
+        <div class="tile-icon">⚙️</div>
+        <div class="tile-name">Blueprint Optimizer</div>
+        <div class="tile-role">Cost vs emotion tradeoff. Design intent λ slider, fitness score, local search optimization loop.</div>
+        <div class="tile-footer"><div class="tile-price">$5.95</div><div class="tile-pairing">Paired: Inventory Weaver $3.95</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">💗</div>
+        <div class="tile-name">EmotionSync</div>
+        <div class="tile-role">Emotion → structural form. 4-axis vectors, multi-emotion blending, reverse inference, Mood Map UI.</div>
+        <div class="tile-footer"><div class="tile-price">$6.95</div><div class="tile-pairing">Paired: Memory Weaver $3.95</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-both"></div></div>
+        <div class="tile-icon">⚖️</div>
+        <div class="tile-name">Structural Balance Optimizer</div>
+        <div class="tile-role">Physics engine. Center of mass, anchor stress, hang orientation, fragility flag, transport advisory.</div>
+        <div class="tile-footer"><div class="tile-price">$7.95</div><div class="tile-pairing">Paired: Inventory Weaver $4.95</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATIVE CANVAS APPS -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">Creative canvas apps</div><div class="sg-line"></div><div class="sg-count">4 apps · $7.95–$9.95</div></div>
+    <div class="app-grid">
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🖌️</div>
+        <div class="tile-name">Layout Studio</div>
+        <div class="tile-role">Draw zones, drop anchors, paint emotion regions. AI completes your sketch. Harmony meter live.</div>
+        <div class="tile-footer"><div class="tile-price">$7.95</div><div class="tile-pairing">Paired: Parametric Layout Lab $14.95 bundle</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🎨</div>
+        <div class="tile-name">Visual Companion</div>
+        <div class="tile-role">Blueprint → Midjourney hero prompt. Overlay PNG, emotion sweep, variation matrix.</div>
+        <div class="tile-footer"><div class="tile-price">$8.95</div><div class="tile-pairing">Upgrade to Pro: $12.95</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">✏️</div>
+        <div class="tile-name">Design Studio</div>
+        <div class="tile-role">Professional drag-and-drop editor. Zone locking, cluster management, blueprint export. SBO heatmap exclusive.</div>
+        <div class="tile-footer"><div class="tile-price">$9.95</div><div class="tile-pairing">Includes: Quadrant Editor + SBO heatmap</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🌀</div>
+        <div class="tile-name">Parametric Layout Lab</div>
+        <div class="tile-role">Emotion → ring geometry. 5 curve families. Live Bézier morphing. Commercial safety toggle.</div>
+        <div class="tile-footer"><div class="tile-price">$9.95</div><div class="tile-pairing">Paired: Layout Studio $14.95 bundle</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCALING APPS -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">Scaling and catalog apps</div><div class="sg-line"></div><div class="sg-count">3 apps · $9.95–$13.95</div></div>
+    <div class="app-grid">
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🌊</div>
+        <div class="tile-name">Blueprint Echo</div>
+        <div class="tile-role">Extract emotional DNA → generate parallel variants across seasons and styles. Echo Sets for catalog scaling.</div>
+        <div class="tile-footer"><div class="tile-price">$9.95</div><div class="tile-pairing">Paired: DVB $14.95 bundle</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🌿</div>
+        <div class="tile-name">Dynamic Variant Branching</div>
+        <div class="tile-role">Blueprint lineage trees. Delta-only branches. Emotion map coverage. Scenario generation. A/B comparison.</div>
+        <div class="tile-footer"><div class="tile-price">$11.95</div><div class="tile-pairing">Paired: Blueprint Intel Pro $19.95 bundle</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">⚙️</div>
+        <div class="tile-name">Visual Companion Pro</div>
+        <div class="tile-role">Any blueprint → any AI target. Image, copy, system prompts, multi-blueprint fusion. Replaces base Visual Companion.</div>
+        <div class="tile-footer"><div class="tile-price">$12.95</div><div class="tile-pairing">Upgrades from Visual Companion $8.95</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI INTELLIGENCE LAYER -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">AI intelligence layer</div><div class="sg-line"></div><div class="sg-count">3 apps · $13.95–$19.95</div></div>
+    <div class="app-grid">
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🧬</div>
+        <div class="tile-name">Blueprint Fusion Engine</div>
+        <div class="tile-role">Multi-blueprint DNA blending. Psychographic personas. 3-question onboarding. Behavioral learning loop.</div>
+        <div class="tile-footer"><div class="tile-price">$13.95</div><div class="tile-pairing">Paired: Blueprint Intel Pro $21.95 bundle</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🧠</div>
+        <div class="tile-name">Blueprint Intelligence Pro</div>
+        <div class="tile-role">Design DNA profile. Emotion sliders. Blueprint versioning. Predictive tuning. Seasonal auto-refresh.</div>
+        <div class="tile-footer"><div class="tile-price">$14.95</div><div class="tile-pairing">Paired: DVB $19.95 · Fusion Engine $21.95</div></div>
+      </div>
+      <div class="app-tile">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🔬</div>
+        <div class="tile-name">Adaptive Blueprint Composer</div>
+        <div class="tile-role">Self-learning design engine. DNA extraction, fitness scoring, evolution timeline. Gets smarter over time.</div>
+        <div class="tile-footer"><div class="tile-price">$19.95</div><div class="tile-pairing">Bundle: Blueprint Intel Pro $14.95</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FREE PLATFORM UPGRADES -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">Free platform upgrades — ships to all users automatically</div><div class="sg-line"></div></div>
+    <div class="app-grid">
+      <div class="app-tile free-engine">
+        <div class="tile-platform"><div class="tp-dot tp-both"></div></div>
+        <div class="tile-icon">🌐</div>
+        <div class="tile-name">Focal Orbit Balance</div>
+        <div class="tile-role">Gravitational mass model. Better placement for every blueprint. Studio Pro heatmap controls exclusive.</div>
+        <div class="tile-footer"><div class="tile-price free">Free engine</div><span class="tile-badge badge-engine">Studio Pro heatmap</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESIGN STUDIO MODES -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">Design Studio modes — not separate apps</div><div class="sg-line"></div></div>
+    <div class="app-grid">
+      <div class="app-tile v2-update">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🔲</div>
+        <div class="tile-name">Quadrant Editor</div>
+        <div class="tile-role">Per-quadrant emotion, color, density. Edge blend. Journey presets (Dawn to Dusk, Grief to Growth). Free in Studio Pro.</div>
+        <div class="tile-footer"><div class="tile-price free">Free in Studio Pro</div><span class="tile-badge badge-studio">$6.95 for Maker</span></div>
+      </div>
+      <div class="app-tile v2-update">
+        <div class="tile-platform"><div class="tp-dot tp-studio"></div></div>
+        <div class="tile-icon">🗺️</div>
+        <div class="tile-name">SBO Design Studio Integration</div>
+        <div class="tile-role">Live balance heatmap in editor. Integrity tab. Blueprint Views. Revert history. Requires SBO + Design Studio.</div>
+        <div class="tile-footer"><div class="tile-price free">Bundled</div><span class="tile-badge badge-spec">Engineering spec</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V2 IMPROVEMENTS -->
+  <div class="section-group">
+    <div class="sg-header"><div class="sg-label">v2 improvements — folded into existing apps</div><div class="sg-line"></div></div>
+    <div class="app-grid">
+      <div class="app-tile v2-update">
+        <div class="tile-icon">💗</div>
+        <div class="tile-name">EmotionSync v2</div>
+        <div class="tile-role">Narrative Mode. Creative Variance slider. User rating feedback loop. Platform expansion schema.</div>
+        <div class="tile-footer"><div class="tile-price free">Update</div><span class="tile-badge badge-v2">EmotionSync subscribers</span></div>
+      </div>
+      <div class="app-tile v2-update">
+        <div class="tile-icon">💗</div>
+        <div class="tile-name">EmotionSync — Mood Map UI</div>
+        <div class="tile-role">2D draggable valence-arousal canvas. History trail. Lock axes. Pins feed into DVB branches.</div>
+        <div class="tile-footer"><div class="tile-price free">Update</div><span class="tile-badge badge-v2">EmotionSync subscribers</span></div>
+      </div>
+      <div class="app-tile v2-update">
+        <div class="tile-icon">🌿</div>
+        <div class="tile-name">Inventory Weaver v2</div>
+        <div class="tile-role">Natural language input. Smart chips. Approximate qty mode. Cost-saver rating. Seasonal remainder logic.</div>
+        <div class="tile-footer"><div class="tile-price free">Update</div><span class="tile-badge badge-v2">Inventory Weaver subscribers</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PAIRING DISCOUNTS -->
+<div class="pairing-section">
+  <div class="sg-header" style="margin-bottom:1rem"><div class="sg-label">Pairing discounts</div><div class="sg-line"></div></div>
+  <div class="pairing-grid">
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">Memory Weaver</span><span class="pair-sep">+</span><span class="pair-app">EmotionSync</span></div>
+      <div class="pair-saving"><div class="pair-price">$8.90</div><div class="pair-was">$11.90</div></div>
+    </div>
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">Inventory Weaver</span><span class="pair-sep">+</span><span class="pair-app">Blueprint Optimizer</span></div>
+      <div class="pair-saving"><div class="pair-price">$8.90</div><div class="pair-was">$10.90</div></div>
+    </div>
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">Inventory Weaver</span><span class="pair-sep">+</span><span class="pair-app">SBO</span></div>
+      <div class="pair-saving"><div class="pair-price">$9.90</div><div class="pair-was">$12.90</div></div>
+    </div>
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">Layout Studio</span><span class="pair-sep">+</span><span class="pair-app">Parametric Layout Lab</span></div>
+      <div class="pair-saving"><div class="pair-price">$14.95</div><div class="pair-was">$17.90</div></div>
+    </div>
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">Blueprint Echo</span><span class="pair-sep">+</span><span class="pair-app">Dynamic Variant Branching</span></div>
+      <div class="pair-saving"><div class="pair-price">$14.95</div><div class="pair-was">$21.90</div></div>
+    </div>
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">Design Studio</span><span class="pair-sep">+</span><span class="pair-app">Blueprint Intel Pro</span></div>
+      <div class="pair-saving"><div class="pair-price">$19.95</div><div class="pair-was">$24.90</div></div>
+    </div>
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">DVB</span><span class="pair-sep">+</span><span class="pair-app">Blueprint Intel Pro</span></div>
+      <div class="pair-saving"><div class="pair-price">$19.95</div><div class="pair-was">$26.90</div></div>
+    </div>
+    <div class="pairing-card">
+      <div class="pair-apps"><span class="pair-app">Blueprint Fusion Engine</span><span class="pair-sep">+</span><span class="pair-app">Blueprint Intel Pro</span></div>
+      <div class="pair-saving"><div class="pair-price">$21.95</div><div class="pair-was">$28.90</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MOODOOR -->
+<div class="moodoor-section">
+  <div class="moodoor-header">
+    <div>
+      <div class="moodoor-title"><em>Moodoor</em> — sister brand</div>
+      <div class="moodoor-desc">Consumer-facing mood-driven door decor curator. Lives at moodoor.com. Powered by Evercrafted's engine on the backend. Separate brand, separate audience, shared inventory.</div>
+    </div>
+    <span class="moodoor-tag">Standalone product</span>
+  </div>
+  <div class="moodoor-grid">
+    <div class="moodoor-tile">
+      <div class="mt-label powered">Powered by Evercrafted</div>
+      <div class="mt-name">EmotionSync</div>
+      <div class="mt-desc">Runs silently — quiz answers map to emotion vector, no user-facing sliders</div>
+    </div>
+    <div class="moodoor-tile">
+      <div class="mt-label powered">Powered by Evercrafted</div>
+      <div class="mt-name">Inventory Weaver</div>
+      <div class="mt-desc">Checks bundle availability before surfacing options to consumer</div>
+    </div>
+    <div class="moodoor-tile">
+      <div class="mt-label powered">Powered by Evercrafted</div>
+      <div class="mt-name">Structural Balance Optimizer</div>
+      <div class="mt-desc">Flags if a suggested bundle would hang badly — silent quality check</div>
+    </div>
+    <div class="moodoor-tile">
+      <div class="mt-label powered">Powered by Evercrafted</div>
+      <div class="mt-name">Blueprint Engine</div>
+      <div class="mt-desc">5-role bundle system (anchor, base, accent, botanical, glow) from Moodoor's bundle logic</div>
+    </div>
+    <div class="moodoor-tile">
+      <div class="mt-label native">Moodoor native</div>
+      <div class="mt-name">Mood Quiz</div>
+      <div class="mt-desc">3-screen emotion-to-bundle flow. Consumer-facing. No design vocabulary required.</div>
+    </div>
+    <div class="moodoor-tile">
+      <div class="mt-label native">Moodoor native (future)</div>
+      <div class="mt-name">AI Door Preview</div>
+      <div class="mt-desc">Before/after door transformation visualization — placeholder ready, build when Moodoor is live</div>
+    </div>
+    <div class="moodoor-tile">
+      <div class="mt-label native">Moodoor native (future)</div>
+      <div class="mt-name">Gift Mode</div>
+      <div class="mt-desc">Printable card, gift message, occasion-tagged bundles — consumer gifting layer</div>
+    </div>
+    <div class="moodoor-tile">
+      <div class="mt-label native">Later — B2B app</div>
+      <div class="mt-name">Moodoor Quiz Builder</div>
+      <div class="mt-desc">Let Studio users embed a branded mood quiz on their own shop. Once Moodoor is live with real conversion data.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ENGINEERING BACKLOG -->
+<div class="backlog-section">
+  <div class="sg-header" style="margin-bottom:1rem"><div class="sg-label">Engineering backlog — specified, not yet built</div><div class="sg-line"></div></div>
+  <div class="backlog-grid">
+    <div class="backlog-card">
+      <div class="bc-title">Quadrant Editor placement algorithm</div>
+      <div class="bc-desc">Scoring function spec: 0.4×sQ + 0.4×sA + 0.2×sE. Candidate loop, arc proximity, Bézier sampling.</div>
+      <span class="bc-tag">TypeScript — ready to hand off</span>
+    </div>
+    <div class="backlog-card">
+      <div class="bc-title">SBO + Design Studio canvas integration</div>
+      <div class="bc-desc">Live heatmap overlay, Integrity tab, Blueprint Views, animation on auto-balance, revert history.</div>
+      <span class="bc-tag">UI spec — requires both apps active</span>
+    </div>
+    <div class="backlog-card">
+      <div class="bc-title">Blueprint Prompt Composer TypeScript</div>
+      <div class="bc-desc">buildPrompt() interfaces, DSL section architecture, template registry, versioned prompt storage.</div>
+      <span class="bc-tag">Developer handoff doc exists</span>
+    </div>
+    <div class="backlog-card">
+      <div class="bc-title">Blueprint Optimizer TypeScript</div>
+      <div class="bc-desc">computeEfficiencyScore(), optimizeBlueprint(), candidate generation — production-ready code from session.</div>
+      <span class="bc-tag">TypeScript — drop-in ready</span>
+    </div>
+    <div class="backlog-card">
+      <div class="bc-title">Psychographic clustering pipeline</div>
+      <div class="bc-desc">K-Means on user vectors, nightly batch job, cluster → persona mapping, cold-start fallback.</div>
+      <span class="bc-tag">Python microservice spec</span>
+    </div>
+    <div class="backlog-card">
+      <div class="bc-title">Moodoor backend connection</div>
+      <div class="bc-desc">Wire quiz answers → EmotionSync vector → Inventory Weaver check → bundle surface. API contracts defined.</div>
+      <span class="bc-tag">Phase 2 after Moodoor launch</span>
+    </div>
+  </div>
+</div>

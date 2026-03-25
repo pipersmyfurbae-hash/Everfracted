@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted Prompt Compiler</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --cream:#F9F7F3;--white:#FDFCFA;--parch:#EAE4DA;--sage:#5C7353;--ink:#1E1C18;--muted:#847B70;--rule:rgba(30,28,24,0.08);
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:13px;line-height:1.6;padding:28px}
+  .card{background:var(--white);border:1px solid var(--rule);border-radius:12px;padding:20px;max-width:900px;margin:0 auto}
+  h1{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;margin-bottom:8px}
+  p{color:var(--muted);margin-bottom:16px}
+  .note{border:1px dashed var(--rule);border-radius:10px;padding:14px;background:#fff}
+  .label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  textarea{width:100%;min-height:140px;border:1px solid var(--rule);border-radius:8px;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px}
+  .actions{display:flex;gap:10px;margin-top:12px}
+  button{border:none;border-radius:8px;padding:10px 14px;font-size:12px;cursor:pointer;background:var(--sage);color:#fff}
+  button.secondary{background:#fff;color:var(--ink);border:1px solid var(--rule)}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="label">Prompt Compiler</div>
+    <h1>Evercrafted Prompt Compiler</h1>
+    <p>Placeholder panel. This is where memory inputs, inventory filters, and style constraints will be compiled into engine-ready prompts.</p>
+    <div class="note">
+      <div class="label">Input draft</div>
+      <textarea placeholder="Paste a memory, mood, or inventory brief here…"></textarea>
+      <div class="actions">
+        <button>Compile prompt</button>
+        <button class="secondary">Save template</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

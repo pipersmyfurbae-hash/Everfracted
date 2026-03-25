@@ -1,0 +1,303 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4;
+    --warm-white: #FDFCFA;
+    --sage: #8A9E85;
+    --sage-light: #C5D4C1;
+    --sage-dark: #4D6649;
+    --blush: #D4897A;
+    --blush-light: #EDD5CF;
+    --blush-dark: #A05E51;
+    --dark: #2A2520;
+    --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1);
+    --border-med: rgba(42,37,32,0.18);
+    --teal-light: #D4EEE8;
+    --teal-mid: #4DA894;
+    --teal-dark: #2A6B5F;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label {
+    font-size: 11px; font-weight: 500; color: var(--teal-dark);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .new-app-label::before {
+    content: ''; display: inline-block;
+    width: 24px; height: 1px; background: var(--teal-mid);
+  }
+
+  .app-card {
+    background: var(--warm-white);
+    border: 1.5px solid var(--teal-mid);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 760px;
+    position: relative; overflow: hidden;
+  }
+  .card-glow {
+    position: absolute; top: -50px; right: -50px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(77,168,148,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* MINI CANVAS PREVIEW */
+  .canvas-preview {
+    background: var(--cream);
+    border: 0.5px solid var(--border-med);
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-bottom: 1.75rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .wreath-canvas {
+    flex-shrink: 0; position: relative;
+    width: 110px; height: 110px;
+  }
+  .canvas-labels {
+    flex: 1; min-width: 180px;
+  }
+  .canvas-label-title {
+    font-size: 11px; font-weight: 500; color: var(--teal-dark);
+    letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.75rem;
+  }
+  .mode-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mode-pill {
+    font-size: 11px; font-weight: 400; padding: 4px 10px; border-radius: 20px;
+    border: 0.5px solid var(--border-med); color: var(--text-muted);
+    background: var(--warm-white);
+  }
+  .mode-pill.active {
+    background: var(--teal-dark); color: white; border-color: var(--teal-dark);
+    font-weight: 500;
+  }
+
+  .card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: var(--teal-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .app-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1;
+  }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge {
+    background: var(--teal-light); color: var(--teal-dark);
+    font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 20px; flex-shrink: 0;
+  }
+
+  .app-desc {
+    font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300;
+    margin-bottom: 1.75rem;
+  }
+
+  .features-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .feature-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--cream); border: 0.5px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .feature-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal-mid); flex-shrink: 0; margin-top: 5px;
+  }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .harmony-strip {
+    background: var(--teal-light); border-radius: 10px;
+    padding: 10px 16px; margin-bottom: 1.75rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  }
+  .harmony-left { display: flex; align-items: center; gap: 10px; }
+  .harmony-icon { font-size: 16px; }
+  .harmony-text { font-size: 12px; color: var(--teal-dark); font-weight: 400; }
+  .harmony-text strong { font-weight: 500; }
+  .harmony-bar-wrap {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .harmony-bar {
+    width: 100px; height: 6px; background: rgba(77,168,148,0.2); border-radius: 3px; overflow: hidden;
+  }
+  .harmony-fill {
+    height: 100%; width: 78%; background: var(--teal-mid); border-radius: 3px;
+  }
+  .harmony-pct { font-size: 11px; color: var(--teal-dark); font-weight: 500; }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .price-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1;
+  }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add {
+    background: var(--teal-dark); color: white;
+    padding: 11px 24px; border-radius: 40px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    border: none; transition: background 0.2s, transform 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn {
+    background: transparent; color: var(--text-muted);
+    padding: 11px 20px; border-radius: 40px;
+    font-size: 13px; font-weight: 400; cursor: pointer;
+    border: 1px solid var(--border-med); transition: border-color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note {
+    font-size: 11px; color: var(--text-muted); font-weight: 300;
+    display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px;
+  }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 560px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .canvas-preview { flex-direction: column; }
+  }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🖌️</div>
+      <div>
+        <div class="app-name">Layout Studio</div>
+        <div class="app-tagline">Draw your layout · anchor your vision · let AI complete it</div>
+      </div>
+    </div>
+    <span class="badge">Creative mode</span>
+  </div>
+
+  <p class="app-desc">
+    You know roughly what you want — Layout Studio lets you sketch it first. Draw zones, drop anchor points, and paint emotional regions directly onto the wreath canvas. Then let the AI step in and fill the rest with perfectly matched florals, textures, and density. Human instinct meets algorithmic precision.
+  </p>
+
+  <!-- MINI CANVAS PREVIEW -->
+  <div class="canvas-preview">
+    <div class="wreath-canvas">
+      <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg" width="110" height="110">
+        <!-- Wreath ring -->
+        <circle cx="55" cy="55" r="42" stroke="#C5D4C1" stroke-width="12" fill="none" opacity="0.5"/>
+        <!-- Emotion zones painted on ring -->
+        <path d="M55 13 A42 42 0 0 1 97 55" stroke="#EDD5CF" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <path d="M97 55 A42 42 0 0 1 55 97" stroke="#D4EEE8" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <path d="M55 97 A42 42 0 0 1 13 55" stroke="#C5D4C1" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <path d="M13 55 A42 42 0 0 1 55 13" stroke="#F5E6C8" stroke-width="12" fill="none" stroke-linecap="round"/>
+        <!-- Anchor points -->
+        <circle cx="55" cy="13" r="4" fill="#4DA894" stroke="white" stroke-width="1.5"/>
+        <circle cx="97" cy="55" r="3" fill="#8A9E85" stroke="white" stroke-width="1.5"/>
+        <circle cx="55" cy="97" r="4" fill="#D4897A" stroke="white" stroke-width="1.5"/>
+        <circle cx="13" cy="55" r="3" fill="#8A9E85" stroke="white" stroke-width="1.5"/>
+        <circle cx="82" cy="28" r="3.5" fill="#4DA894" stroke="white" stroke-width="1.5"/>
+        <circle cx="28" cy="82" r="3.5" fill="#D4897A" stroke="white" stroke-width="1.5"/>
+        <!-- Center label -->
+        <circle cx="55" cy="55" r="16" fill="white" stroke="#E8E4DF" stroke-width="0.5"/>
+        <text x="55" y="52" text-anchor="middle" font-size="7" fill="#9E8E7E" font-family="DM Sans, sans-serif">your</text>
+        <text x="55" y="61" text-anchor="middle" font-size="7" fill="#9E8E7E" font-family="DM Sans, sans-serif">layout</text>
+      </svg>
+    </div>
+    <div class="canvas-labels">
+      <div class="canvas-label-title">Canvas tools</div>
+      <div class="mode-pills">
+        <span class="mode-pill active">Node</span>
+        <span class="mode-pill active">Zone paint</span>
+        <span class="mode-pill">Cluster</span>
+        <span class="mode-pill">Lock zone</span>
+        <span class="mode-pill">AI complete</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Interactive layout canvas</strong>
+        <span>Drag anchor points, draw focus zones, and place clusters on a live circular canvas</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Emotion zone painting</strong>
+        <span>Paint regions with an emotional tone — calm base, joyful accents — and AI matches florals to each zone</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>AI completion slider</strong>
+        <span>Dial from full manual control to full AI completion — or anything in between</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Layout templates</strong>
+        <span>Save your sketches as reusable templates, or browse community-created layouts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HARMONY METER -->
+  <div class="harmony-strip">
+    <div class="harmony-left">
+      <span class="harmony-icon">⚖️</span>
+      <div class="harmony-text"><strong>Harmony meter</strong> — live balance &amp; density feedback as you design</div>
+    </div>
+    <div class="harmony-bar-wrap">
+      <div class="harmony-bar"><div class="harmony-fill"></div></div>
+      <span class="harmony-pct">78%</span>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <div>
+      <div class="price-main"><sup>$</sup>7.95<sub>/mo</sub></div>
+      <div class="price-note">Add to any Maker or Studio Pro plan</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Works with Design Studio, Blueprint Intelligence Pro, and Formula Registry
+</div>

@@ -1,0 +1,149 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+
+  .section { margin-bottom: 2rem; }
+  .label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+
+  /* ALREADY HAVE vs NEW */
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .comp-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; background: var(--color-background-primary); }
+  .comp-card.have { border-color: var(--color-border-tertiary); }
+  .comp-card.new { border: 2px solid var(--color-border-info); }
+  .comp-title { font-size: 13px; font-weight: 500; margin-bottom: 0.6rem; }
+  .comp-title.have { color: var(--color-text-secondary); }
+  .comp-title.new { color: var(--color-text-info); }
+  .comp-item { font-size: 12px; color: var(--color-text-secondary); display: flex; align-items: flex-start; gap: 6px; margin-bottom: 5px; line-height: 1.5; }
+  .dot-grey { width: 5px; height: 5px; border-radius: 50%; background: var(--color-border-secondary); flex-shrink: 0; margin-top: 5px; }
+  .dot-blue { width: 5px; height: 5px; border-radius: 50%; background: var(--color-text-info); flex-shrink: 0; margin-top: 5px; }
+
+  /* 5 UPGRADES */
+  .upgrades { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+  .upgrade-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.1rem; background: var(--color-background-primary); display: flex; align-items: flex-start; gap: 12px; }
+  .upgrade-num { width: 26px; height: 26px; border-radius: 50%; background: var(--color-background-info); color: var(--color-text-info); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .upgrade-body { flex: 1; }
+  .upgrade-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .upgrade-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 5px; }
+  .upgrade-how { font-size: 11px; color: var(--color-text-info); line-height: 1.5; }
+  .upgrade-tag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 5px; }
+  .tag-ui { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .tag-engine { background: var(--color-background-success); color: var(--color-text-success); }
+  .tag-ux { background: var(--color-background-info); color: var(--color-text-info); }
+
+  /* SKIP LIST */
+  .skip-list { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .skip-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.6rem; }
+  .skip-item { font-size: 12px; color: var(--color-text-secondary); display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; line-height: 1.5; }
+  .skip-x { font-size: 11px; color: var(--color-text-danger); flex-shrink: 0; margin-top: 1px; font-weight: 500; }
+
+  /* VERDICT */
+  .verdict { background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .verdict-title { font-size: 13px; font-weight: 500; color: var(--color-text-info); margin-bottom: 0.4rem; }
+  .verdict-desc { font-size: 12px; color: var(--color-text-info); line-height: 1.6; opacity: 0.85; }
+
+  @media (max-width: 560px) { .comparison { grid-template-columns: 1fr; } }
+</style>
+
+<div class="section">
+  <div class="label">What Inventory Weaver already does vs what's genuinely new here</div>
+  <div class="comparison">
+    <div class="comp-card have">
+      <div class="comp-title have">Already in Inventory Weaver</div>
+      <div class="comp-item"><div class="dot-grey"></div>Structured inventory table with SKU, qty, role, color, bloom size</div>
+      <div class="comp-item"><div class="dot-grey"></div>Generate blueprints using only available materials</div>
+      <div class="comp-item"><div class="dot-grey"></div>Inventory constraint checking (required stems vs available)</div>
+      <div class="comp-item"><div class="dot-grey"></div>Formula selection based on what's in stock</div>
+      <div class="comp-item"><div class="dot-grey"></div>Materials list CSV export</div>
+      <div class="comp-item"><div class="dot-grey"></div>Low stock warnings</div>
+      <div class="comp-item"><div class="dot-grey"></div>Cost tracking per design</div>
+      <div class="comp-item"><div class="dot-grey"></div>"Make Again" button</div>
+      <div class="comp-item"><div class="dot-grey"></div>CSV import</div>
+    </div>
+    <div class="comp-card new">
+      <div class="comp-title new">What these docs add that we don't have</div>
+      <div class="comp-item"><div class="dot-blue"></div>Natural language input ("I have eucalyptus and a red ribbon")</div>
+      <div class="comp-item"><div class="dot-blue"></div>AI parsing of freeform text → structured inventory items</div>
+      <div class="comp-item"><div class="dot-blue"></div>Real-time smart chips as the user types</div>
+      <div class="comp-item"><div class="dot-blue"></div>"I'm not sure on exact quantities" mode</div>
+      <div class="comp-item"><div class="dot-blue"></div>Seasonal remainder logic ("use leftover winter greens for spring")</div>
+      <div class="comp-item"><div class="dot-blue"></div>Cost-saver rating ("zero new purchases needed")</div>
+      <div class="comp-item"><div class="dot-blue"></div>AI-suggested add-ons to close creative gaps</div>
+      <div class="comp-item"><div class="dot-blue"></div>"Design With What I Have" as a distinct entry point / mode</div>
+      <div class="comp-item"><div class="dot-blue"></div>Constrained vs add-on mode toggle per design</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">The 5 upgrades worth building into Inventory Weaver</div>
+  <div class="upgrades">
+
+    <div class="upgrade-card">
+      <div class="upgrade-num">1</div>
+      <div class="upgrade-body">
+        <div class="upgrade-title">Natural language inventory input</div>
+        <div class="upgrade-desc">Right now users fill out a structured table row by row. This doc proposes a large textarea where they type or paste "1 grapevine base, 3 eucalyptus stems, red velvet ribbon" and AI parses it into structured rows automatically.</div>
+        <div class="upgrade-how">Add a "Quick add from text" option alongside the existing table. Parse on submit via a lightweight LLM call. The table stays — this is just a faster entry path. Low-confidence items get a yellow flag for manual confirmation.</div>
+        <span class="upgrade-tag tag-ux">UX upgrade</span>
+      </div>
+    </div>
+
+    <div class="upgrade-card">
+      <div class="upgrade-num">2</div>
+      <div class="upgrade-body">
+        <div class="upgrade-title">Real-time smart chips while typing</div>
+        <div class="upgrade-desc">As the user types in the textarea, detected items appear as removable chips below — "Grapevine base", "Eucalyptus ×3", "Red velvet ribbon 2.5in" — giving instant visual confirmation that the AI understood the input before they commit.</div>
+        <div class="upgrade-how">Debounced parse at 400ms. Each chip shows detected category, quantity, and a "?" indicator for low-confidence items. Chips are removable before final parse. Already-structured items in their table show the same chip format for consistency.</div>
+        <span class="upgrade-tag tag-ui">UI upgrade</span>
+      </div>
+    </div>
+
+    <div class="upgrade-card">
+      <div class="upgrade-num">3</div>
+      <div class="upgrade-body">
+        <div class="upgrade-title">"Approximate quantities" mode</div>
+        <div class="upgrade-desc">Currently the engine needs exact quantities. Many crafters don't know exactly how many stems they have — they know they have "some eucalyptus" and "a lot of ribbon." This mode relaxes quantity requirements and generates designs with approximate stock ranges instead.</div>
+        <div class="upgrade-how">Single checkbox: "I'm not sure on exact quantities." Sets a quantitiesApprox flag that tells the engine to use a range (e.g., qty 3–6) per item rather than an exact number, and marks the blueprint as "approximate" in the export. This alone removes a major friction point for casual users.</div>
+        <span class="upgrade-tag tag-engine">Engine upgrade</span>
+      </div>
+    </div>
+
+    <div class="upgrade-card">
+      <div class="upgrade-num">4</div>
+      <div class="upgrade-body">
+        <div class="upgrade-title">Cost-saver rating + AI add-on suggestions</div>
+        <div class="upgrade-desc">Each generated blueprint gets a cost-saver badge — "Zero new purchases", "1–2 items needed", "3+ additions suggested" — and a specific list of what to add and why. This reframes constraint as a feature: "your materials are almost perfect, just add X."</div>
+        <div class="upgrade-how">Compute cost-saver score from (items used from inventory / total items in blueprint). Show in gallery card and blueprint detail. AI add-on suggestions pull the cheapest compatible items from the marketplace catalog that would fill the identified gaps. Links directly to blueprint marketplace.</div>
+        <span class="upgrade-tag tag-ui">UI upgrade</span>
+      </div>
+    </div>
+
+    <div class="upgrade-card">
+      <div class="upgrade-num">5</div>
+      <div class="upgrade-body">
+        <div class="upgrade-title">Seasonal remainder logic</div>
+        <div class="upgrade-desc">When a user's inventory contains items flagged as a previous season (winter greens in spring, fall dried botanicals in summer), the engine surfaces a suggestion: "You have leftover winter greens — here's a neutral spring design that uses them before they expire."</div>
+        <div class="upgrade-how">Add a season_purchased or last_used_season field to inventory items. When generating designs, the engine checks for cross-season items and generates a "Use what you have" variant that incorporates them naturally. Shows as a special filter option: "Use up seasonal leftovers."</div>
+        <span class="upgrade-tag tag-engine">Engine upgrade</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="skip-list">
+    <div class="skip-title">What to skip from these docs — already covered or not worth adding</div>
+    <div class="skip-item"><div class="skip-x">✕</div>Barcode/photo scanning — interesting but a Phase 4 feature, adds significant mobile complexity for marginal gain over the text input</div>
+    <div class="skip-item"><div class="skip-x">✕</div>The full 9-screen flow described — Inventory Weaver already has a flow; we just need to add the natural language entry point, not rebuild the whole thing</div>
+    <div class="skip-item"><div class="skip-x">✕</div>Separate route /design-with-what-i-have — the "Design With What I Have" mode should be a button inside the existing Inventory Weaver app, not a separate product</div>
+    <div class="skip-item"><div class="skip-x">✕</div>Embedding-based synonym matching for vague inputs — overkill for v1; a simple lookup table of common synonyms ("silk greenery" → "eucalyptus") covers 90% of cases</div>
+    <div class="skip-item"><div class="skip-x">✕</div>"Allow catalog fillers for gaps" as a separate mode — this is already implicit in the existing Inventory Weaver output which shows what's missing</div>
+  </div>
+</div>
+
+<div class="verdict">
+  <div class="verdict-title">Verdict — 5 targeted upgrades, no new app needed</div>
+  <div class="verdict-desc">These docs don't describe a new app — they describe a better front door for Inventory Weaver. The natural language input, smart chips, approximate quantities mode, cost-saver rating, and seasonal remainder logic are all real improvements that lower the barrier for casual crafters who find the existing table intimidating. Add them as an Inventory Weaver v2 update, not a separate product. Total development effort is modest — the parsing is the hardest piece, and that's a single LLM call.</div>
+</div>

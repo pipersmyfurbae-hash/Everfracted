@@ -1,0 +1,363 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --forest-light: #E2EDE0; --forest-mid: #4A7A55; --forest-dark: #2A4E32;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .engine-label { font-size: 11px; font-weight: 500; color: var(--forest-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .engine-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--forest-mid); }
+
+  .app-card { background: var(--warm-white); border: 1.5px solid var(--forest-mid); border-radius: 20px; padding: 2rem; max-width: 760px; position: relative; overflow: hidden; }
+  .card-glow { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(74,122,85,0.1) 0%, transparent 70%); pointer-events: none; }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--forest-light); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge-engine { background: var(--forest-light); color: var(--forest-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .positioning-strip { background: var(--forest-light); border-radius: 10px; padding: 12px 16px; margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+  .pos-item { display: flex; flex-direction: column; gap: 3px; }
+  .pos-label { font-size: 10px; font-weight: 500; color: var(--forest-dark); letter-spacing: 0.07em; text-transform: uppercase; }
+  .pos-val { font-size: 12px; color: var(--forest-dark); font-weight: 300; line-height: 1.5; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* ORBIT DIAGRAM */
+  .orbit-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+  .orbit-diagram { flex-shrink: 0; }
+  .orbit-legend { flex: 1; min-width: 200px; }
+  .orbit-legend-title { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; }
+  .orbit-legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .orbit-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .orbit-legend-text { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  .orbit-legend-text strong { font-weight: 500; color: var(--dark); }
+  .mass-formula { background: var(--dark); border-radius: 8px; padding: 8px 12px; margin-top: 10px; font-size: 11px; color: rgba(255,255,255,0.7); font-family: monospace; line-height: 1.6; }
+  .mass-formula span { color: #7AB87A; }
+
+  /* ORBIT STYLES */
+  .orbit-styles { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1.5rem; }
+  .orbit-style-card { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 10px; padding: 12px; }
+  .os-name { font-size: 12px; font-weight: 500; color: var(--dark); margin-bottom: 4px; }
+  .os-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
+  .os-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .os-tag { font-size: 9px; padding: 2px 7px; border-radius: 10px; }
+  .tag-formal { background: #E8EEF4; color: #2E4A6A; }
+  .tag-wild { background: var(--blush-light, #EDD5CF); color: #A05E51; }
+  .tag-minimal { background: var(--sage-light); color: var(--sage-dark); }
+  .os-emotion { font-size: 10px; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+
+  /* HEATMAP MOCKUP */
+  .heatmap-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 1.5rem; flex-wrap: wrap; }
+  .heatmap-left { flex-shrink: 0; }
+  .heatmap-right { flex: 1; min-width: 180px; }
+  .heatmap-title { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; }
+  .heatmap-controls { display: flex; flex-direction: column; gap: 8px; }
+  .hc-row { display: flex; align-items: center; gap: 8px; }
+  .hc-label { font-size: 11px; color: var(--text-muted); min-width: 120px; }
+  .hc-track { flex: 1; height: 4px; background: rgba(42,37,32,0.1); border-radius: 2px; position: relative; }
+  .hc-fill { height: 100%; background: var(--forest-mid); border-radius: 2px; }
+  .hc-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--forest-dark); position: absolute; top: -4px; transform: translateX(-50%); }
+  .hc-val { font-size: 11px; font-weight: 500; color: var(--dark); min-width: 24px; text-align: right; }
+  .exempt-list { margin-top: 10px; }
+  .exempt-title { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+  .exempt-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+  .exempt-pill { font-size: 10px; background: var(--forest-light); color: var(--forest-dark); padding: 3px 9px; border-radius: 10px; }
+
+  /* RISKS */
+  .risks-wrap { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .risk-row { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .risk-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 1px; background: #DDF0E4; color: #2A6B45; }
+  .risk-text { font-size: 12px; color: var(--dark); line-height: 1.5; }
+  .risk-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; display: block; margin-top: 1px; }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--forest-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .v2-strip { background: var(--forest-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 10px; }
+  .v2-label { font-size: 10px; font-weight: 500; color: var(--forest-dark); letter-spacing: 0.08em; text-transform: uppercase; background: white; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+  .v2-text { font-size: 12px; color: var(--forest-dark); font-weight: 300; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+  .price-block {}
+  .free-tag { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; color: var(--forest-dark); }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .price-note-pro { font-size: 11px; color: var(--forest-dark); font-weight: 400; margin-top: 2px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-pro { background: var(--forest-dark); color: white; padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-pro:hover { background: var(--dark); transform: translateY(-1px); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 560px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .orbit-styles { grid-template-columns: 1fr; }
+    .positioning-strip { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="engine-label">Platform engine upgrade</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🌐</div>
+      <div>
+        <div class="app-name">Focal Orbit Balance</div>
+        <div class="app-tagline">Gravitational mass model · concentric orbits · visual balance scoring · heatmap overlay</div>
+      </div>
+    </div>
+    <span class="badge-engine">Engine upgrade</span>
+  </div>
+
+  <!-- POSITIONING -->
+  <div class="positioning-strip">
+    <div class="pos-item">
+      <div class="pos-label">What it is</div>
+      <div class="pos-val">A new placement scoring layer added to the geometry engine</div>
+    </div>
+    <div class="pos-item">
+      <div class="pos-label">Who pays for it</div>
+      <div class="pos-val">Free platform-wide improvement — visible heatmap controls are Studio Pro exclusive</div>
+    </div>
+    <div class="pos-item">
+      <div class="pos-label">Why it matters</div>
+      <div class="pos-val">Every blueprint generated gets smarter balance automatically — no user action needed</div>
+    </div>
+  </div>
+
+  <p class="app-desc">
+    Every blueprint the platform generates already uses polar coordinates for placement. Focal Orbit Balance adds a gravitational scoring layer on top — treating the wreath as a field of visual mass orbiting one or more focal points. Heavier elements (large blooms, high-contrast colors, rich textures) pull the eye more strongly. The engine now knows this and balances the field automatically. The result: every blueprint feels more intentionally designed, not just algorithmically placed.
+  </p>
+
+  <!-- ORBIT DIAGRAM -->
+  <div class="orbit-wrap">
+    <div class="orbit-diagram">
+      <svg viewBox="0 0 180 180" width="160" height="160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Orbit rings -->
+        <circle cx="90" cy="90" r="72" stroke="#4A7A55" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.3"/>
+        <circle cx="90" cy="90" r="56" stroke="#4A7A55" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.4"/>
+        <circle cx="90" cy="90" r="40" stroke="#4A7A55" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+        <circle cx="90" cy="90" r="24" stroke="#4A7A55" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.6"/>
+        <!-- Mass heat segments - outer orbit -->
+        <path d="M90 90 L155 70 A72 72 0 0 1 155 110 Z" fill="#C9923A" opacity="0.35"/>
+        <path d="M90 90 L50 20 A72 72 0 0 1 130 20 Z" fill="#C9923A" opacity="0.2"/>
+        <path d="M90 90 L25 110 A72 72 0 0 1 55 155 Z" fill="#C9923A" opacity="0.25"/>
+        <!-- Mid orbit mass -->
+        <path d="M90 90 L140 72 A56 56 0 0 1 140 108 Z" fill="#D4897A" opacity="0.4"/>
+        <path d="M90 90 L58 30 A56 56 0 0 1 122 30 Z" fill="#D4897A" opacity="0.25"/>
+        <!-- Inner focal bloom -->
+        <circle cx="140" cy="90" r="10" fill="#A05E51" opacity="0.7"/>
+        <circle cx="140" cy="90" r="5" fill="#A05E51"/>
+        <!-- Secondary focal nodes -->
+        <circle cx="68" cy="30" r="7" fill="#4A7A55" opacity="0.5"/>
+        <circle cx="56" cy="142" r="7" fill="#4A7A55" opacity="0.5"/>
+        <!-- Segment lines -->
+        <line x1="90" y1="90" x2="90" y2="18" stroke="#4A7A55" stroke-width="0.4" opacity="0.3"/>
+        <line x1="90" y1="90" x2="152" y2="54" stroke="#4A7A55" stroke-width="0.4" opacity="0.3"/>
+        <line x1="90" y1="90" x2="152" y2="126" stroke="#4A7A55" stroke-width="0.4" opacity="0.3"/>
+        <line x1="90" y1="90" x2="90" y2="162" stroke="#4A7A55" stroke-width="0.4" opacity="0.3"/>
+        <line x1="90" y1="90" x2="28" y2="126" stroke="#4A7A55" stroke-width="0.4" opacity="0.3"/>
+        <line x1="90" y1="90" x2="28" y2="54" stroke="#4A7A55" stroke-width="0.4" opacity="0.3"/>
+        <!-- Center -->
+        <circle cx="90" cy="90" r="4" fill="#2A4E32" opacity="0.5"/>
+        <!-- Labels -->
+        <text x="90" y="8" text-anchor="middle" font-size="7" fill="#7A6E66" font-family="DM Sans, sans-serif">edge orbit</text>
+        <text x="90" y="170" text-anchor="middle" font-size="7" fill="#7A6E66" font-family="DM Sans, sans-serif">mass heat</text>
+      </svg>
+    </div>
+    <div class="orbit-legend">
+      <div class="orbit-legend-title">How visual mass is computed</div>
+      <div class="orbit-legend-item"><div class="orbit-swatch" style="background:#A05E51"></div><div class="orbit-legend-text"><strong>Focal orbit</strong> — primary bloom or bow, allowed to exceed adjacent orbits by up to 40%</div></div>
+      <div class="orbit-legend-item"><div class="orbit-swatch" style="background:#D4897A"></div><div class="orbit-legend-text"><strong>Mid orbit</strong> — secondary florals, mass must stay within 20% of focal</div></div>
+      <div class="orbit-legend-item"><div class="orbit-swatch" style="background:#C9923A" style="opacity:0.6"></div><div class="orbit-legend-text"><strong>Outer orbit</strong> — fillers and greenery, distributed in 3 energy zones (rule of odds)</div></div>
+      <div class="orbit-legend-item"><div class="orbit-swatch" style="background:#4A7A55"></div><div class="orbit-legend-text"><strong>Secondary nodes</strong> — optional at 120°–160° offsets, creating dynamic orbit triangles</div></div>
+      <div class="mass-formula">
+        mass = base × (<span>(size + contrast + texture)</span> / 3)
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 ORBIT STYLES -->
+  <div style="font-size:11px;font-weight:500;color:var(--text-muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.75rem">Three built-in orbit styles</div>
+  <div class="orbit-styles">
+    <div class="orbit-style-card">
+      <div class="os-name">Formal orbit</div>
+      <div class="os-desc">Tight mass bands per orbit, few hot segments, near-symmetrical distribution.</div>
+      <div class="os-tags"><span class="os-tag tag-formal">Low variance</span><span class="os-tag tag-formal">1 focal node</span></div>
+      <div class="os-emotion">Calm, serene, reverent</div>
+    </div>
+    <div class="orbit-style-card">
+      <div class="os-name">Wild orbit</div>
+      <div class="os-desc">Loose mass bands, more hot segments, large imbalance between orbits allowed.</div>
+      <div class="os-tags"><span class="os-tag tag-wild">High variance</span><span class="os-tag tag-wild">2–3 focal nodes</span></div>
+      <div class="os-emotion">Joyful, energetic, dramatic</div>
+    </div>
+    <div class="orbit-style-card">
+      <div class="os-name">Minimal orbit</div>
+      <div class="os-desc">Very low total mass, strict outer orbit cap, maximum negative space.</div>
+      <div class="os-tags"><span class="os-tag tag-minimal">Low mass</span><span class="os-tag tag-minimal">Edge-sparse</span></div>
+      <div class="os-emotion">Modern, Japandi, everyday</div>
+    </div>
+  </div>
+
+  <!-- HEATMAP MOCKUP -->
+  <div class="heatmap-wrap">
+    <div class="heatmap-left">
+      <div style="font-size:10px;font-weight:500;color:var(--text-muted);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px">Studio Pro heatmap overlay</div>
+      <svg viewBox="0 0 140 140" width="120" height="120" fill="none">
+        <circle cx="70" cy="70" r="56" stroke="#C5D4C1" stroke-width="10" fill="none" opacity="0.4"/>
+        <!-- Heatmap overlaid on ring -->
+        <path d="M70 70 L118 52 A56 56 0 0 1 118 88 Z" fill="#E24B4A" opacity="0.5"/>
+        <path d="M70 70 L100 20 A56 56 0 0 1 126 56 Z" fill="#C9923A" opacity="0.35"/>
+        <path d="M70 70 L14 56 A56 56 0 0 1 20 90 Z" fill="#C9923A" opacity="0.3"/>
+        <path d="M70 70 L40 114 A56 56 0 0 1 70 126 Z" fill="#EF9F27" opacity="0.25"/>
+        <path d="M70 70 L70 14 A56 56 0 0 1 100 20 Z" fill="#639922" opacity="0.2"/>
+        <!-- Cool zones -->
+        <path d="M70 70 L20 90 A56 56 0 0 1 40 114 Z" fill="#4DA894" opacity="0.15"/>
+        <path d="M70 70 L70 126 A56 56 0 0 1 100 114 Z" fill="#4DA894" opacity="0.12"/>
+        <!-- Focal marker -->
+        <circle cx="118" cy="70" r="8" fill="#E24B4A" opacity="0.8"/>
+        <circle cx="118" cy="70" r="4" fill="white"/>
+        <!-- Ring base -->
+        <circle cx="70" cy="70" r="56" stroke="#4A7A55" stroke-width="0.5" opacity="0.4"/>
+        <circle cx="70" cy="70" r="40" stroke="#4A7A55" stroke-width="0.5" opacity="0.3"/>
+        <circle cx="70" cy="70" r="24" stroke="#4A7A55" stroke-width="0.5" opacity="0.2"/>
+        <text x="70" y="132" text-anchor="middle" font-size="7" fill="#7A6E66" font-family="DM Sans,sans-serif">mass heatmap</text>
+      </svg>
+    </div>
+    <div class="heatmap-right">
+      <div class="heatmap-title">Pro orbit controls</div>
+      <div class="heatmap-controls">
+        <div class="hc-row">
+          <span class="hc-label">Orbit strictness</span>
+          <div class="hc-track"><div class="hc-fill" style="width:65%"></div><div class="hc-thumb" style="left:65%"></div></div>
+          <span class="hc-val">65</span>
+        </div>
+        <div class="hc-row">
+          <span class="hc-label">Focal dominance</span>
+          <div class="hc-track"><div class="hc-fill" style="width:80%"></div><div class="hc-thumb" style="left:80%"></div></div>
+          <span class="hc-val">80</span>
+        </div>
+        <div class="hc-row">
+          <span class="hc-label">Hot segments</span>
+          <div class="hc-track"><div class="hc-fill" style="width:33%"></div><div class="hc-thumb" style="left:33%"></div></div>
+          <span class="hc-val">4/12</span>
+        </div>
+      </div>
+      <div class="exempt-list">
+        <div class="exempt-title">Blueprint type exemptions</div>
+        <div class="exempt-pills">
+          <span class="exempt-pill">Crescent — bottom exempt</span>
+          <span class="exempt-pill">Heavy base — lower 1/3 exempt</span>
+          <span class="exempt-pill">Side sweep — diagonal exempt</span>
+          <span class="exempt-pill">Full halo — no exemptions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISKS RESOLVED -->
+  <div class="risks-wrap">
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Over-correction ruins intentional asymmetry — blueprint type flags hard-exempt specific zones
+        <span>Crescent blueprints exempt the lower arc from balancing. Heavy base blueprints exempt the bottom third. Side sweeps exempt the diagonal band. The engine knows what's intentional and never "fixes" it</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Computation cost — hard cap at 12 segments, greedy incremental placement
+        <span>Scoring runs incrementally per element placement, not from scratch each time. Hard cap of 12 segments per orbit keeps the scoring function lightweight regardless of blueprint complexity</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Learned parameters need data — ships with hand-tuned defaults mapped to emotion profiles
+        <span>Formal orbit maps to calm and serene. Wild orbit maps to joyful and dramatic. Minimal orbit maps to modern and everyday. Learning layer activates in v2 once real usage data exists — no cold start problem</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Visual mass model</strong>
+        <span>Every element gets a computed mass score — size, color contrast, and texture combined — so the engine knows what the eye sees as heavy or light</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Concentric orbit scoring</strong>
+        <span>4 orbits (inner, mid, outer, edge) each with target mass bands — adjacent orbits can't differ by more than 20%, preventing heavy-ring empty-ring artifacts</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Rule-of-odds energy zones</strong>
+        <span>High-mass segments group into visual triplets around the ring — one main energy zone, two supporting — creating natural rhythm without forced symmetry</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Studio Pro heatmap overlay</strong>
+        <span>Designers see a live mass heatmap over the canvas — bright where mass is heavy, cool where it's light — with sliders for orbit strictness and focal dominance</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Secondary focal nodes</strong>
+        <span>Optionally place 1–2 secondary focal points at 120–160° offsets from the primary — creating dynamic triangular orbit layouts for complex multi-focal designs</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Blueprint type exemptions</strong>
+        <span>Crescent, heavy base, and side sweep blueprint types flag specific orbit zones as intentionally unbalanced — the engine never corrects what is meant to be asymmetric</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="v2-strip">
+    <span class="v2-label">Coming in v2</span>
+    <span class="v2-text">Saliency-informed mass from rendered preview · learned orbit parameters from approved blueprint dataset · multi-ring emotion mapping</span>
+  </div>
+
+  <div class="card-footer">
+    <div class="price-block">
+      <div class="free-tag">Free platform upgrade</div>
+      <div class="price-note">Ships automatically — improves every blueprint for all users</div>
+      <div class="price-note-pro">Heatmap overlay and orbit controls → Studio Pro exclusive</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-pro">Upgrade to Studio Pro to see the heatmap</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Works inside the geometry engine — enhances Memory Weaver, Inventory Weaver, Layout Studio, and every blueprint generated on the platform
+</div>

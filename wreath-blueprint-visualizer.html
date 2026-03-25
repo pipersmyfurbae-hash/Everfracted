@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wreath Blueprint Visualizer</title>
+    <style>
+        :root {
+            --color-bg-primary: #faf7f2;
+            --color-bg-secondary: #ffffff;
+            --color-bg-surface: #f5f5f5;
+            --color-text-primary: #1f2121;
+            --color-text-secondary: #626c71;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-primary: #21808d;
+            --color-primary-hover: #1d7480;
+            --color-success: #21808d;
+            --color-accent: #9DB7D5;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg-primary: #1f2121;
+                --color-bg-secondary: #262828;
+                --color-bg-surface: #1e293b;
+                --color-text-primary: #f5f5f5;
+                --color-text-secondary: #a7a9a9;
+                --color-border: rgba(119, 124, 124, 0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 340px;
+            background: var(--color-bg-secondary);
+            border-right: 1px solid var(--color-border);
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .sidebar h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar .subtitle {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .blueprint-info {
+            margin-bottom: 24px;
+        }
+
+        .blueprint-info h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            color: var(--color-text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-weight: 500;
+        }
+
+        .controls {
+            margin-bottom: 24px;
+        }
+
+        .controls h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px 16px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--color-bg-surface);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-bg-primary);
+        }
+
+        .layer-controls {
+            margin-top: 24px;
+        }
+
+        .layer-toggle {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: var(--color-bg-surface);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .layer-toggle:hover {
+            background: var(--color-bg-primary);
+        }
+
+        .layer-toggle input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .layer-toggle label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .layer-count {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow: auto;
+        }
+
+        .canvas-container {
+            position: relative;
+            background: var(--color-bg-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            display: block;
+            border-radius: 12px;
+        }
+
+        .inspector {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 16px;
+            min-width: 280px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+        }
+
+        .inspector.visible {
+            display: block;
+        }
+
+        .inspector h4 {
+            font-size: 13px;
+            margin-bottom: 12px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .inspector-grid {
+            display: grid;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .inspector-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .inspector-label {
+            color: var(--color-text-secondary);
+        }
+
+        .inspector-value {
+            font-weight: 500;
+        }
+
+        .json-upload {
+            margin-bottom: 24px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 10px 16px;
+            background: var(--color-bg-surface);
+            border: 2px dashed var(--color-border);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--color-primary);
+            background: var(--color-bg-primary);
+        }
+
+        .comparison-mode {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .comparison-canvas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .comparison-canvas h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <h1>Wreath Blueprint Visualizer</h1>
+            <p class="subtitle">AI-Powered Design System</p>
+
+            <div class="json-upload">
+                <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--color-text-secondary);">Load Blueprint</h3>
+                <div class="file-input-wrapper">
+                    <input type="file" id="jsonFile" accept=".json" />
+                    <label for="jsonFile" class="file-input-label">
+                        📁 Choose JSON File
+                    </label>
+                </div>
+            </div>
+
+            <div class="blueprint-info" id="blueprintInfo">
+                <h2 id="blueprintName">Sunlit Veranda – Hydrangea &amp; Lemon</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Description</span>
+                        <span class="info-value" id="blueprintDesc">Load a blueprint to view details</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Style</span>
+                        <span class="info-value" id="blueprintStyle">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Emotion</span>
+                        <span class="info-value" id="blueprintEmotion">—</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Season</span>
+                        <span class="info-value" id="blueprintSeason">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <h3>Actions</h3>
+                <button class="btn" id="exportBtn">📸 Export PNG (High-Res)</button>
+                <button class="btn btn-secondary" id="compareBtn">🔄 Compare Mode</button>
+            </div>
+
+            <div class="layer-controls">
+                <h3>Layer Visibility</h3>
+                <div id="layerToggles"></div>
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <div class="canvas-container">
+                <canvas id="wreathCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="inspector" id="inspector">
+        <h4>Inspector</h4>
+        <div class="inspector-grid" id="inspectorContent">
+            <div class="inspector-row">
+                <span class="inspector-label">Hover over elements to inspect</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PPI = 96;
+        const DEFAULT_DIAMETER = 24;
+
+        let currentBlueprint = null;
+        let layerVisibility = {};
+        let comparisonMode = false;
+        let canvas, ctx;
+
+        function inchesToPixels(inches) {
+            return inches * PPI;
+        }
+
+        function getWreathRadii(diameterInches) {
+            const outerInches = diameterInches / 2;
+            const innerInches = outerInches - 1.5;
+            return {
+                outerRadiusPx: inchesToPixels(outerInches),
+                innerRadiusPx: inchesToPixels(innerInches)
+            };
+        }
+
+        function clockToRadians(clock) {
+            const [hourStr, minuteStr] = clock.split(":");
+            const hour = parseInt(hourStr, 10);
+            const minute = parseInt(minuteStr || "0", 10);
+            const hourIndex = (hour % 12) + (minute / 60);
+            const degrees = hourIndex * 30 - 90;
+            return (degrees * Math.PI) / 180;
+        }
+
+        function getRadiusForCategory(category, cfg) {
+            if (category === "base_ring") return (cfg.innerRadius + cfg.outerRadius) / 2;
+            if (category.startsWith("greenery_eucalyptus")) return cfg.outerRadius;
+            if (category.startsWith("greenery")) return cfg.innerRadius;
+            if (category.startsWith("floral")) return cfg.innerRadius;
+            if (category === "accent_fruit") return cfg.innerRadius - 10;
+            if (category === "filler_flower") return cfg.innerRadius - 5;
+            if (category === "ribbon") return cfg.innerRadius - 20;
+            return cfg.innerRadius;
+        }
+
+        function positionToCanvas(pos, category, cfg) {
+            const theta = clockToRadians(pos.angle);
+            const r = getRadiusForCategory(category, cfg) * cfg.scale;
+            const x = cfg.centerX + r * Math.cos(theta);
+            const y = cfg.centerY + r * Math.sin(theta);
+            const size = (pos.size / 240) * cfg.innerRadius * cfg.scale;
+            return { x, y, size, rotation: pos.rotation };
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                floral_hydrangea: "#9DB7D5",
+                floral_rose: "#D5A7B5",
+                accent_fruit: "#F5D365",
+                greenery_mix: "#4C6B4F",
+                greenery_eucalyptus: "#8FAF79",
+                filler_flower: "#F6F3EC",
+                ribbon: "#D5C7B3",
+                base_ring: "#8B7355"
+            };
+            return colors[category] || "#888888";
+        }
+
+        function renderBlueprint(blueprint, targetCanvas = canvas) {
+            const tCtx = targetCanvas.getContext("2d");
+            const width = targetCanvas.width;
+            const height = targetCanvas.height;
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            const { innerRadiusPx, outerRadiusPx } = getWreathRadii(DEFAULT_DIAMETER);
+            const previewInner = Math.min(width, height) * 0.35;
+            const scale = previewInner / innerRadiusPx;
+            
+            const cfg = {
+                centerX,
+                centerY,
+                innerRadius: innerRadiusPx * scale,
+                outerRadius: outerRadiusPx * scale,
+                scale
+            };
+
+            tCtx.clearRect(0, 0, width, height);
+
+            // Background
+            tCtx.fillStyle = getComputedStyle(document.documentElement)
+                .getPropertyValue('--color-bg-surface').trim();
+            tCtx.fillRect(0, 0, width, height);
+
+            // Base circle guide
+            tCtx.strokeStyle = "#d0c4b0";
+            tCtx.lineWidth = 4;
+            tCtx.beginPath();
+            tCtx.arc(centerX, centerY, cfg.innerRadius + 5, 0, Math.PI * 2);
+            tCtx.stroke();
+
+            // Sort layers by z-index
+            const sortedLayers = [...blueprint.layers].sort((a, b) => a.z_index - b.z_index);
+
+            sortedLayers.forEach(layer => {
+                if (!layerVisibility[layer.key]) return;
+
+                layer.items.forEach(item => {
+                    const componentMeta = blueprint.components.find(c => c.key === item.component);
+                    const category = componentMeta?.category || "";
+                    const color = getCategoryColor(category);
+
+                    item.positions.forEach(pos => {
+                        const { x, y, size, rotation } = positionToCanvas(pos, category, cfg);
+                        const radius = size / 2;
+
+                        tCtx.save();
+                        tCtx.translate(x, y);
+                        tCtx.rotate((rotation * Math.PI) / 180);
+                        if (pos.mirror) tCtx.scale(-1, 1);
+
+                        tCtx.fillStyle = color;
+                        tCtx.strokeStyle = "#555";
+                        tCtx.lineWidth = category === "base_ring" ? 3 : 0.5;
+                        tCtx.globalAlpha = 0.95;
+
+                        tCtx.beginPath();
+                        tCtx.arc(0, 0, radius, 0, Math.PI * 2);
+                        tCtx.fill();
+                        tCtx.stroke();
+
+                        tCtx.restore();
+                    });
+                });
+            });
+
+            // Title
+            tCtx.fillStyle = getComputedStyle(document.documentElement)
+                .getPropertyValue('--color-text-primary').trim();
+            tCtx.font = "16px sans-serif";
+            tCtx.fillText(blueprint.name, 10, 25);
+        }
+
+        function setupLayerToggles(blueprint) {
+            const container = document.getElementById('layerToggles');
+            container.innerHTML = '';
+
+            blueprint.layers.forEach(layer => {
+                const toggle = document.createElement('div');
+                toggle.className = 'layer-toggle';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `layer-${layer.key}`;
+                checkbox.checked = layerVisibility[layer.key];
+                checkbox.addEventListener('change', (e) => {
+                    layerVisibility[layer.key] = e.target.checked;
+                    renderBlueprint(currentBlueprint);
+                });
+
+                const label = document.createElement('label');
+                label.htmlFor = `layer-${layer.key}`;
+                label.textContent = layer.name;
+
+                const count = document.createElement('span');
+                count.className = 'layer-count';
+                count.textContent = `${layer.items.length} items`;
+
+                toggle.appendChild(checkbox);
+                toggle.appendChild(label);
+                toggle.appendChild(count);
+                container.appendChild(toggle);
+            });
+        }
+
+        function updateBlueprintInfo(blueprint) {
+            document.getElementById('blueprintName').textContent = blueprint.name;
+            document.getElementById('blueprintDesc').textContent = blueprint.description;
+            document.getElementById('blueprintStyle').textContent = blueprint.style;
+            document.getElementById('blueprintEmotion').textContent = blueprint.emotion_primary;
+            document.getElementById('blueprintSeason').textContent = blueprint.season;
+        }
+
+        function loadBlueprint(blueprint) {
+            currentBlueprint = blueprint;
+            
+            layerVisibility = {};
+            blueprint.layers.forEach(layer => {
+                layerVisibility[layer.key] = true;
+            });
+
+            updateBlueprintInfo(blueprint);
+            setupLayerToggles(blueprint);
+            renderBlueprint(blueprint);
+        }
+
+        function exportHighRes() {
+            if (!currentBlueprint) return;
+
+            const exportCanvas = document.createElement('canvas');
+            const exportSize = 2400;
+            exportCanvas.width = exportSize;
+            exportCanvas.height = exportSize;
+
+            renderBlueprint(currentBlueprint, exportCanvas);
+
+            exportCanvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `${currentBlueprint.name.replace(/\s+/g, '_')}.png`;
+                link.href = url;
+                link.click();
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        }
+
+        // Default blueprint (Sunlit Veranda)
+        const defaultBlueprint = {
+            "name": "Sunlit Veranda – Hydrangea & Lemon Summer Wreath",
+            "description": "A 24 inch asymmetrical summer wreath with blue and cream hydrangeas, soft eucalyptus and boxwood greenery, subtle lemon accents, and a linen bow.",
+            "style": "summer_asym_soft_sweep",
+            "emotion_primary": "glyph:hopeful_calm",
+            "emotion_secondary": ["glyph:warm_connection"],
+            "season": "summer",
+            "components": [
+                {"key": "base-wreath", "name": "Base Wreath", "category": "base_ring", "sku": "BASE-GRAPEVINE-24IN", "tags": ["base"]},
+                {"key": "greenery-base-arc", "name": "Greenery Base Arc", "category": "greenery_mix", "sku": "GREEN-BOXWOOD-EUC-MIX", "tags": ["greenery"]},
+                {"key": "hydrangea-major-cluster", "name": "Hydrangea Major Cluster", "category": "floral_hydrangea", "sku": "FLORAL-HYDRANGEA-BLUE-MED", "tags": ["hydrangea"]},
+                {"key": "hydrangea-secondary-sprinkle", "name": "Hydrangea Secondary Sprinkle", "category": "floral_hydrangea", "sku": "FLORAL-HYDRANGEA-CREAM-SM", "tags": ["hydrangea"]},
+                {"key": "lemon-accent-cluster", "name": "Lemon Accent Cluster", "category": "accent_fruit", "sku": "ACC-LEMON-SMALL-MATTE", "tags": ["lemon"]},
+                {"key": "filler-breath", "name": "White Filler Breath", "category": "filler_flower", "sku": "FILLER-WHITE-MINIBLOOM", "tags": ["filler"]},
+                {"key": "ribbon-bow", "name": "Linen Ribbon Bow", "category": "ribbon", "sku": "RIBBON-LINEN-TAUPE-2_5IN", "tags": ["ribbon"]},
+                {"key": "air-greens", "name": "Airy Eucalyptus Tips", "category": "greenery_eucalyptus", "sku": "GREEN-EUCALYPTUS-SOFT", "tags": ["eucalyptus"]}
+            ],
+            "layers": [
+                {
+                    "key": "layer-base",
+                    "name": "Base & Structure",
+                    "z_index": 1,
+                    "items": [{
+                        "component": "base-wreath",
+                        "z_index": 1,
+                        "positions": [{"x": 0, "y": 0, "size": 240, "rotation": 0, "angle": "12:00", "mirror": false}]
+                    }]
+                },
+                {
+                    "key": "layer-greenery",
+                    "name": "Greenery Base Arc",
+                    "z_index": 2,
+                    "items": [{
+                        "component": "greenery-base-arc",
+                        "z_index": 2,
+                        "positions": [
+                            {"x": 0, "y": 0, "size": 70, "rotation": -20, "angle": "7:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": -10, "angle": "7:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 0, "angle": "8:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 10, "angle": "8:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 20, "angle": "9:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 30, "angle": "9:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 40, "angle": "10:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 50, "angle": "10:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 60, "angle": "11:00", "mirror": false}
+                        ]
+                    }]
+                },
+                {
+                    "key": "layer-hydrangea-major",
+                    "name": "Hydrangea Major Cluster",
+                    "z_index": 3,
+                    "items": [{
+                        "component": "hydrangea-major-cluster",
+                        "z_index": 3,
+                        "positions": [
+                            {"x": 0, "y": 0, "size": 90, "rotation": 0, "angle": "7:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 95, "rotation": 10, "angle": "8:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 90, "rotation": 20, "angle": "8:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 85, "rotation": 30, "angle": "9:00", "mirror": false}
+                        ]
+                    }]
+                },
+                {
+                    "key": "layer-hydrangea-secondary",
+                    "name": "Hydrangea Secondary",
+                    "z_index": 3,
+                    "items": [{
+                        "component": "hydrangea-secondary-sprinkle",
+                        "z_index": 3,
+                        "positions": [
+                            {"x": 0, "y": 0, "size": 75, "rotation": 10, "angle": "9:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 75, "rotation": 20, "angle": "10:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 30, "angle": "10:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 70, "rotation": 40, "angle": "11:00", "mirror": false}
+                        ]
+                    }]
+                },
+                {
+                    "key": "layer-lemons",
+                    "name": "Lemon Accents",
+                    "z_index": 4,
+                    "items": [{
+                        "component": "lemon-accent-cluster",
+                        "z_index": 4,
+                        "positions": [
+                            {"x": 0, "y": 0, "size": 50, "rotation": -5, "angle": "7:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 50, "rotation": 5, "angle": "8:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 50, "rotation": 15, "angle": "8:30", "mirror": false}
+                        ]
+                    }]
+                },
+                {
+                    "key": "layer-filler",
+                    "name": "White Filler",
+                    "z_index": 5,
+                    "items": [{
+                        "component": "filler-breath",
+                        "z_index": 5,
+                        "positions": [
+                            {"x": 0, "y": 0, "size": 40, "rotation": 0, "angle": "9:30", "mirror": false},
+                            {"x": 0, "y": 0, "size": 40, "rotation": 10, "angle": "10:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 35, "rotation": 20, "angle": "10:30", "mirror": false}
+                        ]
+                    }]
+                },
+                {
+                    "key": "layer-ribbon",
+                    "name": "Ribbon Bow",
+                    "z_index": 4,
+                    "items": [{
+                        "component": "ribbon-bow",
+                        "z_index": 4,
+                        "positions": [
+                            {"x": 0, "y": 0, "size": 100, "rotation": -15, "angle": "7:30", "mirror": false}
+                        ]
+                    }]
+                },
+                {
+                    "key": "layer-air-greens",
+                    "name": "Airy Tips",
+                    "z_index": 6,
+                    "items": [{
+                        "component": "air-greens",
+                        "z_index": 6,
+                        "positions": [
+                            {"x": 0, "y": 0, "size": 90, "rotation": 20, "angle": "10:00", "mirror": false},
+                            {"x": 0, "y": 0, "size": 90, "rotation": 30, "angle": "10:30", "mirror": false}
+                        ]
+                    }]
+                }
+            ]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            canvas = document.getElementById('wreathCanvas');
+            ctx = canvas.getContext('2d');
+
+            loadBlueprint(defaultBlueprint);
+
+            // File upload
+            document.getElementById('jsonFile').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const blueprint = JSON.parse(event.target.result);
+                        loadBlueprint(blueprint);
+                    } catch (err) {
+                        alert('Invalid JSON file: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', exportHighRes);
+
+            // Canvas hover for inspector
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Hover detection logic would go here
+                // For now, just show inspector on hover
+                const inspector = document.getElementById('inspector');
+                inspector.classList.add('visible');
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                document.getElementById('inspector').classList.remove('visible');
+            });
+        });
+    </script>
+</body>
+</html>

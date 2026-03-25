@@ -1,0 +1,357 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --indigo-light: #EAE8F8; --indigo-mid: #7B6FCC; --indigo-dark: #4A3F9E;
+    --blush: #D4897A; --blush-light: #EDD5CF;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label {
+    font-size: 11px; font-weight: 500; color: var(--indigo-dark);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
+  }
+  .new-app-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--indigo-mid); }
+
+  .app-card {
+    background: var(--warm-white); border: 1.5px solid var(--indigo-mid);
+    border-radius: 20px; padding: 2rem; max-width: 760px;
+    position: relative; overflow: hidden;
+  }
+  .card-glow {
+    position: absolute; top: -50px; right: -50px; width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(123,111,204,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--indigo-light); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge { background: var(--indigo-light); color: var(--indigo-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* PROMPT PREVIEW BLOCK */
+  .prompt-preview {
+    background: var(--dark); border-radius: 14px; padding: 1.25rem 1.5rem;
+    margin-bottom: 1.75rem; position: relative;
+  }
+  .prompt-label { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .prompt-text { font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.7; font-weight: 300; font-family: 'DM Sans', sans-serif; }
+  .prompt-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 0.85rem; }
+  .prompt-tag {
+    font-size: 10px; padding: 3px 10px; border-radius: 20px; font-weight: 400;
+    border: 0.5px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.55);
+  }
+  .prompt-tag.hi { background: rgba(123,111,204,0.3); border-color: rgba(123,111,204,0.5); color: rgba(255,255,255,0.85); }
+  .copy-btn {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(255,255,255,0.1); border: 0.5px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.65); font-size: 11px; padding: 4px 12px;
+    border-radius: 20px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.18); color: white; }
+
+  /* VARIATION MATRIX */
+  .matrix-wrap { margin-bottom: 1.75rem; }
+  .matrix-label { font-size: 10px; font-weight: 500; color: var(--indigo-dark); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .matrix-tile {
+    background: var(--cream); border: 0.5px solid var(--border-med);
+    border-radius: 10px; padding: 10px 12px; cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .matrix-tile:hover { border-color: var(--indigo-mid); transform: translateY(-1px); }
+  .tile-name { font-size: 12px; font-weight: 500; color: var(--dark); margin-bottom: 2px; }
+  .tile-desc { font-size: 10px; color: var(--text-muted); font-weight: 300; line-height: 1.4; }
+  .tile-swatch { display: flex; gap: 3px; margin-top: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* EMOTION SWEEP */
+  .sweep-wrap {
+    background: var(--indigo-light); border-radius: 12px;
+    padding: 1rem 1.25rem; margin-bottom: 1.75rem;
+  }
+  .sweep-label { font-size: 10px; font-weight: 500; color: var(--indigo-dark); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .sweep-track { display: flex; align-items: center; gap: 0; }
+  .sweep-node { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .sweep-dot { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(74,63,158,0.25); background: white; display: flex; align-items: center; justify-content: center; font-size: 10px; position: relative; z-index: 1; }
+  .sweep-dot.s1 { background: #EAE8F8; }
+  .sweep-dot.s2 { background: #D8D4F2; }
+  .sweep-dot.s3 { background: #BDB6E8; border-color: var(--indigo-mid); }
+  .sweep-dot.s4 { background: #9B93D8; }
+  .sweep-dot.s5 { background: var(--indigo-mid); }
+  .sweep-name { font-size: 9px; color: var(--indigo-dark); text-align: center; font-weight: 400; }
+  .sweep-line { flex: 1; height: 1px; background: rgba(74,63,158,0.2); margin-bottom: 14px; }
+
+  /* RISK RESOLVED STRIP */
+  .risks-wrap { margin-bottom: 1.75rem; display: flex; flex-direction: column; gap: 6px; }
+  .risk-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--cream); border: 0.5px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .risk-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 1px; }
+  .badge-fixed { background: #DDF0E4; color: #2A6B45; }
+  .risk-text { font-size: 12px; color: var(--dark); line-height: 1.5; font-weight: 400; }
+  .risk-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; display: block; margin-top: 1px; }
+
+  /* HOUSE STYLES */
+  .house-wrap { margin-bottom: 1.75rem; }
+  .house-label { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .house-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .house-pill {
+    font-size: 11px; padding: 5px 12px; border-radius: 20px;
+    background: var(--warm-white); border: 0.5px solid var(--border-med);
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+  }
+  .house-pill:hover { border-color: var(--indigo-mid); color: var(--indigo-dark); }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--indigo-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+  .price-main { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add { background: var(--indigo-dark); color: white; padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn { background: transparent; color: var(--text-muted); padding: 11px 20px; border-radius: 40px; font-size: 13px; font-weight: 400; cursor: pointer; border: 1px solid var(--border-med); transition: border-color 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 560px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .matrix-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🎨</div>
+      <div>
+        <div class="app-name">Visual Companion</div>
+        <div class="app-tagline">Blueprint → Midjourney prompts · overlay export · concept art feedback loop</div>
+      </div>
+    </div>
+    <span class="badge">Creative AI</span>
+  </div>
+
+  <p class="app-desc">
+    Every blueprint you build can now generate a complete Midjourney prompt pack — hero prompt, structural overlay image, and a full variation matrix. Visualize your wreath as concept art before a single stem is cut, then feed what you love back into the system to refine the blueprint. Your design workflow, fully closed loop.
+  </p>
+
+  <!-- HERO PROMPT PREVIEW -->
+  <div class="prompt-preview">
+    <button class="copy-btn" onclick="this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
+    <div class="prompt-label">Hero prompt — "Quiet Evergreen Threshold"</div>
+    <div class="prompt-text">calm, hopeful minimalist evergreen wreath on a grapevine base, negative space, soft cedar and eucalyptus, small pinecones and white berries, narrow taupe linen ribbon at lower left, asymmetrical composition, top-down studio product photo, neutral background, ultra realistic</div>
+    <div class="prompt-tags">
+      <span class="prompt-tag hi">emotion: calm · hopeful</span>
+      <span class="prompt-tag hi">formula: crescent</span>
+      <span class="prompt-tag">18" grapevine</span>
+      <span class="prompt-tag">negative space</span>
+      <span class="prompt-tag">studio lighting</span>
+    </div>
+  </div>
+
+  <!-- VARIATION MATRIX -->
+  <div class="matrix-wrap">
+    <div class="matrix-label">Prompt variation matrix — one blueprint, nine moods</div>
+    <div class="matrix-grid">
+      <div class="matrix-tile">
+        <div class="tile-name">Airy Pastel</div>
+        <div class="tile-desc">Lighter palette, reduced density, soft morning light</div>
+        <div class="tile-swatch">
+          <div class="swatch" style="background:#EDD5CF"></div>
+          <div class="swatch" style="background:#C5D4C1"></div>
+          <div class="swatch" style="background:#F5F0E8"></div>
+        </div>
+      </div>
+      <div class="matrix-tile" style="border-color:var(--indigo-mid)">
+        <div class="tile-name" style="color:var(--indigo-dark)">Hero (base)</div>
+        <div class="tile-desc">Original emotion · palette · structure</div>
+        <div class="tile-swatch">
+          <div class="swatch" style="background:#8A9E85"></div>
+          <div class="swatch" style="background:#C5D4C1"></div>
+          <div class="swatch" style="background:#E8E0D0"></div>
+        </div>
+      </div>
+      <div class="matrix-tile">
+        <div class="tile-name">Moody Luxe</div>
+        <div class="tile-desc">Deep tones, denser foliage, dramatic shadow</div>
+        <div class="tile-swatch">
+          <div class="swatch" style="background:#4D6649"></div>
+          <div class="swatch" style="background:#2A2520"></div>
+          <div class="swatch" style="background:#9E8E7E"></div>
+        </div>
+      </div>
+      <div class="matrix-tile">
+        <div class="tile-name">Rustic Warm</div>
+        <div class="tile-desc">Warm wood tones, texture-forward, amber light</div>
+        <div class="tile-swatch">
+          <div class="swatch" style="background:#C9923A"></div>
+          <div class="swatch" style="background:#8A9E85"></div>
+          <div class="swatch" style="background:#E8D5C0"></div>
+        </div>
+      </div>
+      <div class="matrix-tile">
+        <div class="tile-name">Monochrome</div>
+        <div class="tile-desc">Single green family, tonal depth only</div>
+        <div class="tile-swatch">
+          <div class="swatch" style="background:#4D6649"></div>
+          <div class="swatch" style="background:#8A9E85"></div>
+          <div class="swatch" style="background:#C5D4C1"></div>
+        </div>
+      </div>
+      <div class="matrix-tile">
+        <div class="tile-name">Metallic Frost</div>
+        <div class="tile-desc">Silver-green, frosted accents, winter studio</div>
+        <div class="tile-swatch">
+          <div class="swatch" style="background:#B8C4C8"></div>
+          <div class="swatch" style="background:#8A9E9A"></div>
+          <div class="swatch" style="background:#E8ECEC"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMOTION SWEEP -->
+  <div class="sweep-wrap">
+    <div class="sweep-label">Emotion sweep — same blueprint, five intensity levels</div>
+    <div class="sweep-track">
+      <div class="sweep-node">
+        <div class="sweep-dot s1">✦</div>
+        <div class="sweep-name">Still</div>
+      </div>
+      <div class="sweep-line"></div>
+      <div class="sweep-node">
+        <div class="sweep-dot s2">✦</div>
+        <div class="sweep-name">Calm</div>
+      </div>
+      <div class="sweep-line"></div>
+      <div class="sweep-node">
+        <div class="sweep-dot s3">✦</div>
+        <div class="sweep-name">Balanced</div>
+      </div>
+      <div class="sweep-line"></div>
+      <div class="sweep-node">
+        <div class="sweep-dot s4">✦</div>
+        <div class="sweep-name">Warm</div>
+      </div>
+      <div class="sweep-line"></div>
+      <div class="sweep-node">
+        <div class="sweep-dot s5" style="font-size:12px">✦</div>
+        <div class="sweep-name">Dramatic</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISKS RESOLVED -->
+  <div class="risks-wrap">
+    <div class="risk-row">
+      <span class="risk-badge badge-fixed">Fixed</span>
+      <div class="risk-text">Visual drift — blueprint overlay PNG ships with every prompt pack
+        <span>MJ receives a structural reference image (ring silhouette, cluster positions, negative space) alongside the text prompt, anchoring composition to your blueprint</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge badge-fixed">Fixed</span>
+      <div class="risk-text">Prompt bloat — template engine enforces strict section hierarchy
+        <span>Prompts are built in order: emotion → structure → materials → style → technical. Each section has a character cap; the engine trims, never exceeds</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge badge-fixed">Fixed</span>
+      <div class="risk-text">User friction — one-click "Generate Prompt Bundle" outputs Discord-ready markdown
+        <span>Numbered variants 1–4 in a single pasteable block; no manual assembly. Overlay PNG downloads in one click alongside the bundle</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOUSE STYLES -->
+  <div class="house-wrap">
+    <div class="house-label">House style presets</div>
+    <div class="house-pills">
+      <span class="house-pill">Ralph Lauren Holiday Door</span>
+      <span class="house-pill">Quiet Luxury Spring Entry</span>
+      <span class="house-pill">Farmhouse Harvest</span>
+      <span class="house-pill">Modern Minimalist</span>
+      <span class="house-pill">Coastal Summer</span>
+      <span class="house-pill">+ Save your own</span>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Prompt Compiler</strong>
+        <span>Blueprint schema + emotion tags → structured Midjourney hero prompt, safe variant, bold variant, minimal variant</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Blueprint overlay export</strong>
+        <span>Line-art PNG of your wreath structure — ring, clusters, ribbon anchor, negative space — for MJ to follow compositionally</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Feedback ingestor</strong>
+        <span>Upload MJ outputs, tag what worked, and push refinements back into a new blueprint version — closes the loop</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Experiment tracker</strong>
+        <span>Blueprint → prompts → MJ images → chosen winners → blueprint v2, all linked in a visual experiment board</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <div>
+      <div class="price-main"><sup>$</sup>8.95<sub>/mo</sub></div>
+      <div class="price-note">Add to any Maker or Studio Pro plan</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Works with Memory Weaver, Blueprint Intelligence Pro, and Layout Studio — pairs especially well with Adaptive Blueprint Composer
+</div>

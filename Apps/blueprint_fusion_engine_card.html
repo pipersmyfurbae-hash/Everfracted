@@ -1,0 +1,359 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --blush: #D4897A; --blush-light: #EDD5CF; --blush-dark: #A05E51;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --plum-light: #F0E8F4; --plum-mid: #8A4A9E; --plum-dark: #4E1E6A;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label { font-size: 11px; font-weight: 500; color: var(--plum-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .new-app-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--plum-mid); }
+
+  .app-card { background: var(--warm-white); border: 1.5px solid var(--plum-mid); border-radius: 20px; padding: 2rem; max-width: 760px; position: relative; overflow: hidden; }
+  .card-glow { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(138,74,158,0.1) 0%, transparent 70%); pointer-events: none; }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--plum-light); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge { background: var(--plum-light); color: var(--plum-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* THREE LAYERS */
+  .layers-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1.75rem; }
+  .layer-card { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 12px; padding: 1rem; }
+  .layer-num { font-size: 10px; font-weight: 500; color: var(--plum-mid); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
+  .layer-title { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--dark); margin-bottom: 4px; }
+  .layer-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; font-weight: 300; }
+
+  /* FUSION BLEND MOCKUP */
+  .fusion-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem; }
+  .fusion-label { font-size: 10px; font-weight: 500; color: var(--plum-dark); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 1rem; }
+  .fusion-sources { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .source-pill { display: flex; flex-direction: column; gap: 3px; background: var(--warm-white); border: 0.5px solid var(--border-med); border-radius: 10px; padding: 8px 12px; flex: 1; min-width: 100px; }
+  .sp-name { font-size: 12px; font-weight: 500; color: var(--dark); }
+  .sp-pct { font-size: 11px; color: var(--plum-mid); font-weight: 500; }
+  .sp-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+  .sp-tag { font-size: 9px; background: var(--plum-light); color: var(--plum-dark); padding: 2px 6px; border-radius: 6px; }
+  .fusion-plus { font-size: 16px; color: var(--text-muted); flex-shrink: 0; }
+  .fusion-arrow { font-size: 13px; color: var(--plum-mid); text-align: center; margin-bottom: 8px; }
+  .fusion-result { background: var(--dark); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .fr-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 500; color: var(--cream); }
+  .fr-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .fr-tag { font-size: 9px; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); padding: 2px 8px; border-radius: 8px; }
+  .fr-why { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 4px; font-style: italic; }
+
+  /* PSYCHOGRAPHIC PERSONAS */
+  .personas-wrap { margin-bottom: 1.75rem; }
+  .personas-label { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .personas-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; }
+  .persona-card { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 10px; padding: 9px 8px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+  .persona-card:hover { border-color: var(--plum-mid); }
+  .persona-card.active { border-color: var(--plum-mid); background: var(--plum-light); }
+  .persona-icon { font-size: 16px; margin-bottom: 4px; }
+  .persona-name { font-size: 10px; font-weight: 500; color: var(--dark); margin-bottom: 3px; line-height: 1.3; }
+  .persona-traits { font-size: 9px; color: var(--text-muted); line-height: 1.4; }
+
+  /* ONBOARDING QUIZ */
+  .quiz-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem; }
+  .quiz-label { font-size: 10px; font-weight: 500; color: var(--plum-dark); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 1rem; }
+  .quiz-q { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .q-text { font-size: 12px; color: var(--dark); font-weight: 400; }
+  .q-scale { display: flex; align-items: center; gap: 6px; }
+  .q-min { font-size: 10px; color: var(--text-muted); min-width: 70px; text-align: right; }
+  .q-max { font-size: 10px; color: var(--text-muted); min-width: 70px; }
+  .q-track { flex: 1; height: 4px; background: rgba(42,37,32,0.1); border-radius: 2px; position: relative; }
+  .q-fill { height: 100%; background: var(--plum-mid); border-radius: 2px; }
+  .q-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--plum-dark); position: absolute; top: -4px; transform: translateX(-50%); }
+  .quiz-footer { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 4px; }
+
+  /* RISKS */
+  .risks-wrap { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .risk-row { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .risk-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 1px; background: #DDF0E4; color: #2A6B45; }
+  .risk-text { font-size: 12px; color: var(--dark); line-height: 1.5; }
+  .risk-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; display: block; margin-top: 1px; }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--plum-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .pair-strip { background: var(--plum-light); border-radius: 10px; padding: 10px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .pair-text { font-size: 12px; color: var(--plum-dark); }
+  .pair-text strong { font-weight: 500; }
+  .pair-price { display: flex; align-items: center; gap: 10px; }
+  .pair-old { font-size: 12px; color: var(--text-muted); text-decoration: line-through; }
+  .pair-new { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 500; color: var(--plum-dark); }
+  .pair-new sub { font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+  .v2-strip { background: var(--plum-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 10px; }
+  .v2-label { font-size: 10px; font-weight: 500; color: var(--plum-dark); letter-spacing: 0.08em; text-transform: uppercase; background: white; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+  .v2-text { font-size: 12px; color: var(--plum-dark); font-weight: 300; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+  .price-main { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add { background: var(--plum-dark); color: white; padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn { background: transparent; color: var(--text-muted); padding: 11px 20px; border-radius: 40px; font-size: 13px; font-weight: 400; cursor: pointer; border: 1px solid var(--border-med); transition: border-color 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .layers-grid { grid-template-columns: 1fr; }
+    .personas-grid { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🧬</div>
+      <div>
+        <div class="app-name">Blueprint Fusion Engine</div>
+        <div class="app-tagline">Multi-blueprint DNA blending · psychographic personas · behavioral learning · traceable lineage</div>
+      </div>
+    </div>
+    <span class="badge">Personalization engine</span>
+  </div>
+
+  <p class="app-desc">
+    Every other app in the ecosystem starts from one blueprint and evolves it. The Fusion Engine starts from <em style="font-style:italic;color:var(--dark)">several</em> — blending structural DNA from multiple archetypes into a single coherent hybrid. Romantic symmetry + Minimal negative space + Rustic texture = something none of them are alone. And the more you use it, the better it understands <em style="font-style:italic;color:var(--dark)">who you are</em> as a designer — building a psychographic profile from your choices, slider preferences, and design behavior that seeds every future fusion automatically.
+  </p>
+
+  <!-- THREE LAYERS -->
+  <div class="layers-grid">
+    <div class="layer-card">
+      <div class="layer-num">Layer 1</div>
+      <div class="layer-title">Fusion Engine</div>
+      <div class="layer-desc">Blend 2–4 blueprint archetypes by weighted DNA — structure, density, focal logic, palette harmony</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">Layer 2</div>
+      <div class="layer-title">Psychographic Personas</div>
+      <div class="layer-desc">5 design identity types that shape which blueprints are selected and how they're weighted in every fusion</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-num">Layer 3</div>
+      <div class="layer-title">Behavioral Learning</div>
+      <div class="layer-desc">3-question onboarding + continuous behavioral signals build and refine your psychographic vector over time</div>
+    </div>
+  </div>
+
+  <!-- FUSION BLEND MOCKUP -->
+  <div class="fusion-wrap">
+    <div class="fusion-label">Active fusion — "Lush Serenity" recipe</div>
+    <div class="fusion-sources">
+      <div class="source-pill">
+        <div class="sp-name">Romantic</div>
+        <div class="sp-pct">70%</div>
+        <div class="sp-tags"><span class="sp-tag">Symmetry</span><span class="sp-tag">Dense focal</span></div>
+      </div>
+      <div class="fusion-plus">+</div>
+      <div class="source-pill">
+        <div class="sp-name">Minimal</div>
+        <div class="sp-pct">30%</div>
+        <div class="sp-tags"><span class="sp-tag">Neg. space</span><span class="sp-tag">Low contrast</span></div>
+      </div>
+    </div>
+    <div class="fusion-arrow">↓ fused into</div>
+    <div class="fusion-result">
+      <div>
+        <div class="fr-name">Lush Serenity</div>
+        <div class="fr-tags">
+          <span class="fr-tag">Dense lower arc</span>
+          <span class="fr-tag">Open top third</span>
+          <span class="fr-tag">Soft palette</span>
+          <span class="fr-tag">Single focal</span>
+        </div>
+        <div class="fr-why">"Romantic cluster logic, Minimal negative space. Conflict resolved: Romantic density capped at Minimal's outer band limit."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PSYCHOGRAPHIC PERSONAS -->
+  <div class="personas-wrap">
+    <div class="personas-label">Five design personas — your identity seeds every fusion</div>
+    <div class="personas-grid">
+      <div class="persona-card active">
+        <div class="persona-icon">🕯️</div>
+        <div class="persona-name">Orderly Soother</div>
+        <div class="persona-traits">Structure, ritual, calm symmetry</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🌿</div>
+        <div class="persona-name">Quiet Minimalist</div>
+        <div class="persona-traits">Low noise, breathing room, restraint</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🌸</div>
+        <div class="persona-name">Romantic Storyteller</div>
+        <div class="persona-traits">Meaning, memory, layered beauty</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🎉</div>
+        <div class="persona-name">Playful Experimentalist</div>
+        <div class="persona-traits">Novelty, bold contrast, surprise</div>
+      </div>
+      <div class="persona-card">
+        <div class="persona-icon">🌱</div>
+        <div class="persona-name">Eco Symbolist</div>
+        <div class="persona-traits">Meaning-driven, natural, foraged</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING QUIZ -->
+  <div class="quiz-wrap">
+    <div class="quiz-label">Onboarding — 3 questions, 30 seconds, behavior does the rest</div>
+    <div class="quiz-q">
+      <div class="q-text">When it comes to decor, I prefer:</div>
+      <div class="q-scale">
+        <span class="q-min">Very structured</span>
+        <div class="q-track"><div class="q-fill" style="width:25%"></div><div class="q-thumb" style="left:25%"></div></div>
+        <span class="q-max">Very freeform</span>
+      </div>
+    </div>
+    <div class="quiz-q">
+      <div class="q-text">I feel most at home in spaces that are:</div>
+      <div class="q-scale">
+        <span class="q-min">Very minimal</span>
+        <div class="q-track"><div class="q-fill" style="width:60%"></div><div class="q-thumb" style="left:60%"></div></div>
+        <span class="q-max">Very detailed</span>
+      </div>
+    </div>
+    <div class="quiz-q" style="margin-bottom:0">
+      <div class="q-text">For me, decor should mostly:</div>
+      <div class="q-scale">
+        <span class="q-min">Look beautiful</span>
+        <div class="q-track"><div class="q-fill" style="width:80%"></div><div class="q-thumb" style="left:80%"></div></div>
+        <span class="q-max">Feel meaningful</span>
+      </div>
+    </div>
+    <div class="quiz-footer">Answers seed your psychographic vector. Behavior refines it automatically — no more questions unless you want to tune it manually.</div>
+  </div>
+
+  <!-- RISKS RESOLVED -->
+  <div class="risks-wrap">
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Fusion constraints override emotional nuance — free expression quota preserves 20% for pure emotion
+        <span>20% of placements in every fused blueprint ignore structural constraints and follow pure emotional curves. This ensures the fusion never feels over-engineered, and strong emotions (grief, wild joy) can still break structure intentionally via the Tension slider</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Onboarding quiz kills flow — 3 questions maximum, under 30 seconds
+        <span>Three semantic differential questions seed the psychographic vector as a prior. Every subsequent interaction — blueprint favorites, slider choices, pulse answers — continuously refines it. Users who skip the quiz get a neutral vector and the system learns from behavior alone</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Stereotyping users into fixed personas — manual override + "Try something unlike me" toggle
+        <span>"Tune my style" panel lets users see and manually adjust their psychographic sliders at any time. "Try something unlike me" intentionally selects blueprints from an opposing persona cluster — creates contrast pieces for special occasions or gifts without permanently shifting the profile</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Cold start problem for new users — quiz answers provide an immediate working prior
+        <span>Three quiz answers give the Fusion Engine a usable psychographic vector on day one. The system is calibrated to work with quiz-only data and improve gracefully as behavior accumulates — no blank slate, no bad first experience</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Multi-blueprint DNA blending</strong>
+        <span>Combine 2–4 blueprint archetypes by weighted ratio — structural zones, density curves, focal logic, and palette harmony all fused into one coherent hybrid</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Conflict resolver</strong>
+        <span>When two blueprints have incompatible rules (radial vs asymmetric, dense vs minimal), the engine applies arbitration — higher-weight blueprint wins, or auto-morphs to stable middle form</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Traceable lineage with "Why here?"</strong>
+        <span>Click any element on the fused blueprint to see which parent contributed it and why — "This bloom sits in the Comfort Arc from Romantic blueprint, boosted by high serenity density"</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Behavioral persona evolution</strong>
+        <span>Every blueprint you favorite, slider you move, and preset you override updates your psychographic vector — your fusion defaults become more accurate with every session</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Fusion recipe library</strong>
+        <span>Save successful blend ratios as named recipes ("Lush Serenity", "Bold Heritage") — reapply to any new blueprint or share with other designers in the marketplace</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Discovery mode</strong>
+        <span>AI auto-combines least-correlated blueprints to surface experimental designs outside your usual persona — controlled surprise that sparks new creative directions</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pair-strip">
+    <div class="pair-text">Pair with <strong>Blueprint Intelligence Pro</strong> — BIP learns from fusion outputs, Fusion Engine uses BIP's performance data to weight blend ratios</div>
+    <div class="pair-price">
+      <span class="pair-old">$14.95 + $13.95</span>
+      <span class="pair-new">$21.95<sub>/mo both</sub></span>
+    </div>
+  </div>
+
+  <div class="v2-strip">
+    <span class="v2-label">Coming in v2</span>
+    <span class="v2-text">K-Means behavioral clustering across all users · persona marketplace (share your vector) · gift context toggle · TypeScript interfaces for all schemas</span>
+  </div>
+
+  <div class="card-footer">
+    <div>
+      <div class="price-main"><sup>$</sup>13.95<sub>/mo</sub></div>
+      <div class="price-note">Standalone · or $21.95/mo paired with Blueprint Intelligence Pro</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Works with Blueprint Intelligence Pro, EmotionSync, Dynamic Variant Branching, and Adaptive Blueprint Composer · psychographic vector feeds every app that makes design decisions
+</div>

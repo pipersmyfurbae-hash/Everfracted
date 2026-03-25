@@ -1,0 +1,411 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --violet-light: #EDE8F8; --violet-mid: #8B6FCC; --violet-dark: #4E3A8A;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label { font-size: 11px; font-weight: 500; color: var(--violet-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .new-app-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--violet-mid); }
+
+  .app-card { background: var(--warm-white); border: 1.5px solid var(--violet-mid); border-radius: 20px; padding: 2rem; max-width: 760px; position: relative; overflow: hidden; }
+  .card-glow { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(139,111,204,0.1) 0%, transparent 70%); pointer-events: none; }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--violet-light); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge { background: var(--violet-light); color: var(--violet-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* SHAPE FAMILIES */
+  .shapes-label { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .shapes-row { display: flex; gap: 10px; margin-bottom: 1.75rem; flex-wrap: wrap; }
+  .shape-tile { flex: 1; min-width: 100px; background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 12px; padding: 10px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+  .shape-tile.active { border-color: var(--violet-mid); background: var(--violet-light); }
+  .shape-canvas { display: block; margin: 0 auto 6px; }
+  .shape-name { font-size: 11px; font-weight: 500; color: var(--dark); margin-bottom: 2px; }
+  .shape-emotion { font-size: 10px; color: var(--text-muted); font-weight: 300; }
+
+  /* LAB MOCKUP */
+  .lab-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; overflow: hidden; margin-bottom: 1.75rem; }
+  .lab-topbar { background: var(--dark); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .lab-title { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7); letter-spacing: 0.06em; text-transform: uppercase; }
+  .lab-btns { display: flex; gap: 6px; }
+  .lab-btn { font-size: 10px; padding: 4px 10px; border-radius: 16px; cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; }
+  .lab-btn-ghost { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.65); }
+  .lab-btn-primary { background: var(--violet-mid); color: white; }
+  .lab-body { display: grid; grid-template-columns: 180px 1fr 150px; gap: 0; }
+  .lab-panel { padding: 1rem; }
+  .lab-panel-left { border-right: 0.5px solid var(--border-med); }
+  .lab-panel-right { border-left: 0.5px solid var(--border-med); }
+  .lab-section-title { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 8px; }
+  .emotion-pills-lab { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .ep-btn { font-size: 11px; padding: 5px 10px; border-radius: 8px; border: 0.5px solid var(--border-med); background: var(--warm-white); color: var(--text-muted); cursor: pointer; text-align: left; }
+  .ep-btn.active { background: var(--violet-dark); color: white; border-color: var(--violet-dark); }
+  .param-row { display: flex; align-items: center; gap: 6px; margin-bottom: 7px; }
+  .param-label { font-size: 10px; color: var(--text-muted); min-width: 60px; }
+  .param-track { flex: 1; height: 3px; background: rgba(42,37,32,0.12); border-radius: 2px; position: relative; }
+  .param-fill { height: 100%; background: var(--violet-mid); border-radius: 2px; }
+  .param-thumb { width: 10px; height: 10px; border-radius: 50%; background: var(--violet-dark); position: absolute; top: -3px; transform: translateX(-50%); }
+  .param-val { font-size: 10px; font-weight: 500; color: var(--dark); min-width: 22px; text-align: right; }
+  .lab-center { display: flex; align-items: center; justify-content: center; padding: 1rem; background: var(--warm-white); }
+  .stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .stat-label { font-size: 10px; color: var(--text-muted); }
+  .stat-val { font-size: 10px; font-weight: 500; color: var(--dark); }
+  .cluster-plan { margin-top: 10px; }
+  .cp-item { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+  .cp-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .safety-toggle { display: flex; align-items: center; gap: 6px; margin-top: 10px; padding-top: 8px; border-top: 0.5px solid var(--border); }
+  .safety-icon { font-size: 12px; }
+  .safety-text { font-size: 10px; color: var(--sage-dark); font-weight: 400; }
+  .safety-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sage); margin-left: auto; }
+
+  /* CURVE FORMULA STRIP */
+  .formula-strip { background: var(--dark); border-radius: 10px; padding: 10px 16px; margin-bottom: 1.5rem; }
+  .formula-title { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.4); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  .formula-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
+  .formula-item { text-align: center; }
+  .formula-name { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
+  .formula-eq { font-size: 9px; color: rgba(139,111,204,0.9); font-family: monospace; line-height: 1.6; }
+  .formula-emotion { font-size: 9px; color: rgba(255,255,255,0.3); margin-top: 2px; font-style: italic; }
+
+  /* RISKS */
+  .risks-wrap { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .risk-row { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .risk-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 1px; background: #DDF0E4; color: #2A6B45; }
+  .risk-text { font-size: 12px; color: var(--dark); line-height: 1.5; }
+  .risk-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; display: block; margin-top: 1px; }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--violet-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .pair-strip { background: var(--violet-light); border-radius: 10px; padding: 10px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .pair-text { font-size: 12px; color: var(--violet-dark); font-weight: 400; }
+  .pair-text strong { font-weight: 500; }
+  .pair-price { display: flex; align-items: center; gap: 10px; }
+  .pair-old { font-size: 12px; color: var(--text-muted); text-decoration: line-through; }
+  .pair-new { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 500; color: var(--violet-dark); }
+  .pair-new sub { font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+  .v2-strip { background: var(--violet-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 10px; }
+  .v2-label { font-size: 10px; font-weight: 500; color: var(--violet-dark); letter-spacing: 0.08em; text-transform: uppercase; background: white; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+  .v2-text { font-size: 12px; color: var(--violet-dark); font-weight: 300; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+  .price-main { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add { background: var(--violet-dark); color: white; padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn { background: transparent; color: var(--text-muted); padding: 11px 20px; border-radius: 40px; font-size: 13px; font-weight: 400; cursor: pointer; border: 1px solid var(--border-med); transition: border-color 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .formula-grid { grid-template-columns: repeat(2,1fr); }
+    .lab-body { grid-template-columns: 1fr; }
+    .lab-panel-left, .lab-panel-right { border: none; border-top: 0.5px solid var(--border-med); }
+    .shapes-row { gap: 6px; }
+  }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🌀</div>
+      <div>
+        <div class="app-name">Parametric Layout Lab</div>
+        <div class="app-tagline">Emotion → ring geometry · 5 curve families · live morphing · commercial safety</div>
+      </div>
+    </div>
+    <span class="badge">Shape engine</span>
+  </div>
+
+  <p class="app-desc">
+    Every wreath on the platform currently starts with a circle. The Parametric Layout Lab breaks that assumption — emotion now drives the actual <em style="font-style:italic;color:var(--dark)">shape of the ring itself</em>. Calm becomes a soft ellipse. Romance becomes a gentle rose curve with petal peaks at focal points. Wild joy becomes a perturbed circle with organic irregularity. The ring is no longer a template — it's a parametric expression of what the wreath should feel like.
+  </p>
+
+  <!-- 5 SHAPE FAMILIES -->
+  <div class="shapes-label">Five parametric curve families</div>
+  <div class="shapes-row">
+    <div class="shape-tile active">
+      <svg class="shape-canvas" viewBox="0 0 60 60" width="52" height="52" fill="none">
+        <ellipse cx="30" cy="30" rx="22" ry="18" stroke="#8B6FCC" stroke-width="1.5" fill="none"/>
+        <circle cx="30" cy="30" r="2" fill="#8B6FCC" opacity="0.4"/>
+      </svg>
+      <div class="shape-name">Ellipse</div>
+      <div class="shape-emotion">Calm · Serene</div>
+    </div>
+    <div class="shape-tile">
+      <svg class="shape-canvas" viewBox="0 0 60 60" width="52" height="52" fill="none">
+        <path d="M30 30 m0 -18 q6 4 8 0 q6 -4 8 8 q4 6 0 8 q-4 6 -8 8 q-6 4 -8 0 q-6 -4 -8 -8 q-4 -6 0 -8 q4 -6 8 -8 Z" stroke="#D4897A" stroke-width="1.5" fill="none"/>
+        <circle cx="30" cy="12" r="2.5" fill="#D4897A" opacity="0.6"/>
+        <circle cx="48" cy="30" r="2.5" fill="#D4897A" opacity="0.6"/>
+        <circle cx="30" cy="48" r="2.5" fill="#D4897A" opacity="0.6"/>
+        <circle cx="12" cy="30" r="2.5" fill="#D4897A" opacity="0.6"/>
+      </svg>
+      <div class="shape-name">Rose curve</div>
+      <div class="shape-emotion">Romantic · Whimsical</div>
+    </div>
+    <div class="shape-tile">
+      <svg class="shape-canvas" viewBox="0 0 60 60" width="52" height="52" fill="none">
+        <path d="M30 30 Q34 14 44 20 Q52 28 46 38 Q40 50 28 48 Q14 44 14 32 Q14 18 26 14 Q36 10 42 18" stroke="#C9923A" stroke-width="1.5" fill="none"/>
+        <circle cx="30" cy="30" r="2" fill="#C9923A" opacity="0.4"/>
+      </svg>
+      <div class="shape-name">Spiral</div>
+      <div class="shape-emotion">Energetic · Growth</div>
+    </div>
+    <div class="shape-tile">
+      <svg class="shape-canvas" viewBox="0 0 60 60" width="52" height="52" fill="none">
+        <path d="M30 12 Q44 14 48 24 Q54 36 46 44 Q38 54 26 50 Q12 46 10 34 Q8 20 18 14 Q24 10 30 12 Z" stroke="#4A7A55" stroke-width="1.5" fill="none"/>
+      </svg>
+      <div class="shape-name">Perturbed</div>
+      <div class="shape-emotion">Wild · Organic</div>
+    </div>
+    <div class="shape-tile">
+      <svg class="shape-canvas" viewBox="0 0 60 60" width="52" height="52" fill="none">
+        <path d="M30 13 C42 13 48 20 48 30 C48 42 40 47 30 47 C18 47 12 40 12 30 C12 20 18 13 30 13 Z" stroke="#2E4A6A" stroke-width="1.5" fill="none"/>
+        <circle cx="30" cy="30" r="1.5" fill="#2E4A6A" opacity="0.3"/>
+      </svg>
+      <div class="shape-name">Bézier luxury</div>
+      <div class="shape-emotion">Elevated · Refined</div>
+    </div>
+  </div>
+
+  <!-- FORMULA STRIP -->
+  <div class="formula-strip">
+    <div class="formula-title">Parametric formulas — emotion maps to curve parameters</div>
+    <div class="formula-grid">
+      <div class="formula-item">
+        <div class="formula-name">Ellipse</div>
+        <div class="formula-eq">x = R·cosθ<br>y = e·R·sinθ</div>
+        <div class="formula-emotion">e → 0.8–1.2</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Rose</div>
+        <div class="formula-eq">r = R + a·cos(nθ)<br>n = petal count</div>
+        <div class="formula-emotion">a → 0.1–0.2R</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Spiral</div>
+        <div class="formula-eq">r = R₀ + k·θ<br>θ ∈ [0, 2π]</div>
+        <div class="formula-emotion">k → arousal level</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Perturbed</div>
+        <div class="formula-eq">r = R + a₁sin(n₁θ)<br>+ a₂sin(n₂θ+φ)</div>
+        <div class="formula-emotion">n₁≠n₂ → organic</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Bézier</div>
+        <div class="formula-eq">anchors on circle<br>→ cubic spline</div>
+        <div class="formula-emotion">elegance → smooth</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAB UI MOCKUP -->
+  <div class="lab-wrap">
+    <div class="lab-topbar">
+      <span class="lab-title">Parametric Layout Lab</span>
+      <div class="lab-btns">
+        <button class="lab-btn lab-btn-ghost">Save preset</button>
+        <button class="lab-btn lab-btn-ghost">Reset</button>
+        <button class="lab-btn lab-btn-primary">Use in design</button>
+      </div>
+    </div>
+    <div class="lab-body">
+      <!-- LEFT: CONTROLS -->
+      <div class="lab-panel lab-panel-left">
+        <div class="lab-section-title">Emotion</div>
+        <div class="emotion-pills-lab">
+          <button class="ep-btn">Calm</button>
+          <button class="ep-btn active">Romantic</button>
+          <button class="ep-btn">Energetic</button>
+          <button class="ep-btn">Wild</button>
+          <button class="ep-btn">Luxurious</button>
+        </div>
+        <div class="lab-section-title">Shape — Rose curve</div>
+        <div class="param-row"><span class="param-label">Petal count</span><div class="param-track"><div class="param-fill" style="width:60%"></div><div class="param-thumb" style="left:60%"></div></div><span class="param-val">4</span></div>
+        <div class="param-row"><span class="param-label">Amplitude</span><div class="param-track"><div class="param-fill" style="width:40%"></div><div class="param-thumb" style="left:40%"></div></div><span class="param-val">0.12</span></div>
+        <div class="param-row"><span class="param-label">Slot count</span><div class="param-track"><div class="param-fill" style="width:55%"></div><div class="param-thumb" style="left:55%"></div></div><span class="param-val">48</span></div>
+        <div class="safety-toggle">
+          <span class="safety-icon">🔒</span>
+          <span class="safety-text">Commercial safety on</span>
+          <div class="safety-dot"></div>
+        </div>
+      </div>
+      <!-- CENTER: CANVAS -->
+      <div class="lab-center">
+        <svg viewBox="0 0 180 180" width="150" height="150" fill="none">
+          <!-- Safe zone band -->
+          <circle cx="90" cy="90" r="72" stroke="#E8E4DC" stroke-width="16" fill="none" opacity="0.5"/>
+          <!-- Rose curve r = 65 + 13·cos(4θ) -->
+          <path d="M155 90 C154 72 148 58 138 50 C128 42 116 40 104 44 C96 48 90 56 88 66 C86 58 82 50 74 46 C62 40 48 44 38 54 C28 64 26 78 30 90 C26 102 28 116 38 126 C48 136 62 140 74 136 C82 132 86 124 88 114 C90 124 96 132 104 136 C116 140 128 138 138 130 C148 122 154 108 155 90Z" stroke="#8B6FCC" stroke-width="1.5" fill="none"/>
+          <!-- Anchor dots at petal peaks -->
+          <circle cx="155" cy="90" r="4" fill="#8B6FCC" opacity="0.8"/>
+          <circle cx="90" cy="18" r="4" fill="#8B6FCC" opacity="0.8"/>
+          <circle cx="25" cy="90" r="4" fill="#8B6FCC" opacity="0.8"/>
+          <circle cx="90" cy="162" r="4" fill="#8B6FCC" opacity="0.8"/>
+          <!-- Distributed anchor dots -->
+          <circle cx="138" cy="50" r="2.5" fill="#D4897A" opacity="0.6"/>
+          <circle cx="42" cy="50" r="2.5" fill="#D4897A" opacity="0.6"/>
+          <circle cx="138" cy="130" r="2.5" fill="#D4897A" opacity="0.6"/>
+          <circle cx="42" cy="130" r="2.5" fill="#D4897A" opacity="0.6"/>
+          <circle cx="104" cy="28" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <circle cx="76" cy="28" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <circle cx="104" cy="152" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <circle cx="76" cy="152" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <circle cx="162" cy="68" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <circle cx="162" cy="112" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <circle cx="18" cy="68" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <circle cx="18" cy="112" r="2" fill="#C5D4C1" opacity="0.7"/>
+          <!-- Center -->
+          <circle cx="90" cy="90" r="3" fill="#8B6FCC" opacity="0.25"/>
+          <text x="90" y="168" text-anchor="middle" font-size="7" fill="#7A6E66" font-family="DM Sans,sans-serif">48 anchor slots · 4 focal peaks</text>
+        </svg>
+      </div>
+      <!-- RIGHT: STATS -->
+      <div class="lab-panel lab-panel-right">
+        <div class="lab-section-title">Layout stats</div>
+        <div class="stat-row"><span class="stat-label">Total slots</span><span class="stat-val">48</span></div>
+        <div class="stat-row"><span class="stat-label">Symmetry score</span><span class="stat-val">0.82</span></div>
+        <div class="stat-row"><span class="stat-label">Max radius</span><span class="stat-val">78px</span></div>
+        <div class="stat-row"><span class="stat-label">Min radius</span><span class="stat-val">52px</span></div>
+        <div class="stat-row"><span class="stat-label">Shape family</span><span class="stat-val">Rose</span></div>
+        <div class="cluster-plan">
+          <div class="lab-section-title" style="margin-top:8px">Cluster plan</div>
+          <div class="cp-item"><div class="cp-dot" style="background:#8B6FCC"></div>4 focal peaks — 5 slots each</div>
+          <div class="cp-item"><div class="cp-dot" style="background:#D4897A"></div>4 secondary — 3 slots each</div>
+          <div class="cp-item"><div class="cp-dot" style="background:#C5D4C1"></div>Filler — 16 remaining</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RISKS RESOLVED -->
+  <div class="risks-wrap">
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Too many sliders overwhelm users — emotion presets are the primary interface
+        <span>Selecting "Romantic" auto-sets Rose curve with n=4, a=0.12R. Users who want more control reveal Advanced parameters — most never need to. The lab feels like picking a mood, not writing a formula</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Spiral and rose shapes push elements outside manufacturable band — commercial safety toggle
+        <span>When on, all parameters are clamped to pre-tested ranges that keep every anchor slot within the physical wreath band. The safe zone ring is always visible on canvas so designers see the boundary in real time</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Full AI placement too slow for realtime preview — curve-only during tweaking, placement on commit
+        <span>Parameter changes instantly redraw the curve outline and anchor dots only — no AI placement runs. Full floral distribution runs once when the user hits "Use in Design" — fast interaction, accurate result</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Overly aggressive parameters make unusable layouts — named curve presets are pre-validated
+        <span>Named presets like "Serene Ellipse 01" and "Soft Romance 03" are hand-tested and guaranteed commercial. Power users can go off-preset, but the presets are always the safe, beautiful starting point</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>5 curve families</strong>
+        <span>Ellipse, rose curve, spiral, perturbed circle, and Bézier luxury — each mapping to a distinct emotional register with pre-tested parameter ranges</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Live Bézier morphing</strong>
+        <span>Switching between emotion presets animates through parameter space via interpolation — designers see the shape flow continuously rather than jump between states</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Named curve presets</strong>
+        <span>"Serene Ellipse 01", "Soft Romance 03", "Wild Joy 02" — pre-validated named shapes that can be saved to an account and applied to any new blueprint in one click</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Focal lock zones</strong>
+        <span>Lock specific anchor slots before morphing — the shape changes around them but critical bloom positions stay fixed, preserving intentional focal points through any parameter adjustment</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Layout seed export</strong>
+        <span>Every layout saves a seed value — regenerate the exact same variant later, share it with a client, or replay it on a different blueprint with consistent geometry</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Fractal mini-rings</strong>
+        <span>Advanced mode: nest smaller parametric rings inside the primary layout for layered, multi-depth compositions — ships as a power user toggle, hidden by default</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAIRING DISCOUNT -->
+  <div class="pair-strip">
+    <div class="pair-text">Bundle with <strong>Layout Studio</strong> — both canvas tools, natural pairing</div>
+    <div class="pair-price">
+      <span class="pair-old">$7.95 + $9.95</span>
+      <span class="pair-new">$14.95<sub>/mo both</sub></span>
+    </div>
+  </div>
+
+  <div class="v2-strip">
+    <span class="v2-label">Coming in v2</span>
+    <span class="v2-text">Learn parameter ranges from approved blueprints · raw formula view for power users · multi-ring emotion mapping · TypeScript interface export for devs</span>
+  </div>
+
+  <div class="card-footer">
+    <div>
+      <div class="price-main"><sup>$</sup>9.95<sub>/mo</sub></div>
+      <div class="price-note">Standalone · or $14.95/mo bundled with Layout Studio</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Works with Layout Studio, EmotionSync, and Design Studio · layouts export directly to the geometry engine as anchor point arrays
+</div>

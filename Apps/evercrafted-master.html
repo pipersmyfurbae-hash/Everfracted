@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evercrafted Platform — Master Reference</title>
+    <style>
+        :root {
+            --color-primary: #2d5016;
+            --color-primary-light: #4a7c2a;
+            --color-accent: #8b4513;
+            --color-bg: #fefefe;
+            --color-surface: #f9f9f9;
+            --color-border: #e0e0e0;
+            --color-text: #1a1a1a;
+            --color-text-muted: #666;
+            --color-success: #2d5016;
+            --color-warning: #d97706;
+            --color-info: #0284c7;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --radius: 8px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background: var(--color-bg);
+        }
+
+        header {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--spacing-lg) var(--spacing-md);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            margin-top: var(--spacing-xs);
+        }
+
+        nav {
+            background: var(--color-surface);
+            padding: var(--spacing-md);
+            border-bottom: 2px solid var(--color-border);
+            position: sticky;
+            top: 120px;
+            z-index: 99;
+            overflow-x: auto;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-text);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            background: white;
+            border: 1px solid var(--color-border);
+            transition: all 0.2s;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        nav a:hover {
+            background: var(--color-primary-light);
+            color: white;
+            border-color: var(--color-primary-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        section {
+            margin-bottom: var(--spacing-xl);
+            background: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 3px solid var(--color-primary-light);
+        }
+
+        h3 {
+            font-size: 1.35rem;
+            color: var(--color-accent);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--color-text);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        p {
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-text);
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-left: var(--spacing-sm);
+        }
+
+        .status-concept { background: #fef3c7; color: #92400e; }
+        .status-prototype { background: #dbeafe; color: #1e40af; }
+        .status-ready { background: #d1fae5; color: #065f46; }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .mockup {
+            background: #f0f0f0;
+            border: 2px dashed var(--color-border);
+            border-radius: var(--radius);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-md) 0;
+            text-align: center;
+            color: var(--color-text-muted);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .mockup-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-accent);
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: var(--spacing-md);
+            border-radius: var(--radius);
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: var(--spacing-md) 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .button:hover {
+            background: var(--color-primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .button-secondary {
+            background: var(--color-accent);
+        }
+
+        .button-secondary:hover {
+            background: #6b3410;
+        }
+
+        .info-box {
+            background: #e0f2fe;
+            border-left: 4px solid var(--color-info);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            border-radius: var(--radius);
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--color-warning);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            border-radius: var(--radius);
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid var(--color-success);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            border-radius: var(--radius);
+        }
+
+        details {
+            margin: var(--spacing-md) 0;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: var(--spacing-md);
+            background: white;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            user-select: none;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        summary:hover {
+            color: var(--color-primary-light);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+        }
+
+        th, td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            background: var(--color-surface);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .blueprint-viewer {
+            background: white;
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--color-primary-light);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            margin-right: var(--spacing-xs);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        footer {
+            background: var(--color-surface);
+            padding: var(--spacing-lg);
+            text-align: center;
+            margin-top: var(--spacing-xl);
+            border-top: 2px solid var(--color-border);
+            color: var(--color-text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌿 Evercrafted Platform</h1>
+        <p>Inventory-Driven + Emotion-Driven Wreath Design System</p>
+        <span class="version-badge">Version 1.0 — Master Reference</span>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#memory-weaver">Memory Weaver</a></li>
+            <li><a href="#inventory-weaver">Inventory Weaver</a></li>
+            <li><a href="#design-studio">Design Studio</a></li>
+            <li><a href="#formula-registry">Formula Registry</a></li>
+            <li><a href="#blueprint-object">Blueprint Object</a></li>
+            <li><a href="#wreath-dna">Wreath DNA Engine</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#roadmap">Roadmap</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- OVERVIEW -->
+        <section id="overview">
+            <h2>Platform Overview</h2>
+            
+            <div class="success-box">
+                <strong>Core Principle:</strong> All modules compile into a single canonical blueprint object. This blueprint is the universal data structure that powers the entire platform.
+            </div>
+
+            <h3>What Evercrafted Does</h3>
+            <p>Evercrafted is the operating system for wreath design. It combines floral design theory, deterministic geometry, AI-assisted creativity, and inventory optimization into one unified platform.</p>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>🧠 Memory Weaver</h4>
+                    <p><strong>Input:</strong> Memory or emotional prompt</p>
+                    <p><strong>Output:</strong> Custom wreath design</p>
+                    <p>Transforms personal stories into floral compositions using emotion-to-color mapping and symbolic flower selection.</p>
+                </div>
+
+                <div class="card">
+                    <h4>📦 Inventory Weaver</h4>
+                    <p><strong>Input:</strong> User's craft inventory</p>
+                    <p><strong>Output:</strong> Designs using only available materials</p>
+                    <p>Solves the "what can I make with what I have" problem. Generates designs constrained by real inventory.</p>
+                </div>
+
+                <div class="card">
+                    <h4>🎨 Design Studio</h4>
+                    <p><strong>Input:</strong> Manual control + editing</p>
+                    <p><strong>Output:</strong> Professional-grade blueprints</p>
+                    <p>Full control interface for designers. Lock zones, adjust clusters, refine placements, export production files.</p>
+                </div>
+            </div>
+
+            <h3>Business Model</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Type</th>
+                        <th>Price</th>
+                        <th>Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Free</strong></td>
+                        <td>$0/mo</td>
+                        <td>Memory Weaver (limited), preview only, no exports</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Maker</strong></td>
+                        <td>$19/mo</td>
+                        <td>Inventory engine, unlimited designs, SVG/PDF exports</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pro</strong></td>
+                        <td>$49/mo</td>
+                        <td>Design Studio, blueprint editing, advanced exports, API access</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Why This Platform Wins</h3>
+            <ul>
+                <li><strong>Inventory-aware:</strong> First design tool that respects real material constraints</li>
+                <li><strong>Geometry-driven:</strong> Deterministic placement using floral design theory</li>
+                <li><strong>AI-assisted:</strong> Emotion interpretation, not random generation</li>
+                <li><strong>Exportable:</strong> SVG, PDF, JSON blueprints for any workflow</li>
+                <li><strong>Professional:</strong> 10x more sophisticated than existing craft tools</li>
+            </ul>
+
+            <div class="info-box">
+                <strong>Strategic Vision:</strong> This is not just a design tool. It's a platform that could evolve into blueprint marketplaces, supplier integrations, educational systems, and floral arrangement OS for bouquets, centerpieces, and installations.
+            </div>
+        </section>
+
+        <!-- MEMORY WEAVER -->
+        <section id="memory-weaver">
+            <h2>Memory Weaver <span class="status-badge status-prototype">Prototype</span></h2>
+            
+            <h3>What It Does</h3>
+            <p>Transforms personal memories and emotional prompts into professionally designed wreaths. The system interprets emotion, selects symbolic flowers, chooses appropriate composition formulas, and generates a complete blueprint.</p>
+
+            <h3>Why It Matters</h3>
+            <p><strong>Marketing hook:</strong> "This wreath was designed from my grandmother's memory." Creates shareable, emotional content that drives viral growth.</p>
+            <p><strong>Business value:</strong> Lowers barrier to entry. Non-designers can create meaningful wreaths instantly.</p>
+
+            <h3>User Flow</h3>
+            <div class="card">
+                <ol>
+                    <li>User enters memory or emotional prompt (text)</li>
+                    <li>System extracts core emotions (AI analysis)</li>
+                    <li>Emotion mapped to color palette + floral symbols</li>
+                    <li>System selects composition formula based on emotion tone</li>
+                    <li>Wreath blueprint generated using deterministic geometry</li>
+                    <li>User sees SVG preview + build instructions</li>
+                    <li>Export options: SVG, PDF, blueprint JSON</li>
+                </ol>
+            </div>
+
+            <div class="mockup">
+                <div>
+                    <div class="mockup-label">Memory Input Interface</div>
+                    <p>Large text area with prompts like:</p>
+                    <p><em>"Tell us about a memory you'd like to preserve..."</em></p>
+                    <p><em>"What emotion should this wreath capture?"</em></p>
+                </div>
+            </div>
+
+            <h3>Engine Logic</h3>
+            <details>
+                <summary>Step-by-Step Process</summary>
+                <ol>
+                    <li><strong>Emotion Extraction (AI):</strong> LLM analyzes text and returns emotion array: [joy: 0.8, nostalgia: 0.6, calm: 0.4]</li>
+                    <li><strong>Color Selection:</strong> Map emotions to color families using lookup table</li>
+                    <li><strong>Floral Symbolism:</strong> Select flowers with matching symbolic meanings</li>
+                    <li><strong>Formula Selection:</strong> Choose composition type based on emotion intensity/balance</li>
+                    <li><strong>Generate Blueprint:</strong> Run deterministic placement engine</li>
+                    <li><strong>Render + Export:</strong> Create SVG visualization and build guide</li>
+                </ol>
+            </details>
+
+            <h3>Sample Input/Output</h3>
+            <details>
+                <summary>Example: "My grandmother's garden in spring"</summary>
+                <h4>Input:</h4>
+                <pre>{
+  "memory_text": "My grandmother's garden in spring. Soft pink roses, white daisies, morning light filtering through the trees. Peaceful and full of love.",
+  "user_preferences": {
+    "wreath_size": 24,
+    "base_type": "grapevine"
+  }
+}</pre>
+                <h4>Output:</h4>
+                <pre>{
+  "emotions_detected": {
+    "nostalgia": 0.85,
+    "serenity": 0.75,
+    "love": 0.70
+  },
+  "color_palette": ["soft_pink", "cream", "sage_green"],
+  "floral_selections": [
+    {"type": "rose", "color": "blush_pink", "symbolism": "love"},
+    {"type": "daisy", "color": "white", "symbolism": "innocence"},
+    {"type": "eucalyptus", "color": "sage", "symbolism": "memory"}
+  ],
+  "composition": "crescent",
+  "blueprint_id": "mem_abc123"
+}</pre>
+            </details>
+
+            <h3>Developer Notes</h3>
+            <div class="warning-box">
+                <strong>Critical:</strong> AI is used ONLY for emotion interpretation and flower selection. Placement is 100% deterministic using geometry engine.
+            </div>
+            <h4>API Routes Needed:</h4>
+            <ul>
+                <li><code>POST /api/memory/analyze</code> — Extract emotions from text</li>
+                <li><code>POST /api/memory/generate</code> — Create full blueprint from memory</li>
+                <li><code>GET /api/memory/{id}</code> — Retrieve saved memory wreath</li>
+            </ul>
+            <h4>Frontend Components:</h4>
+            <ul>
+                <li><code>MemoryInput.tsx</code> — Text input with character counter</li>
+                <li><code>EmotionDisplay.tsx</code> — Visual emotion breakdown</li>
+                <li><code>FloralPalette.tsx</code> — Show selected flowers + symbolism</li>
+                <li><code>WreathPreview.tsx</code> — SVG render of final design</li>
+            </ul>
+        </section>
+
+        <!-- INVENTORY WEAVER -->
+        <section id="inventory-weaver">
+            <h2>Inventory Weaver <span class="status-badge status-prototype">Prototype</span></h2>
+            
+            <h3>What It Does</h3>
+            <p>Generates wreath designs using ONLY materials the user currently has in inventory. Solves the most common crafter question: "What can I make with what I already have?"</p>
+
+            <h3>Why It Matters</h3>
+            <p><strong>Pain point solved:</strong> Crafters waste time guessing what designs are possible with limited supplies.</p>
+            <p><strong>Business value:</strong> This alone could be a standalone SaaS product. High retention potential.</p>
+
+            <h3>User Flow</h3>
+            <div class="card">
+                <ol>
+                    <li>User uploads/enters inventory (manual or CSV import)</li>
+                    <li>System categorizes items by role (focal, secondary, filler, greenery)</li>
+                    <li>User requests design ("use what I have")</li>
+                    <li>System checks available quantities and selects appropriate formula</li>
+                    <li>Blueprint generated respecting inventory constraints</li>
+                    <li>System shows inventory depletion (what gets used)</li>
+                    <li>Export SVG, build guide, and updated inventory</li>
+                </ol>
+            </div>
+
+            <div class="mockup">
+                <div>
+                    <div class="mockup-label">Inventory Manager Interface</div>
+                    <p>Table view with columns:</p>
+                    <p><strong>Item | Category | Color | Role | Qty | Bloom Size | Image</strong></p>
+                    <p>+ Quick add buttons for common items</p>
+                    <p>+ CSV import option</p>
+                </div>
+            </div>
+
+            <h3>Inventory Item Schema</h3>
+            <pre>{
+  "id": "uuid",
+  "user_id": "uuid",
+  "name": "Garden Rose Stem",
+  "category": "rose",
+  "color_family": "blush_pink",
+  "role": "focal",
+  "qty_on_hand": 12,
+  "bloom_diameter": 4.5,
+  "stem_length": 18,
+  "image_url": "https://...",
+  "cost_per_unit": 2.50,
+  "supplier_sku": "AFL-RS-001",
+  "created_at": "2026-03-10T10:00:00Z"
+}</pre>
+
+            <h3>Engine Logic</h3>
+            <details>
+                <summary>Constraint-Based Design Generation</summary>
+                <ol>
+                    <li><strong>Inventory Analysis:</strong> Count available stems by role (focal: 12, secondary: 20, filler: 30, greenery: 40)</li>
+                    <li><strong>Formula Selection:</strong> Choose formula that fits available quantities (if low on focal → use "focal burst" or "crescent")</li>
+                    <li><strong>Placement with Constraints:</strong> Engine places elements and checks: <code>required_stems <= available_stems</code></li>
+                    <li><strong>Automatic Adjustment:</strong> If constraint violated, reduce cluster density or switch formula</li>
+                    <li><strong>Usage Report:</strong> Return list of items used and updated quantities</li>
+                </ol>
+            </details>
+
+            <h3>Sample Output</h3>
+            <details>
+                <summary>Design + Inventory Depletion</summary>
+                <pre>{
+  "blueprint_id": "inv_xyz789",
+  "formula_used": "crescent",
+  "items_used": [
+    {"sku": "rose_blush", "qty_used": 7, "qty_remaining": 5},
+    {"sku": "daisy_white", "qty_used": 12, "qty_remaining": 8},
+    {"sku": "eucalyptus", "qty_used": 15, "qty_remaining": 25}
+  ],
+  "estimated_cost": 45.00,
+  "can_make_again": true,
+  "times_makeable": 1
+}</pre>
+            </details>
+
+            <h3>Developer Notes</h3>
+            <h4>Database Models:</h4>
+            <ul>
+                <li><code>inventory_items</code> table with user_id, name, category, role, qty, bloom_size</li>
+                <li><code>design_usage</code> table tracking what was used in each design</li>
+            </ul>
+            <h4>API Routes:</h4>
+            <ul>
+                <li><code>GET /api/inventory</code> — List user's inventory</li>
+                <li><code>POST /api/inventory</code> — Add item</li>
+                <li><code>PUT /api/inventory/{id}</code> — Update quantity</li>
+                <li><code>POST /api/inventory/generate</code> — Create design from inventory</li>
+            </ul>
+            <h4>Key Features:</h4>
+            <ul>
+                <li>CSV import/export for inventory</li>
+                <li>Low stock warnings</li>
+                <li>"Make Again" button (checks if inventory sufficient)</li>
+                <li>Cost tracking per design</li>
+            </ul>
+        </section>
+
+        <!-- DESIGN STUDIO -->
+        <section id="design-studio">
+            <h2>Design Studio <span class="status-badge status-concept">Concept</span></h2>
+            
+            <h3>What It Does</h3>
+            <p>Professional manual design interface. Designers can start from AI-generated blueprints or blank canvas, then drag/drop/edit elements with full control.</p>
+
+            <h3>Why It Matters</h3>
+            <p><strong>Trust barrier:</strong> Professionals will not adopt AI-only tools. They need control.</p>
+            <p><strong>Upsell path:</strong> Free/Maker users hit limits → upgrade to Pro for Studio access.</p>
+
+            <h3>Core Features</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Zone Editing</h4>
+                    <p>Lock/unlock zones. Adjust angle ranges. Set density caps. Define allowed roles.</p>
+                </div>
+                <div class="card">
+                    <h4>Element Control</h4>
+                    <p>Drag elements to reposition. Rotate. Scale. Change layer depth. Swap flowers.</p>
+                </div>
+                <div class="card">
+                    <h4>Cluster Management</h4>
+                    <p>Add/remove clusters. Adjust cluster centers. Set cluster density. Clone clusters.</p>
+                </div>
+                <div class="card">
+                    <h4>Export Options</h4>
+                    <p>SVG (with layers). PDF build guide. Blueprint JSON. PNG preview. CSV bill of materials.</p>
+                </div>
+            </div>
+
+            <div class="mockup">
+                <div>
+                    <div class="mockup-label">Studio Canvas</div>
+                    <p>Center: SVG wreath preview (1000x1000)</p>
+                    <p>Left sidebar: Layer panel, element list</p>
+                    <p>Right sidebar: Properties panel (angle, radius, rotation, scale)</p>
+                    <p>Top toolbar: Undo/redo, save, export, regenerate</p>
+                </div>
+            </div>
+
+            <h3>Interaction Modes</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Action</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Select</strong></td>
+                        <td>Click element</td>
+                        <td>Highlight + show properties</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Move</strong></td>
+                        <td>Drag element</td>
+                        <td>Update angle/radius in real-time</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rotate</strong></td>
+                        <td>Drag rotation handle</td>
+                        <td>Update rotation_deg</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scale</strong></td>
+                        <td>Drag scale handle</td>
+                        <td>Update scale value</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Zone Edit</strong></td>
+                        <td>Select zone, drag bounds</td>
+                        <td>Update angle_start/angle_end</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Developer Notes</h3>
+            <h4>Tech Stack:</h4>
+            <ul>
+                <li>Canvas: SVG with React (or Konva.js for more complex interactions)</li>
+                <li>State: Zustand store for blueprint state</li>
+                <li>Undo/Redo: Immer for immutable state history</li>
+            </ul>
+            <h4>Components:</h4>
+            <ul>
+                <li><code>StudioCanvas.tsx</code> — Main SVG workspace</li>
+                <li><code>ElementLayer.tsx</code> — Draggable flower component</li>
+                <li><code>ZoneOverlay.tsx</code> — Visual zone boundaries</li>
+                <li><code>PropertiesPanel.tsx</code> — Right sidebar controls</li>
+                <li><code>LayerPanel.tsx</code> — Left sidebar layer tree</li>
+            </ul>
+        </section>
+
+        <!-- FORMULA REGISTRY -->
+        <section id="formula-registry">
+            <h2>Formula Registry <span class="status-badge status-prototype">Prototype</span></h2>
+            
+            <h3>What It Is</h3>
+            <p>A library of 12 composition formulas. Each formula defines cluster placement rules, zone structures, and aesthetic principles.</p>
+
+            <h3>The 12 Formulas</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>1. Crescent</h4>
+                    <p><strong>Shape:</strong> Asymmetrical arc, heaviest at bottom</p>
+                    <p><strong>Zones:</strong> 1 focal (bottom), 1 secondary (arc), greenery trails</p>
+                    <span class="tag">Classic</span>
+                </div>
+
+                <div class="card">
+                    <h4>2. Double Echo</h4>
+                    <p><strong>Shape:</strong> Two mirrored clusters at 4 and 8 o'clock</p>
+                    <p><strong>Zones:</strong> 2 focal, bridge greenery</p>
+                    <span class="tag">Symmetrical</span>
+                </div>
+
+                <div class="card">
+                    <h4>3. Bottom Heavy</h4>
+                    <p><strong>Shape:</strong> Dense base, sparse top</p>
+                    <p><strong>Zones:</strong> Large focal zone 5-7 o'clock, minimal top</p>
+                    <span class="tag">Gravity</span>
+                </div>
+
+                <div class="card">
+                    <h4>4. Side Sweep</h4>
+                    <p><strong>Shape:</strong> Diagonal flow from 2 to 8 o'clock</p>
+                    <p><strong>Zones:</strong> Linear zone structure, directional greenery</p>
+                    <span class="tag">Directional</span>
+                </div>
+
+                <div class="card">
+                    <h4>5. Open Arc</h4>
+                    <p><strong>Shape:</strong> Negative space at top, bloom arc at bottom</p>
+                    <p><strong>Zones:</strong> Silence zone 10-2, dense bloom zone 4-8</p>
+                    <span class="tag">Modern</span>
+                </div>
+
+                <div class="card">
+                    <h4>6. Full Halo</h4>
+                    <p><strong>Shape:</strong> Even distribution, no negative space</p>
+                    <p><strong>Zones:</strong> 8 equal zones, radial symmetry</p>
+                    <span class="tag">Traditional</span>
+                </div>
+
+                <div class="card">
+                    <h4>7. Split Garden</h4>
+                    <p><strong>Shape:</strong> Two distinct halves (colors/textures)</p>
+                    <p><strong>Zones:</strong> Left/right split at 12-6 axis</p>
+                    <span class="tag">Contrast</span>
+                </div>
+
+                <div class="card">
+                    <h4>8. Focal Burst</h4>
+                    <p><strong>Shape:</strong> Single large focal point with radiating accents</p>
+                    <p><strong>Zones:</strong> 1 large focal, accent rays</p>
+                    <span class="tag">Dramatic</span>
+                </div>
+
+                <div class="card">
+                    <h4>9. Laddered Rhythm</h4>
+                    <p><strong>Shape:</strong> Stepped clusters at 2, 5, 8, 11 o'clock</p>
+                    <p><strong>Zones:</strong> 4 focal zones, rhythmic spacing</p>
+                    <span class="tag">Rhythm</span>
+                </div>
+
+                <div class="card">
+                    <h4>10. Radial Burst</h4>
+                    <p><strong>Shape:</strong> Spokes radiating from center</p>
+                    <p><strong>Zones:</strong> 6-8 linear zones from center outward</p>
+                    <span class="tag">Geometric</span>
+                </div>
+
+                <div class="card">
+                    <h4>11. Bow Anchor</h4>
+                    <p><strong>Shape:</strong> Large bow/ribbon at top or bottom, flowers opposite</p>
+                    <p><strong>Zones:</strong> Bow zone + complementary focal zone</p>
+                    <span class="tag">Seasonal</span>
+                </div>
+
+                <div class="card">
+                    <h4>12. Inventory Salvage</h4>
+                    <p><strong>Shape:</strong> Adaptive formula using whatever is available</p>
+                    <p><strong>Zones:</strong> Dynamic zone creation based on inventory</p>
+                    <span class="tag">Adaptive</span>
+                </div>
+            </div>
+
+            <h3>Formula Selection Logic</h3>
+            <details>
+                <summary>How Engine Chooses Formula</summary>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Context</th>
+                            <th>Formula Selected</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Emotion: serene, calm</td>
+                            <td>Crescent or Open Arc</td>
+                            <td>Negative space = calm</td>
+                        </tr>
+                        <tr>
+                            <td>Emotion: joyful, celebratory</td>
+                            <td>Full Halo or Radial Burst</td>
+                            <td>Abundance = joy</td>
+                        </tr>
+                        <tr>
+                            <td>Emotion: nostalgic, romantic</td>
+                            <td>Double Echo</td>
+                            <td>Symmetry = balance/memory</td>
+                        </tr>
+                        <tr>
+                            <td>Low inventory (focal < 10)</td>
+                            <td>Focal Burst or Crescent</td>
+                            <td>Efficient focal use</td>
+                        </tr>
+                        <tr>
+                            <td>High inventory (all roles > 20)</td>
+                            <td>Full Halo or Split Garden</td>
+                            <td>Can support density</td>
+                        </tr>
+                        <tr>
+                            <td>Mismatched inventory</td>
+                            <td>Inventory Salvage</td>
+                            <td>Adaptive approach</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
+
+            <h3>Developer Notes</h3>
+            <p>Each formula stored as JSON preset:</p>
+            <pre>{
+  "id": "crescent",
+  "name": "Crescent",
+  "description": "Asymmetrical arc, heaviest at bottom",
+  "zones": [
+    {
+      "zone_id": "focal",
+      "type": "focal",
+      "angle_start": 180,
+      "angle_end": 240,
+      "radius_min": 0.7,
+      "radius_max": 1.0,
+      "density": 0.8
+    },
+    {
+      "zone_id": "arc",
+      "type": "secondary",
+      "angle_start": 150,
+      "angle_end": 270,
+      "radius_min": 0.6,
+      "radius_max": 0.9,
+      "density": 0.5
+    }
+  ],
+  "cluster_rules": {
+    "focal_clusters": 1,
+    "secondary_clusters": 2,
+    "greenery_follows_arc": true
+  }
+}</pre>
+        </section>
+
+        <!-- BLUEPRINT OBJECT -->
+        <section id="blueprint-object">
+            <h2>Blueprint Object Specification <span class="status-badge status-ready">Ready</span></h2>
+            
+            <h3>Core Concept</h3>
+            <div class="success-box">
+                <strong>Universal Truth:</strong> Every module (Memory Weaver, Inventory Weaver, Design Studio) must produce and consume this exact blueprint object structure.
+            </div>
+
+            <h3>Complete Blueprint Schema</h3>
+            <div class="blueprint-viewer">
+                <pre>{
+  "blueprint_id": "bp_abc123xyz",
+  "created_at": "2026-03-10T10:00:00Z",
+  "version": "1.0",
+  "metadata": {
+    "user_id": "user_123",
+    "source": "memory_weaver",
+    "title": "Grandmother's Garden",
+    "description": "Spring nostalgia wreath"
+  },
+  "base": {
+    "type": "grapevine",
+    "outer_diameter": 24,
+    "inner_diameter": 10,
+    "thickness": 2,
+    "material_notes": "Natural grapevine, medium density"
+  },
+  "composition": {
+    "style": "asymmetrical",
+    "formula": "crescent",
+    "visual_weight": "bottom_heavy",
+    "negative_space": true
+  },
+  "zones": [
+    {
+      "zone_id": "z1_focal",
+      "type": "focal",
+      "angle_start": 180,
+      "angle_end": 240,
+      "radius_min": 0.7,
+      "radius_max": 1.0,
+      "allowed_roles": ["focal"],
+      "density_cap": 0.8,
+      "locked": false
+    },
+    {
+      "zone_id": "z2_secondary",
+      "type": "secondary",
+      "angle_start": 150,
+      "angle_end": 270,
+      "radius_min": 0.5,
+      "radius_max": 0.85,
+      "allowed_roles": ["secondary", "accent"],
+      "density_cap": 0.6,
+      "locked": false
+    },
+    {
+      "zone_id": "z3_greenery",
+      "type": "greenery",
+      "angle_start": 120,
+      "angle_end": 300,
+      "radius_min": 0.4,
+      "radius_max": 1.0,
+      "allowed_roles": ["greenery", "filler"],
+      "density_cap": 0.7,
+      "locked": false
+    }
+  ],
+  "elements": [
+    {
+      "element_id": "el_001",
+      "sku": "rose_blush_4inch",
+      "name": "Blush Garden Rose",
+      "role": "focal",
+      "angle_deg": 210,
+      "radius_norm": 0.82,
+      "rotation_deg": 30,
+      "scale": 1.0,
+      "layer": 4,
+      "zone_id": "z1_focal",
+      "cluster_id": "c1"
+    },
+    {
+      "element_id": "el_002",
+      "sku": "daisy_white_3inch",
+      "name": "White Daisy",
+      "role": "secondary",
+      "angle_deg": 195,
+      "radius_norm": 0.65,
+      "rotation_deg": -15,
+      "scale": 0.9,
+      "layer": 3,
+      "zone_id": "z2_secondary",
+      "cluster_id": "c1"
+    },
+    {
+      "element_id": "el_003",
+      "sku": "eucalyptus_sage",
+      "name": "Sage Eucalyptus",
+      "role": "greenery",
+      "angle_deg": 180,
+      "radius_norm": 0.55,
+      "rotation_deg": 45,
+      "scale": 1.2,
+      "layer": 1,
+      "zone_id": "z3_greenery",
+      "cluster_id": "c1"
+    }
+  ],
+  "scores": {
+    "balance": 0.87,
+    "rhythm": 0.82,
+    "proportion": 0.90,
+    "contrast": 0.78,
+    "silhouette": 0.85,
+    "inventory_fit": 1.0,
+    "overall": 0.86
+  },
+  "build_instructions": [
+    {
+      "step": 1,
+      "action": "insert",
+      "items": ["eucalyptus_sage"],
+      "zone": "z3_greenery",
+      "clock_position": "6:00 to 10:00",
+      "notes": "Create greenery base layer, stems pointing outward"
+    },
+    {
+      "step": 2,
+      "action": "place",
+      "items": ["rose_blush_4inch"],
+      "zone": "z1_focal",
+      "clock_position": "7:00",
+      "notes": "Position main focal rose slightly left of bottom center"
+    },
+    {
+      "step": 3,
+      "action": "cluster",
+      "items": ["daisy_white_3inch"],
+      "zone": "z2_secondary",
+      "clock_position": "6:30 to 8:00",
+      "notes": "Add white daisies around focal rose for contrast"
+    }
+  ],
+  "export_formats": {
+    "svg_url": "https://storage.evercrafted.com/blueprints/bp_abc123xyz.svg",
+    "pdf_url": "https://storage.evercrafted.com/blueprints/bp_abc123xyz.pdf",
+    "json_url": "https://storage.evercrafted.com/blueprints/bp_abc123xyz.json"
+  }
+}</pre>
+            </div>
+
+            <h3>Key Sections Explained</h3>
+            <details>
+                <summary>Base Object</summary>
+                <p>Defines the physical wreath form. All measurements in inches.</p>
+                <ul>
+                    <li><strong>type:</strong> grapevine, foam, wire, straw</li>
+                    <li><strong>outer_diameter:</strong> Total wreath diameter</li>
+                    <li><strong>inner_diameter:</strong> Open center diameter</li>
+                    <li><strong>thickness:</strong> Depth of base material</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Zones Array</summary>
+                <p>Each zone defines a region with placement constraints.</p>
+                <ul>
+                    <li><strong>angle_start/end:</strong> Degrees (0° = top, clockwise)</li>
+                    <li><strong>radius_min/max:</strong> Normalized (0 = inner edge, 1 = outer edge)</li>
+                    <li><strong>allowed_roles:</strong> What element types can go here</li>
+                    <li><strong>density_cap:</strong> Max fill percentage (0-1)</li>
+                    <li><strong>locked:</strong> If true, zone cannot be edited in Studio</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Elements Array</summary>
+                <p>Each element is a single flower/greenery stem with exact placement.</p>
+                <ul>
+                    <li><strong>angle_deg:</strong> Polar angle (0-360)</li>
+                    <li><strong>radius_norm:</strong> Normalized radial distance (0-1)</li>
+                    <li><strong>rotation_deg:</strong> Stem rotation for natural look</li>
+                    <li><strong>scale:</strong> Size multiplier (0.5 = half size, 1.5 = 150%)</li>
+                    <li><strong>layer:</strong> Z-index for overlap (1 = back, higher = front)</li>
+                    <li><strong>cluster_id:</strong> Groups elements that belong together</li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Scores Object</summary>
+                <p>Algorithmic evaluation of design quality (0-1 scale).</p>
+                <ul>
+                    <li><strong>balance:</strong> Visual weight distribution</li>
+                    <li><strong>rhythm:</strong> Repetition and flow</li>
+                    <li><strong>proportion:</strong> Size relationships</li>
+                    <li><strong>contrast:</strong> Color/texture variety</li>
+                    <li><strong>silhouette:</strong> Outer shape clarity</li>
+                    <li><strong>inventory_fit:</strong> How well design uses available materials</li>
+                </ul>
+            </details>
+        </section>
+
+        <!-- WREATH DNA ENGINE -->
+        <section id="wreath-dna">
+            <h2>Wreath DNA Engine <span class="status-badge status-concept">Concept</span></h2>
+            
+            <div class="info-box">
+                <strong>Future Module:</strong> This is the "10x upgrade" — a genetic encoding system that would make Evercrafted impossible to replicate. To be discussed separately.
+            </div>
+
+            <h3>Concept Overview</h3>
+            <p>Instead of just storing blueprints as static snapshots, the DNA Engine would encode the <em>generative rules</em> that created each design. This allows:</p>
+            <ul>
+                <li><strong>Parametric variation:</strong> "Make this wreath bigger/smaller/fuller"</li>
+                <li><strong>Style transfer:</strong> "Use this wreath's structure but with fall colors"</li>
+                <li><strong>Design breeding:</strong> Combine traits from two wreaths</li>
+                <li><strong>Marketplace intelligence:</strong> Understand what makes designs successful</li>
+            </ul>
+
+            <h3>What DNA Would Encode</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Gene</th>
+                        <th>Encodes</th>
+                        <th>Example Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>symmetry</strong></td>
+                        <td>Radial vs asymmetric balance</td>
+                        <td>0.2 (highly asymmetric)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>density</strong></td>
+                        <td>Overall fullness</td>
+                        <td>0.75 (quite full)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>negative_space</strong></td>
+                        <td>Intentional empty areas</td>
+                        <td>0.3 (moderate silence)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>focal_dominance</strong></td>
+                        <td>How strong focal point is</td>
+                        <td>0.9 (very dominant)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>color_harmony</strong></td>
+                        <td>Monochrome vs rainbow</td>
+                        <td>0.6 (analogous palette)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>texture_variance</strong></td>
+                        <td>Smooth vs wild textures</td>
+                        <td>0.8 (high texture mix)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mockup">
+                <div>
+                    <div class="mockup-label">DNA Visualization</div>
+                    <p>Visual "genome" showing 12-16 trait sliders</p>
+                    <p>Users could adjust genes and regenerate</p>
+                    <p>Like adjusting face sliders in character creation</p>
+                </div>
+            </div>
+
+            <p><strong>Discussion reserved for deeper session.</strong></p>
+        </section>
+
+        <!-- ARCHITECTURE -->
+        <section id="architecture">
+            <h2>System Architecture <span class="status-badge status-ready">Ready</span></h2>
+            
+            <h3>Technology Stack</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>Frontend</h4>
+                    <ul>
+                        <li><strong>Framework:</strong> Next.js 14 (React)</li>
+                        <li><strong>Language:</strong> TypeScript</li>
+                        <li><strong>State:</strong> Zustand</li>
+                        <li><strong>Graphics:</strong> SVG + Canvas API</li>
+                        <li><strong>Styling:</strong> Tailwind CSS</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h4>Backend</h4>
+                    <ul>
+                        <li><strong>Framework:</strong> Python FastAPI</li>
+                        <li><strong>Geometry Engine:</strong> NumPy + custom algorithms</li>
+                        <li><strong>Blueprint Engine:</strong> Pure Python</li>
+                        <li><strong>Scoring Engine:</strong> Python scoring functions</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h4>Database</h4>
+                    <ul>
+                        <li><strong>Primary:</strong> PostgreSQL</li>
+                        <li><strong>Tables:</strong> users, inventory, projects, blueprints</li>
+                        <li><strong>JSON columns:</strong> For blueprint storage</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h4>Storage & AI</h4>
+                    <ul>
+                        <li><strong>Object Storage:</strong> S3-compatible</li>
+                        <li><strong>LLM:</strong> OpenAI GPT-4 (emotion analysis only)</li>
+                        <li><strong>Images:</strong> User uploads + floral library</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Data Flow</h3>
+            <div class="card">
+                <h4>Memory Weaver Flow</h4>
+                <pre>User Input (text)
+    ↓
+Next.js → POST /api/memory/analyze
+    ↓
+FastAPI → LLM emotion extraction
+    ↓
+Emotion → Color Palette (lookup table)
+    ↓
+Formula Selection (based on emotion)
+    ↓
+Geometry Engine → Blueprint Generation
+    ↓
+SVG Render Engine → Visual Output
+    ↓
+Return blueprint + SVG to frontend</pre>
+            </div>
+
+            <div class="card">
+                <h4>Inventory Weaver Flow</h4>
+                <pre>User Inventory (database)
+    ↓
+Next.js → POST /api/inventory/generate
+    ↓
+FastAPI → Load inventory constraints
+    ↓
+Formula Selection (inventory-aware)
+    ↓
+Geometry Engine → Constrained Placement
+    ↓
+Check: required <= available
+    ↓
+If violation → adjust or retry
+    ↓
+Return blueprint + usage report</pre>
+            </div>
+
+            <h3>Critical Architecture Decisions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Decision</th>
+                        <th>Why</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI for emotion only, not placement</td>
+                        <td>Deterministic geometry = repeatable, teachable, scalable</td>
+                    </tr>
+                    <tr>
+                        <td>Polar coordinates for placement</td>
+                        <td>Natural for radial wreath structure</td>
+                    </tr>
+                    <tr>
+                        <td>Blueprint as canonical object</td>
+                        <td>All modules interoperable, future-proof</td>
+                    </tr>
+                    <tr>
+                        <td>Python backend for geometry</td>
+                        <td>NumPy performance + clarity for math-heavy operations</td>
+                    </tr>
+                    <tr>
+                        <td>PostgreSQL with JSON columns</td>
+                        <td>Relational integrity + flexible blueprint storage</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>API Routes</h3>
+            <details>
+                <summary>Complete Route List</summary>
+                <h4>Authentication</h4>
+                <ul>
+                    <li><code>POST /auth/register</code></li>
+                    <li><code>POST /auth/login</code></li>
+                    <li><code>POST /auth/logout</code></li>
+                </ul>
+
+                <h4>Inventory</h4>
+                <ul>
+                    <li><code>GET /api/inventory</code> — List user's items</li>
+                    <li><code>POST /api/inventory</code> — Add item</li>
+                    <li><code>PUT /api/inventory/{id}</code> — Update item</li>
+                    <li><code>DELETE /api/inventory/{id}</code> — Remove item</li>
+                    <li><code>POST /api/inventory/import</code> — CSV upload</li>
+                </ul>
+
+                <h4>Memory Weaver</h4>
+                <ul>
+                    <li><code>POST /api/memory/analyze</code> — Extract emotions</li>
+                    <li><code>POST /api/memory/generate</code> — Full blueprint creation</li>
+                    <li><code>GET /api/memory/{id}</code> — Retrieve saved memory wreath</li>
+                </ul>
+
+                <h4>Inventory Weaver</h4>
+                <ul>
+                    <li><code>POST /api/inventory/generate</code> — Create design from inventory</li>
+                    <li><code>GET /api/inventory/usage/{blueprint_id}</code> — Show what was used</li>
+                </ul>
+
+                <h4>Blueprints</h4>
+                <ul>
+                    <li><code>GET /api/blueprint/{id}</code> — Retrieve blueprint</li>
+                    <li><code>POST /api/blueprint</code> — Save new blueprint</li>
+                    <li><code>PUT /api/blueprint/{id}</code> — Update blueprint</li>
+                    <li><code>DELETE /api/blueprint/{id}</code> — Delete blueprint</li>
+                </ul>
+
+                <h4>Exports</h4>
+                <ul>
+                    <li><code>POST /api/export/svg</code> — Generate SVG</li>
+                    <li><code>POST /api/export/pdf</code> — Generate PDF build guide</li>
+                    <li><code>POST /api/export/json</code> — Download blueprint JSON</li>
+                </ul>
+
+                <h4>Formulas</h4>
+                <ul>
+                    <li><code>GET /api/formulas</code> — List all 12 formulas</li>
+                    <li><code>GET /api/formulas/{id}</code> — Get formula details</li>
+                </ul>
+            </details>
+        </section>
+
+        <!-- ROADMAP -->
+        <section id="roadmap">
+            <h2>Development Roadmap <span class="status-badge status-ready">Ready</span></h2>
+            
+            <h3>MVP — 4 Week Build</h3>
+            <div class="card">
+                <h4>Week 1: Foundation</h4>
+                <ul>
+                    <li>✅ User authentication (register/login)</li>
+                    <li>✅ Database schema (users, inventory, blueprints)</li>
+                    <li>✅ Inventory CRUD interface</li>
+                    <li>✅ Basic wreath canvas (SVG display)</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>Week 2: Core Engine</h4>
+                <ul>
+                    <li>⏳ Geometry engine (polar coordinate placement)</li>
+                    <li>⏳ 3 composition formulas (Crescent, Full Halo, Focal Burst)</li>
+                    <li>⏳ Zone system implementation</li>
+                    <li>⏳ SVG render engine</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>Week 3: Generators</h4>
+                <ul>
+                    <li>⏳ Memory Weaver (emotion → blueprint)</li>
+                    <li>⏳ Inventory Weaver (constrained generation)</li>
+                    <li>⏳ Blueprint JSON export</li>
+                    <li>⏳ Basic scoring engine</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>Week 4: Polish & Launch</h4>
+                <ul>
+                    <li>⏳ UI polish (Tailwind styling)</li>
+                    <li>⏳ Subscription logic (Stripe integration)</li>
+                    <li>⏳ PDF build guide export</li>
+                    <li>⏳ Landing page + onboarding</li>
+                    <li>⏳ Beta launch</li>
+                </ul>
+            </div>
+
+            <h3>Post-MVP Features (Months 2-6)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Quarter</th>
+                        <th>Features</th>
+                        <th>Goal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Q2</strong></td>
+                        <td>Design Studio, all 12 formulas, undo/redo</td>
+                        <td>Pro tier launch</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Q3</strong></td>
+                        <td>Blueprint marketplace, designer profiles</td>
+                        <td>Monetize community</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Q4</strong></td>
+                        <td>Wreath DNA Engine, parametric variation</td>
+                        <td>Competitive moat</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Long-Term Vision (Year 2+)</h3>
+            <ul>
+                <li>🎯 <strong>Image Analyzer:</strong> Upload wreath photo → system recreates blueprint</li>
+                <li>🎯 <strong>3D Rendering:</strong> Realistic depth preview</li>
+                <li>🎯 <strong>Supplier Integration:</strong> Auto-link to Afloral, Sullivans, etc.</li>
+                <li>🎯 <strong>Arrangement OS:</strong> Expand to bouquets, centerpieces, arches</li>
+                <li>🎯 <strong>Educational Platform:</strong> Teach design principles through the engine</li>
+                <li>🎯 <strong>Mobile App:</strong> iOS/Android native apps</li>
+            </ul>
+
+            <h3>Success Metrics</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Month 3</th>
+                        <th>Month 6</th>
+                        <th>Year 1</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Monthly Active Users</td>
+                        <td>100</td>
+                        <td>500</td>
+                        <td>5,000</td>
+                    </tr>
+                    <tr>
+                        <td>Designs Generated</td>
+                        <td>1,000</td>
+                        <td>10,000</td>
+                        <td>100,000</td>
+                    </tr>
+                    <tr>
+                        <td>Paid Subscribers</td>
+                        <td>10</td>
+                        <td>50</td>
+                        <td>500</td>
+                    </tr>
+                    <tr>
+                        <td>MRR</td>
+                        <td>$200</td>
+                        <td>$1,500</td>
+                        <td>$15,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- DOWNLOAD SCHEMAS -->
+        <section>
+            <h2>Download Artifacts</h2>
+            
+            <div class="card">
+                <h3>Ready to Build?</h3>
+                <p>Download these artifacts to begin development:</p>
+                <button class="button" onclick="downloadBlueprint()">📄 Blueprint Schema (JSON)</button>
+                <button class="button" onclick="downloadInventory()">📦 Inventory Schema (JSON)</button>
+                <button class="button" onclick="downloadFormulas()">🧬 Formula Library (JSON)</button>
+                <button class="button-secondary" onclick="downloadPRD()">📋 Full PRD (Markdown)</button>
+            </div>
+
+            <div class="info-box">
+                <strong>Developer Handoff:</strong> This HTML file + JSON schemas contain everything needed to start building. Share with your development team or use as reference while coding.
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p><strong>Evercrafted Platform</strong> — Master Reference Document</p>
+        <p>Version 1.0 | Generated March 10, 2026</p>
+        <p>Created by Bret Baden</p>
+    </footer>
+
+    <script>
+        // Download Functions
+        function downloadBlueprint() {
+            const schema = {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "Evercrafted Blueprint Schema",
+                "type": "object",
+                "required": ["blueprint_id", "base", "composition", "zones", "elements"],
+                "properties": {
+                    "blueprint_id": {"type": "string"},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "version": {"type": "string"},
+                    "metadata": {
+                        "type": "object",
+                        "properties": {
+                            "user_id": {"type": "string"},
+                            "source": {"type": "string", "enum": ["memory_weaver", "inventory_weaver", "design_studio"]},
+                            "title": {"type": "string"},
+                            "description": {"type": "string"}
+                        }
+                    },
+                    "base": {
+                        "type": "object",
+                        "required": ["type", "outer_diameter", "inner_diameter"],
+                        "properties": {
+                            "type": {"type": "string", "enum": ["grapevine", "foam", "wire", "straw"]},
+                            "outer_diameter": {"type": "number"},
+                            "inner_diameter": {"type": "number"},
+                            "thickness": {"type": "number"}
+                        }
+                    },
+                    "composition": {
+                        "type": "object",
+                        "properties": {
+                            "style": {"type": "string"},
+                            "formula": {"type": "string"},
+                            "visual_weight": {"type": "string"},
+                            "negative_space": {"type": "boolean"}
+                        }
+                    },
+                    "zones": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["zone_id", "type", "angle_start", "angle_end"],
+                            "properties": {
+                                "zone_id": {"type": "string"},
+                                "type": {"type": "string"},
+                                "angle_start": {"type": "number", "minimum": 0, "maximum": 360},
+                                "angle_end": {"type": "number", "minimum": 0, "maximum": 360},
+                                "radius_min": {"type": "number", "minimum": 0, "maximum": 1},
+                                "radius_max": {"type": "number", "minimum": 0, "maximum": 1},
+                                "allowed_roles": {"type": "array", "items": {"type": "string"}},
+                                "density_cap": {"type": "number", "minimum": 0, "maximum": 1},
+                                "locked": {"type": "boolean"}
+                            }
+                        }
+                    },
+                    "elements": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["element_id", "sku", "angle_deg", "radius_norm", "layer"],
+                            "properties": {
+                                "element_id": {"type": "string"},
+                                "sku": {"type": "string"},
+                                "name": {"type": "string"},
+                                "role": {"type": "string"},
+                                "angle_deg": {"type": "number"},
+                                "radius_norm": {"type": "number", "minimum": 0, "maximum": 1},
+                                "rotation_deg": {"type": "number"},
+                                "scale": {"type": "number"},
+                                "layer": {"type": "integer"},
+                                "zone_id": {"type": "string"},
+                                "cluster_id": {"type": "string"}
+                            }
+                        }
+                    },
+                    "scores": {
+                        "type": "object",
+                        "properties": {
+                            "balance": {"type": "number", "minimum": 0, "maximum": 1},
+                            "rhythm": {"type": "number", "minimum": 0, "maximum": 1},
+                            "proportion": {"type": "number", "minimum": 0, "maximum": 1},
+                            "contrast": {"type": "number", "minimum": 0, "maximum": 1},
+                            "silhouette": {"type": "number", "minimum": 0, "maximum": 1},
+                            "inventory_fit": {"type": "number", "minimum": 0, "maximum": 1},
+                            "overall": {"type": "number", "minimum": 0, "maximum": 1}
+                        }
+                    }
+                }
+            };
+            downloadJSON(schema, 'blueprint.schema.json');
+        }
+
+        function downloadInventory() {
+            const schema = {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "Inventory Item Schema",
+                "type": "object",
+                "required": ["id", "user_id", "name", "role", "qty_on_hand"],
+                "properties": {
+                    "id": {"type": "string"},
+                    "user_id": {"type": "string"},
+                    "name": {"type": "string"},
+                    "category": {"type": "string"},
+                    "color_family": {"type": "string"},
+                    "role": {"type": "string", "enum": ["focal", "secondary", "accent", "filler", "greenery"]},
+                    "qty_on_hand": {"type": "integer", "minimum": 0},
+                    "bloom_diameter": {"type": "number"},
+                    "stem_length": {"type": "number"},
+                    "image_url": {"type": "string"},
+                    "cost_per_unit": {"type": "number"},
+                    "supplier_sku": {"type": "string"},
+                    "created_at": {"type": "string", "format": "date-time"}
+                }
+            };
+            downloadJSON(schema, 'inventory-item.schema.json');
+        }
+
+        function downloadFormulas() {
+            const formulas = [
+                {
+                    "id": "crescent",
+                    "name": "Crescent",
+                    "description": "Asymmetrical arc, heaviest at bottom",
+                    "style": "asymmetrical",
+                    "negative_space": true,
+                    "zones": [
+                        {
+                            "zone_id": "focal",
+                            "type": "focal",
+                            "angle_start": 180,
+                            "angle_end": 240,
+                            "radius_min": 0.7,
+                            "radius_max": 1.0,
+                            "density": 0.8
+                        }
+                    ]
+                },
+                {
+                    "id": "full_halo",
+                    "name": "Full Halo",
+                    "description": "Even distribution, no negative space",
+                    "style": "symmetrical",
+                    "negative_space": false
+                },
+                {
+                    "id": "focal_burst",
+                    "name": "Focal Burst",
+                    "description": "Single large focal point with radiating accents",
+                    "style": "asymmetrical",
+                    "negative_space": true
+                }
+            ];
+            downloadJSON(formulas, 'formulas.json');
+        }
+
+        function downloadPRD() {
+            alert('Full PRD markdown export would be generated here');
+        }
+
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({behavior: 'smooth', block: 'start'});
+            });
+        });
+    </script>
+
+</body>
+</html>

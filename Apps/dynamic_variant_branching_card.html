@@ -1,0 +1,439 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #FAF8F4; --warm-white: #FDFCFA;
+    --sage: #8A9E85; --sage-light: #C5D4C1; --sage-dark: #4D6649;
+    --blush: #D4897A; --blush-light: #EDD5CF; --blush-dark: #A05E51;
+    --dark: #2A2520; --text-muted: #7A6E66;
+    --border: rgba(42,37,32,0.1); --border-med: rgba(42,37,32,0.18);
+    --copper-light: #F5EAD8; --copper-mid: #B87A3A; --copper-dark: #6E4418;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: transparent; color: var(--dark); padding: 1.5rem 0; }
+
+  .new-app-label { font-size: 11px; font-weight: 500; color: var(--copper-dark); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .new-app-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--copper-mid); }
+
+  .app-card { background: var(--warm-white); border: 1.5px solid var(--copper-mid); border-radius: 20px; padding: 2rem; max-width: 760px; position: relative; overflow: hidden; }
+  .card-glow { position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(184,122,58,0.1) 0%, transparent 70%); pointer-events: none; }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem; }
+  .card-title-group { display: flex; align-items: center; gap: 14px; }
+  .app-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--copper-light); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .app-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; color: var(--dark); line-height: 1.1; }
+  .app-tagline { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+  .badge { background: var(--copper-light); color: var(--copper-dark); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; flex-shrink: 0; }
+
+  .app-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-weight: 300; margin-bottom: 1.75rem; }
+
+  /* LINEAGE TREE MOCKUP */
+  .tree-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; overflow: hidden; margin-bottom: 1.75rem; }
+  .tree-header { background: var(--dark); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .tree-header-title { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7); letter-spacing: 0.06em; text-transform: uppercase; }
+  .tree-header-btns { display: flex; gap: 6px; }
+  .tree-btn { font-size: 10px; padding: 4px 10px; border-radius: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; }
+  .tree-btn-ghost { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
+  .tree-btn-primary { background: var(--copper-mid); color: white; }
+  .tree-body { display: grid; grid-template-columns: 220px 1fr; }
+  .tree-left { border-right: 0.5px solid var(--border-med); padding: 1rem; }
+  .tree-search { width: 100%; padding: 6px 10px; border: 0.5px solid var(--border-med); border-radius: 8px; font-size: 11px; color: var(--dark); font-family: 'DM Sans', sans-serif; background: var(--warm-white); margin-bottom: 10px; outline: none; }
+
+  /* TREE NODES */
+  .tree-node { margin-bottom: 3px; }
+  .tree-node-row { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+  .tree-node-row:hover { background: rgba(42,37,32,0.05); }
+  .tree-node-row.active { background: var(--copper-light); }
+  .tree-indent { width: 12px; flex-shrink: 0; }
+  .tree-icon { font-size: 12px; flex-shrink: 0; }
+  .tree-label { font-size: 12px; color: var(--dark); font-weight: 400; flex: 1; }
+  .tree-label.root { font-weight: 500; }
+  .tree-emotion-chip { font-size: 9px; background: var(--sage-light); color: var(--sage-dark); padding: 2px 6px; border-radius: 8px; }
+  .tree-count { font-size: 9px; color: var(--text-muted); background: rgba(42,37,32,0.08); padding: 2px 6px; border-radius: 8px; }
+  .tree-actions { display: flex; gap: 3px; opacity: 0; }
+  .tree-node-row:hover .tree-actions { opacity: 1; }
+  .tree-action-btn { font-size: 10px; color: var(--text-muted); padding: 1px 5px; border-radius: 4px; cursor: pointer; background: transparent; border: none; }
+  .tree-action-btn:hover { color: var(--copper-dark); }
+  .tree-children { margin-left: 14px; }
+  .tree-line { border-left: 1px dashed rgba(42,37,32,0.15); margin-left: 5px; padding-left: 9px; }
+
+  /* RIGHT: BRANCH DETAIL */
+  .tree-right { padding: 1rem; }
+  .branch-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: var(--dark); margin-bottom: 4px; }
+  .branch-trail { font-size: 10px; color: var(--text-muted); margin-bottom: 10px; }
+  .branch-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+  .branch-chip { font-size: 10px; padding: 3px 9px; border-radius: 10px; }
+  .bc-emotion { background: var(--copper-light); color: var(--copper-dark); }
+  .bc-cost { background: var(--sage-light); color: var(--sage-dark); }
+  .bc-density { background: #E8EEF4; color: #2E4A6A; }
+  .bc-perf { background: #DDF0E4; color: #2A6B45; }
+  .diff-title { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 6px; }
+  .diff-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  .diff-item { font-size: 11px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 5px; line-height: 1.5; }
+  .diff-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--copper-mid); flex-shrink: 0; margin-top: 5px; }
+  .scenario-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+  .sc-chip { font-size: 10px; background: var(--warm-white); border: 0.5px solid var(--border-med); color: var(--text-muted); padding: 3px 8px; border-radius: 8px; }
+
+  /* EMOTION MAP PREVIEW */
+  .emap-wrap { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.75rem; display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: flex-start; }
+  .emap-left { flex-shrink: 0; }
+  .emap-title { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 8px; }
+  .emap-right { flex: 1; min-width: 180px; }
+  .emap-insight { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 8px; }
+  .emap-untapped { display: flex; flex-direction: column; gap: 4px; }
+  .untapped-item { font-size: 11px; color: var(--copper-dark); background: var(--copper-light); padding: 5px 10px; border-radius: 8px; }
+
+  /* COMPARISON STRIP -->
+  .compare-strip { background: var(--cream); border: 0.5px solid var(--border-med); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; overflow-x: auto; }
+  .compare-title { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; }
+  .compare-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+  .compare-table th { text-align: left; font-weight: 500; color: var(--dark); padding: 6px 8px; border-bottom: 0.5px solid var(--border-med); font-size: 11px; }
+  .compare-table td { padding: 6px 8px; border-bottom: 0.5px solid var(--border); color: var(--text-muted); }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table td:first-child { color: var(--text-muted); font-weight: 400; }
+  .winner-col { background: rgba(184,122,58,0.06); }
+  .winner-badge { font-size: 9px; background: #DDF0E4; color: #2A6B45; padding: 1px 6px; border-radius: 6px; margin-left: 4px; }
+
+  /* RISKS */
+  .risks-wrap { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+  .risk-row { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .risk-badge { font-size: 9px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; margin-top: 1px; background: #DDF0E4; color: #2A6B45; }
+  .risk-text { font-size: 12px; color: var(--dark); line-height: 1.5; }
+  .risk-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; display: block; margin-top: 1px; }
+
+  .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; background: var(--cream); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .feature-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--copper-mid); flex-shrink: 0; margin-top: 5px; }
+  .feature-text { font-size: 12px; color: var(--dark); font-weight: 400; line-height: 1.5; }
+  .feature-text strong { font-weight: 500; display: block; margin-bottom: 1px; }
+  .feature-text span { color: var(--text-muted); font-weight: 300; font-size: 11px; }
+
+  .pair-strip { background: var(--copper-light); border-radius: 10px; padding: 10px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .pair-text { font-size: 12px; color: var(--copper-dark); }
+  .pair-text strong { font-weight: 500; }
+  .pair-price { display: flex; align-items: center; gap: 10px; }
+  .pair-old { font-size: 12px; color: var(--text-muted); text-decoration: line-through; }
+  .pair-new { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 500; color: var(--copper-dark); }
+  .pair-new sub { font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 300; }
+
+  .v2-strip { background: var(--copper-light); border-radius: 10px; padding: 10px 14px; margin-bottom: 1.75rem; display: flex; align-items: center; gap: 10px; }
+  .v2-label { font-size: 10px; font-weight: 500; color: var(--copper-dark); letter-spacing: 0.08em; text-transform: uppercase; background: white; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+  .v2-text { font-size: 12px; color: var(--copper-dark); font-weight: 300; }
+
+  .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding-top: 1.25rem; border-top: 0.5px solid var(--border); }
+  .price-main { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--dark); line-height: 1; }
+  .price-main sup { font-size: 16px; font-weight: 400; vertical-align: top; margin-top: 8px; display: inline-block; }
+  .price-main sub { font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 300; }
+  .price-note { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 3px; }
+
+  .card-actions { display: flex; align-items: center; gap: 10px; }
+  .btn-add { background: var(--copper-dark); color: white; padding: 11px 24px; border-radius: 40px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: background 0.2s, transform 0.15s; font-family: 'DM Sans', sans-serif; }
+  .btn-add:hover { background: var(--dark); transform: translateY(-1px); }
+  .btn-learn { background: transparent; color: var(--text-muted); padding: 11px 20px; border-radius: 40px; font-size: 13px; font-weight: 400; cursor: pointer; border: 1px solid var(--border-med); transition: border-color 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-learn:hover { border-color: var(--dark); color: var(--dark); }
+
+  .compat-note { font-size: 11px; color: var(--text-muted); font-weight: 300; display: flex; align-items: center; gap: 6px; margin-top: 1rem; padding-left: 4px; }
+  .compat-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .tree-body { grid-template-columns: 1fr; }
+    .tree-left { border-right: none; border-bottom: 0.5px solid var(--border-med); }
+  }
+</style>
+
+<div class="new-app-label">New ecosystem app</div>
+
+<div class="app-card">
+  <div class="card-glow"></div>
+
+  <div class="card-header">
+    <div class="card-title-group">
+      <div class="app-icon">🌿</div>
+      <div>
+        <div class="app-name">Dynamic Variant Branching</div>
+        <div class="app-tagline">Blueprint lineage trees · delta-only branches · emotion map · scenario generation · A/B comparison</div>
+      </div>
+    </div>
+    <span class="badge">Product line engine</span>
+  </div>
+
+  <p class="app-desc">
+    A single wreath blueprint shouldn't be a dead end — it should be the root of an entire product family. Dynamic Variant Branching turns every blueprint into a living lineage: branch by emotion shift, budget tier, seasonal palette, or client constraint. Each branch stores only what changed. The system resolves the full design at generation time. One root blueprint can produce a budget line, a premium metallic line, a client-specific line, and a seasonal flip — all sharing the same structural DNA.
+  </p>
+
+  <!-- LINEAGE TREE MOCKUP -->
+  <div class="tree-wrap">
+    <div class="tree-header">
+      <span class="tree-header-title">Blueprint Lineage — Autumn Hearth</span>
+      <div class="tree-header-btns">
+        <button class="tree-btn tree-btn-ghost">Emotion map</button>
+        <button class="tree-btn tree-btn-ghost">Compare</button>
+        <button class="tree-btn tree-btn-primary">+ Branch</button>
+      </div>
+    </div>
+    <div class="tree-body">
+      <!-- TREE LEFT -->
+      <div class="tree-left">
+        <input class="tree-search" type="text" placeholder="Search branches…">
+        <!-- ROOT -->
+        <div class="tree-node">
+          <div class="tree-node-row">
+            <span class="tree-icon">🌿</span>
+            <span class="tree-label root">Root — Autumn Hearth</span>
+            <span class="tree-count">8</span>
+          </div>
+          <div class="tree-children tree-line">
+            <!-- Budget line -->
+            <div class="tree-node">
+              <div class="tree-node-row">
+                <span class="tree-icon">💛</span>
+                <span class="tree-label">Budget Porch</span>
+                <span class="tree-emotion-chip">Cozy</span>
+                <span class="tree-count">2</span>
+                <div class="tree-actions">
+                  <button class="tree-action-btn">+</button>
+                  <button class="tree-action-btn">≡</button>
+                </div>
+              </div>
+            </div>
+            <!-- Premium line -->
+            <div class="tree-node">
+              <div class="tree-node-row active">
+                <span class="tree-icon">✦</span>
+                <span class="tree-label">Premium Copper</span>
+                <span class="tree-emotion-chip">Luxe</span>
+                <span class="tree-count">3</span>
+                <div class="tree-actions">
+                  <button class="tree-action-btn">+</button>
+                  <button class="tree-action-btn">≡</button>
+                </div>
+              </div>
+              <div class="tree-children tree-line">
+                <div class="tree-node">
+                  <div class="tree-node-row">
+                    <span class="tree-icon">👤</span>
+                    <span class="tree-label" style="font-size:11px">Client Smith – Blue wall</span>
+                    <div class="tree-actions">
+                      <button class="tree-action-btn">+</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Seasonal flip -->
+            <div class="tree-node">
+              <div class="tree-node-row">
+                <span class="tree-icon">❄️</span>
+                <span class="tree-label">Winter Flip</span>
+                <span class="tree-emotion-chip">Calm</span>
+                <span class="tree-count">1</span>
+              </div>
+            </div>
+            <!-- A/B test -->
+            <div class="tree-node">
+              <div class="tree-node-row">
+                <span class="tree-icon">🔬</span>
+                <span class="tree-label">Etsy A/B Test</span>
+                <span class="tree-count">2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TREE RIGHT: BRANCH DETAIL -->
+      <div class="tree-right">
+        <div class="branch-name">Premium Copper Winter</div>
+        <div class="branch-trail">Root → Premium Copper → this branch</div>
+        <div class="branch-chips">
+          <span class="branch-chip bc-emotion">Warm · Luxurious</span>
+          <span class="branch-chip bc-cost">$85–$110</span>
+          <span class="branch-chip bc-density">Full ring</span>
+          <span class="branch-chip bc-perf">Top 25% CTR</span>
+        </div>
+        <div class="diff-title">What changed from root</div>
+        <div class="diff-list">
+          <div class="diff-item"><div class="diff-dot"></div>Increased warmth +0.2, decreased formality −0.15</div>
+          <div class="diff-item"><div class="diff-dot"></div>Replaced red berries with copper metallic ornaments</div>
+          <div class="diff-item"><div class="diff-dot"></div>Shifted focal cluster toward lower-left, increased density 15%</div>
+          <div class="diff-item"><div class="diff-dot"></div>Added deep green velvet ribbon, removed burlap</div>
+        </div>
+        <div class="diff-title">Linked scenarios</div>
+        <div class="scenario-chips">
+          <span class="sc-chip">Etsy 24"</span>
+          <span class="sc-chip">Front door shaded porch</span>
+          <span class="sc-chip">Wholesale pack</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMOTION MAP -->
+  <div class="emap-wrap">
+    <div class="emap-left">
+      <div class="emap-title">Emotion map — coverage view</div>
+      <svg viewBox="0 0 180 160" width="160" height="142" fill="none">
+        <!-- Axes -->
+        <line x1="16" y1="80" x2="164" y2="80" stroke="rgba(42,37,32,0.12)" stroke-width="0.5"/>
+        <line x1="90" y1="10" x2="90" y2="150" stroke="rgba(42,37,32,0.12)" stroke-width="0.5"/>
+        <!-- Axis labels -->
+        <text x="10" y="83" font-size="8" fill="#9E8E7E" font-family="DM Sans,sans-serif" text-anchor="middle">Calm</text>
+        <text x="170" y="83" font-size="8" fill="#9E8E7E" font-family="DM Sans,sans-serif" text-anchor="middle">Energy</text>
+        <text x="90" y="9" font-size="8" fill="#9E8E7E" font-family="DM Sans,sans-serif" text-anchor="middle">Formal</text>
+        <text x="90" y="158" font-size="8" fill="#9E8E7E" font-family="DM Sans,sans-serif" text-anchor="middle">Playful</text>
+        <!-- Untapped zone shading -->
+        <rect x="16" y="10" width="74" height="70" fill="rgba(42,37,32,0.03)" rx="4"/>
+        <text x="53" y="48" font-size="7" fill="rgba(42,37,32,0.25)" font-family="DM Sans,sans-serif" text-anchor="middle">untapped</text>
+        <rect x="16" y="86" width="74" height="64" fill="rgba(42,37,32,0.03)" rx="4"/>
+        <text x="53" y="118" font-size="7" fill="rgba(42,37,32,0.25)" font-family="DM Sans,sans-serif" text-anchor="middle">untapped</text>
+        <!-- Existing branch dots -->
+        <circle cx="118" cy="60" r="8" fill="#B87A3A" opacity="0.85"/>
+        <text x="118" y="63" font-size="6" fill="white" font-family="DM Sans,sans-serif" text-anchor="middle">Root</text>
+        <circle cx="130" cy="52" r="6" fill="#C9923A" opacity="0.7"/>
+        <text x="130" y="55" font-size="5" fill="white" font-family="DM Sans,sans-serif" text-anchor="middle">Luxe</text>
+        <circle cx="108" cy="72" r="5" fill="#8A9E85" opacity="0.7"/>
+        <text x="108" y="75" font-size="5" fill="white" font-family="DM Sans,sans-serif" text-anchor="middle">Bdgt</text>
+        <circle cx="60" cy="58" r="5" fill="#A0B4C0" opacity="0.5"/>
+        <text x="60" y="61" font-size="5" fill="white" font-family="DM Sans,sans-serif" text-anchor="middle">Wint</text>
+        <circle cx="125" cy="105" r="5" fill="#C2829A" opacity="0.5"/>
+        <text x="125" y="108" font-size="5" fill="white" font-family="DM Sans,sans-serif" text-anchor="middle">A/B</text>
+        <!-- Ghost new branch -->
+        <circle cx="48" cy="120" r="6" stroke="#B87A3A" stroke-width="1" fill="none" stroke-dasharray="2 2"/>
+        <text x="48" y="135" font-size="7" fill="#B87A3A" font-family="DM Sans,sans-serif" text-anchor="middle">+ new?</text>
+      </svg>
+    </div>
+    <div class="emap-right">
+      <div class="emap-title">Untapped emotional territory</div>
+      <p class="emap-insight">Your Autumn Hearth lineage covers the warm-formal quadrant well. The emotion map shows two untapped zones — clicking either generates an AI-suggested branch automatically.</p>
+      <div class="emap-untapped">
+        <div class="untapped-item">Calm + Playful — relaxed casual porch wreath not yet covered</div>
+        <div class="untapped-item">Calm + Formal — elegant minimal entry, zero branches here</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="compare-strip">
+    <div class="compare-title">Branch comparison — side by side</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:120px">Attribute</th>
+          <th>Budget Porch</th>
+          <th class="winner-col">Premium Copper <span class="winner-badge">winner</span></th>
+          <th>Winter Flip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Emotion</td><td>Cozy · Warm</td><td class="winner-col">Luxurious · Warm</td><td>Calm · Elegant</td></tr>
+        <tr><td>Cost band</td><td>$38–52</td><td class="winner-col">$85–110</td><td>$55–75</td></tr>
+        <tr><td>Density</td><td>Medium</td><td class="winner-col">Full</td><td>Medium-airy</td></tr>
+        <tr><td>Focal style</td><td>Ring even</td><td class="winner-col">Low-left asymmetric</td><td>Top arc</td></tr>
+        <tr><td>CTR</td><td>Avg</td><td class="winner-col">Top 25%</td><td>New</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RISKS RESOLVED -->
+  <div class="risks-wrap">
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Complexity creep — archive system plus "Active only" default filter
+        <span>Branches are tagged as Active, Archived, or Experimental. Default tree view shows Active only. Search, filter by emotion family, and archive in one click keep the workspace clean regardless of how many branches exist</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Merge conflicts when root schema changes — versioned deltas with migration helpers
+        <span>Every delta carries a schema_version field. When root rules change, a migration helper auto-converts old deltas to the new format rather than breaking them. Branches that can't migrate cleanly are flagged as "needs review" rather than silently corrupted</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Performance on deep lineage resolution — memoized resolveBlueprint with smart invalidation
+        <span>resolveBlueprint() caches the merged config at each node. When a parent delta changes, only that node and its descendants are invalidated — not the whole tree. Deep lineages resolve in milliseconds from cache</span>
+      </div>
+    </div>
+    <div class="risk-row">
+      <span class="risk-badge">Fixed</span>
+      <div class="risk-text">Overloaded create-branch modal — Basic/Advanced tab split
+        <span>Basic tab shows 4 controls: branch label, emotion preset buttons, cost band, palette operation. Advanced tab reveals full delta editor with per-dimension sliders and rule overrides. Most users never need Advanced</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Delta-only branch storage</strong>
+        <span>Each branch stores only what changed from its parent — emotion delta, palette operations, SKU substitutions, rule overrides. resolveBlueprint() merges the full tree at generation time</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Emotion map coverage view</strong>
+        <span>2D plot showing all branches for a lineage — see which emotional spaces you haven't covered and click to auto-generate a branch suggestion for the gap</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Scenario-aware generation</strong>
+        <span>Built-in scenarios (Etsy 24", front door shaded porch, wholesale, apartment door) apply their own constraint overlays to any branch — same design, different context</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Human-readable diffs</strong>
+        <span>"Increased warmth, replaced red berries with copper ornaments, shifted focal cluster lower-left" — every branch explains itself in plain language, not raw JSON deltas</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Client-specific branch portals</strong>
+        <span>Lock a branch subtree with a client's constraints — they only see their tailored variants and can mark favorites. Whole-room bundle support: wreath + garland + centerpiece sharing one emotional lineage</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-dot"></div>
+      <div class="feature-text">
+        <strong>Performance-driven auto-branching</strong>
+        <span>When a branch's CTR, save rate, or sales outperform siblings, the system proposes a new child branch that pushes the winning traits further — continuous product line evolution</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pair-strip">
+    <div class="pair-text">Pair with <strong>Blueprint Intelligence Pro</strong> — BIP learns from variant performance, DVB generates the variants</div>
+    <div class="pair-price">
+      <span class="pair-old">$14.95 + $11.95</span>
+      <span class="pair-new">$19.95<sub>/mo both</sub></span>
+    </div>
+  </div>
+
+  <div class="v2-strip">
+    <span class="v2-label">Coming in v2</span>
+    <span class="v2-text">Auto-branch from performance data · keyboard shortcuts (B to branch) · inline branch annotations · color-blind safe emotion map · bundle blueprints across product types</span>
+  </div>
+
+  <div class="card-footer">
+    <div>
+      <div class="price-main"><sup>$</sup>11.95<sub>/mo</sub></div>
+      <div class="price-note">Standalone · or $19.95/mo paired with Blueprint Intelligence Pro</div>
+    </div>
+    <div class="card-actions">
+      <button class="btn-learn">Learn more</button>
+      <button class="btn-add">Add to my plan</button>
+    </div>
+  </div>
+</div>
+
+<div class="compat-note">
+  <div class="compat-dot"></div>
+  Works with Blueprint Intelligence Pro, Adaptive Blueprint Composer, and Design Studio · branches export as full blueprint JSONs to any downstream tool
+</div>

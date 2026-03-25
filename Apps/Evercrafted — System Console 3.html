@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — System Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0907;--surface:#110f0c;--surface2:#1a1714;--surface3:#221f1b;
+  --border:#2a2520;--border2:#3a342d;
+  --gold:#c9a96e;--gold2:#e8c98a;--gold-dim:rgba(201,169,110,.12);--gold-glow:rgba(201,169,110,.06);
+  --sage:#7a9e7e;--sage-dim:rgba(122,158,126,.15);
+  --rose:#c47c6e;--rose-dim:rgba(196,124,110,.15);
+  --lav:#9b8ec4;--lav-dim:rgba(155,142,196,.15);
+  --amber:#d4a843;--amber-dim:rgba(212,168,67,.15);
+  --teal:#5a8a84;--teal-dim:rgba(90,138,132,.15);
+  --text:#e8e0d4;--text-dim:#8a7d6e;--text-muted:#4a4038;
+  --fd:'Cormorant Garamond',serif;--fm:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--fm);font-size:13px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5;}
+
+body.light{
+  --bg:#f9f7f3;--surface:#ffffff;--surface2:#f5f1ea;--surface3:#efe9df;
+  --border:rgba(30,28,24,0.08);--border2:rgba(30,28,24,0.14);
+  --gold:#8c7258;--gold2:#b59b7f;--gold-dim:rgba(140,114,88,0.12);--gold-glow:rgba(140,114,88,0.06);
+  --sage:#5c7353;--sage-dim:rgba(92,115,83,0.16);
+  --rose:#c47c6e;--rose-dim:rgba(196,124,110,0.12);
+  --lav:#8b86b0;--lav-dim:rgba(139,134,176,0.12);
+  --amber:#c9a96e;--amber-dim:rgba(201,169,110,0.14);
+  --teal:#5a8a84;--teal-dim:rgba(90,138,132,0.12);
+  --text:#1e1c18;--text-dim:#5c544b;--text-muted:#8b8278;
+  --fm:'DM Sans',sans-serif;
+}
+body.light::before{opacity:.25;}
+.app{display:flex;height:100vh;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:228px;min-width:228px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.logo-label{font-family:var(--fd);font-size:22px;font-weight:300;letter-spacing:.12em;color:var(--gold);display:block;line-height:1;}
+.logo-sub{font-size:9px;letter-spacing:.26em;color:var(--text-muted);margin-top:5px;text-transform:uppercase;display:block;}
+.sidebar-section{padding:14px 0 4px;flex-shrink:0;}
+.ssl{font-size:8px;letter-spacing:.3em;color:var(--text-muted);text-transform:uppercase;padding:0 20px;margin-bottom:4px;}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;color:var(--text-dim);transition:all .15s;border-left:2px solid transparent;font-size:11.5px;letter-spacing:.02em;}
+.ni:hover{color:var(--text);background:var(--gold-glow);}
+.ni.active{color:var(--gold);border-left-color:var(--gold);background:var(--gold-dim);}
+.ni.locked{opacity:.25;pointer-events:none;}
+.ni-icon{font-size:12px;opacity:.7;width:15px;text-align:center;}
+.pb{font-size:7.5px;letter-spacing:.13em;padding:2px 5px;border-radius:1px;margin-left:auto;white-space:nowrap;}
+.pb-live{background:var(--sage-dim);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.pb-p2{background:var(--lav-dim);color:var(--lav);border:1px solid rgba(155,142,196,.3);}
+.pb-p3{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(212,168,67,.3);}
+.pb-p4{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(90,138,132,.3);}
+.sidebar-footer{margin-top:auto;padding:12px 20px;border-top:1px solid var(--border);flex-shrink:0;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--sage);display:inline-block;margin-right:7px;animation:pulse 2.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.stxt{font-size:10px;color:var(--text-muted);letter-spacing:.1em;}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-title{font-family:var(--fd);font-size:18px;font-weight:300;letter-spacing:.08em;}
+.tm{display:flex;gap:14px;align-items:center;}
+.mtag{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);background:var(--surface2);border:1px solid var(--border);padding:3px 8px;border-radius:2px;}
+.mtag.hl{color:var(--gold);border-color:rgba(201,169,110,.3);background:var(--gold-dim);}
+
+/* PANELS */
+.panel{display:none;padding:26px 28px;animation:pIn .28s ease both;}
+.panel.active{display:block;}
+@keyframes pIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+/* SHARED COMPONENTS */
+.sh{font-family:var(--fd);font-size:12px;font-weight:400;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.sh::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border2),transparent);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:16px 20px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent);}
+.clbl{font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+.cval{font-family:var(--fd);font-size:32px;font-weight:300;color:var(--gold);line-height:1;}
+.csub{font-size:11px;color:var(--text-dim);margin-top:4px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px;}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:var(--fm);font-size:10px;letter-spacing:.13em;padding:8px 13px;cursor:pointer;text-transform:uppercase;transition:all .15s;border-radius:2px;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn.primary{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.btn.primary:hover{background:rgba(201,169,110,.22);}
+.btn.sage{border-color:var(--sage);color:var(--sage);background:var(--sage-dim);}
+.btn.rose{border-color:var(--rose);color:var(--rose);background:var(--rose-dim);}
+.sel{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:var(--fm);font-size:11px;padding:7px 10px;border-radius:2px;outline:none;cursor:pointer;transition:border-color .15s;}
+.sel:focus{border-color:var(--gold);}
+.sel option{background:var(--surface2);}
+.row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.jblock{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:16px 20px;font-size:11px;line-height:1.85;color:var(--text-dim);overflow-x:auto;margin-bottom:20px;position:relative;max-height:380px;overflow-y:auto;}
+.jkey{color:var(--gold);}.jstr{color:var(--sage);}.jnum{color:var(--rose);}.jbool{color:var(--lav);}.jnull{color:var(--text-muted);}
+.cpbtn{position:sticky;float:right;top:0;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:var(--fm);font-size:9px;letter-spacing:.15em;padding:3px 8px;cursor:pointer;text-transform:uppercase;transition:all .15s;border-radius:2px;margin-bottom:6px;}
+.cpbtn:hover{border-color:var(--gold);color:var(--gold);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+input[type=range]{-webkit-appearance:none;height:2px;background:var(--border2);border-radius:2px;outline:none;cursor:pointer;flex:1;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--gold);cursor:pointer;transition:transform .12s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3);}
+.slrow{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.sllbl{font-size:9px;letter-spacing:.13em;color:var(--text-dim);width:105px;text-transform:uppercase;}
+.slval{font-size:10px;color:var(--gold);width:34px;text-align:right;}
+.dbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;}
+.dblbl{font-size:9px;letter-spacing:.16em;color:var(--text-muted);text-transform:uppercase;width:120px;flex-shrink:0;}
+.dbtrack{flex:1;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.dbfill{height:100%;border-radius:2px;background:linear-gradient(to right,var(--gold),var(--gold2));transition:width .5s ease;}
+.dbval{font-size:10px;color:var(--text-dim);width:32px;text-align:right;}
+
+/* ── DASHBOARD ── */
+.mrow{background:var(--surface2);border:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:10px;border-radius:2px;transition:border-color .15s;}
+.mrow:hover{border-color:var(--border2);}
+.mst{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.st-live{background:var(--sage);box-shadow:0 0 5px var(--sage);}
+.st-dev{background:var(--gold);box-shadow:0 0 5px rgba(201,169,110,.5);}
+.st-p3{background:var(--amber);box-shadow:0 0 5px rgba(212,168,67,.4);}
+.st-plan{background:var(--text-muted);}
+.mtag2{font-size:8px;letter-spacing:.16em;text-transform:uppercase;padding:2px 6px;border-radius:1px;}
+.t-dev{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,169,110,.3);}
+.t-p3{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(212,168,67,.3);}
+.t-plan{background:var(--surface);color:var(--text-muted);border:1px solid var(--border);}
+
+/* ── FORMULA ── */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:22px;}
+.fc{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:14px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.fc:hover{border-color:var(--gold);background:var(--gold-glow);}
+.fc.sel2{border-color:var(--gold);background:var(--gold-dim);}
+.fc.sel2::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);}
+.fn{font-family:var(--fd);font-size:15px;font-weight:400;color:var(--text);margin-bottom:4px;}
+.fd2{font-size:10px;color:var(--text-dim);line-height:1.55;}
+.fnum{position:absolute;top:9px;right:11px;font-size:9px;color:var(--text-muted);letter-spacing:.16em;}
+.drow{display:flex;gap:7px;margin-bottom:7px;align-items:baseline;}
+.dk{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);width:120px;flex-shrink:0;}
+.dv{font-size:11px;color:var(--text-dim);}
+
+/* ── EMOTION ── */
+.etbar{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:16px 20px;margin-bottom:22px;display:flex;gap:24px;align-items:center;flex-wrap:wrap;}
+.ri{display:flex;flex-direction:column;gap:3px;}
+.rl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);}
+.rv{font-family:var(--fd);font-size:24px;font-weight:300;color:var(--gold);}
+.et{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.tbar{background:var(--surface2);border:1px solid var(--border);border-radius:2px;padding:10px 12px;}
+.tn{font-size:9px;letter-spacing:.17em;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;}
+.bt{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.bf{height:100%;border-radius:2px;transition:width .4s ease;background:var(--gold);}
+.tv{font-size:10px;color:var(--text-dim);margin-top:5px;}
+
+/* ── DNA REGISTRY ── */
+.dna-rg{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:22px;}
+.dpc{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:16px;cursor:pointer;transition:all .15s;}
+.dpc:hover{border-color:var(--gold);background:var(--gold-glow);}
+.dpc.sel2{border-color:var(--gold);background:var(--gold-dim);}
+.dpn{font-family:var(--fd);font-size:16px;font-weight:400;color:var(--text);margin-bottom:3px;}
+.dpf{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:9px;}
+.mbr{display:flex;align-items:center;gap:6px;}
+.mbl{font-size:8px;letter-spacing:.1em;color:var(--text-muted);width:78px;text-transform:uppercase;}
+.mbt{flex:1;height:2px;background:var(--border2);border-radius:1px;overflow:hidden;}
+.mbf{height:100%;border-radius:1px;}
+.gr{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);}
+.gr:last-child{border-bottom:none;}
+.gn{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);width:140px;flex-shrink:0;}
+.gbt{flex:1;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.gbf{height:100%;border-radius:2px;transition:width .5s ease;}
+.gv{font-size:10.5px;color:var(--text-dim);width:36px;text-align:right;}
+.gh{font-size:8px;letter-spacing:.13em;padding:2px 5px;border-radius:1px;color:var(--rose);background:var(--rose-dim);border:1px solid rgba(196,124,110,.3);}
+.gs{font-size:8px;letter-spacing:.13em;padding:2px 5px;border-radius:1px;color:var(--sage);background:var(--sage-dim);border:1px solid rgba(122,158,126,.3);}
+
+/* ── PLACEMENT ── */
+.pcb{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:14px;}
+.pcbl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:9px;}
+.slog{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:12px;font-size:10px;line-height:1.8;color:var(--text-dim);max-height:160px;overflow-y:auto;margin-bottom:20px;}
+.le{display:flex;gap:7px;padding:2px 0;border-bottom:1px solid var(--border);}
+.lid{color:var(--gold);width:46px;flex-shrink:0;}
+.lang{color:var(--sage);width:54px;}
+.lrad{color:var(--rose);width:54px;}
+.lrol{color:var(--lav);flex:1;}
+.ldep{color:var(--text-muted);}
+
+/* ── INVENTORY ── */
+.inv-t{width:100%;border-collapse:collapse;margin-bottom:20px;}
+.inv-t th{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface);}
+.inv-t td{font-size:11px;color:var(--text-dim);padding:8px 10px;border-bottom:1px solid var(--border);transition:background .12s;}
+.inv-t tr:hover td{background:var(--gold-glow);}
+.iname{color:var(--text);font-size:11.5px;}
+.irole{font-size:8px;letter-spacing:.13em;text-transform:uppercase;padding:2px 6px;border-radius:1px;}
+.rf{background:var(--rose-dim);color:var(--rose);border:1px solid rgba(196,124,110,.3);}
+.rs{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,169,110,.3);}
+.rfi{background:var(--sage-dim);color:var(--sage);border:1px solid rgba(122,158,126,.3);}
+.rg{background:rgba(42,37,32,.8);color:var(--text-muted);border:1px solid var(--border);}
+.ibar{display:flex;align-items:center;gap:5px;}
+.ibt{width:55px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.ibf{height:100%;border-radius:2px;background:var(--gold);}
+.ic{font-size:9px;letter-spacing:.1em;text-transform:uppercase;}
+.ich{color:var(--sage);}.icm{color:var(--gold);}.icl{color:var(--rose);}
+.fbtn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:var(--fm);font-size:9px;letter-spacing:.16em;padding:5px 11px;cursor:pointer;text-transform:uppercase;transition:all .15s;border-radius:2px;}
+.fbtn:hover{border-color:var(--border2);color:var(--text);}
+.fbtn.active{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.frow{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+.frow:last-child{border-bottom:none;}
+.ff{font-size:11px;color:var(--text);flex:1;}
+.fscore{font-family:var(--fd);font-size:18px;font-weight:300;}
+.fsh{color:var(--sage);}.fsm{color:var(--gold);}.fsl{color:var(--rose);}
+.fbt{width:70px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.fbf{height:100%;border-radius:2px;}
+
+/* ══ PHASE 3 STYLES ══ */
+
+/* ABC Lab */
+.abc-layout{display:flex;gap:14px;margin-bottom:22px;}
+.abc-left{flex:1;display:flex;flex-direction:column;gap:12px;}
+.abc-right{width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+.abc-canvas-box{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.abc-lineage{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:14px;flex:1;}
+.lin-node{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface);border:1px solid var(--border);border-radius:2px;font-size:10px;color:var(--text-dim);cursor:pointer;transition:all .15s;}
+.lin-node:hover{border-color:var(--gold);color:var(--gold);}
+.lin-node.active{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.lin-node.parent{border-color:var(--sage);color:var(--sage);background:var(--sage-dim);}
+.lin-arrow{color:var(--text-muted);font-size:11px;margin:0 2px;}
+.abc-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.abc-metric{background:var(--surface2);border:1px solid var(--border);border-radius:2px;padding:10px 12px;}
+.abc-ml{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;}
+.abc-mv{font-family:var(--fd);font-size:22px;font-weight:300;color:var(--gold);}
+.abc-ms{font-size:10px;color:var(--text-dim);margin-top:3px;}
+.mutation-log{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:12px;max-height:140px;overflow-y:auto;}
+.mut-entry{display:flex;gap:8px;padding:3px 0;border-bottom:1px solid var(--border);font-size:10px;}
+.mut-entry:last-child{border-bottom:none;}
+.mut-gene{color:var(--gold);width:120px;flex-shrink:0;}
+.mut-from{color:var(--rose);}
+.mut-arr{color:var(--text-muted);margin:0 4px;}
+.mut-to{color:var(--sage);}
+.mut-type{color:var(--lav);margin-left:auto;font-size:9px;letter-spacing:.1em;}
+
+/* Genome Dashboard */
+.genome-layout{display:flex;gap:14px;margin-bottom:22px;}
+.genome-tree{width:280px;flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:14px;}
+.genome-detail{flex:1;display:flex;flex-direction:column;gap:12px;}
+.tree-node{padding:8px 12px;border:1px solid var(--border);border-radius:2px;cursor:pointer;transition:all .15s;margin-bottom:6px;position:relative;}
+.tree-node:hover{border-color:var(--gold);background:var(--gold-glow);}
+.tree-node.active{border-color:var(--gold);background:var(--gold-dim);}
+.tree-node.child{margin-left:22px;}
+.tree-node.child::before{content:'└';position:absolute;left:-16px;top:8px;color:var(--text-muted);font-size:11px;}
+.tree-node.grandchild{margin-left:44px;}
+.tree-node.grandchild::before{content:'└';position:absolute;left:-16px;top:8px;color:var(--text-muted);font-size:11px;}
+.tn-name{font-family:var(--fd);font-size:14px;font-weight:400;color:var(--text);margin-bottom:2px;}
+.tn-id{font-size:9px;letter-spacing:.15em;color:var(--text-muted);}
+.tn-score{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--fd);font-size:16px;font-weight:300;color:var(--gold);}
+.genome-radar-box{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:16px;display:flex;flex-direction:column;align-items:center;}
+.genome-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.gs2{background:var(--surface2);border:1px solid var(--border);border-radius:2px;padding:10px 12px;}
+.gs2l{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.gs2v{font-family:var(--fd);font-size:20px;font-weight:300;color:var(--gold);}
+.changed-genes{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:14px;}
+.cg-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:10.5px;}
+.cg-row:last-child{border-bottom:none;}
+.cg-gene{color:var(--text-dim);width:130px;flex-shrink:0;}
+.cg-from{color:var(--rose);}
+.cg-to{color:var(--sage);}
+.cg-delta{margin-left:auto;}
+.delta-up{color:var(--sage);font-size:10px;}
+.delta-dn{color:var(--rose);font-size:10px;}
+
+/* Output Studio */
+.output-layout{display:flex;gap:14px;margin-bottom:22px;}
+.output-left{flex:1;display:flex;flex-direction:column;gap:12px;}
+.output-right{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+.output-preview{background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.cut-list{background:var(--surface2);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.cl-head{display:grid;grid-template-columns:1fr 60px 80px 80px;gap:0;background:var(--surface);border-bottom:1px solid var(--border);}
+.cl-head div{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);padding:7px 12px;}
+.cl-row{display:grid;grid-template-columns:1fr 60px 80px 80px;gap:0;border-bottom:1px solid var(--border);transition:background .12s;}
+.cl-row:last-child{border-bottom:none;}
+.cl-row:hover{background:var(--gold-glow);}
+.cl-row div{font-size:11px;color:var(--text-dim);padding:8px 12px;}
+.cl-name{color:var(--text);}
+.cl-role{font-size:8px;letter-spacing:.1em;text-transform:uppercase;}
+.build-steps{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:14px;}
+.bs-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-dim);align-items:flex-start;}
+.bs-row:last-child{border-bottom:none;}
+.bs-num{width:20px;height:20px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text-muted);flex-shrink:0;margin-top:1px;}
+.bs-num.done{border-color:var(--sage);color:var(--sage);background:var(--sage-dim);}
+.bs-txt{flex:1;line-height:1.65;}
+.export-btns{display:flex;flex-direction:column;gap:8px;}
+.exp-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:var(--fm);font-size:10px;letter-spacing:.13em;padding:10px 14px;cursor:pointer;text-transform:uppercase;transition:all .15s;border-radius:2px;display:flex;align-items:center;gap:8px;width:100%;}
+.exp-btn:hover{border-color:var(--gold);color:var(--gold);}
+.exp-btn.active{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
+.exp-icon{font-size:14px;opacity:.7;}
+.assembly-notes{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:14px;font-size:11px;color:var(--text-dim);line-height:1.75;}
+.an-title{font-family:var(--fd);font-size:14px;font-weight:400;color:var(--text);margin-bottom:8px;}
+
+@media(max-width:960px){
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .fg,.et{grid-template-columns:repeat(2,1fr);}
+  .dna-rg,.abc-metrics,.genome-stats{grid-template-columns:1fr;}
+  .abc-layout,.genome-layout,.output-layout{flex-direction:column;}
+  .abc-right,.genome-tree,.output-right{width:100%;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="logo-label">Evercrafted</span>
+    <span class="logo-sub">System Console · Full Stack</span>
+  </div>
+  <div class="sidebar-section">
+    <div class="ssl">Phase 1</div>
+    <div class="ni active" onclick="nav('dashboard',this)"><span class="ni-icon">◈</span>Dashboard<span class="pb pb-live">Live</span></div>
+    <div class="ni" onclick="nav('formula',this)"><span class="ni-icon">⬡</span>Formula Explorer<span class="pb pb-live">Live</span></div>
+    <div class="ni" onclick="nav('emotion',this)"><span class="ni-icon">◉</span>Emotion Space<span class="pb pb-live">Live</span></div>
+    <div class="ni" onclick="nav('blueprint',this)"><span class="ni-icon">⬜</span>Blueprint Inspector<span class="pb pb-live">Live</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="ssl">Phase 2</div>
+    <div class="ni" onclick="nav('dna',this)"><span class="ni-icon">◧</span>DNA Registry<span class="pb pb-p2">P2</span></div>
+    <div class="ni" onclick="nav('placement',this)"><span class="ni-icon">⊹</span>Placement Debugger<span class="pb pb-p2">P2</span></div>
+    <div class="ni" onclick="nav('inventory',this)"><span class="ni-icon">▦</span>Inventory Analyzer<span class="pb pb-p2">P2</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="ssl">Phase 3</div>
+    <div class="ni" onclick="nav('abc',this)"><span class="ni-icon">⟳</span>ABC Lab<span class="pb pb-p3">P3</span></div>
+    <div class="ni" onclick="nav('genome',this)"><span class="ni-icon">◬</span>Genome Dashboard<span class="pb pb-p3">P3</span></div>
+    <div class="ni" onclick="nav('output',this)"><span class="ni-icon">⊞</span>Output Studio<span class="pb pb-p3">P3</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="ssl">Phase 4 — Locked</div>
+    <div class="ni locked"><span class="ni-icon">⬡</span>API Center<span class="pb pb-p4">P4</span></div>
+    <div class="ni locked"><span class="ni-icon">◈</span>Schema Registry<span class="pb pb-p4">P4</span></div>
+    <div class="ni locked"><span class="ni-icon">◫</span>Architecture Map<span class="pb pb-p4">P4</span></div>
+  </div>
+  <div class="sidebar-footer">
+    <span class="sdot"></span><span class="stxt">Console v3.0 · P1–P3 Live</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="topbar">
+  <div class="topbar-title" id="topbarTitle">System Dashboard</div>
+  <div class="tm">
+    <span class="mtag hl">EC_CANON_V1</span>
+    <span class="mtag" id="clk">—</span>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="panel active" id="panel-dashboard">
+  <div class="sh">Platform State</div>
+  <div class="g4">
+    <div class="card"><div class="clbl">Console Modules</div><div class="cval">10</div><div class="csub">P1 + P2 + P3 live</div></div>
+    <div class="card"><div class="clbl">Composition Formulas</div><div class="cval">12</div><div class="csub">All locked & canonical</div></div>
+    <div class="card"><div class="clbl">DNA Traits</div><div class="cval">12</div><div class="csub">Hard + soft boundaries</div></div>
+    <div class="card"><div class="clbl">ABC Mutations</div><div class="cval" id="dbMutations">0</div><div class="csub">Tracked this session</div></div>
+  </div>
+  <div class="sh">Module Status</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:22px;" id="dashModules"></div>
+  <div class="sh">Architecture Spine</div>
+  <div style="display:flex;gap:0;align-items:center;flex-wrap:wrap;margin-bottom:22px;" id="spineRow"></div>
+  <div class="sh">Canon Rule</div>
+  <div class="card">
+    <div class="clbl">Core Philosophy</div>
+    <div style="font-family:var(--fd);font-size:19px;font-weight:300;color:var(--text);margin:9px 0 6px;letter-spacing:.04em;">AI interprets. Geometry places.</div>
+    <div style="font-size:11px;color:var(--text-dim);line-height:1.75;">AI handles memory interpretation, style direction, and variant evolution. Stem placement is entirely deterministic — governed by polar coordinates and composition formula rules. This is Evercrafted's primary technical moat.</div>
+  </div>
+</div>
+
+<!-- ══ FORMULA EXPLORER ══ -->
+<div class="panel" id="panel-formula">
+  <div class="sh">12 Canonical Composition Formulas</div>
+  <div class="fg" id="formulaGrid"></div>
+  <div class="sh">Formula Detail</div>
+  <div style="display:flex;gap:13px;margin-bottom:22px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:18px;flex:1;display:flex;align-items:center;justify-content:center;min-height:250px;"><canvas id="formulaCanvas" width="250" height="250"></canvas></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:18px;flex:1;">
+      <div style="font-family:var(--fd);font-size:20px;font-weight:300;color:var(--gold);margin-bottom:12px;" id="fdName">Select a Formula</div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.7;margin-bottom:16px;" id="fdDesc">Click any formula card to inspect its geometry and DNA recommendations.</div>
+      <div id="fdRows"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EMOTION SPACE ══ -->
+<div class="panel" id="panel-emotion">
+  <div class="sh">Valence–Arousal Emotion Map</div>
+  <div style="display:flex;justify-content:center;margin-bottom:22px;"><canvas id="emotionCanvas" width="480" height="480" style="cursor:crosshair;border:1px solid var(--border);border-radius:3px;max-width:100%;"></canvas></div>
+  <div class="sh">Emotional Readout</div>
+  <div class="etbar">
+    <div class="ri"><div class="rl">Valence</div><div class="rv" id="valV">—</div><div style="font-size:11px;color:var(--text-dim);" id="valTxt">Hover map</div></div>
+    <div class="ri"><div class="rl">Arousal</div><div class="rv" id="aroV">—</div><div style="font-size:11px;color:var(--text-dim);" id="aroTxt"></div></div>
+    <div class="ri"><div class="rl">Quadrant</div><div style="font-family:var(--fd);font-size:18px;font-weight:300;color:var(--text);margin-top:3px;" id="emoLabel">—</div></div>
+    <div class="ri" style="flex:1;"><div class="rl">Design Direction</div><div style="font-size:11px;color:var(--text-dim);line-height:1.7;margin-top:3px;" id="emoDir">Move cursor on the emotion map above.</div></div>
+  </div>
+  <div class="sh">Derived Design Traits</div>
+  <div class="et">
+    <div class="tbar"><div class="tn">Saturation</div><div class="bt"><div class="bf" id="trSat" style="width:50%"></div></div><div class="tv" id="trSatV">—</div></div>
+    <div class="tbar"><div class="tn">Density</div><div class="bt"><div class="bf" id="trDen" style="width:50%"></div></div><div class="tv" id="trDenV">—</div></div>
+    <div class="tbar"><div class="tn">Contrast</div><div class="bt"><div class="bf" id="trCon" style="width:50%"></div></div><div class="tv" id="trConV">—</div></div>
+    <div class="tbar"><div class="tn">Symmetry</div><div class="bt"><div class="bf" id="trSym" style="width:50%"></div></div><div class="tv" id="trSymV">—</div></div>
+    <div class="tbar"><div class="tn">Accent Intensity</div><div class="bt"><div class="bf" id="trAcc" style="width:50%"></div></div><div class="tv" id="trAccV">—</div></div>
+    <div class="tbar"><div class="tn">Material Softness</div><div class="bt"><div class="bf" id="trSof" style="width:50%"></div></div><div class="tv" id="trSofV">—</div></div>
+  </div>
+</div>
+
+<!-- ══ BLUEPRINT INSPECTOR ══ -->
+<div class="panel" id="panel-blueprint">
+  <div class="sh">Blueprint Generator</div>
+  <div class="row">
+    <select class="sel" id="bpF"><option value="">— Formula —</option><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Laddered Rhythm</option><option>Radial Burst</option><option>Bow Anchor</option><option>Inventory Salvage</option></select>
+    <select class="sel" id="bpE"><option value="">— Emotion —</option><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+    <select class="sel" id="bpS"><option value="">— Style —</option><option>Organic Drape</option><option>Editorial Restraint</option><option>Lush Garden</option><option>Architectural</option><option>Woodland</option></select>
+    <button class="btn primary" onclick="generateBP()">⊕ Generate</button>
+    <button class="btn" onclick="sendToOutput()">→ Output Studio</button>
+  </div>
+  <div class="sh">Blueprint JSON</div>
+  <div class="jblock" id="bpJson"><button class="cpbtn" onclick="copyBP()">Copy</button><div id="jsonContent" style="white-space:pre;">Generate a blueprint above to inspect the canonical object.</div></div>
+  <div class="sh">Wreath DNA Profile</div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:22px;" id="dnaGrid"></div>
+</div>
+
+<!-- ══ DNA REGISTRY ══ -->
+<div class="panel" id="panel-dna">
+  <div class="sh">Wreath DNA Registry</div>
+  <div class="dna-rg" id="dnaRegGrid"></div>
+  <div class="sh">DNA Inspector</div>
+  <div style="display:flex;gap:13px;margin-bottom:22px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><canvas id="radarCanvas" width="240" height="240"></canvas></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:16px;flex:1;" id="dnaInspPanel">
+      <div style="font-family:var(--fd);font-size:19px;font-weight:300;color:var(--gold);margin-bottom:3px;" id="dnaInspName">Select a DNA Profile</div>
+      <div style="font-size:9px;letter-spacing:.2em;color:var(--text-muted);text-transform:uppercase;margin-bottom:14px;" id="dnaInspForm">—</div>
+      <div id="dnaGeneRows"></div>
+    </div>
+  </div>
+  <div class="sh">Boundary Classification</div>
+  <div class="g2">
+    <div class="card"><div class="clbl">Hard Boundaries</div><div style="font-size:11px;color:var(--text-dim);line-height:1.8;margin-top:7px;">Identity-defining traits — cannot be mutated by ABC:<br><span style="color:var(--rose)">style_signature · ec_certified · formula_index · brand_alignment</span></div></div>
+    <div class="card"><div class="clbl">Soft Boundaries</div><div style="font-size:11px;color:var(--text-dim);line-height:1.8;margin-top:7px;">Traits ABC can evolve within defined ranges:<br><span style="color:var(--sage)">cluster_count · density_profile · greenery_ratio · silence_arc · focal_depth</span></div></div>
+  </div>
+</div>
+
+<!-- ══ PLACEMENT DEBUGGER ══ -->
+<div class="panel" id="panel-placement">
+  <div class="sh">Placement Engine Debugger</div>
+  <div style="display:flex;gap:13px;margin-bottom:22px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:13px;flex-shrink:0;"><canvas id="placementCanvas" width="360" height="360"></canvas></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="pcb"><div class="pcbl">Composition</div>
+        <div class="slrow"><div class="sllbl">Stem Count</div><input type="range" id="slSC" min="6" max="48" value="24" oninput="runPlacement()"><div class="slval" id="slSCV">24</div></div>
+        <div class="slrow"><div class="sllbl">Cluster Count</div><input type="range" id="slCC" min="1" max="9" value="4" oninput="runPlacement()"><div class="slval" id="slCCV">4</div></div>
+        <div class="slrow"><div class="sllbl">Spread °</div><input type="range" id="slSP" min="10" max="180" value="60" oninput="runPlacement()"><div class="slval" id="slSPV">60</div></div>
+        <div class="slrow"><div class="sllbl">Silence Arc °</div><input type="range" id="slSA" min="0" max="120" value="30" oninput="runPlacement()"><div class="slval" id="slSAV">30</div></div>
+      </div>
+      <div class="pcb"><div class="pcbl">Depth & Role</div>
+        <div class="slrow"><div class="sllbl">Focal Depth</div><input type="range" id="slFD" min="1" max="10" value="5" oninput="runPlacement()"><div class="slval" id="slFDV">0.5</div></div>
+        <div class="slrow"><div class="sllbl">Greenery Ratio</div><input type="range" id="slGR" min="0" max="100" value="40" oninput="runPlacement()"><div class="slval" id="slGRV">0.40</div></div>
+        <div class="slrow"><div class="sllbl">Focal Ratio</div><input type="range" id="slFR" min="0" max="40" value="15" oninput="runPlacement()"><div class="slval" id="slFRV">0.15</div></div>
+      </div>
+      <div class="pcb"><div class="pcbl">Formula</div>
+        <select class="sel" id="plF" onchange="runPlacement()" style="width:100%;"><option>Crescent</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option><option>Open Arc</option><option>Full Halo</option><option>Split Garden</option><option>Focal Burst</option><option>Radial Burst</option></select>
+      </div>
+      <button class="btn primary" onclick="runPlacement()" style="width:100%;">⟳ Re-solve Placement</button>
+    </div>
+  </div>
+  <div class="sh">Stem Log</div>
+  <div class="slog">
+    <div style="display:flex;gap:7px;padding:2px 0;margin-bottom:3px;border-bottom:1px solid var(--border2);">
+      <div style="color:var(--text-muted);font-size:8px;letter-spacing:.18em;width:46px;">ID</div>
+      <div style="color:var(--text-muted);font-size:8px;letter-spacing:.18em;width:54px;">ANGLE°</div>
+      <div style="color:var(--text-muted);font-size:8px;letter-spacing:.18em;width:54px;">RADIUS</div>
+      <div style="color:var(--text-muted);font-size:8px;letter-spacing:.18em;flex:1;">ROLE</div>
+      <div style="color:var(--text-muted);font-size:8px;letter-spacing:.18em;">DEPTH</div>
+    </div>
+    <div id="stemLog"></div>
+  </div>
+</div>
+
+<!-- ══ INVENTORY ANALYZER ══ -->
+<div class="panel" id="panel-inventory">
+  <div class="sh">Inventory Summary</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:22px;" id="invStats"></div>
+  <div class="sh">Inventory Items</div>
+  <div class="row">
+    <button class="fbtn active" onclick="filterInv('all',this)">All</button>
+    <button class="fbtn" onclick="filterInv('focal',this)">Focal</button>
+    <button class="fbtn" onclick="filterInv('supporting',this)">Supporting</button>
+    <button class="fbtn" onclick="filterInv('filler',this)">Filler</button>
+    <button class="fbtn" onclick="filterInv('greenery',this)">Greenery</button>
+    <button class="fbtn" onclick="filterInv('low',this)">⚠ Low Stock</button>
+  </div>
+  <table class="inv-t"><thead><tr><th>Item</th><th>Role</th><th>Color</th><th>Stock</th><th>Formulas</th><th>Compat</th></tr></thead><tbody id="invBody"></tbody></table>
+  <div class="sh">Formula Feasibility</div>
+  <div class="card" id="feasCard"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 3: ABC LAB
+══════════════════════════════════════════════ -->
+<div class="panel" id="panel-abc">
+  <div class="sh">Adaptive Blueprint Composer — ABC Lab</div>
+  <div class="abc-layout">
+    <div class="abc-left">
+      <div class="row" style="margin-bottom:0;">
+        <select class="sel" id="abcFormula"><option>Crescent</option><option>Full Halo</option><option>Focal Burst</option><option>Double Echo</option><option>Bottom Heavy</option><option>Side Sweep</option></select>
+        <select class="sel" id="abcEmotion"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+        <button class="btn primary" onclick="abcSeed()">⊕ Seed Blueprint</button>
+        <button class="btn sage" onclick="abcMutate()">⟳ Mutate DNA</button>
+        <button class="btn" onclick="abcReset()">↺ Reset</button>
+      </div>
+      <div class="abc-metrics" id="abcMetrics">
+        <div class="abc-metric"><div class="abc-ml">Emotion Fit</div><div class="abc-mv" id="abcEF">—</div><div class="abc-ms">Target alignment</div></div>
+        <div class="abc-metric"><div class="abc-ml">DNA Cohesion</div><div class="abc-mv" id="abcDC">—</div><div class="abc-ms">Brand integrity</div></div>
+        <div class="abc-metric"><div class="abc-ml">Generation</div><div class="abc-mv" id="abcGen">0</div><div class="abc-ms">Evolution depth</div></div>
+        <div class="abc-metric"><div class="abc-ml">Brand Alignment</div><div class="abc-mv" id="abcBA">—</div><div class="abc-ms">EC canon fit</div></div>
+        <div class="abc-metric"><div class="abc-ml">Mutations</div><div class="abc-mv" id="abcMC">0</div><div class="abc-ms">Total this session</div></div>
+        <div class="abc-metric"><div class="abc-ml">Fitness Score</div><div class="abc-mv" id="abcFS">—</div><div class="abc-ms">Composite score</div></div>
+      </div>
+      <div class="sh" style="margin-top:4px;">Mutation Log</div>
+      <div class="mutation-log" id="mutationLog"><div style="color:var(--text-muted);font-size:10px;">Seed a blueprint, then mutate to track gene changes.</div></div>
+      <div class="sh">Blueprint DNA — Current State</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;" id="abcDNABars"></div>
+    </div>
+    <div class="abc-right">
+      <div class="abc-canvas-box">
+        <div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);align-self:flex-start;">Live Wreath Preview</div>
+        <canvas id="abcCanvas" width="270" height="270"></canvas>
+      </div>
+      <div class="abc-lineage">
+        <div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:9px;">Blueprint Lineage</div>
+        <div id="abcLineage" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;">
+          <div style="color:var(--text-muted);font-size:10px;">No lineage yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 3: GENOME DASHBOARD
+══════════════════════════════════════════════ -->
+<div class="panel" id="panel-genome">
+  <div class="sh">Wreath Genome Dashboard</div>
+  <div class="genome-layout">
+    <div class="genome-tree">
+      <div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">Blueprint Family Tree</div>
+      <div id="genomeTree"></div>
+    </div>
+    <div class="genome-detail">
+      <div class="genome-radar-box">
+        <div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;align-self:flex-start;">DNA Radar — Selected Blueprint</div>
+        <canvas id="genomeRadar" width="340" height="240"></canvas>
+      </div>
+      <div class="sh">Genome Statistics</div>
+      <div class="genome-stats" id="genomeStats"></div>
+      <div class="sh">Changed Genes vs. Parent</div>
+      <div class="changed-genes" id="changedGenes">
+        <div style="color:var(--text-muted);font-size:11px;padding:8px 0;">Select a blueprint in the family tree to inspect genetic drift from parent.</div>
+      </div>
+    </div>
+  </div>
+  <div class="sh">Adaptive Status</div>
+  <div class="g3" id="adaptiveStatus"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PHASE 3: OUTPUT STUDIO
+══════════════════════════════════════════════ -->
+<div class="panel" id="panel-output">
+  <div class="sh">Blueprint Output Studio</div>
+  <div class="output-layout">
+    <div class="output-left">
+      <div class="row" style="margin-bottom:4px;">
+        <select class="sel" id="outFormula"><option>Crescent</option><option>Full Halo</option><option>Focal Burst</option><option>Double Echo</option><option>Bottom Heavy</option><option>Radial Burst</option></select>
+        <select class="sel" id="outEmotion"><option>Cozy & Calm</option><option>Festive & Bright</option><option>Dramatic Tension</option><option>Vintage Melancholy</option></select>
+        <button class="btn primary" onclick="generateOutput()">⊕ Compile Output</button>
+      </div>
+      <div class="sh">Cut List</div>
+      <div class="cut-list" id="cutList">
+        <div class="cl-head"><div>Item</div><div>Count</div><div>Role</div><div>Length</div></div>
+        <div id="cutListBody" style="padding:10px;color:var(--text-muted);font-size:11px;">Generate a blueprint to see the cut list.</div>
+      </div>
+      <div class="sh">Assembly Build Steps</div>
+      <div class="build-steps" id="buildSteps">
+        <div style="color:var(--text-muted);font-size:11px;padding:6px 0;">Generate a blueprint to see assembly instructions.</div>
+      </div>
+    </div>
+    <div class="output-right">
+      <div class="output-preview">
+        <div style="font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);align-self:flex-start;">Wreath Preview</div>
+        <canvas id="outputCanvas" width="260" height="260"></canvas>
+      </div>
+      <div class="assembly-notes" id="assemblyNotes">
+        <div class="an-title">Assembly Notes</div>
+        <div style="color:var(--text-muted);font-size:11px;">Generate a blueprint to see assembly notes.</div>
+      </div>
+      <div class="sh" style="margin-top:4px;">Export</div>
+      <div class="export-btns">
+        <button class="exp-btn" onclick="exportOutput('json')" id="expJSON"><span class="exp-icon">{ }</span>Export Blueprint JSON</button>
+        <button class="exp-btn" onclick="exportOutput('csv')" id="expCSV"><span class="exp-icon">≡</span>Export Cut List CSV</button>
+        <button class="exp-btn" onclick="exportOutput('pdf')" id="expPDF"><span class="exp-icon">□</span>Export Build Guide PDF</button>
+        <button class="exp-btn" onclick="exportOutput('mj')" id="expMJ"><span class="exp-icon">✦</span>Export Midjourney Prompt</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── CLOCK ──
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,10000);
+
+// ── NAV ──
+const TITLES={dashboard:'System Dashboard',formula:'Formula Explorer',emotion:'Emotion Space Explorer',blueprint:'Blueprint Inspector',dna:'Wreath DNA Registry',placement:'Placement Debugger',inventory:'Inventory Analyzer',abc:'ABC Lab — Adaptive Blueprint Composer',genome:'Wreath Genome Dashboard',output:'Blueprint Output Studio'};
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbarTitle').textContent=TITLES[id];
+  if(id==='emotion')initEmotion();
+  if(id==='placement')runPlacement();
+  if(id==='genome')buildGenomeTree();
+}
+
+// ── SPINE ──
+(()=>{
+  ['Emotion Space','Formula Engine','Wreath DNA','Placement Engine','Blueprint Engine','Genome Dashboard','Blueprint Outputs']
+  .forEach((s,i,a)=>{
+    const d=document.createElement('div');d.style.cssText='display:flex;align-items:center;';
+    d.innerHTML=`<div style="background:var(--surface2);border:1px solid var(--border);padding:6px 11px;font-size:9px;letter-spacing:.13em;color:var(--text-dim);white-space:nowrap;border-radius:2px;">${s}</div>${i<a.length-1?'<span style="color:var(--gold);padding:0 4px;font-size:10px;opacity:.4;">→</span>':''}`;
+    document.getElementById('spineRow').appendChild(d);
+  });
+})();
+
+const API_BASE = "http://localhost:8787";
+
+// ── DASHBOARD MODULES ──
+(()=>{
+  const mods=[
+    {n:'Memory Weaver',p:'Phase 1',s:'dev',t:'dev'},
+    {n:'Inventory Weaver',p:'Phase 1',s:'dev',t:'dev'},
+    {n:'Design Studio',p:'Phase 1',s:'dev',t:'dev'},
+    {n:'Adaptive Blueprint Composer',p:'Phase 3',s:'p3',t:'p3'},
+    {n:'Wreath Genome Dashboard',p:'Phase 3',s:'p3',t:'p3'},
+    {n:'Blueprint Output Studio',p:'Phase 3',s:'p3',t:'p3'},
+  ];
+  const cls={dev:['st-dev','t-dev','In Dev'],p3:['st-p3','t-p3','P3 Live'],plan:['st-plan','t-plan','Planned']};
+  document.getElementById('dashModules').innerHTML=mods.map(m=>{
+    const[sc,tc,tl]=cls[m.s]||cls.plan;
+    return`<div class="mrow"><div class="mst ${sc}"></div><div style="font-size:11.5px;color:var(--text);flex:1;">${m.n}</div><div style="font-size:10px;color:var(--text-muted);letter-spacing:.12em;">${m.p}</div><div class="mtag2 ${tc}">${tl}</div></div>`;
+  }).join('');
+})();
+
+// ══════ FORMULA EXPLORER ══════
+const DEFAULT_FORMULAS=[
+  {name:'Crescent',desc:'Asymmetric arc along lower curve. Defines clear negative space at top.',style:'Organic',focal:'Low-Center',density:'Medium',dna:['asymmetry','negative space arc','low focal']},
+  {name:'Double Echo',desc:'Two mirrored clusters from opposite quadrants creating visual resonance.',style:'Structured',focal:'Dual',density:'High',dna:['bilateral rhythm','echo clustering','weighted symmetry']},
+  {name:'Bottom Heavy',desc:'Mass concentrated below center. Strong grounded visual weight.',style:'Grounded',focal:'Bottom',density:'High',dna:['gravity pull','base anchoring','open crown']},
+  {name:'Side Sweep',desc:'Directional movement across one axis. Trailing greenery extends beyond the base.',style:'Dynamic',focal:'Side',density:'Medium',dna:['directional flow','trailing gesture','single axis']},
+  {name:'Open Arc',desc:'Structured arc with intentional silence at opening. Edited, architectural.',style:'Editorial',focal:'Center',density:'Low',dna:['silence arc','architectural restraint','open negative']},
+  {name:'Full Halo',desc:'Even distribution of mass around entire form. Complete circle expression.',style:'Classic',focal:'Radial',density:'Full',dna:['full coverage','radial balance','uniform rhythm']},
+  {name:'Split Garden',desc:'Two distinct material sections divided by a silence zone. Botanical contrast.',style:'Botanical',focal:'Split',density:'High',dna:['zone division','material contrast','mid silence']},
+  {name:'Focal Burst',desc:'Single explosive focal point radiating outward from a defined center.',style:'Dramatic',focal:'Single',density:'High',dna:['radial burst','focal dominance','outward energy']},
+  {name:'Laddered Rhythm',desc:'Sequential staggered placements creating cadence along one quadrant.',style:'Rhythmic',focal:'Staggered',density:'Medium',dna:['sequential beat','stagger depth','linear cadence']},
+  {name:'Radial Burst',desc:'Geometric radiating stems from center. Mathematical, structured, precise.',style:'Geometric',focal:'Center',density:'Medium',dna:['polar geometry','equal radius','angular precision']},
+  {name:'Bow Anchor',desc:'Accent element serves as structural anchor at base or focal point.',style:'Decorative',focal:'Bow',density:'Medium',dna:['bow anchor','ribbon vector','accent frame']},
+  {name:'Inventory Salvage',desc:'Adaptive composition optimized for available materials. No waste.',style:'Adaptive',focal:'Variable',density:'Variable',dna:['inventory-fit','substitution logic','adaptive layout']},
+];
+let FORMULAS=[];
+
+function populateFormulaSelect(id, withPlaceholder){
+  const sel=document.getElementById(id);
+  if(!sel) return;
+  const current=sel.value;
+  const options=(withPlaceholder?'<option value="">— Formula —</option>':'')+
+    FORMULAS.map(f=>`<option>${f.name}</option>`).join('');
+  sel.innerHTML=options;
+  if(current && FORMULAS.some(f=>f.name===current)) sel.value=current;
+  if(!sel.value && FORMULAS.length) sel.value=FORMULAS[0].name;
+}
+
+async function loadFormulas(){
+  try{
+    const res=await fetch(`${API_BASE}/formulas`);
+    const json=await res.json();
+    if(res.ok && json.ok && Array.isArray(json.formulas)) FORMULAS=json.formulas;
+    else FORMULAS=DEFAULT_FORMULAS;
+  }catch(e){FORMULAS=DEFAULT_FORMULAS;}
+
+  populateFormulaSelect('bpF', true);
+  populateFormulaSelect('plF', false);
+  populateFormulaSelect('abcFormula', false);
+  populateFormulaSelect('outFormula', false);
+}
+
+function initFormulaGrid(){
+  const g=document.getElementById('formulaGrid');
+  if(!g) return;
+  g.innerHTML='';
+  FORMULAS.forEach((f,i)=>{
+    const c=document.createElement('div');c.className='fc';
+    c.innerHTML=`<div class="fnum">F${String(i+1).padStart(2,'0')}</div><div class="fn">${f.name}</div><div class="fd2">${f.desc}</div>`;
+    c.onclick=()=>{document.querySelectorAll('.fc').forEach(x=>x.classList.remove('sel2'));c.classList.add('sel2');selectFormula(i);};
+    g.appendChild(c);
+  });
+}
+function selectFormula(i){
+  const f=FORMULAS[i];
+  document.getElementById('fdName').textContent=f.name;
+  document.getElementById('fdDesc').textContent=f.desc;
+  document.getElementById('fdRows').innerHTML=[['Style',f.style],['Focal',f.focal],['Density',f.density],['DNA Signals',f.dna.join(' · ')],['Index',`F${String(i+1).padStart(2,'0')}`]].map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${v}</div></div>`).join('');
+  drawFormulaPreview(i);
+}
+function drawFormulaPreview(idx){
+  const c=document.getElementById('formulaCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=90;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=15;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(201,169,110,.15)';ctx.lineWidth=1;ctx.stroke();
+  const gold='#c9a96e',sage='#7a9e7e',rose='#c47c6e';
+  function s(a,r,l,col,w=1.6){const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a),ex=cx+(r+l)*Math.cos(a),ey=cy+(r+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w+.6,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+  function cl(sa,ea,n,l,col){for(let i=0;i<=n;i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.1;s(a,R-6,l+Math.random()*9,col);}}
+  [[()=>cl(Math.PI*.3,Math.PI*1.7,16,18,gold)],[()=>{cl(-.4,.4,7,20,gold);cl(Math.PI-.4,Math.PI+.4,7,20,sage);}],[()=>{cl(Math.PI*.1,Math.PI*.9,18,22,gold);cl(Math.PI*.3,Math.PI*.7,8,12,sage);}],[()=>{cl(-.6,.6,10,20,gold);s(0,R,35,rose,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,12,18,gold);cl(Math.PI*.95,Math.PI*1.85,9,12,sage);}],[()=>cl(0,Math.PI*2,26,16,gold)],[()=>{cl(Math.PI*.1,Math.PI*.85,12,20,gold);cl(Math.PI*1.1,Math.PI*1.85,12,20,sage);}],[()=>{for(let i=0;i<14;i++){const a=(i/14)*Math.PI*2;s(a,R-8,25+Math.random()*14,i%3===0?rose:gold,1.8);}}],[()=>{for(let i=0;i<9;i++){const a=-.3+i*.18;s(a,R-4,12+i*2.2,i%2===0?gold:sage,1.6);}}],[()=>{for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;s(a,R-5,20,gold,1.8);}}],[()=>{cl(Math.PI*.6,Math.PI*1.4,14,16,gold);ctx.beginPath();ctx.ellipse(cx,cy+R,14,8,0,0,Math.PI*2);ctx.strokeStyle=rose;ctx.lineWidth=2;ctx.stroke();}],[()=>{const cs=[gold,sage,rose];for(let i=0;i<18;i++){const a=Math.random()*Math.PI*2;s(a,R-7,9+Math.random()*20,cs[Math.floor(Math.random()*3)],1.4);}}]][idx][0]();
+}
+
+// ══════ EMOTION SPACE ══════
+let eCtx,eW,eH,eReady=false;
+function initEmotion(){
+  const c=document.getElementById('emotionCanvas');if(!c||eReady)return;eReady=true;
+  eCtx=c.getContext('2d');eW=c.width;eH=c.height;drawEmoMap();
+  c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();updateEmo((e.clientX-r.left)*(eW/r.width),(e.clientY-r.top)*(eH/r.height));});
+  c.addEventListener('click',e=>{const r=c.getBoundingClientRect();updateEmo((e.clientX-r.left)*(eW/r.width),(e.clientY-r.top)*(eH/r.height));});
+}
+function drawEmoMap(px,py){
+  const ctx=eCtx,w=eW,h=eH;
+  ctx.fillStyle='#f3eee6';ctx.fillRect(0,0,w,h);
+  [{x:w/2,y:0,w:w/2,h:h/2,c:'rgba(122,158,126,.09)'},{x:0,y:0,w:w/2,h:h/2,c:'rgba(155,142,196,.07)'},{x:w/2,y:h/2,w:w/2,h:h/2,c:'rgba(201,169,110,.07)'},{x:0,y:h/2,w:w/2,h:h/2,c:'rgba(196,124,110,.07)'}].forEach(q=>{ctx.fillStyle=q.c;ctx.fillRect(q.x,q.y,q.w,q.h);});
+  ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=1;ctx.setLineDash([4,7]);
+  ctx.beginPath();ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(w,h/2);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font='9px "DM Mono"';ctx.fillStyle='rgba(74,64,56,.9)';ctx.textAlign='center';
+  ctx.fillText('AROUSAL +',w/2,12);ctx.fillText('AROUSAL −',w/2,h-5);
+  ctx.save();ctx.translate(9,h/2);ctx.rotate(-Math.PI/2);ctx.fillText('VALENCE −',0,0);ctx.restore();
+  ctx.save();ctx.translate(w-9,h/2);ctx.rotate(Math.PI/2);ctx.fillText('VALENCE +',0,0);ctx.restore();
+  ctx.font='11px "Cormorant Garamond"';ctx.fillStyle='rgba(232,224,212,.26)';ctx.textAlign='center';
+  ['Festive & Bright','Dramatic Tension','Cozy & Calm','Vintage Melancholy'].forEach((l,i)=>{
+    ctx.fillText(l,i<2?[w*.75,w*.25][i]:[w*.75,w*.25][i-2],i<2?h*.17:h*.84);
+  });
+  if(px!==undefined){
+    const g=ctx.createRadialGradient(px,py,0,px,py,24);g.addColorStop(0,'rgba(201,169,110,.44)');g.addColorStop(1,'rgba(201,169,110,0)');
+    ctx.beginPath();ctx.arc(px,py,24,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,4.5,0,Math.PI*2);ctx.fillStyle='#c9a96e';ctx.fill();
+    ctx.strokeStyle='rgba(201,169,110,.22)';ctx.lineWidth=1;ctx.setLineDash([3,5]);
+    ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,h);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(w,py);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+function updateEmo(px,py){
+  drawEmoMap(px,py);
+  const v=parseFloat(((px/eW)*2-1).toFixed(2)),a=parseFloat((-(py/eH)*2+1).toFixed(2));
+  document.getElementById('valV').textContent=v.toFixed(2);document.getElementById('aroV').textContent=a.toFixed(2);
+  const q=v>0&&a>0?'Festive & Bright':v<0&&a>0?'Dramatic Tension':v>0?'Cozy & Calm':'Vintage Melancholy';
+  const dirs={'Festive & Bright':'High saturation · dense mass · warm contrast · asymmetric burst','Dramatic Tension':'Deep contrast · rough textures · sparse silence arcs · bold focal','Cozy & Calm':'Warm muted tones · soft textures · generous negative space · organic asymmetry','Vintage Melancholy':'Desaturated palette · heavy greenery · low accent · downward visual weight'};
+  document.getElementById('emoLabel').textContent=q;document.getElementById('emoDir').textContent=dirs[q];
+  document.getElementById('valTxt').textContent=v>0?'Positive':'Negative';document.getElementById('aroTxt').textContent=a>0?'Energized':'Subdued';
+  const sat=clamp((v+1)/2*.6+(a+1)/2*.4),den=clamp((a+1)/2*.7+.15),con=clamp(Math.abs(v)*.5+Math.abs(a)*.5),sym=clamp(1-Math.abs(v)*.4-Math.abs(a)*.2),acc=clamp((a+1)/2*.6+Math.abs(v)*.3),sof=clamp((v+1)/2*.5+(1-(a+1)/2)*.4);
+  [sat,den,con,sym,acc,sof].forEach((val,i)=>{
+    const ids=['Sat','Den','Con','Sym','Acc','Sof'];
+    document.getElementById('tr'+ids[i]).style.width=(val*100)+'%';
+    document.getElementById('tr'+ids[i]+'V').textContent=val.toFixed(2);
+  });
+}
+function clamp(v,mn=0,mx=1){return Math.max(mn,Math.min(mx,v));}
+
+// ══════ BLUEPRINT INSPECTOR ══════
+function rnd(mn,mx,dp=2){return parseFloat((Math.random()*(mx-mn)+mn).toFixed(dp));}
+let lastBP=null;
+(()=>{
+  const keys=['cluster_count','cluster_weight_distribution','cluster_spread_deg','density_profile','greenery_direction','silhouette_bias','greenery_ratio','focal_ratio','silence_arc','focal_depth','style_signature','color_bias'];
+  const g=document.getElementById('dnaGrid');
+  keys.forEach(k=>{const r=document.createElement('div');r.className='dbar';r.dataset.key=k;r.innerHTML=`<div class="dblbl">${k.replace(/_/g,' ')}</div><div class="dbtrack"><div class="dbfill" style="width:0%"></div></div><div class="dbval">—</div>`;g.appendChild(r);});
+})();
+async function fetchBlueprint(formula,emotion,style){
+  try{
+    const res=await fetch(`${API_BASE}/blueprints/generate`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({formula,emotion,style})
+    });
+    const json=await res.json();
+    if(res.ok && json.ok && json.blueprint) return json.blueprint;
+  }catch(e){}
+  return makeBP(formula,emotion,style);
+}
+
+async function generateBP(){
+  const formula=document.getElementById('bpF').value||'Crescent';
+  const emotion=document.getElementById('bpE').value||'Cozy & Calm';
+  const style=document.getElementById('bpS').value||'Organic Drape';
+  const bp=await fetchBlueprint(formula,emotion,style);lastBP=bp;
+  document.getElementById('jsonContent').innerHTML=syntaxHL(JSON.stringify(bp,null,2));
+  updateDNABars(bp.dna,'dnaGrid');
+}
+function makeBP(formula,emotion,style){
+  const id='EC-'+Date.now().toString(36).toUpperCase();
+  const dna={cluster_count:Math.floor(rnd(3,9,0)),cluster_weight_distribution:rnd(.3,.9),cluster_spread_deg:Math.floor(rnd(20,120,0)),density_profile:rnd(.3,1),greenery_direction:rnd(-1,1),silhouette_bias:rnd(-.5,.5),greenery_ratio:rnd(.3,.7),focal_ratio:rnd(.1,.4),silence_arc:rnd(0,90,0),focal_depth:rnd(.2,.8),style_signature:style,color_bias:rnd(-.5,.5)};
+  const eMap={'Cozy & Calm':{v:rnd(.1,.9),a:rnd(-.9,-.1)},'Festive & Bright':{v:rnd(.1,.9),a:rnd(.1,.9)},'Dramatic Tension':{v:rnd(-.9,-.1),a:rnd(.1,.9)},'Vintage Melancholy':{v:rnd(-.9,-.1),a:rnd(-.9,-.1)}};
+  const emo=eMap[emotion]||{v:0,a:0};
+  return{blueprint_id:id,base:{form:'circular',diameter_inches:[18,20,24][Math.floor(Math.random()*3)],frame_type:'wire_wreath_frame'},composition:{formula,formula_index:FORMULAS.findIndex(f=>f.name===formula)+1,zone_count:dna.cluster_count},dna,emotion_space:{valence:emo.v,arousal:emo.a,quadrant_label:emotion,palette_bias:emo.v>0?'warm':'cool'},zones:Array.from({length:dna.cluster_count},(_,i)=>({zone_id:`Z${i+1}`,angle_start:Math.floor((i/dna.cluster_count)*360),angle_end:Math.floor(((i+1)/dna.cluster_count)*360),type:i===0?'focal':i%3===0?'silence':'fill'})),anchors:[{anchor_id:'A1',angle:0,radius:1,role:'focal_primary'}],elements:[{role:'focal',count:Math.floor(rnd(1,4,0)),tier:'T1'},{role:'supporting',count:Math.floor(rnd(4,10,0)),tier:'T2'},{role:'filler',count:Math.floor(rnd(8,20,0)),tier:'T3'},{role:'greenery',count:Math.floor(rnd(12,30,0)),tier:'base'}],scores:{emotion_fit:rnd(.7,.99),dna_cohesion:rnd(.75,.99),brand_alignment:rnd(.8,.99),ec_certified:true},versioning:{schema:'EC_CANON_V1',generated:new Date().toISOString(),formula_engine:'deterministic_v1'}};
+}
+function updateDNABars(dna,gridId){
+  const keys=Object.keys(dna);
+  document.querySelectorAll(`#${gridId} .dbar`).forEach((r,i)=>{
+    if(!keys[i])return;const val=dna[keys[i]];const num=typeof val==='number'?val:null;
+    const fill=r.querySelector('.dbfill');const valEl=r.querySelector('.dbval');
+    if(num!==null){
+      const k=keys[i];
+      let pct=k==='cluster_count'?((num-1)/9)*100:k==='cluster_spread_deg'?(num/120)*100:k==='silence_arc'?(num/90)*100:((num+1)/2)*100;
+      fill.style.width=clamp(pct/100)*100+'%';
+      valEl.textContent=Number.isInteger(num)?num:num.toFixed(2);
+    }else{fill.style.width='55%';valEl.textContent=val;}
+  });
+}
+function syntaxHL(json){return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,m=>{let c='jnum';if(/^"/.test(m))c=/:$/.test(m)?'jkey':'jstr';else if(/true|false/.test(m))c='jbool';else if(/null/.test(m))c='jnull';return`<span class="${c}">${m}</span>`;});}
+function copyBP(){const txt=document.getElementById('jsonContent').textContent;navigator.clipboard.writeText(txt).then(()=>{const b=document.querySelector('.cpbtn');if(b){b.textContent='Copied!';setTimeout(()=>b.textContent='Copy',1400);}});}
+function sendToOutput(){nav('output',document.querySelector('[onclick*="output"]'));}
+
+// ══════ DNA REGISTRY ══════
+const DEFAULT_DNA_PROFILES=[
+  {name:'Crescent Classic',formula:'Crescent',genes:{cluster_count:.45,cluster_weight:.7,cluster_spread:.5,density:.55,greenery_ratio:.4,focal_ratio:.2,silence_arc:.65,focal_depth:.45,silhouette_bias:.2,color_bias:.2,symmetry:.15,accent:.3}},
+  {name:'Halo Luxe',formula:'Full Halo',genes:{cluster_count:.9,cluster_weight:.5,cluster_spread:.9,density:.9,greenery_ratio:.5,focal_ratio:.25,silence_arc:.04,focal_depth:.6,silhouette_bias:0,color_bias:.1,symmetry:.9,accent:.5}},
+  {name:'Focal Burst Drama',formula:'Focal Burst',genes:{cluster_count:.3,cluster_weight:.9,cluster_spread:.2,density:.8,greenery_ratio:.25,focal_ratio:.4,silence_arc:.1,focal_depth:.9,silhouette_bias:.1,color_bias:.2,symmetry:.08,accent:.9}},
+  {name:'Woodland Sweep',formula:'Side Sweep',genes:{cluster_count:.5,cluster_weight:.6,cluster_spread:.55,density:.5,greenery_ratio:.7,focal_ratio:.15,silence_arc:.3,focal_depth:.3,silhouette_bias:.4,color_bias:.3,symmetry:.2,accent:.25}},
+];
+let DNA_PROFILES=[];
+const DNA_COLORS=['#c9a96e','#7a9e7e','#c47c6e','#9b8ec4'];
+
+async function loadDNAProfiles(){
+  try{
+    const res=await fetch(`${API_BASE}/dna-profiles`);
+    const json=await res.json();
+    if(res.ok && json.ok && Array.isArray(json.profiles)) DNA_PROFILES=json.profiles;
+    else DNA_PROFILES=DEFAULT_DNA_PROFILES;
+  }catch(e){DNA_PROFILES=DEFAULT_DNA_PROFILES;}
+}
+
+function buildDNARegistry(){
+  const g=document.getElementById('dnaRegGrid');
+  if(!g) return;
+  g.innerHTML='';
+  DNA_PROFILES.forEach((p,i)=>{
+    const c=document.createElement('div');c.className='dpc';
+    const bkeys=['cluster_count','cluster_weight','cluster_spread','density','greenery_ratio','focal_ratio'];
+    const bars=bkeys.map(k=>`<div class="mbr" style="margin-bottom:3px;"><div class="mbl">${k.replace(/_/g,' ')}</div><div class="mbt"><div class="mbf" style="width:${(p.genes[k]||0)*100}%;background:${DNA_COLORS[i]};"></div></div></div>`).join('');
+    c.innerHTML=`<div class="dpn">${p.name}</div><div class="dpf">${p.formula}</div><div>${bars}</div>`;
+    c.onclick=()=>{document.querySelectorAll('.dpc').forEach(x=>x.classList.remove('sel2'));c.classList.add('sel2');selectDNA(i);};
+    g.appendChild(c);
+  });
+}
+function selectDNA(i){
+  const p=DNA_PROFILES[i];
+  document.getElementById('dnaInspName').textContent=p.name;
+  document.getElementById('dnaInspForm').textContent=p.formula;
+  const hard=['style_signature','ec_certified','brand_alignment'];
+  document.getElementById('dnaGeneRows').innerHTML=Object.entries(p.genes).map(([k,v])=>`<div class="gr"><div class="gn">${k.replace(/_/g,' ')}</div><div class="gbt"><div class="gbf" style="width:${v*100}%;background:${DNA_COLORS[i]||'#c9a96e'};"></div></div><div class="gv">${v.toFixed(2)}</div><div class="${hard.includes(k)?'gh':'gs'}">${hard.includes(k)?'HARD':'SOFT'}</div></div>`).join('');
+  drawRadar(p,document.getElementById('radarCanvas'));
+}
+function drawRadar(profile,canvas,w2=240,h2=240){
+  if(!canvas)return;const ctx=canvas.getContext('2d'),w=w2||canvas.width,h=h2||canvas.height,cx=w/2,cy=h/2,R=Math.min(w,h)/2-28;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);
+  const keys=Object.keys(profile.genes);const n=Math.min(keys.length,8);
+  [.25,.5,.75,1].forEach(r=>{ctx.beginPath();for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;const x=cx+R*r*Math.cos(a);const y=cy+R*r*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}ctx.closePath();ctx.strokeStyle=`rgba(42,37,32,${r===1?.9:.45})`;ctx.lineWidth=1;ctx.stroke();});
+  for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));ctx.strokeStyle='rgba(42,37,32,.65)';ctx.lineWidth=1;ctx.stroke();const lx=cx+(R+13)*Math.cos(a);const ly=cy+(R+13)*Math.sin(a);ctx.font='7px "DM Mono"';ctx.fillStyle='rgba(74,64,56,.9)';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(keys[i].replace(/_/g,' ').substring(0,10),lx,ly);}
+  const vals=Object.values(profile.genes).slice(0,n);
+  ctx.beginPath();vals.forEach((v,i)=>{const a=(i/n)*Math.PI*2-Math.PI/2;const x=cx+R*v*Math.cos(a);const y=cy+R*v*Math.sin(a);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.closePath();const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,R);grd.addColorStop(0,'rgba(201,169,110,.28)');grd.addColorStop(1,'rgba(201,169,110,.05)');ctx.fillStyle=grd;ctx.fill();ctx.strokeStyle='rgba(201,169,110,.85)';ctx.lineWidth=1.5;ctx.stroke();
+  vals.forEach((v,i)=>{const a=(i/n)*Math.PI*2-Math.PI/2;ctx.beginPath();ctx.arc(cx+R*v*Math.cos(a),cy+R*v*Math.sin(a),2.5,0,Math.PI*2);ctx.fillStyle='#c9a96e';ctx.fill();});
+}
+
+// ══════ PLACEMENT DEBUGGER ══════
+function runPlacementLocal(){
+  const SC=+document.getElementById('slSC').value,CC=+document.getElementById('slCC').value,SP=+document.getElementById('slSP').value,SA=+document.getElementById('slSA').value;
+  const FD=+document.getElementById('slFD').value/10,GR=+document.getElementById('slGR').value/100,FR=+document.getElementById('slFR').value/100;
+  const formula=document.getElementById('plF').value;
+  document.getElementById('slSCV').textContent=SC;document.getElementById('slCCV').textContent=CC;
+  document.getElementById('slSPV').textContent=SP+'°';document.getElementById('slSAV').textContent=SA+'°';
+  document.getElementById('slFDV').textContent=FD.toFixed(1);document.getElementById('slGRV').textContent=GR.toFixed(2);document.getElementById('slFRV').textContent=FR.toFixed(2);
+  const stems=solvePlacement(SC,CC,SP,SA,FD,GR,FR,formula);
+  drawPlacementCanvas(stems,SA);renderStemLog(stems);
+}
+
+async function runPlacement(){
+  const SC=+document.getElementById('slSC').value,CC=+document.getElementById('slCC').value,SP=+document.getElementById('slSP').value,SA=+document.getElementById('slSA').value;
+  const FD=+document.getElementById('slFD').value/10,GR=+document.getElementById('slGR').value/100,FR=+document.getElementById('slFR').value/100;
+  const formula=document.getElementById('plF').value;
+  document.getElementById('slSCV').textContent=SC;document.getElementById('slCCV').textContent=CC;
+  document.getElementById('slSPV').textContent=SP+'°';document.getElementById('slSAV').textContent=SA+'°';
+  document.getElementById('slFDV').textContent=FD.toFixed(1);document.getElementById('slGRV').textContent=GR.toFixed(2);document.getElementById('slFRV').textContent=FR.toFixed(2);
+  try{
+    const res=await fetch(`${API_BASE}/placement/generate`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({stemCount:SC,clusterCount:CC,spreadDeg:SP,silenceDeg:SA,focalDepth:FD,greeneryRatio:GR,focalRatio:FR,formula})
+    });
+    const json=await res.json();
+    if(res.ok && json.ok && Array.isArray(json.stems)){
+      drawPlacementCanvas(json.stems,SA);renderStemLog(json.stems);
+      return;
+    }
+  }catch(e){}
+  runPlacementLocal();
+}
+function solvePlacement(SC,CC,SP,SA,FD,GR,FR,formula){
+  const stems=[];const silS=(270-SA/2)*Math.PI/180,silE=(270+SA/2)*Math.PI/180;
+  const gc=Math.floor(SC*GR),fc=Math.max(1,Math.floor(SC*FR)),filc=SC-gc-fc;
+  function getAngles(total){
+    const a=[];
+    if(formula==='Full Halo'){for(let i=0;i<total;i++)a.push((i/total)*Math.PI*2);}
+    else if(formula==='Crescent'){const sp=Math.PI*1.4,off=Math.PI*.3;for(let i=0;i<total;i++)a.push(off+sp*(i/(total-1||1)));}
+    else if(formula==='Bottom Heavy'){for(let i=0;i<total;i++)a.push(Math.PI*.1+Math.PI*.8*(i/(total-1||1))+(Math.random()-.5)*.18);}
+    else if(formula==='Side Sweep'){for(let i=0;i<total;i++)a.push(-.5+i*(1/total)+(Math.random()-.5)*.14);}
+    else if(formula==='Radial Burst'){for(let i=0;i<total;i++)a.push((i/total)*Math.PI*2);}
+    else if(formula==='Focal Burst'){for(let i=0;i<total;i++)a.push((i/total)*Math.PI*2+(Math.random()-.5)*.28);}
+    else{for(let c=0;c<CC;c++){const cA=(c/CC)*Math.PI*2;const pc=Math.ceil(total/CC);for(let j=0;j<pc&&a.length<total;j++)a.push(cA+(j-pc/2)*(SP*Math.PI/180/pc)+(Math.random()-.5)*.07);}}
+    return a.slice(0,total);
+  }
+  let sid=1;
+  [['greenery',gc],['filler',filc],['focal',fc]].forEach(([role,count])=>{
+    getAngles(count).forEach(a=>{
+      const normA=((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+      if(SA>0&&normA>silS&&normA<silE&&formula!=='Full Halo')return;
+      const radius=role==='focal'?1-FD*.3:.85+Math.random()*.18;
+      const depth=role==='focal'?FD:role==='greenery'?.1+Math.random()*.2:.3+Math.random()*.4;
+      stems.push({id:`S${String(sid++).padStart(3,'0')}`,angle:Math.round(((a*180/Math.PI)%360+360)%360),radius:+radius.toFixed(2),role,depth:+depth.toFixed(2)});
+    });
+  });
+  return stems;
+}
+function drawPlacementCanvas(stems,SA){
+  const c=document.getElementById('placementCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=130;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);
+  if(SA>0){ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R+18,(270-SA/2)*Math.PI/180,(270+SA/2)*Math.PI/180);ctx.closePath();ctx.fillStyle='rgba(196,124,110,.04)';ctx.fill();ctx.beginPath();ctx.arc(cx,cy,R+18,(270-SA/2)*Math.PI/180,(270+SA/2)*Math.PI/180);ctx.strokeStyle='rgba(196,124,110,.18)';ctx.lineWidth=1;ctx.setLineDash([3,5]);ctx.stroke();ctx.setLineDash([]);}
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=17;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(201,169,110,.14)';ctx.lineWidth=1;ctx.stroke();
+  ctx.strokeStyle='rgba(42,37,32,.4)';ctx.lineWidth=1;ctx.setLineDash([2,6]);
+  ctx.beginPath();ctx.moveTo(cx-R-18,cy);ctx.lineTo(cx+R+18,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-R-18);ctx.lineTo(cx,cy+R+18);ctx.stroke();ctx.setLineDash([]);
+  const rc={'focal':'#c47c6e','filler':'#c9a96e','greenery':'#7a9e7e'};
+  const rs={'focal':4.5,'filler':3,'greenery':2.2};
+  stems.forEach(s=>{
+    const a=s.angle*Math.PI/180,r=R*s.radius,sl=s.role==='focal'?16:s.role==='greenery'?9:12;
+    const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a),ex=cx+(r+sl)*Math.cos(a),ey=cy+(r+sl)*Math.sin(a);
+    ctx.globalAlpha=s.role==='greenery'?.65:1;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=rc[s.role];ctx.lineWidth=s.role==='focal'?1.8:1.2;ctx.stroke();
+    ctx.beginPath();ctx.arc(ex,ey,rs[s.role],0,Math.PI*2);ctx.fillStyle=rc[s.role];ctx.fill();
+    ctx.globalAlpha=1;
+  });
+  [['focal','Focal','#c47c6e'],['filler','Filler','#c9a96e'],['greenery','Greenery','#7a9e7e']].forEach(([,l,col],i)=>{
+    ctx.beginPath();ctx.arc(13,h-46+i*15,3.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+    ctx.font='9px "DM Mono"';ctx.fillStyle='rgba(138,125,110,.8)';ctx.textAlign='left';ctx.fillText(l,21,h-43+i*15);
+  });
+}
+function renderStemLog(stems){document.getElementById('stemLog').innerHTML=stems.slice(0,50).map(s=>`<div class="le"><div class="lid">${s.id}</div><div class="lang">${s.angle}°</div><div class="lrad">${s.radius}</div><div class="lrol">${s.role}</div><div class="ldep">${s.depth}</div></div>`).join('');}
+
+// ══════ INVENTORY ══════
+const DEFAULT_INV=[
+  {name:'Ivory Garden Rose',role:'focal',color:'Ivory',stock:12,max:24,formulas:['Full Halo','Crescent','Focal Burst'],emotion:'Cozy & Calm',compat:'high'},
+  {name:'Dusty Mauve Peony',role:'focal',color:'Mauve',stock:6,max:24,formulas:['Crescent','Double Echo'],emotion:'Vintage Melancholy',compat:'high'},
+  {name:'Dried Wheat Bundle',role:'supporting',color:'Tan',stock:34,max:60,formulas:['Bottom Heavy','Crescent'],emotion:'Cozy & Calm',compat:'med'},
+  {name:'Burgundy Ranunculus',role:'focal',color:'Burgundy',stock:3,max:24,formulas:['Focal Burst','Double Echo'],emotion:'Dramatic Tension',compat:'low'},
+  {name:'Silver Dollar Eucalyptus',role:'greenery',color:'Silver/Green',stock:48,max:80,formulas:['All'],emotion:'All',compat:'high'},
+  {name:'Bleached Lunaria',role:'filler',color:'White',stock:28,max:50,formulas:['Open Arc','Crescent'],emotion:'Vintage Melancholy',compat:'high'},
+  {name:'Rust Anemone',role:'supporting',color:'Rust',stock:18,max:40,formulas:['Full Halo','Focal Burst'],emotion:'Festive & Bright',compat:'high'},
+  {name:'Navy Thistle',role:'supporting',color:'Navy',stock:9,max:40,formulas:['Split Garden','Open Arc'],emotion:'Dramatic Tension',compat:'med'},
+  {name:'Sage Bundle',role:'greenery',color:'Green/Grey',stock:55,max:80,formulas:['All'],emotion:'All',compat:'high'},
+  {name:'Champagne Amaranthus',role:'filler',color:'Champagne',stock:22,max:50,formulas:['Crescent','Full Halo'],emotion:'Cozy & Calm',compat:'high'},
+  {name:'Terracotta Berry',role:'filler',color:'Terracotta',stock:31,max:60,formulas:['Bottom Heavy','Laddered Rhythm'],emotion:'Festive & Bright',compat:'med'},
+  {name:'Black Protea',role:'focal',color:'Black',stock:2,max:16,formulas:['Focal Burst','Open Arc'],emotion:'Dramatic Tension',compat:'low'},
+  {name:'Cotton Stem',role:'filler',color:'White/Natural',stock:44,max:60,formulas:['Bottom Heavy','Full Halo'],emotion:'Cozy & Calm',compat:'high'},
+  {name:'Lavender Bunch',role:'greenery',color:'Lavender',stock:38,max:80,formulas:['Crescent','Full Halo'],emotion:'Vintage Melancholy',compat:'high'},
+  {name:'Golden Banksia',role:'supporting',color:'Gold',stock:7,max:30,formulas:['Focal Burst','Radial Burst'],emotion:'Festive & Bright',compat:'med'},
+];
+let INV=[];
+
+async function loadInventory(){
+  try{
+    const res=await fetch(`${API_BASE}/inventory`);
+    const json=await res.json();
+    if(res.ok && json.ok && Array.isArray(json.items)) INV=json.items;
+    else INV=DEFAULT_INV;
+  }catch(e){INV=DEFAULT_INV;}
+}
+let invFilter='all';
+function buildInventory(){
+  const total=INV.length,stock=INV.reduce((s,i)=>s+i.stock,0),low=INV.filter(i=>i.stock/i.max<.3).length,hi=INV.filter(i=>i.compat==='high').length;
+  document.getElementById('invStats').innerHTML=[['Total SKUs',total,'Catalogued'],['Total Stock',stock,'Units'],['Low Stock',low,'At < 30%'],['High Compat',hi,'Formula fit']].map(([l,v,s])=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:12px 14px;"><div style="font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px;">${l}</div><div style="font-family:var(--fd);font-size:26px;font-weight:300;color:var(--gold);">${v}</div><div style="font-size:10px;color:var(--text-muted);margin-top:3px;">${s}</div></div>`).join('');
+  renderInv();renderFeas();
+}
+function filterInv(f,btn){invFilter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderInv();}
+function renderInv(){
+  let items=INV;
+  if(invFilter==='low')items=items.filter(i=>i.stock/i.max<.3);else if(invFilter!=='all')items=items.filter(i=>i.role===invFilter);
+  const rc={focal:'rf',supporting:'rs',filler:'rfi',greenery:'rg'};
+  const cc={high:'ich',med:'icm',low:'icl'};
+  document.getElementById('invBody').innerHTML=items.map(i=>`<tr><td class="iname">${i.name}</td><td><span class="irole ${rc[i.role]}">${i.role}</span></td><td>${i.color}</td><td><div class="ibar"><div class="ibt"><div class="ibf" style="width:${Math.min(100,(i.stock/i.max)*100)}%;${i.stock/i.max<.3?'background:var(--rose);':''}"></div></div><span style="font-size:10px;color:${i.stock/i.max<.3?'var(--rose)':i.stock/i.max<.6?'var(--gold)':'var(--text-dim)'};">${i.stock}/${i.max}</span></div></td><td style="font-size:10px;">${Array.isArray(i.formulas)?i.formulas.slice(0,2).join(', '):i.formulas}</td><td class="ic ${cc[i.compat]}">${i.compat.toUpperCase()}</td></tr>`).join('');
+}
+function renderFeas(){
+  const formulas=['Crescent','Full Halo','Focal Burst','Bottom Heavy','Side Sweep','Double Echo','Open Arc','Split Garden'];
+  document.getElementById('feasCard').innerHTML=formulas.map(f=>{
+    const ci=INV.filter(i=>Array.isArray(i.formulas)&&(i.formulas.includes(f)||i.formulas.includes('All')));
+    const av=ci.filter(i=>i.stock>3).length;const score=Math.min(1,av/(ci.length||1));
+    const lvl=score>.7?'high':score>.4?'med':'low';
+    const col=lvl==='high'?'var(--sage)':lvl==='med'?'var(--amber)':'var(--rose)';
+    return`<div class="frow"><div class="ff">${f}</div><div class="fbt"><div class="fbf" style="width:${score*100}%;background:${col};"></div></div><div class="fscore fs${lvl}">${Math.round(score*100)}%</div><div style="font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:${col};padding:2px 6px;border-radius:1px;background:${col}1a;border:1px solid ${col}44;">${lvl.toUpperCase()}</div></div>`;
+  }).join('');
+}
+loadInventory().then(buildInventory);
+
+// ══════════════════════════════════════════════════
+// PHASE 3: ABC LAB
+// ══════════════════════════════════════════════════
+let abcState={dna:null,gen:0,lineage:[],totalMutations:0};
+const DNA_KEYS=['cluster_count','cluster_weight_distribution','cluster_spread_deg','density_profile','greenery_direction','silhouette_bias','greenery_ratio','focal_ratio','silence_arc','focal_depth','style_signature','color_bias'];
+const SOFT_GENES=['cluster_count','density_profile','greenery_ratio','silence_arc','focal_depth','cluster_weight_distribution','cluster_spread_deg'];
+
+(()=>{
+  const g=document.getElementById('abcDNABars');
+  DNA_KEYS.forEach(k=>{const r=document.createElement('div');r.className='dbar';r.dataset.key=k;r.innerHTML=`<div class="dblbl">${k.replace(/_/g,' ')}</div><div class="dbtrack"><div class="dbfill" style="width:0%"></div></div><div class="dbval">—</div>`;g.appendChild(r);});
+})();
+
+async function abcSeed(){
+  const formula=document.getElementById('abcFormula').value;
+  const emotion=document.getElementById('abcEmotion').value;
+  const bp=await fetchBlueprint(formula,emotion,'Organic Drape');
+  const id='EC-'+Math.random().toString(36).substr(2,5).toUpperCase();
+  abcState={dna:{...bp.dna},gen:0,lineage:[{id,label:'Seed',formula,emotion,scores:bp.scores,gen:0}],totalMutations:0};
+  updateABCPanel(bp.scores);
+  renderABCLineage();
+  updateDNABars(abcState.dna,'abcDNABars');
+  drawABCPreview(formula);
+  document.getElementById('mutationLog').innerHTML='<div style="color:var(--text-muted);font-size:10px;padding:3px 0;">Blueprint seeded. Mutate to begin evolving.</div>';
+}
+function abcMutate(){
+  if(!abcState.dna){abcSeed();return;}
+  const prevDNA={...abcState.dna};
+  const softKeys=SOFT_GENES.filter(k=>typeof abcState.dna[k]==='number');
+  const numMuts=Math.floor(Math.random()*3)+1;
+  const mutLog=[];
+  for(let i=0;i<numMuts;i++){
+    const key=softKeys[Math.floor(Math.random()*softKeys.length)];
+    const oldVal=abcState.dna[key];
+    let delta=(Math.random()-.5)*.25;
+    let newVal;
+    if(key==='cluster_count'){newVal=Math.max(1,Math.min(9,Math.round(oldVal+(Math.random()>.5?1:-1))));}
+    else if(key==='cluster_spread_deg'){newVal=Math.max(10,Math.min(120,Math.round(oldVal+(Math.random()-.5)*20)));}
+    else if(key==='silence_arc'){newVal=Math.max(0,Math.min(90,Math.round(oldVal+(Math.random()-.5)*15)));}
+    else{newVal=parseFloat(clamp(oldVal+delta).toFixed(2));}
+    abcState.dna[key]=newVal;
+    mutLog.push({gene:key,from:typeof oldVal==='number'&&!Number.isInteger(oldVal)?oldVal.toFixed(2):oldVal,to:typeof newVal==='number'&&!Number.isInteger(newVal)?newVal.toFixed(2):newVal});
+  }
+  abcState.gen++;abcState.totalMutations+=numMuts;
+  const newId='EC-'+Math.random().toString(36).substr(2,5).toUpperCase();
+  const newScores={emotion_fit:clamp(rnd(.7,.99)),dna_cohesion:clamp(rnd(.78,.99)),brand_alignment:clamp(rnd(.82,.99))};
+  abcState.lineage.push({id:newId,label:`Gen ${abcState.gen}`,formula:document.getElementById('abcFormula').value,emotion:document.getElementById('abcEmotion').value,scores:newScores,gen:abcState.gen,mutations:mutLog});
+  updateABCPanel(newScores);
+  renderABCLineage();
+  updateDNABars(abcState.dna,'abcDNABars');
+  drawABCPreview(document.getElementById('abcFormula').value);
+  // Mutation log
+  const ml=document.getElementById('mutationLog');
+  const entries=mutLog.map(m=>`<div class="mut-entry"><div class="mut-gene">${m.gene.replace(/_/g,' ')}</div><div class="mut-from">${m.from}</div><div class="mut-arr">→</div><div class="mut-to">${m.to}</div><div class="mut-type">SOFT</div></div>`).join('');
+  ml.innerHTML=`<div style="font-size:8px;letter-spacing:.18em;color:var(--text-muted);padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:4px;">GEN ${abcState.gen} · ${mutLog.length} GENE${mutLog.length>1?'S':''} MUTATED</div>${entries}`+ml.innerHTML;
+  document.getElementById('dbMutations').textContent=abcState.totalMutations;
+}
+function abcReset(){abcState={dna:null,gen:0,lineage:[],totalMutations:0};document.getElementById('abcLineage').innerHTML='<div style="color:var(--text-muted);font-size:10px;">No lineage yet.</div>';document.getElementById('mutationLog').innerHTML='<div style="color:var(--text-muted);font-size:10px;">Seed a blueprint, then mutate to track gene changes.</div>';['abcEF','abcDC','abcBA','abcFS'].forEach(id=>document.getElementById(id).textContent='—');document.getElementById('abcGen').textContent='0';document.getElementById('abcMC').textContent='0';document.getElementById('dbMutations').textContent='0';const c=document.getElementById('abcCanvas');if(c){const ctx=c.getContext('2d');ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,c.width,c.height);}document.querySelectorAll('#abcDNABars .dbfill').forEach(f=>f.style.width='0%');document.querySelectorAll('#abcDNABars .dbval').forEach(v=>v.textContent='—');}
+function updateABCPanel(scores){
+  document.getElementById('abcEF').textContent=(scores.emotion_fit*100).toFixed(0)+'%';
+  document.getElementById('abcDC').textContent=(scores.dna_cohesion*100).toFixed(0)+'%';
+  document.getElementById('abcBA').textContent=(scores.brand_alignment*100).toFixed(0)+'%';
+  document.getElementById('abcGen').textContent=abcState.gen;
+  document.getElementById('abcMC').textContent=abcState.totalMutations;
+  const fitness=((scores.emotion_fit+scores.dna_cohesion+scores.brand_alignment)/3*100).toFixed(0)+'%';
+  document.getElementById('abcFS').textContent=fitness;
+}
+function renderABCLineage(){
+  const lin=abcState.lineage;
+  document.getElementById('abcLineage').innerHTML=lin.map((n,i)=>`
+    ${i>0?'<span class="lin-arrow">→</span>':''}
+    <div class="lin-node ${i===0?'parent':i===lin.length-1?'active':''}" title="${n.id}">${n.label}</div>
+  `).join('');
+}
+function drawABCPreview(formula){
+  const c=document.getElementById('abcCanvas');if(!c)return;
+  const fi=FORMULAS.findIndex(f=>f.name===formula);
+  if(fi>=0){
+    // Reuse formula drawing with slight randomness
+    const ctx=c.getContext('2d');const w=c.width,h=c.height,cx=w/2,cy=h/2,R=95;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=16;ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(201,169,110,.15)';ctx.lineWidth=1;ctx.stroke();
+    const gold='#c9a96e',sage='#7a9e7e',rose='#c47c6e';
+    function s(a,r,l,col,w=1.6){const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a),ex=cx+(r+l)*Math.cos(a),ey=cy+(r+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w+.6,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+    function cl(sa,ea,n,l,col){for(let i=0;i<=n;i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.12;s(a,R-7,l+Math.random()*10,col);}}
+    const density=abcState.dna?abcState.dna.density_profile||.6:.6;
+    const gc=abcState.dna?abcState.dna.greenery_ratio||.4:.4;
+    const stemMult=.7+density*.6;
+    [[()=>cl(Math.PI*.3,Math.PI*1.7,Math.round(16*stemMult),18,gold)],[()=>{cl(-.4,.4,Math.round(7*stemMult),20,gold);cl(Math.PI-.4,Math.PI+.4,Math.round(7*stemMult),20,sage);}],[()=>{cl(Math.PI*.1,Math.PI*.9,Math.round(18*stemMult),22,gold);}],[()=>{cl(-.6,.6,Math.round(10*stemMult),20,gold);s(0,R,35,rose,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,Math.round(12*stemMult),18,gold);}],[()=>cl(0,Math.PI*2,Math.round(26*stemMult),16,gold)],[()=>{cl(Math.PI*.1,Math.PI*.85,Math.round(12*stemMult),20,gold);cl(Math.PI*1.1,Math.PI*1.85,Math.round(12*stemMult),20,sage);}],[()=>{for(let i=0;i<Math.round(14*stemMult);i++){const a=(i/14)*Math.PI*2;s(a,R-8,25+Math.random()*14,i%3===0?rose:gold,1.8);}}],[()=>{for(let i=0;i<Math.round(9*stemMult);i++){const a=-.3+i*.18;s(a,R-4,12+i*2,i%2===0?gold:sage,1.6);}}],[()=>{for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;s(a,R-5,20,gold,1.8);}}],[()=>{cl(Math.PI*.6,Math.PI*1.4,Math.round(14*stemMult),16,gold);}],[()=>{const cs=[gold,sage,rose];for(let i=0;i<Math.round(18*stemMult);i++){const a=Math.random()*Math.PI*2;s(a,R-7,9+Math.random()*20,cs[Math.floor(Math.random()*3)],1.4);}}]][fi][0]();
+    // Gen watermark
+    ctx.font='8px "DM Mono"';ctx.fillStyle='rgba(201,169,110,.35)';ctx.textAlign='right';ctx.fillText(`GEN ${abcState.gen}`,w-8,h-8);
+  }
+}
+
+// ══════════════════════════════════════════════════
+// PHASE 3: GENOME DASHBOARD
+// ══════════════════════════════════════════════════
+const GENOME_FAMILY=[
+  {id:'EC-A001',name:'Halo Luxe',formula:'Full Halo',gen:0,parent:null,genes:{cluster_count:.9,cluster_weight:.5,density:.9,greenery_ratio:.5,focal_ratio:.25,silence_arc:.04,focal_depth:.6,symmetry:.9},scores:{ef:.91,dc:.95,ba:.93}},
+  {id:'EC-A002',name:'Halo Soft',formula:'Full Halo',gen:1,parent:'EC-A001',genes:{cluster_count:.8,cluster_weight:.55,density:.78,greenery_ratio:.55,focal_ratio:.22,silence_arc:.1,focal_depth:.5,symmetry:.85},scores:{ef:.88,dc:.91,ba:.9}},
+  {id:'EC-A003',name:'Halo Open',formula:'Full Halo',gen:2,parent:'EC-A002',genes:{cluster_count:.7,cluster_weight:.48,density:.65,greenery_ratio:.6,focal_ratio:.18,silence_arc:.22,focal_depth:.42,symmetry:.75},scores:{ef:.84,dc:.87,ba:.88}},
+  {id:'EC-B001',name:'Crescent Base',formula:'Crescent',gen:0,parent:null,genes:{cluster_count:.45,cluster_weight:.7,density:.55,greenery_ratio:.4,focal_ratio:.2,silence_arc:.65,focal_depth:.45,symmetry:.15},scores:{ef:.89,dc:.92,ba:.91}},
+  {id:'EC-B002',name:'Crescent Deep',formula:'Crescent',gen:1,parent:'EC-B001',genes:{cluster_count:.4,cluster_weight:.75,density:.62,greenery_ratio:.38,focal_ratio:.28,silence_arc:.58,focal_depth:.6,symmetry:.12},scores:{ef:.86,dc:.9,ba:.89}},
+];
+let selGenomeNode=null;
+function buildGenomeTree(){
+  const tree=document.getElementById('genomeTree');
+  tree.innerHTML='';
+  GENOME_FAMILY.forEach(bp=>{
+    const d=document.createElement('div');
+    const isChild=bp.parent!==null;
+    const isGrand=bp.gen===2;
+    d.className=`tree-node${isGrand?' grandchild':isChild?' child':''}`;
+    d.innerHTML=`<div class="tn-name">${bp.name}</div><div class="tn-id">${bp.id} · Gen ${bp.gen}</div><div class="tn-score">${(bp.scores.ef*100).toFixed(0)}%</div>`;
+    d.onclick=()=>{document.querySelectorAll('.tree-node').forEach(n=>n.classList.remove('active'));d.classList.add('active');selectGenomeBP(bp);};
+    tree.appendChild(d);
+  });
+  // Auto-select first
+  selectGenomeBP(GENOME_FAMILY[0]);
+  document.querySelector('.tree-node').classList.add('active');
+}
+function selectGenomeBP(bp){
+  selGenomeNode=bp;
+  // Radar
+  drawRadar({genes:bp.genes},document.getElementById('genomeRadar'),340,240);
+  // Stats
+  document.getElementById('genomeStats').innerHTML=[
+    ['Emotion Fit',(bp.scores.ef*100).toFixed(0)+'%','Target alignment'],
+    ['DNA Cohesion',(bp.scores.dc*100).toFixed(0)+'%','Brand integrity'],
+    ['Brand Alignment',(bp.scores.ba*100).toFixed(0)+'%','EC canon fit'],
+    ['Generation',`Gen ${bp.gen}`,'Evolution depth'],
+    ['Fitness',((bp.scores.ef+bp.scores.dc+bp.scores.ba)/3*100).toFixed(0)+'%','Composite score'],
+    ['Formula',bp.formula,'Composition type'],
+  ].map(([l,v,s])=>`<div class="gs2"><div class="gs2l">${l}</div><div class="gs2v">${v}</div><div style="font-size:9px;color:var(--text-muted);margin-top:2px;">${s}</div></div>`).join('');
+  // Changed genes
+  const parent=GENOME_FAMILY.find(b=>b.id===bp.parent);
+  if(parent){
+    const changes=Object.entries(bp.genes).filter(([k,v])=>typeof v==='number'&&Math.abs(v-(parent.genes[k]||0))>0.02).map(([k,v])=>{
+      const pv=parent.genes[k]||0;const delta=v-pv;
+      return`<div class="cg-row"><div class="cg-gene">${k.replace(/_/g,' ')}</div><div class="cg-from">${pv.toFixed(2)}</div><span style="color:var(--text-muted);margin:0 6px;">→</span><div class="cg-to">${v.toFixed(2)}</div><div class="cg-delta"><span class="${delta>0?'delta-up':'delta-dn'}">${delta>0?'↑':'↓'} ${Math.abs(delta).toFixed(2)}</span></div></div>`;
+    }).join('');
+    document.getElementById('changedGenes').innerHTML=changes||'<div style="color:var(--text-muted);font-size:11px;padding:6px 0;">No significant gene changes from parent.</div>';
+  }else{
+    document.getElementById('changedGenes').innerHTML='<div style="color:var(--text-muted);font-size:11px;padding:6px 0;">This is a root blueprint (Gen 0). No parent to compare.</div>';
+  }
+  // Adaptive status
+  document.getElementById('adaptiveStatus').innerHTML=[
+    {l:'Trend Bias',v:bp.gen>0?'Adaptive':'Seeded',s:bp.gen>0?'Evolving from parent DNA':'Base canon blueprint'},
+    {l:'ABC Status',v:bp.scores.dc>.9?'Optimized':'Active',s:'Mutating within soft bounds'},
+    {l:'Brand Protection',v:bp.scores.ba>.88?'Protected':'Review',s:'EC hard boundaries intact'},
+  ].map(o=>`<div class="card"><div class="clbl">${o.l}</div><div style="font-family:var(--fd);font-size:20px;font-weight:300;color:var(--gold);margin:6px 0 3px;">${o.v}</div><div style="font-size:11px;color:var(--text-dim);">${o.s}</div></div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// PHASE 3: OUTPUT STUDIO
+// ══════════════════════════════════════════════════
+let currentOutput=null;
+async function generateOutput(){
+  const formula=document.getElementById('outFormula').value;
+  const emotion=document.getElementById('outEmotion').value;
+  const bp=await fetchBlueprint(formula,emotion,'Organic Drape');
+  currentOutput={bp,formula,emotion};
+  // Cut list
+  const roles=[{role:'focal',tier:'T1',count:bp.elements[0].count,len:'4–6"'},{role:'supporting',tier:'T2',count:bp.elements[1].count,len:'6–9"'},{role:'filler',tier:'T3',count:bp.elements[2].count,len:'3–5"'},{role:'greenery',tier:'base',count:bp.elements[3].count,len:'8–14"'}];
+  const invItems=[['Ivory Garden Rose','focal'],['Rust Anemone','supporting'],['Champagne Amaranthus','filler'],['Silver Dollar Eucalyptus','greenery'],['Dried Wheat Bundle','supporting'],['Bleached Lunaria','filler'],['Sage Bundle','greenery']];
+  const rows=roles.flatMap(r=>{
+    const matching=invItems.filter(([,role])=>role===r.role).slice(0,r.role==='greenery'?2:1);
+    return matching.map(([name])=>`<div class="cl-row"><div class="cl-name">${name}</div><div>${Math.ceil(r.count/matching.length)}</div><div><span class="irole ${r.role==='focal'?'rf':r.role==='supporting'?'rs':r.role==='filler'?'rfi':'rg'}">${r.role}</span></div><div>${r.len}</div></div>`);
+  });
+  document.getElementById('cutListBody').innerHTML=rows.join('');
+  // Build steps
+  const steps=[
+    {n:1,done:true,txt:'Attach greenery base evenly around wire frame, varying angles 15–30° for natural movement.'},
+    {n:2,done:true,txt:`Apply formula: ${formula}. Establish primary zone anchor points using polar coordinate grid.`},
+    {n:3,done:false,txt:'Place focal stems at primary anchor (A1) using deepest depth layer. Angle outward at 20–35°.'},
+    {n:4,done:false,txt:'Add supporting stems to secondary zones, distributing weight per DNA cluster_weight profile.'},
+    {n:5,done:false,txt:`Fill in filler layer: ${emotion==='Festive & Bright'?'Layer densely for high saturation feel.':emotion==='Vintage Melancholy'?'Leave deliberate gaps for melancholy silence arc.':'Balance evenly across zones.'}`},
+    {n:6,done:false,txt:'Check silence arc integrity. Ensure negative space zones are clear and intentional.'},
+    {n:7,done:false,txt:'Final inspection: verify polar symmetry/asymmetry against formula spec. Export blueprint JSON.'},
+  ];
+  document.getElementById('buildSteps').innerHTML=steps.map(s=>`<div class="bs-row"><div class="bs-num${s.done?' done':''}">${s.done?'✓':s.n}</div><div class="bs-txt">${s.txt}</div></div>`).join('');
+  // Assembly notes
+  document.getElementById('assemblyNotes').innerHTML=`<div class="an-title">${formula} · ${emotion}</div><div style="font-size:11px;color:var(--text-dim);line-height:1.75;margin-bottom:8px;">This blueprint calls for <strong style="color:var(--text)">${bp.dna.cluster_count} clusters</strong> across a <strong style="color:var(--text)">${bp.base.diameter_inches}"</strong> wire frame.</div><div style="font-size:11px;color:var(--text-dim);line-height:1.75;margin-bottom:8px;">Greenery ratio: <strong style="color:var(--gold)">${(bp.dna.greenery_ratio*100).toFixed(0)}%</strong> · Focal depth: <strong style="color:var(--gold)">${bp.dna.focal_depth.toFixed(2)}</strong></div><div style="font-size:11px;color:var(--text-dim);line-height:1.75;margin-bottom:8px;">Silence arc: <strong style="color:var(--gold)">${bp.dna.silence_arc}°</strong> at base. Protect this space.</div><div style="font-size:10px;color:var(--text-muted);border-top:1px solid var(--border);padding-top:8px;margin-top:8px;">Blueprint ID: ${bp.blueprint_id}<br>Certified: EC_CERT_MFGSAFE_V1</div>`;
+  // Draw preview
+  drawOutputPreview(formula);
+  // Activate export buttons
+  document.querySelectorAll('.exp-btn').forEach(b=>b.classList.add('active'));
+}
+function drawOutputPreview(formula){
+  const c=document.getElementById('outputCanvas');if(!c)return;
+  const fi=FORMULAS.findIndex(f=>f.name===formula);
+  if(fi<0)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w/2,cy=h/2,R=88;
+  ctx.clearRect(0,0,w,h);ctx.fillStyle='#f5f1ea';ctx.fillRect(0,0,w,h);
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(42,37,32,.9)';ctx.lineWidth=15;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(201,169,110,.15)';ctx.lineWidth=1;ctx.stroke();
+  const gold='#c9a96e',sage='#7a9e7e',rose='#c47c6e';
+  function s(a,r,l,col,w=1.6){const x=cx+r*Math.cos(a),y=cy+r*Math.sin(a),ex=cx+(r+l)*Math.cos(a),ey=cy+(r+l)*Math.sin(a);ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke();ctx.beginPath();ctx.arc(ex,ey,w+.6,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();}
+  function cl(sa,ea,n,l,col){for(let i=0;i<=n;i++){const a=sa+(ea-sa)*(i/n)+(Math.random()-.5)*.1;s(a,R-6,l+Math.random()*8,col);}}
+  [[()=>cl(Math.PI*.3,Math.PI*1.7,16,17,gold)],[()=>{cl(-.4,.4,7,19,gold);cl(Math.PI-.4,Math.PI+.4,7,19,sage);}],[()=>{cl(Math.PI*.1,Math.PI*.9,18,21,gold);}],[()=>{cl(-.6,.6,10,19,gold);s(0,R,33,rose,2);}],[()=>{cl(Math.PI*.15,Math.PI*.85,12,17,gold);}],[()=>cl(0,Math.PI*2,26,15,gold)],[()=>{cl(Math.PI*.1,Math.PI*.85,12,19,gold);cl(Math.PI*1.1,Math.PI*1.85,12,19,sage);}],[()=>{for(let i=0;i<14;i++){const a=(i/14)*Math.PI*2;s(a,R-8,24+Math.random()*13,i%3===0?rose:gold,1.7);}}],[()=>{for(let i=0;i<9;i++){const a=-.3+i*.18;s(a,R-4,11+i*2.2,i%2===0?gold:sage,1.6);}}],[()=>{for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;s(a,R-5,19,gold,1.8);}}],[()=>{cl(Math.PI*.6,Math.PI*1.4,14,15,gold);}],[()=>{const cs=[gold,sage,rose];for(let i=0;i<18;i++){const a=Math.random()*Math.PI*2;s(a,R-7,9+Math.random()*19,cs[Math.floor(Math.random()*3)],1.4);}}]][fi][0]();
+  ctx.font='8px "DM Mono"';ctx.fillStyle='rgba(201,169,110,.4)';ctx.textAlign='right';ctx.fillText(formula.toUpperCase(),w-8,h-8);
+}
+function exportOutput(type){
+  if(!currentOutput){alert('Generate a blueprint first.');return;}
+  const {bp,formula,emotion}=currentOutput;
+  const btn=document.getElementById('exp'+type.toUpperCase());
+  const orig=btn.querySelector('.exp-icon').nextSibling.textContent;
+  const content={
+    json:()=>JSON.stringify(bp,null,2),
+    csv:()=>`Item,Count,Role,Length\nIvory Garden Rose,${bp.elements[0].count},focal,4-6in\nRust Anemone,${bp.elements[1].count},supporting,6-9in\nChampage Amaranthus,${bp.elements[2].count},filler,3-5in\nSilver Dollar Eucalyptus,${bp.elements[3].count},greenery,8-14in`,
+    pdf:()=>`EVERCRAFTED BUILD GUIDE\n========================\nBlueprint: ${bp.blueprint_id}\nFormula: ${formula}\nEmotion: ${emotion}\nDiameter: ${bp.base.diameter_inches}"\n\nDNA PROFILE\n-----------\n${Object.entries(bp.dna).map(([k,v])=>`${k}: ${v}`).join('\n')}\n\nBUILD STEPS\n-----------\n1. Attach greenery base\n2. Apply ${formula} formula\n3. Place focal stems at A1\n4. Add supporting layer\n5. Fill filler layer\n6. Check silence arc\n7. Final inspection\n\nEC_CERT_MFGSAFE_V1`,
+    mj:()=>`/imagine prompt: luxury faux botanical wreath, ${formula.toLowerCase()} composition formula, ${emotion.toLowerCase()} emotional tone, ${bp.dna.style_signature} style, asymmetric, matte finish, no ribbons, no bows, editorial product photography, black background, soft side lighting, 8k detail, --ar 1:1 --v 6 --style raw`,
+  };
+  const exts={json:'json',csv:'csv',pdf:'txt',mj:'txt'};
+  const blob=new Blob([content[type]()],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`evercrafted-${type}-${bp.blueprint_id}.${exts[type]}`;a.click();
+  btn.style.borderColor='var(--sage)';btn.style.color='var(--sage)';
+  setTimeout(()=>{btn.style.borderColor='';btn.style.color='';},1800);
+}
+
+// ── THEME ──
+(() => {
+  document.body.classList.add('light');
+})();
+
+// ── BOOT ──
+loadFormulas().then(initFormulaGrid);
+loadDNAProfiles().then(buildDNARegistry);
+runPlacement();
+</script>
+</body>
+</html>
