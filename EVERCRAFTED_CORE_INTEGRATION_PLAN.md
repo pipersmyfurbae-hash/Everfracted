@@ -12,6 +12,8 @@ Make the Evercrafted Engine the single core runtime so every app uses one shared
 - Added `assets/js/evercrafted-core-engine.js` as the shared frontend core client.
 - Updated all `app-*.html` pages that use engine generation to call this shared core client.
 - Removed one hard-coded direct engine debug call in `app-memory-weaver.html` so traffic always flows through the core resolver.
+- Extended the shared client to also own auth (`signup/signin/password-reset`), intake (`waitlist/contact`), and blueprint cloud actions (`blueprints/uploads`).
+- Migrated `evercrafted-auth.html`, `evercrafted-waitlist.html`, `contact.html`, `evercrafted-website.html`, and `app-blueprint.html` to those shared client methods.
 
 ## Target architecture (recommended)
 1. **Core API layer (source of truth):** `backend/server.js`

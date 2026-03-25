@@ -655,6 +655,7 @@ body{
   </div>
 </div>
 
+<script src="assets/js/evercrafted-core-engine.js"></script>
 <script>
 // ── STATE
 let currentScreen = 'signup';
@@ -738,8 +739,6 @@ function showScreen(id){
   updateNav(id);
 }
 
-const API_BASE = "http://localhost:8787";
-
 async function submitSignup(){
   const firstName = document.getElementById('su-fname').value;
   const lastName = document.getElementById('su-lname') ? document.getElementById('su-lname').value : document.querySelector('#screen-signup input[type=\"text\"][placeholder=\"Reynolds\"]').value;
@@ -752,18 +751,12 @@ async function submitSignup(){
   }
 
   try {
-    const res = await fetch(`${API_BASE}/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password
-      })
+    await window.EvercraftedCoreEngine.signup({
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      password
     });
-    const json = await res.json();
-    if (!res.ok || !json.ok) throw new Error(json.error || 'Signup failed');
     showScreen('plan');
   } catch (err) {
     alert('Signup failed. Please try again.');
@@ -780,13 +773,7 @@ async function submitSignin(){
   }
 
   try {
-    const res = await fetch(`${API_BASE}/signin`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const json = await res.json();
-    if (!res.ok || !json.ok) throw new Error(json.error || 'Signin failed');
+    await window.EvercraftedCoreEngine.signin({ email, password });
     showScreen('onboard-1');
   } catch (err) {
     alert('Sign in failed. Please check your credentials.');
@@ -801,13 +788,7 @@ async function submitReset(){
   }
 
   try {
-    const res = await fetch(`${API_BASE}/password-reset`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-    const json = await res.json();
-    if (!res.ok || !json.ok) throw new Error(json.error || 'Reset failed');
+    await window.EvercraftedCoreEngine.passwordReset({ email });
     showScreen('reset-sent');
   } catch (err) {
     alert('Reset failed. Please try again.');

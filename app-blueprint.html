@@ -759,8 +759,6 @@ const state = {
   isCustom: false
 };
 
-const API_BASE = "http://localhost:8787";
-
 // Admin unlock
 (() => {
   const params = new URLSearchParams(window.location.search);
@@ -1103,13 +1101,7 @@ async function saveBlueprintToCloud() {
   };
 
   try {
-    const res = await fetch(`${API_BASE}/blueprints`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const json = await res.json();
-    if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+    await window.EvercraftedCoreEngine.saveBlueprint(payload);
     showToast(`"${name}" saved to cloud`);
   } catch (err) {
     showToast("Cloud save failed");
@@ -1166,9 +1158,7 @@ if (uploadInput) {
     const fd = new FormData();
     fd.append('file', file);
     try {
-      const res = await fetch(`${API_BASE}/uploads`, { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error || "Upload failed");
+      await window.EvercraftedCoreEngine.uploadFile(fd);
       showToast("Image uploaded");
     } catch (err) {
       showToast("Upload failed");

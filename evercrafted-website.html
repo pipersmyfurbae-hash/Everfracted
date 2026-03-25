@@ -1141,6 +1141,7 @@ footer {
   <p style="font-family:var(--ec-script);font-size:1rem;color:rgba(255,255,255,0.2)">Made with care</p>
 </div>
 
+<script src="assets/js/evercrafted-core-engine.js"></script>
 <script>
 // Nav scroll effect
 const nav = document.getElementById('main-nav');
@@ -1172,8 +1173,6 @@ document.querySelectorAll('.service-card').forEach(card => {
   });
 });
 
-const API_BASE = "http://localhost:8787";
-
 // Contact form
 async function handleSubmit(e) {
   e.preventDefault();
@@ -1198,20 +1197,14 @@ async function handleSubmit(e) {
   });
 
   try {
-    const res = await fetch(`${API_BASE}/contact`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        role,
-        extra: message,
-        channel: "evercrafted-website"
-      })
+    await window.EvercraftedCoreEngine.submitContact({
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      role,
+      extra: message,
+      channel: "evercrafted-website"
     });
-    const json = await res.json();
-    if (!res.ok || !json.ok) throw new Error(json.error || 'Submit failed');
     success.style.display = 'block';
     success.style.animation = 'fadeUp 0.5s ease forwards';
   } catch (err) {
