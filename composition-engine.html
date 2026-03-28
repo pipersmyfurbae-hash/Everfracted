@@ -1,0 +1,2915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — Composition Engine Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+
+<style>
+/* ─────────────────────────────────────────
+   BRAND TOKENS
+───────────────────────────────────────── */
+:root {
+  --ec-white:        #FFFFFF;
+  --ec-off-white:    #F9F7F4;
+  --ec-paper:        #F2EFE9;
+  --ec-black:        #1A1A1A;
+  --ec-charcoal:     #2E2E2E;
+  --ec-ink:          #4A4A4A;
+
+  --ec-green:        #4A6741;
+  --ec-green-light:  #6B8F67;
+  --ec-green-pale:   #EEF2ED;
+  --ec-green-dim:    rgba(74,103,65,0.12);
+  --ec-green-glow:   rgba(74,103,65,0.25);
+
+  --ec-gray-100:     #F5F5F5;
+  --ec-gray-200:     #E8E8E8;
+  --ec-gray-300:     #D0D0D0;
+  --ec-gray-400:     #A8A8A8;
+  --ec-gray-500:     #787878;
+
+  --ec-warning:      #C4922A;
+  --ec-info:         #4A6785;
+
+  --ec-surface:      var(--ec-white);
+  --ec-surface-alt:  var(--ec-off-white);
+  --ec-surface-warm: var(--ec-paper);
+  --ec-border:       var(--ec-gray-200);
+  --ec-text:         var(--ec-black);
+  --ec-text-muted:   var(--ec-ink);
+  --ec-text-faint:   var(--ec-gray-500);
+
+  --ec-font-serif:   'Cormorant Garamond', Georgia, serif;
+  --ec-font-sans:    'Inter', system-ui, sans-serif;
+  --ec-font-script:  'Dancing Script', cursive;
+  --ec-font-mono:    'DM Mono', monospace;
+
+  --ec-space-1:  0.25rem;
+  --ec-space-2:  0.5rem;
+  --ec-space-3:  0.75rem;
+  --ec-space-4:  1rem;
+  --ec-space-5:  1.5rem;
+  --ec-space-6:  2rem;
+  --ec-space-8:  2.5rem;
+  --ec-space-10: 3rem;
+  --ec-space-12: 4rem;
+
+  --ec-radius-sm:   4px;
+  --ec-radius-md:   8px;
+  --ec-radius-lg:   14px;
+  --ec-radius-xl:   20px;
+  --ec-radius-full: 9999px;
+
+  --ec-shadow-sm:   0 1px 3px rgba(0,0,0,0.06);
+  --ec-shadow-md:   0 4px 16px rgba(0,0,0,0.08);
+  --ec-shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+  --ec-shadow-hero: 0 24px 64px rgba(0,0,0,0.10);
+
+  --ec-transition:  200ms ease;
+}
+
+/* ─────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ec-font-sans);
+  background: var(--ec-off-white);
+  color: var(--ec-text);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ─────────────────────────────────────────
+   HEADER / NAV
+───────────────────────────────────────── */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--ec-space-8);
+  height: 64px;
+  background: rgba(249,247,244,0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ec-border);
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+  text-decoration: none;
+  color: var(--ec-text);
+}
+.site-logo__mark {
+  width: 32px; height: 32px;
+  background: var(--ec-green-pale);
+  border-radius: var(--ec-radius-full);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--ec-green-dim);
+}
+.site-logo__name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.site-logo__sub {
+  font-family: var(--ec-font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ec-text-faint);
+  display: block;
+  line-height: 1;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-5);
+  list-style: none;
+}
+.header-nav a {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ec-text-muted);
+  text-decoration: none;
+  transition: color var(--ec-transition);
+}
+.header-nav a:hover,
+.header-nav a.active { color: var(--ec-green); }
+
+.header-badge {
+  font-family: var(--ec-font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  background: var(--ec-green-pale);
+  border: 1px solid var(--ec-green-dim);
+  padding: 4px 12px;
+  border-radius: var(--ec-radius-full);
+}
+
+/* ─────────────────────────────────────────
+   HERO
+───────────────────────────────────────── */
+.hero {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px var(--ec-space-8) 80px;
+  position: relative;
+  overflow: hidden;
+  background: var(--ec-off-white);
+}
+
+/* Animated radial gradient background */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 60%, rgba(74,103,65,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-family: var(--ec-font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  margin-bottom: var(--ec-space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+}
+.hero-eyebrow::before,
+.hero-eyebrow::after {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--ec-green);
+  opacity: 0.5;
+}
+
+.hero-headline {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(3.2rem, 7vw, 6.5rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ec-black);
+  max-width: 900px;
+  margin-bottom: var(--ec-space-5);
+}
+.hero-headline em {
+  font-style: italic;
+  color: var(--ec-green);
+}
+
+.hero-sub {
+  font-family: var(--ec-font-sans);
+  font-size: 1.05rem;
+  color: var(--ec-text-muted);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: var(--ec-space-8);
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-8);
+  margin-bottom: var(--ec-space-10);
+}
+.hero-stat {
+  text-align: center;
+}
+.hero-stat__num {
+  font-family: var(--ec-font-serif);
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--ec-black);
+  line-height: 1;
+  display: block;
+}
+.hero-stat__label {
+  font-family: var(--ec-font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ec-text-faint);
+  margin-top: 4px;
+}
+.hero-stat-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--ec-border);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ec-space-2);
+  font-family: var(--ec-font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ec-white);
+  background: var(--ec-green);
+  padding: 14px 32px;
+  border-radius: var(--ec-radius-full);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.hero-cta:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 32px var(--ec-green-glow);
+}
+.hero-cta svg { transition: transform 200ms ease; }
+.hero-cta:hover svg { transform: translateX(3px); }
+
+/* Botanical divider */
+.botanical-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0 20px;
+  color: var(--ec-green);
+  opacity: 0.5;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--ec-text-faint);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--ec-font-sans);
+  animation: scrollBob 2s ease-in-out infinite;
+}
+@keyframes scrollBob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(6px); }
+}
+.scroll-indicator__line {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, var(--ec-green), transparent);
+}
+
+/* ─────────────────────────────────────────
+   SECTION WRAPPER
+───────────────────────────────────────── */
+.section {
+  padding: 120px var(--ec-space-8);
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.section--full {
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+.section--dark {
+  background: var(--ec-black);
+  color: var(--ec-off-white);
+  max-width: 100%;
+  padding: 120px var(--ec-space-8);
+}
+.section--dark .section-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-family: var(--ec-font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  margin-bottom: var(--ec-space-3);
+}
+.section--dark .section-eyebrow { color: var(--ec-green-light); }
+
+.section-heading {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--ec-space-4);
+}
+.section-heading em { font-style: italic; color: var(--ec-green); }
+.section--dark .section-heading em { color: var(--ec-green-light); }
+
+.section-lead {
+  font-size: 1rem;
+  color: var(--ec-text-muted);
+  max-width: 580px;
+  line-height: 1.75;
+}
+.section--dark .section-lead { color: var(--ec-gray-400); }
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: var(--ec-space-10);
+  gap: var(--ec-space-8);
+}
+.section-header-left { flex: 1; }
+.section-header-right {
+  font-family: var(--ec-font-script);
+  font-size: 1.3rem;
+  color: var(--ec-text-faint);
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+
+/* ─────────────────────────────────────────
+   PIPELINE — VERTICAL INTERACTIVE FLOW
+───────────────────────────────────────── */
+.pipeline-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 2px 1fr;
+  gap: 0 var(--ec-space-8);
+  align-items: start;
+  position: relative;
+}
+
+/* Center spine */
+.pipeline-spine {
+  grid-column: 2;
+  grid-row: 1 / span 20;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pipeline-spine__line {
+  width: 2px;
+  flex: 1;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    var(--ec-green) 8%,
+    var(--ec-green) 92%,
+    transparent 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+/* Animated flow particle */
+.pipeline-spine__line::after {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--ec-green-light), transparent);
+  border-radius: 2px;
+  animation: flowDown 3s linear infinite;
+}
+@keyframes flowDown {
+  0%   { top: -60px; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Pipeline engine cards */
+.pipeline-engine {
+  position: relative;
+  cursor: pointer;
+}
+.pipeline-engine--left {
+  grid-column: 1;
+  text-align: right;
+  padding-right: var(--ec-space-6);
+  padding-bottom: var(--ec-space-10);
+}
+.pipeline-engine--right {
+  grid-column: 3;
+  text-align: left;
+  padding-left: var(--ec-space-6);
+  padding-bottom: var(--ec-space-10);
+}
+
+/* Connector dot on spine */
+.pipeline-engine::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ec-green);
+  border: 3px solid var(--ec-off-white);
+  box-shadow: 0 0 0 2px var(--ec-green);
+  z-index: 2;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.pipeline-engine--left::before {
+  right: -var(--ec-space-6);
+  right: calc(-1 * var(--ec-space-6) - 5px);
+}
+.pipeline-engine--right::before {
+  left: calc(-1 * var(--ec-space-6) - 5px);
+}
+.pipeline-engine:hover::before {
+  transform: scale(1.4);
+  box-shadow: 0 0 0 4px var(--ec-green-glow);
+}
+
+/* Connector line from card to spine */
+.pipeline-engine::after {
+  content: '';
+  position: absolute;
+  top: 33px;
+  height: 1px;
+  background: var(--ec-green);
+  opacity: 0.4;
+  transition: opacity 200ms ease;
+}
+.pipeline-engine--left::after {
+  right: 0;
+  width: var(--ec-space-6);
+}
+.pipeline-engine--right::after {
+  left: 0;
+  width: var(--ec-space-6);
+}
+.pipeline-engine:hover::after { opacity: 1; }
+
+.engine-card {
+  background: var(--ec-surface);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-lg);
+  padding: var(--ec-space-5) var(--ec-space-6);
+  box-shadow: var(--ec-shadow-sm);
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition), border-color var(--ec-transition);
+  position: relative;
+  overflow: hidden;
+}
+.engine-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--ec-green-pale) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+.pipeline-engine:hover .engine-card {
+  transform: translateY(-4px);
+  box-shadow: var(--ec-shadow-lg);
+  border-color: var(--ec-green-light);
+}
+.pipeline-engine:hover .engine-card::before { opacity: 1; }
+.pipeline-engine.active .engine-card {
+  border-color: var(--ec-green);
+  box-shadow: 0 0 0 3px var(--ec-green-dim), var(--ec-shadow-lg);
+}
+.pipeline-engine.active .engine-card::before { opacity: 1; }
+
+.engine-number {
+  font-family: var(--ec-font-serif);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ec-green);
+  text-transform: uppercase;
+  margin-bottom: var(--ec-space-2);
+  display: block;
+}
+.engine-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ec-black);
+  margin-bottom: var(--ec-space-2);
+  line-height: 1.2;
+}
+.engine-desc {
+  font-family: var(--ec-font-sans);
+  font-size: 0.85rem;
+  color: var(--ec-text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--ec-space-3);
+}
+.engine-io {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ec-space-2);
+  margin-top: var(--ec-space-3);
+  padding-top: var(--ec-space-3);
+  border-top: 1px solid var(--ec-border);
+}
+.engine-io-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ec-space-2);
+  font-family: var(--ec-font-sans);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.engine-io-label {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  color: var(--ec-text-faint);
+  min-width: 36px;
+  padding-top: 1px;
+}
+.engine-io-value {
+  color: var(--ec-text-muted);
+  font-family: var(--ec-font-mono);
+  font-size: 0.72rem;
+  background: var(--ec-gray-100);
+  padding: 2px 8px;
+  border-radius: var(--ec-radius-sm);
+  line-height: 1.6;
+}
+.pipeline-engine--left .engine-io-row { flex-direction: row-reverse; }
+.pipeline-engine--left .engine-io-label { text-align: left; }
+
+/* Engine tags */
+.engine-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ec-space-1);
+  margin-top: var(--ec-space-3);
+}
+.pipeline-engine--left .engine-tags { justify-content: flex-end; }
+.engine-tag {
+  font-family: var(--ec-font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  background: var(--ec-green-pale);
+  padding: 2px 8px;
+  border-radius: var(--ec-radius-full);
+  border: 1px solid var(--ec-green-dim);
+}
+
+/* ─────────────────────────────────────────
+   DETAIL PANEL (right side sticky)
+───────────────────────────────────────── */
+.pipeline-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--ec-space-10);
+  align-items: start;
+}
+.pipeline-detail {
+  position: sticky;
+  top: 88px;
+}
+.detail-panel {
+  background: var(--ec-surface);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--ec-shadow-lg);
+  min-height: 520px;
+  transition: all 300ms ease;
+}
+.detail-panel__header {
+  background: var(--ec-green);
+  padding: var(--ec-space-5) var(--ec-space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+}
+.detail-panel__icon {
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.15);
+  border-radius: var(--ec-radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 1rem;
+}
+.detail-panel__title {
+  font-family: var(--ec-font-serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  line-height: 1.2;
+}
+.detail-panel__subtitle {
+  font-family: var(--ec-font-sans);
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.detail-panel__body {
+  padding: var(--ec-space-6);
+}
+.detail-schema {
+  background: var(--ec-black);
+  border-radius: var(--ec-radius-md);
+  padding: var(--ec-space-5);
+  margin-bottom: var(--ec-space-5);
+  overflow: auto;
+  max-height: 260px;
+}
+.detail-schema pre {
+  font-family: var(--ec-font-mono);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: #a8d5a2;
+  white-space: pre;
+}
+.detail-schema .key   { color: #7ec8e3; }
+.detail-schema .str   { color: #f0c27f; }
+.detail-schema .num   { color: #c3a6ff; }
+.detail-schema .bool  { color: #f28779; }
+.detail-schema .punct { color: #888; }
+
+.detail-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ec-space-3);
+  margin-bottom: var(--ec-space-5);
+}
+.detail-metric {
+  background: var(--ec-surface-alt);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-md);
+  padding: var(--ec-space-3) var(--ec-space-4);
+}
+.detail-metric__val {
+  font-family: var(--ec-font-serif);
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--ec-black);
+  line-height: 1;
+}
+.detail-metric__label {
+  font-family: var(--ec-font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ec-text-faint);
+  margin-top: 4px;
+}
+
+.detail-note {
+  font-family: var(--ec-font-sans);
+  font-size: 0.82rem;
+  color: var(--ec-text-muted);
+  line-height: 1.65;
+  border-left: 2px solid var(--ec-green);
+  padding-left: var(--ec-space-4);
+}
+
+/* Default state of detail panel */
+.detail-panel--empty .detail-panel__header { background: var(--ec-gray-300); }
+.detail-empty-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ec-space-12) var(--ec-space-6);
+  text-align: center;
+  gap: var(--ec-space-4);
+}
+.detail-empty-msg svg { color: var(--ec-gray-300); }
+.detail-empty-msg p {
+  font-family: var(--ec-font-sans);
+  font-size: 0.85rem;
+  color: var(--ec-text-faint);
+  max-width: 220px;
+  line-height: 1.6;
+}
+
+/* ─────────────────────────────────────────
+   SCORING ENGINE SECTION
+───────────────────────────────────────── */
+.scoring-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ec-space-6);
+  align-items: start;
+}
+.score-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ec-space-4);
+}
+.score-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ec-space-2);
+}
+.score-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.score-bar-name {
+  font-family: var(--ec-font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ec-text-muted);
+}
+.score-bar-val {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ec-black);
+}
+.score-bar-track {
+  height: 6px;
+  background: var(--ec-gray-200);
+  border-radius: var(--ec-radius-full);
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: var(--ec-radius-full);
+  background: linear-gradient(90deg, var(--ec-green) 0%, var(--ec-green-light) 100%);
+  width: 0%;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.score-bar-fill.animated { width: var(--target-width); }
+
+.score-overall-card {
+  background: var(--ec-black);
+  border-radius: var(--ec-radius-xl);
+  padding: var(--ec-space-8);
+  color: var(--ec-off-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--ec-space-4);
+  min-height: 300px;
+}
+.score-overall-label {
+  font-family: var(--ec-font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-gray-400);
+}
+.score-overall-num {
+  font-family: var(--ec-font-serif);
+  font-size: 5rem;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--ec-white);
+}
+.score-overall-ring {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+.score-overall-ring svg {
+  transform: rotate(-90deg);
+}
+.score-ring-bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.08);
+  stroke-width: 8;
+}
+.score-ring-fill {
+  fill: none;
+  stroke: var(--ec-green-light);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 408;
+  stroke-dashoffset: 408;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.score-ring-fill.animated { stroke-dashoffset: 74; } /* 408 * (1 - 0.82) */
+.score-ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.score-ring-val {
+  font-family: var(--ec-font-serif);
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--ec-white);
+  line-height: 1;
+}
+.score-ring-sub {
+  font-family: var(--ec-font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ec-gray-400);
+  margin-top: 4px;
+}
+.score-pass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ec-font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ec-green-light);
+  background: rgba(107,143,103,0.15);
+  border: 1px solid rgba(107,143,103,0.3);
+  padding: 6px 14px;
+  border-radius: var(--ec-radius-full);
+}
+.score-pass-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ec-green-light);
+}
+
+/* ─────────────────────────────────────────
+   REPAIR ENGINE SECTION
+───────────────────────────────────────── */
+.repair-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ec-space-4);
+  margin-bottom: var(--ec-space-8);
+}
+.repair-pass-card {
+  background: var(--ec-surface);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-lg);
+  padding: var(--ec-space-5);
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.repair-pass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ec-shadow-md);
+}
+.repair-pass-num {
+  font-family: var(--ec-font-serif);
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--ec-green);
+  line-height: 1;
+  margin-bottom: var(--ec-space-2);
+}
+.repair-pass-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ec-black);
+  margin-bottom: var(--ec-space-2);
+  line-height: 1.3;
+}
+.repair-pass-desc {
+  font-family: var(--ec-font-sans);
+  font-size: 0.8rem;
+  color: var(--ec-text-muted);
+  line-height: 1.6;
+}
+
+.repair-convergence {
+  background: var(--ec-surface-warm);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-xl);
+  padding: var(--ec-space-8);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ec-space-8);
+  align-items: center;
+}
+.repair-conv-chart {
+  position: relative;
+  height: 180px;
+}
+.repair-conv-chart svg { width: 100%; height: 100%; }
+.repair-conv-info { }
+.repair-conv-title {
+  font-family: var(--ec-font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: var(--ec-space-3);
+  color: var(--ec-black);
+}
+.repair-conv-body {
+  font-family: var(--ec-font-sans);
+  font-size: 0.85rem;
+  color: var(--ec-text-muted);
+  line-height: 1.7;
+  margin-bottom: var(--ec-space-4);
+}
+.repair-params {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ec-space-2);
+}
+.repair-param {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--ec-font-sans);
+  font-size: 0.8rem;
+  padding: var(--ec-space-2) var(--ec-space-3);
+  background: var(--ec-surface);
+  border-radius: var(--ec-radius-md);
+  border: 1px solid var(--ec-border);
+}
+.repair-param-key {
+  font-weight: 600;
+  color: var(--ec-text-muted);
+  font-family: var(--ec-font-mono);
+  font-size: 0.72rem;
+}
+.repair-param-val {
+  font-family: var(--ec-font-mono);
+  font-size: 0.72rem;
+  color: var(--ec-green);
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────
+   GENOME SECTION
+───────────────────────────────────────── */
+.genome-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ec-space-6);
+  align-items: start;
+}
+.genome-card {
+  background: var(--ec-surface);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--ec-shadow-md);
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.genome-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ec-shadow-lg);
+}
+.genome-card__header {
+  background: var(--ec-green-pale);
+  padding: var(--ec-space-4) var(--ec-space-5);
+  border-bottom: 1px solid var(--ec-green-dim);
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+}
+.genome-card__sku {
+  font-family: var(--ec-font-mono);
+  font-size: 0.72rem;
+  color: var(--ec-green);
+  background: var(--ec-surface);
+  padding: 2px 8px;
+  border-radius: var(--ec-radius-sm);
+  border: 1px solid var(--ec-green-dim);
+}
+.genome-card__name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ec-black);
+}
+.genome-card__body {
+  padding: var(--ec-space-5);
+}
+.genome-traits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ec-space-3);
+}
+.genome-trait {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--ec-font-sans);
+  font-size: 0.8rem;
+}
+.genome-trait-key {
+  color: var(--ec-text-faint);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  min-width: 120px;
+}
+.genome-trait-val {
+  font-family: var(--ec-font-mono);
+  font-size: 0.75rem;
+  color: var(--ec-text-muted);
+  text-align: right;
+}
+.genome-trait-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--ec-gray-200);
+  border-radius: var(--ec-radius-full);
+  margin: 0 var(--ec-space-3);
+  overflow: hidden;
+}
+.genome-trait-fill {
+  height: 100%;
+  background: var(--ec-green);
+  border-radius: var(--ec-radius-full);
+  width: 0;
+  transition: width 1s ease 0.3s;
+}
+.genome-trait-fill.animated { width: var(--fill-w); }
+
+.genome-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ec-space-1);
+  margin-top: var(--ec-space-4);
+  padding-top: var(--ec-space-4);
+  border-top: 1px solid var(--ec-border);
+}
+.genome-tag {
+  font-family: var(--ec-font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: var(--ec-radius-full);
+  border: 1px solid var(--ec-border);
+  color: var(--ec-text-muted);
+}
+.genome-tag--emotion {
+  background: var(--ec-green-pale);
+  border-color: var(--ec-green-dim);
+  color: var(--ec-green);
+}
+
+/* Substitution chain */
+.substitution-chain {
+  background: var(--ec-surface-warm);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-xl);
+  padding: var(--ec-space-8);
+}
+.sub-chain-title {
+  font-family: var(--ec-font-serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: var(--ec-space-2);
+  color: var(--ec-black);
+}
+.sub-chain-desc {
+  font-family: var(--ec-font-sans);
+  font-size: 0.85rem;
+  color: var(--ec-text-muted);
+  margin-bottom: var(--ec-space-6);
+  line-height: 1.65;
+}
+.sub-chain-nodes {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  gap: var(--ec-space-2);
+}
+.sub-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ec-space-2);
+}
+.sub-node__pill {
+  font-family: var(--ec-font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--ec-radius-full);
+  border: 1.5px solid var(--ec-border);
+  background: var(--ec-surface);
+  color: var(--ec-text-muted);
+  white-space: nowrap;
+  transition: all var(--ec-transition);
+}
+.sub-node--primary .sub-node__pill {
+  background: var(--ec-green);
+  border-color: var(--ec-green);
+  color: white;
+}
+.sub-node__label {
+  font-family: var(--ec-font-sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ec-text-faint);
+}
+.sub-arrow {
+  font-size: 1rem;
+  color: var(--ec-gray-300);
+  align-self: center;
+  margin-bottom: 20px;
+}
+.sub-weights {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--ec-space-3);
+  margin-top: var(--ec-space-6);
+}
+.sub-weight {
+  background: var(--ec-surface);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-md);
+  padding: var(--ec-space-3);
+  text-align: center;
+}
+.sub-weight-pct {
+  font-family: var(--ec-font-serif);
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--ec-green);
+  line-height: 1;
+}
+.sub-weight-label {
+  font-family: var(--ec-font-sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ec-text-faint);
+  margin-top: 4px;
+}
+
+/* ─────────────────────────────────────────
+   FORMULA REGISTRY
+───────────────────────────────────────── */
+.formula-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ec-space-5);
+  margin-bottom: var(--ec-space-8);
+}
+.formula-card {
+  background: var(--ec-surface);
+  border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-xl);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition), border-color var(--ec-transition);
+}
+.formula-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ec-shadow-lg);
+  border-color: var(--ec-green-light);
+}
+.formula-card.selected {
+  border-color: var(--ec-green);
+  box-shadow: 0 0 0 3px var(--ec-green-dim), var(--ec-shadow-lg);
+}
+.formula-preview {
+  height: 160px;
+  background: var(--ec-surface-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.formula-preview svg { width: 120px; height: 120px; }
+.formula-card__body {
+  padding: var(--ec-space-4) var(--ec-space-5);
+}
+.formula-card__name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ec-black);
+  margin-bottom: var(--ec-space-1);
+}
+.formula-card__id {
+  font-family: var(--ec-font-mono);
+  font-size: 0.7rem;
+  color: var(--ec-text-faint);
+  margin-bottom: var(--ec-space-3);
+}
+.formula-card__score {
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-2);
+  font-family: var(--ec-font-sans);
+  font-size: 0.78rem;
+}
+.formula-score-badge {
+  font-family: var(--ec-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ec-green);
+  background: var(--ec-green-pale);
+  padding: 2px 8px;
+  border-radius: var(--ec-radius-full);
+}
+.formula-score-label {
+  color: var(--ec-text-faint);
+  font-size: 0.72rem;
+}
+
+/* ─────────────────────────────────────────
+   DNA FINGERPRINT
+───────────────────────────────────────── */
+.dna-section {
+  background: var(--ec-black);
+  padding: 120px var(--ec-space-8);
+  position: relative;
+  overflow: hidden;
+}
+.dna-section::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(74,103,65,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.dna-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ec-space-12);
+  align-items: center;
+}
+.dna-left .section-eyebrow { color: var(--ec-green-light); }
+.dna-left .section-heading { color: var(--ec-off-white); }
+.dna-left .section-heading em { color: var(--ec-green-light); }
+.dna-left .section-lead { color: var(--ec-gray-400); }
+.dna-uses {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ec-space-3);
+  margin-top: var(--ec-space-6);
+}
+.dna-use {
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+  font-family: var(--ec-font-sans);
+  font-size: 0.85rem;
+  color: var(--ec-gray-400);
+}
+.dna-use::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ec-green-light);
+  flex-shrink: 0;
+}
+.dna-code-block {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--ec-radius-xl);
+  overflow: hidden;
+}
+.dna-code-header {
+  padding: var(--ec-space-3) var(--ec-space-5);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: var(--ec-space-3);
+}
+.dna-code-dots {
+  display: flex;
+  gap: 6px;
+}
+.dna-code-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.dna-code-dot--red   { background: #ff5f57; }
+.dna-code-dot--amber { background: #febc2e; }
+.dna-code-dot--green { background: #28c840; }
+.dna-code-filename {
+  font-family: var(--ec-font-mono);
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.3);
+}
+.dna-code-body {
+  padding: var(--ec-space-6);
+}
+.dna-code-body pre {
+  font-family: var(--ec-font-mono);
+  font-size: 0.78rem;
+  line-height: 1.8;
+  color: #a8d5a2;
+  overflow: auto;
+}
+.dna-code-body .k  { color: #7ec8e3; }
+.dna-code-body .s  { color: #f0c27f; }
+.dna-code-body .n  { color: #c3a6ff; }
+.dna-code-body .p  { color: rgba(255,255,255,0.3); }
+.dna-code-body .c  { color: rgba(255,255,255,0.25); font-style: italic; }
+
+/* ─────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────── */
+.site-footer {
+  background: var(--ec-charcoal);
+  padding: var(--ec-space-10) var(--ec-space-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ec-space-6);
+}
+.footer-brand {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ec-off-white);
+}
+.footer-brand span {
+  font-family: var(--ec-font-script);
+  color: var(--ec-green-light);
+  font-size: 0.9rem;
+  display: block;
+}
+.footer-meta {
+  font-family: var(--ec-font-sans);
+  font-size: 0.75rem;
+  color: var(--ec-gray-500);
+  text-align: right;
+}
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .pipeline-layout { grid-template-columns: 1fr; }
+  .pipeline-detail { position: static; }
+  .scoring-grid { grid-template-columns: 1fr; }
+  .genome-grid { grid-template-columns: 1fr; }
+  .dna-inner { grid-template-columns: 1fr; }
+  .formula-grid { grid-template-columns: 1fr 1fr; }
+  .repair-grid { grid-template-columns: 1fr 1fr; }
+  .sub-weights { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .site-header { padding: 0 var(--ec-space-5); }
+  .header-nav { display: none; }
+  .hero { padding: 100px var(--ec-space-5) 60px; }
+  .hero-stats { gap: var(--ec-space-5); }
+  .section { padding: 80px var(--ec-space-5); }
+  .pipeline-wrapper { grid-template-columns: 1fr; }
+  .pipeline-spine { display: none; }
+  .pipeline-engine--left,
+  .pipeline-engine--right {
+    grid-column: 1;
+    text-align: left;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .pipeline-engine--left .engine-io-row { flex-direction: row; }
+  .pipeline-engine--left .engine-tags { justify-content: flex-start; }
+  .pipeline-engine::before,
+  .pipeline-engine::after { display: none; }
+  .formula-grid { grid-template-columns: 1fr; }
+  .repair-grid { grid-template-columns: 1fr; }
+  .repair-convergence { grid-template-columns: 1fr; }
+  .sub-weights { grid-template-columns: 1fr 1fr; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .dna-section { padding: 80px var(--ec-space-5); }
+  .site-footer { flex-direction: column; text-align: center; }
+  .footer-meta { text-align: center; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════
+     HEADER
+════════════════════════════════════════ -->
+<header class="site-header">
+  <a href="#" class="site-logo">
+    <div class="site-logo__mark">
+      <svg width="16" height="16" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:var(--ec-green)">
+        <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+      </svg>
+    </div>
+    <div>
+      <span class="site-logo__name">Evercrafted</span>
+      <span class="site-logo__sub">Composition Engine</span>
+    </div>
+  </a>
+  <nav>
+    <ul class="header-nav">
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#scoring">Scoring</a></li>
+      <li><a href="#repair">Repair</a></li>
+      <li><a href="#genome">Genome</a></li>
+      <li><a href="#formula">Formulas</a></li>
+      <li><a href="#dna">Blueprint DNA</a></li>
+    </ul>
+  </nav>
+  <span class="header-badge">PRD v1.0</span>
+</header>
+
+
+<!-- ═══════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-eyebrow reveal">Composition Engine Pipeline</div>
+
+  <h1 class="hero-headline reveal reveal-delay-1">
+    Emotion becomes<br><em>engineered</em> design.
+  </h1>
+
+  <p class="hero-sub reveal reveal-delay-2">
+    A deterministic 10-engine pipeline that transforms a single emotional memory and a stem inventory into a mathematically balanced, reproducible wreath blueprint.
+  </p>
+
+  <div class="hero-stats reveal reveal-delay-3">
+    <div class="hero-stat">
+      <span class="hero-stat__num">10</span>
+      <span class="hero-stat__label">Core Engines</span>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat__num">0.78</span>
+      <span class="hero-stat__label">Min Score Target</span>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat__num">8</span>
+      <span class="hero-stat__label">Repair Pass Limit</span>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <span class="hero-stat__num">7</span>
+      <span class="hero-stat__label">Score Metrics</span>
+    </div>
+  </div>
+
+  <a href="#pipeline" class="hero-cta reveal reveal-delay-4">
+    Explore the Pipeline
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3L8 13M8 13L4 9M8 13L12 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+
+  <div class="scroll-indicator">
+    <div class="scroll-indicator__line"></div>
+    scroll
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     PIPELINE — INTERACTIVE FLOW
+════════════════════════════════════════ -->
+<section id="pipeline" class="section">
+  <div class="section-header reveal">
+    <div class="section-header-left">
+      <div class="section-eyebrow">10 Engines</div>
+      <h2 class="section-heading">The Composition<br><em>Pipeline</em></h2>
+      <p class="section-lead">Click any engine to inspect its input schema, output schema, and key parameters. The pipeline executes sequentially — each engine feeds the next.</p>
+    </div>
+    <div class="section-header-right">The Engine</div>
+  </div>
+
+  <div class="pipeline-layout">
+    <!-- LEFT: Pipeline flow -->
+    <div>
+      <div class="pipeline-wrapper" id="pipelineFlow">
+
+        <!-- Spine -->
+        <div class="pipeline-spine">
+          <div class="pipeline-spine__line"></div>
+        </div>
+
+        <!-- 01 Memory Interpreter — LEFT -->
+        <div class="pipeline-engine pipeline-engine--left reveal" data-engine="memory">
+          <div class="engine-card">
+            <span class="engine-number">01 — Input</span>
+            <div class="engine-name">Memory Interpreter</div>
+            <div class="engine-desc">Parses emotional prompts into structured signals — energy level, palette bias, and symbolic tags that anchor the design intent.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">"nostalgic cozy Christmas"</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">emotion, energy, palette_bias, symbolic_tags</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">NLP</span>
+              <span class="engine-tag">Emotion</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 Emotion Mapper — RIGHT -->
+        <div class="pipeline-engine pipeline-engine--right reveal reveal-delay-1" data-engine="emotion">
+          <div class="engine-card">
+            <span class="engine-number">02 — Signal</span>
+            <div class="engine-name">Emotion Mapper</div>
+            <div class="engine-desc">Converts emotional intent into concrete design signals: color palette, contrast ratio, and density bias that shape the visual character.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">emotion_signal</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">palette[], contrast, density_bias</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">Palette</span>
+              <span class="engine-tag">Contrast</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 Inventory Analyzer — LEFT -->
+        <div class="pipeline-engine pipeline-engine--left reveal" data-engine="inventory">
+          <div class="engine-card">
+            <span class="engine-number">03 — Inventory</span>
+            <div class="engine-name">Inventory Analyzer</div>
+            <div class="engine-desc">Converts raw stem inventory into role pools — focal, secondary, accent, filler, greenery — with flexibility scoring and diameter averages.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">stem_inventory[]</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">role_pools, flexibility_score</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">Roles</span>
+              <span class="engine-tag">Pools</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 Formula Selector — RIGHT -->
+        <div class="pipeline-engine pipeline-engine--right reveal reveal-delay-1" data-engine="formula">
+          <div class="engine-card">
+            <span class="engine-number">04 — Selection</span>
+            <div class="engine-name">Formula Selector</div>
+            <div class="engine-desc">Scores all registered formulas across 6 weighted dimensions and selects the best match for the emotional intent and available inventory.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">emotion_signal, role_pools</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">selected_formula, confidence</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">Scoring</span>
+              <span class="engine-tag">Formula</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 Anchor Generator — LEFT -->
+        <div class="pipeline-engine pipeline-engine--left reveal" data-engine="anchor">
+          <div class="engine-card">
+            <span class="engine-number">05 — Geometry</span>
+            <div class="engine-name">Anchor Generator</div>
+            <div class="engine-desc">Transforms formula anchor group definitions into actual polar coordinates using seeded randomness — ensuring reproducible cluster positions.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">formula.anchor_groups[], seed</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">anchors[]{anchor_id, θ, r}</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">Polar</span>
+              <span class="engine-tag">Seeded</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 06 Zone Field Builder — RIGHT -->
+        <div class="pipeline-engine pipeline-engine--right reveal reveal-delay-1" data-engine="zone">
+          <div class="engine-card">
+            <span class="engine-number">06 — Zones</span>
+            <div class="engine-name">Zone Field Builder</div>
+            <div class="engine-desc">Divides the wreath ring into angular sectors — focal zones, transition arcs, and silence arcs — each with a target density value.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">formula.zone_definitions[]</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">zone_field[]{angle, zone, density}</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">Zones</span>
+              <span class="engine-tag">Density</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 07 Stem Allocator — LEFT -->
+        <div class="pipeline-engine pipeline-engine--left reveal" data-engine="allocator">
+          <div class="engine-card">
+            <span class="engine-number">07 — Allocation</span>
+            <div class="engine-name">Stem Allocator</div>
+            <div class="engine-desc">Distributes total stem count across roles using formula role bias ratios, adjusted for available inventory and the 60/30/10 proportion rule.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">role_pools, formula.role_bias</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">allocation{focal,secondary,accent,filler,greenery}</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">60/30/10</span>
+              <span class="engine-tag">Roles</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 08 Placement Solver — RIGHT -->
+        <div class="pipeline-engine pipeline-engine--right reveal reveal-delay-1" data-engine="placement">
+          <div class="engine-card">
+            <span class="engine-number">08 — Placement</span>
+            <div class="engine-name">Placement Solver</div>
+            <div class="engine-desc">Assigns each stem a precise polar coordinate (θ, r), depth layer, and direction vector. Collision detection enforces minimum spacing by role class.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">allocation, anchors[], zone_field[]</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">placements[]{stem_id, θ, r, depth, vector}</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">Polar</span>
+              <span class="engine-tag">Collision</span>
+              <span class="engine-tag">Depth</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 09 Repair Engine — LEFT -->
+        <div class="pipeline-engine pipeline-engine--left reveal" data-engine="repair">
+          <div class="engine-card">
+            <span class="engine-number">09 — Repair</span>
+            <div class="engine-name">Repair Engine</div>
+            <div class="engine-desc">Runs up to 8 iterative improvement passes until the design scores ≥ 0.78. If threshold is not reached, anchors regenerate and density recalculates.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">placements[], score_breakdown</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">repaired_placements[], final_score</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">4-Pass</span>
+              <span class="engine-tag">Iterative</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10 Blueprint + Render — RIGHT -->
+        <div class="pipeline-engine pipeline-engine--right reveal reveal-delay-1" data-engine="blueprint">
+          <div class="engine-card">
+            <span class="engine-number">10 — Output</span>
+            <div class="engine-name">Blueprint &amp; Render Engine</div>
+            <div class="engine-desc">Generates the final blueprint JSON, step-by-step builder guide, SVG canvas preview, and Midjourney render prompt from the solved placement set.</div>
+            <div class="engine-io">
+              <div class="engine-io-row">
+                <span class="engine-io-label">In</span>
+                <span class="engine-io-value">repaired_placements[], genome_records[]</span>
+              </div>
+              <div class="engine-io-row">
+                <span class="engine-io-label">Out</span>
+                <span class="engine-io-value">blueprint_json, builder_guide, svg, render_prompt</span>
+              </div>
+            </div>
+            <div class="engine-tags">
+              <span class="engine-tag">JSON</span>
+              <span class="engine-tag">SVG</span>
+              <span class="engine-tag">Render</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pipeline-wrapper -->
+    </div><!-- /pipeline col -->
+
+    <!-- RIGHT: Detail panel -->
+    <div class="pipeline-detail">
+      <div class="detail-panel detail-panel--empty" id="detailPanel">
+        <div class="detail-panel__header">
+          <div class="detail-panel__icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="white" stroke-width="1.5"/><path d="M9 6v4M9 12v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="detail-panel__title">Engine Inspector</div>
+            <div class="detail-panel__subtitle">Select an engine to inspect</div>
+          </div>
+        </div>
+        <div class="detail-panel__body">
+          <div class="detail-empty-msg" id="detailEmpty">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/><path d="M24 16v8M24 28v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <p>Click any engine card on the left to inspect its schema, parameters, and data flow.</p>
+          </div>
+          <div id="detailContent" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pipeline-layout -->
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SCORING ENGINE
+════════════════════════════════════════ -->
+<section id="scoring" style="background:var(--ec-surface-warm); padding: 120px 0;">
+  <div class="section" style="padding-top:0;padding-bottom:0;">
+    <div class="section-header reveal">
+      <div class="section-header-left">
+        <div class="section-eyebrow">7 Metrics</div>
+        <h2 class="section-heading">Scoring<br><em>Engine</em></h2>
+        <p class="section-lead">Every generated design is evaluated across seven professional composition metrics. A minimum overall score of 0.78 is required to pass.</p>
+      </div>
+      <div class="section-header-right">Quality Gate</div>
+    </div>
+
+    <div class="scoring-grid">
+      <!-- Score bars -->
+      <div class="score-bars" id="scoreBars">
+        <div class="score-bar-row reveal">
+          <div class="score-bar-label">
+            <span class="score-bar-name">Balance</span>
+            <span class="score-bar-val">0.83</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="--target-width:83%"></div></div>
+        </div>
+        <div class="score-bar-row reveal reveal-delay-1">
+          <div class="score-bar-label">
+            <span class="score-bar-name">Rhythm</span>
+            <span class="score-bar-val">0.79</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="--target-width:79%"></div></div>
+        </div>
+        <div class="score-bar-row reveal reveal-delay-2">
+          <div class="score-bar-label">
+            <span class="score-bar-name">Contrast</span>
+            <span class="score-bar-val">0.74</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="--target-width:74%"></div></div>
+        </div>
+        <div class="score-bar-row reveal reveal-delay-3">
+          <div class="score-bar-label">
+            <span class="score-bar-name">Density</span>
+            <span class="score-bar-val">0.81</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="--target-width:81%"></div></div>
+        </div>
+        <div class="score-bar-row reveal reveal-delay-4">
+          <div class="score-bar-label">
+            <span class="score-bar-name">Focal Clarity</span>
+            <span class="score-bar-val">0.86</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="--target-width:86%"></div></div>
+        </div>
+        <div class="score-bar-row reveal reveal-delay-5">
+          <div class="score-bar-label">
+            <span class="score-bar-name">Negative Space</span>
+            <span class="score-bar-val">0.77</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="--target-width:77%"></div></div>
+        </div>
+        <div class="score-bar-row reveal">
+          <div class="score-bar-label">
+            <span class="score-bar-name">Inventory Efficiency</span>
+            <span class="score-bar-val">0.91</span>
+          </div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="--target-width:91%"></div></div>
+        </div>
+      </div>
+
+      <!-- Overall ring -->
+      <div class="score-overall-card reveal reveal-delay-2">
+        <div class="score-overall-label">Overall Score</div>
+        <div class="score-overall-ring" id="scoreRing">
+          <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+            <circle class="score-ring-bg" cx="70" cy="70" r="65"/>
+            <circle class="score-ring-fill" id="scoreRingFill" cx="70" cy="70" r="65"/>
+          </svg>
+          <div class="score-ring-center">
+            <span class="score-ring-val">0.82</span>
+            <span class="score-ring-sub">Overall</span>
+          </div>
+        </div>
+        <div class="score-pass-badge">Design Passes</div>
+        <p style="font-family:var(--ec-font-sans);font-size:0.8rem;color:var(--ec-gray-400);max-width:220px;line-height:1.6;text-align:center;">
+          Score ≥ 0.78 threshold met. Blueprint is approved for export.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     REPAIR ENGINE
+════════════════════════════════════════ -->
+<section id="repair" class="section">
+  <div class="section-header reveal">
+    <div class="section-header-left">
+      <div class="section-eyebrow">4-Pass System</div>
+      <h2 class="section-heading">Repair<br><em>Engine</em></h2>
+      <p class="section-lead">The repair engine runs iterative improvement passes until the design meets the minimum score threshold. Up to 8 passes are allowed before anchor regeneration.</p>
+    </div>
+    <div class="section-header-right">Convergence</div>
+  </div>
+
+  <div class="repair-grid">
+    <div class="repair-pass-card reveal">
+      <div class="repair-pass-num">01</div>
+      <div class="repair-pass-name">Density Normalization</div>
+      <div class="repair-pass-desc">Redistributes stems to match the zone field density targets. Overcrowded zones shed stems; sparse zones absorb them.</div>
+    </div>
+    <div class="repair-pass-card reveal reveal-delay-1">
+      <div class="repair-pass-num">02</div>
+      <div class="repair-pass-name">Cluster Cohesion</div>
+      <div class="repair-pass-desc">Pulls scattered stems toward their nearest anchor point, strengthening visual groupings and reducing isolated outliers.</div>
+    </div>
+    <div class="repair-pass-card reveal reveal-delay-2">
+      <div class="repair-pass-num">03</div>
+      <div class="repair-pass-name">Silence Arc Enforcement</div>
+      <div class="repair-pass-desc">Clears the designated silence arc of non-greenery stems, creating intentional negative space that frames the focal cluster.</div>
+    </div>
+    <div class="repair-pass-card reveal reveal-delay-3">
+      <div class="repair-pass-num">04</div>
+      <div class="repair-pass-name">Focal Clarity</div>
+      <div class="repair-pass-desc">Ensures focal blooms are unobstructed, correctly depth-layered above secondary stems, and meet minimum angular separation.</div>
+    </div>
+  </div>
+
+  <div class="repair-convergence reveal">
+    <div class="repair-conv-chart">
+      <svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- Grid lines -->
+        <line x1="40" y1="20" x2="40" y2="155" stroke="#E8E8E8" stroke-width="1"/>
+        <line x1="40" y1="155" x2="300" y2="155" stroke="#E8E8E8" stroke-width="1"/>
+        <line x1="40" y1="100" x2="300" y2="100" stroke="#E8E8E8" stroke-width="0.5" stroke-dasharray="4 4"/>
+        <line x1="40" y1="60"  x2="300" y2="60"  stroke="#E8E8E8" stroke-width="0.5" stroke-dasharray="4 4"/>
+
+        <!-- Threshold line at 0.78 -->
+        <line x1="40" y1="72" x2="300" y2="72" stroke="#C4922A" stroke-width="1.5" stroke-dasharray="6 3"/>
+        <text x="304" y="76" font-family="DM Mono, monospace" font-size="9" fill="#C4922A">0.78</text>
+
+        <!-- Score curve (improving across passes) -->
+        <polyline
+          points="40,140 80,128 120,112 160,95 200,82 240,72 280,68"
+          fill="none"
+          stroke="#4A6741"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+        <!-- Data points -->
+        <circle cx="40"  cy="140" r="4" fill="#4A6741"/>
+        <circle cx="80"  cy="128" r="4" fill="#4A6741"/>
+        <circle cx="120" cy="112" r="4" fill="#4A6741"/>
+        <circle cx="160" cy="95"  r="4" fill="#4A6741"/>
+        <circle cx="200" cy="82"  r="4" fill="#4A6741"/>
+        <circle cx="240" cy="72"  r="4" fill="#6B8F67"/>
+        <circle cx="280" cy="68"  r="5" fill="#4A6741" stroke="white" stroke-width="2"/>
+
+        <!-- Pass labels -->
+        <text x="38"  y="170" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="middle">P1</text>
+        <text x="78"  y="170" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="middle">P2</text>
+        <text x="118" y="170" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="middle">P3</text>
+        <text x="158" y="170" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="middle">P4</text>
+        <text x="198" y="170" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="middle">P5</text>
+        <text x="238" y="170" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="middle">P6</text>
+        <text x="278" y="170" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="middle">P7</text>
+
+        <!-- Y axis labels -->
+        <text x="34" y="144" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="end">0.60</text>
+        <text x="34" y="104" font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="end">0.70</text>
+        <text x="34" y="64"  font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="end">0.80</text>
+        <text x="34" y="24"  font-family="DM Mono, monospace" font-size="8" fill="#A8A8A8" text-anchor="end">0.90</text>
+
+        <!-- Pass label -->
+        <text x="170" y="14" font-family="Inter, sans-serif" font-size="9" fill="#787878" text-anchor="middle" letter-spacing="1">SCORE CONVERGENCE ACROSS REPAIR PASSES</text>
+      </svg>
+    </div>
+    <div class="repair-conv-info">
+      <div class="repair-conv-title">Convergence Parameters</div>
+      <div class="repair-conv-body">
+        The repair engine halts as soon as the overall score crosses the minimum threshold. If 8 passes are exhausted without convergence, the anchor set regenerates with a new seed offset and the pipeline restarts from Pass 1.
+      </div>
+      <div class="repair-params">
+        <div class="repair-param">
+          <span class="repair-param-key">repair_pass_limit</span>
+          <span class="repair-param-val">8</span>
+        </div>
+        <div class="repair-param">
+          <span class="repair-param-key">minimum_target_score</span>
+          <span class="repair-param-val">0.78</span>
+        </div>
+        <div class="repair-param">
+          <span class="repair-param-key">on_failure</span>
+          <span class="repair-param-val">regenerate_anchors</span>
+        </div>
+        <div class="repair-param">
+          <span class="repair-param-key">seed_offset_on_retry</span>
+          <span class="repair-param-val">+1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     FLORAL GENOME ENGINE
+════════════════════════════════════════ -->
+<section id="genome" style="background:var(--ec-surface-warm); padding:120px 0;">
+  <div class="section" style="padding-top:0;padding-bottom:0;">
+    <div class="section-header reveal">
+      <div class="section-header-left">
+        <div class="section-eyebrow">Floral Intelligence</div>
+        <h2 class="section-heading">Floral Genome<br><em>Engine</em></h2>
+        <p class="section-lead">Every stem in the system is represented as a design organism — a genome record with physical traits, emotional tags, and substitution neighbors.</p>
+      </div>
+      <div class="section-header-right">The Genome</div>
+    </div>
+
+    <div class="genome-grid">
+      <!-- Genome card 1 -->
+      <div class="genome-card reveal">
+        <div class="genome-card__header">
+          <span class="genome-card__sku">96532NT</span>
+          <span class="genome-card__name">Rose Tamora</span>
+        </div>
+        <div class="genome-card__body">
+          <div class="genome-traits">
+            <div class="genome-trait">
+              <span class="genome-trait-key">Bloom Diameter</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:76%"></div></div>
+              <span class="genome-trait-val">3.8"</span>
+            </div>
+            <div class="genome-trait">
+              <span class="genome-trait-key">Stem Length</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:68%"></div></div>
+              <span class="genome-trait-val">18"</span>
+            </div>
+            <div class="genome-trait">
+              <span class="genome-trait-key">Gesture</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:80%"></div></div>
+              <span class="genome-trait-val">cluster</span>
+            </div>
+            <div class="genome-trait">
+              <span class="genome-trait-key">Texture</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:90%"></div></div>
+              <span class="genome-trait-val">velvet</span>
+            </div>
+          </div>
+          <div class="genome-tags">
+            <span class="genome-tag">focal</span>
+            <span class="genome-tag">secondary</span>
+            <span class="genome-tag genome-tag--emotion">romantic</span>
+            <span class="genome-tag genome-tag--emotion">luxury</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Genome card 2 -->
+      <div class="genome-card reveal reveal-delay-1">
+        <div class="genome-card__header">
+          <span class="genome-card__sku">44821EG</span>
+          <span class="genome-card__name">English Garden Rose</span>
+        </div>
+        <div class="genome-card__body">
+          <div class="genome-traits">
+            <div class="genome-trait">
+              <span class="genome-trait-key">Bloom Diameter</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:70%"></div></div>
+              <span class="genome-trait-val">3.5"</span>
+            </div>
+            <div class="genome-trait">
+              <span class="genome-trait-key">Stem Length</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:72%"></div></div>
+              <span class="genome-trait-val">20"</span>
+            </div>
+            <div class="genome-trait">
+              <span class="genome-trait-key">Gesture</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:75%"></div></div>
+              <span class="genome-trait-val">cluster</span>
+            </div>
+            <div class="genome-trait">
+              <span class="genome-trait-key">Texture</span>
+              <div class="genome-trait-bar"><div class="genome-trait-fill" style="--fill-w:82%"></div></div>
+              <span class="genome-trait-val">soft</span>
+            </div>
+          </div>
+          <div class="genome-tags">
+            <span class="genome-tag">focal</span>
+            <span class="genome-tag">secondary</span>
+            <span class="genome-tag genome-tag--emotion">nostalgic</span>
+            <span class="genome-tag genome-tag--emotion">garden</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Substitution chain -->
+    <div class="substitution-chain reveal" style="margin-top:var(--ec-space-8)">
+      <div class="sub-chain-title">Genome Substitution Chain</div>
+      <div class="sub-chain-desc">When a required stem is out of inventory, the substitution engine finds the nearest genome neighbor using a weighted similarity score across five trait dimensions.</div>
+
+      <div class="sub-chain-nodes">
+        <div class="sub-node sub-node--primary">
+          <div class="sub-node__pill">Rose Tamora</div>
+          <div class="sub-node__label">Primary</div>
+        </div>
+        <div class="sub-arrow">→</div>
+        <div class="sub-node">
+          <div class="sub-node__pill">English Garden Rose</div>
+          <div class="sub-node__label">Sub 1</div>
+        </div>
+        <div class="sub-arrow">→</div>
+        <div class="sub-node">
+          <div class="sub-node__pill">Cabbage Rose</div>
+          <div class="sub-node__label">Sub 2</div>
+        </div>
+        <div class="sub-arrow">→</div>
+        <div class="sub-node">
+          <div class="sub-node__pill">Ranunculus</div>
+          <div class="sub-node__label">Sub 3</div>
+        </div>
+      </div>
+
+      <div class="sub-weights">
+        <div class="sub-weight">
+          <div class="sub-weight-pct">30%</div>
+          <div class="sub-weight-label">Bloom Size</div>
+        </div>
+        <div class="sub-weight">
+          <div class="sub-weight-pct">25%</div>
+          <div class="sub-weight-label">Gesture Type</div>
+        </div>
+        <div class="sub-weight">
+          <div class="sub-weight-pct">20%</div>
+          <div class="sub-weight-label">Texture</div>
+        </div>
+        <div class="sub-weight">
+          <div class="sub-weight-pct">15%</div>
+          <div class="sub-weight-label">Color Family</div>
+        </div>
+        <div class="sub-weight">
+          <div class="sub-weight-pct">10%</div>
+          <div class="sub-weight-label">Emotion Tags</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     FORMULA REGISTRY
+════════════════════════════════════════ -->
+<section id="formula" class="section">
+  <div class="section-header reveal">
+    <div class="section-header-left">
+      <div class="section-eyebrow">Composition Formulas</div>
+      <h2 class="section-heading">Formula<br><em>Registry</em></h2>
+      <p class="section-lead">Each formula defines a complete wreath structure — anchor groups, zone arcs, density curves, and role bias ratios. The selector scores all formulas and picks the best match.</p>
+    </div>
+    <div class="section-header-right">The Structure</div>
+  </div>
+
+  <div class="formula-grid">
+    <!-- Crescent -->
+    <div class="formula-card selected reveal" data-formula="crescent">
+      <div class="formula-preview">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- Wreath ring -->
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#D0D0D0" stroke-width="12" opacity="0.3"/>
+          <!-- Crescent cluster — heavy bottom-left -->
+          <circle cx="38" cy="82" r="7" fill="#4A6741" opacity="0.9"/>
+          <circle cx="50" cy="88" r="5" fill="#4A6741" opacity="0.8"/>
+          <circle cx="62" cy="90" r="6" fill="#4A6741" opacity="0.85"/>
+          <circle cx="74" cy="86" r="4" fill="#6B8F67" opacity="0.7"/>
+          <circle cx="84" cy="78" r="3" fill="#6B8F67" opacity="0.5"/>
+          <!-- Sparse top -->
+          <circle cx="60" cy="18" r="2" fill="#6B8F67" opacity="0.3"/>
+          <circle cx="40" cy="28" r="2" fill="#6B8F67" opacity="0.25"/>
+          <circle cx="80" cy="28" r="2" fill="#6B8F67" opacity="0.25"/>
+          <!-- Silence arc indicator -->
+          <path d="M 20 50 A 44 44 0 0 1 60 16" fill="none" stroke="#C4922A" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+          <text x="60" y="108" font-family="DM Mono, monospace" font-size="7" fill="#A8A8A8" text-anchor="middle">crescent</text>
+        </svg>
+      </div>
+      <div class="formula-card__body">
+        <div class="formula-card__name">Crescent Sweep</div>
+        <div class="formula-card__id">formula_id: "crescent"</div>
+        <div class="formula-card__score">
+          <span class="formula-score-badge">0.84</span>
+          <span class="formula-score-label">confidence score</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Ring -->
+    <div class="formula-card reveal reveal-delay-1" data-formula="full_ring">
+      <div class="formula-preview">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#D0D0D0" stroke-width="12" opacity="0.3"/>
+          <!-- Evenly distributed blooms -->
+          <circle cx="60" cy="18" r="5" fill="#4A6741" opacity="0.85"/>
+          <circle cx="91" cy="29" r="4" fill="#4A6741" opacity="0.8"/>
+          <circle cx="102" cy="60" r="5" fill="#4A6741" opacity="0.85"/>
+          <circle cx="91" cy="91" r="4" fill="#4A6741" opacity="0.8"/>
+          <circle cx="60" cy="102" r="5" fill="#4A6741" opacity="0.85"/>
+          <circle cx="29" cy="91" r="4" fill="#4A6741" opacity="0.8"/>
+          <circle cx="18" cy="60" r="5" fill="#4A6741" opacity="0.85"/>
+          <circle cx="29" cy="29" r="4" fill="#4A6741" opacity="0.8"/>
+          <!-- Filler between -->
+          <circle cx="76" cy="21" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="99" cy="44" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="99" cy="76" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="76" cy="99" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="44" cy="99" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="21" cy="76" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="21" cy="44" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="44" cy="21" r="2.5" fill="#6B8F67" opacity="0.5"/>
+          <text x="60" y="108" font-family="DM Mono, monospace" font-size="7" fill="#A8A8A8" text-anchor="middle">full_ring</text>
+        </svg>
+      </div>
+      <div class="formula-card__body">
+        <div class="formula-card__name">Full Ring</div>
+        <div class="formula-card__id">formula_id: "full_ring"</div>
+        <div class="formula-card__score">
+          <span class="formula-score-badge">0.71</span>
+          <span class="formula-score-label">confidence score</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cascade -->
+    <div class="formula-card reveal reveal-delay-2" data-formula="cascade">
+      <div class="formula-preview">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#D0D0D0" stroke-width="12" opacity="0.3"/>
+          <!-- Cascade — top heavy, trailing down right -->
+          <circle cx="60" cy="18" r="7" fill="#4A6741" opacity="0.9"/>
+          <circle cx="76" cy="22" r="5" fill="#4A6741" opacity="0.85"/>
+          <circle cx="90" cy="32" r="6" fill="#4A6741" opacity="0.8"/>
+          <circle cx="99" cy="46" r="5" fill="#6B8F67" opacity="0.7"/>
+          <circle cx="102" cy="62" r="4" fill="#6B8F67" opacity="0.55"/>
+          <circle cx="97" cy="76" r="3" fill="#6B8F67" opacity="0.4"/>
+          <!-- Sparse left -->
+          <circle cx="44" cy="22" r="2.5" fill="#6B8F67" opacity="0.3"/>
+          <circle cx="28" cy="38" r="2" fill="#6B8F67" opacity="0.2"/>
+          <text x="60" y="108" font-family="DM Mono, monospace" font-size="7" fill="#A8A8A8" text-anchor="middle">cascade</text>
+        </svg>
+      </div>
+      <div class="formula-card__body">
+        <div class="formula-card__name">Cascade Drop</div>
+        <div class="formula-card__id">formula_id: "cascade"</div>
+        <div class="formula-card__score">
+          <span class="formula-score-badge">0.67</span>
+          <span class="formula-score-label">confidence score</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Triangular -->
+    <div class="formula-card reveal reveal-delay-3" data-formula="triangular">
+      <div class="formula-preview">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#D0D0D0" stroke-width="12" opacity="0.3"/>
+          <!-- 3 focal anchors at 120° intervals -->
+          <circle cx="60" cy="18" r="7" fill="#4A6741" opacity="0.9"/>
+          <circle cx="98" cy="84" r="7" fill="#4A6741" opacity="0.9"/>
+          <circle cx="22" cy="84" r="7" fill="#4A6741" opacity="0.9"/>
+          <!-- Secondary around each -->
+          <circle cx="74" cy="22" r="4" fill="#6B8F67" opacity="0.65"/>
+          <circle cx="46" cy="22" r="4" fill="#6B8F67" opacity="0.65"/>
+          <circle cx="102" cy="68" r="4" fill="#6B8F67" opacity="0.65"/>
+          <circle cx="102" cy="98" r="4" fill="#6B8F67" opacity="0.65"/>
+          <circle cx="18" cy="68" r="4" fill="#6B8F67" opacity="0.65"/>
+          <circle cx="18" cy="98" r="4" fill="#6B8F67" opacity="0.65"/>
+          <text x="60" y="108" font-family="DM Mono, monospace" font-size="7" fill="#A8A8A8" text-anchor="middle">triangular</text>
+        </svg>
+      </div>
+      <div class="formula-card__body">
+        <div class="formula-card__name">Triangular Balance</div>
+        <div class="formula-card__id">formula_id: "triangular"</div>
+        <div class="formula-card__score">
+          <span class="formula-score-badge">0.79</span>
+          <span class="formula-score-label">confidence score</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asymmetric -->
+    <div class="formula-card reveal reveal-delay-4" data-formula="asymmetric">
+      <div class="formula-preview">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#D0D0D0" stroke-width="12" opacity="0.3"/>
+          <!-- Heavy bottom, light top-right -->
+          <circle cx="50" cy="100" r="7" fill="#4A6741" opacity="0.9"/>
+          <circle cx="36" cy="92" r="5" fill="#4A6741" opacity="0.8"/>
+          <circle cx="64" cy="100" r="5" fill="#4A6741" opacity="0.8"/>
+          <circle cx="78" cy="94" r="4" fill="#6B8F67" opacity="0.65"/>
+          <circle cx="88" cy="82" r="3" fill="#6B8F67" opacity="0.5"/>
+          <!-- Light scatter top-right -->
+          <circle cx="96" cy="44" r="3" fill="#6B8F67" opacity="0.35"/>
+          <circle cx="84" cy="26" r="2.5" fill="#6B8F67" opacity="0.25"/>
+          <text x="60" y="108" font-family="DM Mono, monospace" font-size="7" fill="#A8A8A8" text-anchor="middle">asymmetric</text>
+        </svg>
+      </div>
+      <div class="formula-card__body">
+        <div class="formula-card__name">Asymmetric Weight</div>
+        <div class="formula-card__id">formula_id: "asymmetric"</div>
+        <div class="formula-card__score">
+          <span class="formula-score-badge">0.76</span>
+          <span class="formula-score-label">confidence score</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Focal Trio -->
+    <div class="formula-card reveal reveal-delay-5" data-formula="focal_trio">
+      <div class="formula-preview">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="#D0D0D0" stroke-width="12" opacity="0.3"/>
+          <!-- 3 focal blooms close together at bottom -->
+          <circle cx="52" cy="96" r="7" fill="#4A6741" opacity="0.9"/>
+          <circle cx="68" cy="96" r="7" fill="#4A6741" opacity="0.9"/>
+          <circle cx="60" cy="84" r="6" fill="#4A6741" opacity="0.85"/>
+          <!-- Supporting ring sparse -->
+          <circle cx="38" cy="88" r="3" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="82" cy="88" r="3" fill="#6B8F67" opacity="0.5"/>
+          <circle cx="30" cy="70" r="2.5" fill="#6B8F67" opacity="0.35"/>
+          <circle cx="90" cy="70" r="2.5" fill="#6B8F67" opacity="0.35"/>
+          <circle cx="60" cy="18" r="2" fill="#6B8F67" opacity="0.2"/>
+          <text x="60" y="108" font-family="DM Mono, monospace" font-size="7" fill="#A8A8A8" text-anchor="middle">focal_trio</text>
+        </svg>
+      </div>
+      <div class="formula-card__body">
+        <div class="formula-card__name">Focal Trio</div>
+        <div class="formula-card__id">formula_id: "focal_trio"</div>
+        <div class="formula-card__score">
+          <span class="formula-score-badge">0.81</span>
+          <span class="formula-score-label">confidence score</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula selector scoring model -->
+  <div class="repair-convergence reveal" style="margin-top:0">
+    <div class="repair-conv-info" style="grid-column:1/-1">
+      <div class="repair-conv-title">Formula Selector Scoring Model</div>
+      <div class="repair-conv-body">The selector scores every registered formula across six weighted dimensions. The formula with the highest composite score is selected and its confidence value is recorded in the Blueprint DNA.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:var(--ec-space-3);grid-column:1/-1;">
+      <div class="repair-param" style="flex-direction:column;align-items:flex-start;gap:4px;padding:var(--ec-space-4);">
+        <span class="repair-param-val" style="font-size:1.1rem;">30%</span>
+        <span class="repair-param-key">Inventory Feasibility</span>
+      </div>
+      <div class="repair-param" style="flex-direction:column;align-items:flex-start;gap:4px;padding:var(--ec-space-4);">
+        <span class="repair-param-val" style="font-size:1.1rem;">20%</span>
+        <span class="repair-param-key">Emotional Match</span>
+      </div>
+      <div class="repair-param" style="flex-direction:column;align-items:flex-start;gap:4px;padding:var(--ec-space-4);">
+        <span class="repair-param-val" style="font-size:1.1rem;">15%</span>
+        <span class="repair-param-key">Silhouette</span>
+      </div>
+      <div class="repair-param" style="flex-direction:column;align-items:flex-start;gap:4px;padding:var(--ec-space-4);">
+        <span class="repair-param-val" style="font-size:1.1rem;">15%</span>
+        <span class="repair-param-key">Negative Space</span>
+      </div>
+      <div class="repair-param" style="flex-direction:column;align-items:flex-start;gap:4px;padding:var(--ec-space-4);">
+        <span class="repair-param-val" style="font-size:1.1rem;">10%</span>
+        <span class="repair-param-key">Complexity</span>
+      </div>
+      <div class="repair-param" style="flex-direction:column;align-items:flex-start;gap:4px;padding:var(--ec-space-4);">
+        <span class="repair-param-val" style="font-size:1.1rem;">10%</span>
+        <span class="repair-param-key">Genome Compat.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     BLUEPRINT DNA
+════════════════════════════════════════ -->
+<section id="dna" class="dna-section">
+  <div class="dna-inner">
+    <div class="dna-left reveal">
+      <div class="section-eyebrow">Design Fingerprint</div>
+      <h2 class="section-heading">Blueprint<br><em>DNA</em></h2>
+      <p class="section-lead">Every generated design receives a unique fingerprint. Identical inputs always regenerate the identical design — versioned, shareable, and resellable.</p>
+      <div class="dna-uses">
+        <div class="dna-use">Product identification and catalog listing</div>
+        <div class="dna-use">Blueprint resale and marketplace listing</div>
+        <div class="dna-use">Version control and design history</div>
+        <div class="dna-use">Reproducible renders from the same seed</div>
+      </div>
+      <div style="margin-top:var(--ec-space-6);font-family:var(--ec-font-mono);font-size:0.78rem;color:rgba(255,255,255,0.25);line-height:1.8;">
+        seed = hash(<br>
+        &nbsp;&nbsp;memory_input<br>
+        &nbsp;&nbsp;+ inventory_signature<br>
+        &nbsp;&nbsp;+ formula_id<br>
+        )
+      </div>
+    </div>
+    <div class="dna-code-block reveal reveal-delay-2">
+      <div class="dna-code-header">
+        <div class="dna-code-dots">
+          <div class="dna-code-dot dna-code-dot--red"></div>
+          <div class="dna-code-dot dna-code-dot--amber"></div>
+          <div class="dna-code-dot dna-code-dot--green"></div>
+        </div>
+        <span class="dna-code-filename">blueprint_dna.json</span>
+      </div>
+      <div class="dna-code-body">
+        <pre><span class="p">{</span>
+  <span class="k">"formula"</span><span class="p">:</span>        <span class="s">"crescent"</span><span class="p">,</span>
+  <span class="k">"seed"</span><span class="p">:</span>           <span class="n">92384723</span><span class="p">,</span>
+  <span class="k">"cluster_count"</span><span class="p">:</span>  <span class="n">2</span><span class="p">,</span>
+  <span class="k">"silence_arc"</span><span class="p">:</span>    <span class="p">[</span><span class="n">280</span><span class="p">,</span> <span class="n">330</span><span class="p">],</span>
+  <span class="k">"stem_count"</span><span class="p">:</span>     <span class="n">58</span><span class="p">,</span>
+  <span class="k">"palette"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s">"deep_red"</span><span class="p">,</span>
+    <span class="s">"pine_green"</span><span class="p">,</span>
+    <span class="s">"gold"</span>
+  <span class="p">],</span>
+  <span class="k">"score"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="k">"balance"</span><span class="p">:</span>            <span class="n">0.83</span><span class="p">,</span>
+    <span class="k">"rhythm"</span><span class="p">:</span>             <span class="n">0.79</span><span class="p">,</span>
+    <span class="k">"focal_clarity"</span><span class="p">:</span>      <span class="n">0.86</span><span class="p">,</span>
+    <span class="k">"inventory_efficiency"</span><span class="p">:</span><span class="n">0.91</span><span class="p">,</span>
+    <span class="k">"overall"</span><span class="p">:</span>            <span class="n">0.82</span>
+  <span class="p">},</span>
+  <span class="k">"repair_passes"</span><span class="p">:</span>  <span class="n">3</span><span class="p">,</span>
+  <span class="k">"formula_confidence"</span><span class="p">:</span> <span class="n">0.84</span><span class="p">,</span>
+  <span class="k">"version"</span><span class="p">:</span>        <span class="s">"1.0.0"</span><span class="p">,</span>
+  <span class="k">"created_at"</span><span class="p">:</span>     <span class="s">"2026-03-28T00:00:00Z"</span>
+<span class="p">}</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-brand">
+    Evercrafted
+    <span>emotion into design</span>
+  </div>
+  <div class="footer-meta">
+    Composition Engine Pipeline<br>
+    PRD v1.0 · Author: Bret Baden
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════
+     ENGINE DETAIL DATA
+════════════════════════════════════════ -->
+<script>
+const ENGINE_DATA = {
+  memory: {
+    icon: '🧠',
+    title: 'Memory Interpreter',
+    subtitle: '01 — Input Layer',
+    schema: `{
+  <span class="key">"input"</span>: <span class="str">"nostalgic cozy Christmas"</span>,
+  <span class="key">"output"</span>: {
+    <span class="key">"emotion"</span>:      <span class="str">"nostalgia"</span>,
+    <span class="key">"energy"</span>:       <span class="num">0.4</span>,
+    <span class="key">"palette_bias"</span>: <span class="str">"warm"</span>,
+    <span class="key">"symbolic_tags"</span>: <span class="punct">[</span>
+      <span class="str">"evergreen"</span><span class="punct">,</span>
+      <span class="str">"berries"</span><span class="punct">,</span>
+      <span class="str">"pine_cone"</span>
+    <span class="punct">]</span>
+  }
+}`,
+    metrics: [
+      { val: '0.4', label: 'Energy Level' },
+      { val: 'warm', label: 'Palette Bias' },
+      { val: '3', label: 'Symbolic Tags' },
+      { val: 'NLP', label: 'Parse Method' },
+    ],
+    note: 'The Memory Interpreter is the emotional gateway. It converts free-form text into structured design intent that every downstream engine can consume.'
+  },
+  emotion: {
+    icon: '🎨',
+    title: 'Emotion Mapper',
+    subtitle: '02 — Signal Layer',
+    schema: `{
+  <span class="key">"palette"</span>: <span class="punct">[</span>
+    <span class="str">"deep_red"</span><span class="punct">,</span>
+    <span class="str">"pine_green"</span><span class="punct">,</span>
+    <span class="str">"gold"</span>
+  <span class="punct">],</span>
+  <span class="key">"contrast"</span>:     <span class="num">0.7</span>,
+  <span class="key">"density_bias"</span>: <span class="str">"moderate"</span>,
+  <span class="key">"warmth"</span>:       <span class="num">0.8</span>,
+  <span class="key">"complexity"</span>:   <span class="str">"medium"</span>
+}`,
+    metrics: [
+      { val: '3', label: 'Palette Colors' },
+      { val: '0.7', label: 'Contrast Ratio' },
+      { val: 'mod.', label: 'Density Bias' },
+      { val: '0.8', label: 'Warmth Score' },
+    ],
+    note: 'Emotion Mapper bridges human feeling and design parameters. The contrast and density outputs directly influence formula selection and stem allocation.'
+  },
+  inventory: {
+    icon: '📦',
+    title: 'Inventory Analyzer',
+    subtitle: '03 — Inventory Layer',
+    schema: `{
+  <span class="key">"role_pools"</span>: {
+    <span class="key">"focal"</span>:    <span class="num">7</span>,
+    <span class="key">"secondary"</span>:<span class="num">12</span>,
+    <span class="key">"accent"</span>:   <span class="num">9</span>,
+    <span class="key">"filler"</span>:   <span class="num">15</span>,
+    <span class="key">"greenery"</span>: <span class="num">33
+
+  },
+  <span class="key">"avg_bloom_diameter"</span>: <span class="num">2.4</span>,
+  <span class="key">"avg_stem_length"</span>:    <span class="num">16.2</span>,
+  <span class="key">"flexibility_score"</span>:  <span class="num">0.73</span>,
+  <span class="key">"total_stems"</span>:        <span class="num">76</span>
+}`,
+    metrics: [
+      { val: '76', label: 'Total Stems' },
+      { val: '5', label: 'Role Pools' },
+      { val: '0.73', label: 'Flexibility' },
+      { val: '2.4"', label: 'Avg Diameter' },
+    ],
+    note: 'Flexibility score measures how well the inventory supports role substitution. A score above 0.65 gives the formula selector more options.'
+  },
+  formula: {
+    icon: '⚙️',
+    title: 'Formula Selector',
+    subtitle: '04 — Selection Layer',
+    schema: `{
+  <span class="key">"selected_formula"</span>: <span class="str">"crescent"</span>,
+  <span class="key">"confidence"</span>:        <span class="num">0.84</span>,
+  <span class="key">"scores"</span>: {
+    <span class="key">"inventory_feasibility"</span>: <span class="num">0.91</span>,
+    <span class="key">"emotional_match"</span>:       <span class="num">0.88</span>,
+    <span class="key">"silhouette"</span>:            <span class="num">0.79</span>,
+    <span class="key">"negative_space"</span>:        <span class="num">0.82</span>,
+    <span class="key">"complexity"</span>:            <span class="num">0.74</span>,
+    <span class="key">"genome_compat"</span>:         <span class="num">0.86</span>
+  }
+}`,
+    metrics: [
+      { val: '0.84', label: 'Confidence' },
+      { val: '6', label: 'Score Dims.' },
+      { val: '0.91', label: 'Inv. Feasibility' },
+      { val: '0.88', label: 'Emotion Match' },
+    ],
+    note: 'The formula selector is the strategic brain. It evaluates every registered formula and selects the one with the highest weighted composite score.'
+  },
+  anchor: {
+    icon: '📍',
+    title: 'Anchor Generator',
+    subtitle: '05 — Geometry Layer',
+    schema: `{
+  <span class="key">"anchors"</span>: <span class="punct">[</span>
+    {
+      <span class="key">"anchor_id"</span>: <span class="str">"primary_cluster"</span>,
+      <span class="key">"theta"</span>:     <span class="num">218.3</span>,
+      <span class="key">"radius"</span>:    <span class="num">0.73</span>,
+      <span class="key">"scale"</span>:     <span class="num">1.0</span>
+    },
+    {
+      <span class="key">"anchor_id"</span>: <span class="str">"secondary_cluster"</span>,
+      <span class="key">"theta"</span>:     <span class="num">247.1</span>,
+      <span class="key">"radius"</span>:    <span class="num">0.71</span>,
+      <span class="key">"scale"</span>:     <span class="num">0.7</span>
+    }
+  <span class="punct">],</span>
+  <span class="key">"seed_used"</span>: <span class="num">92384723</span>
+}`,
+    metrics: [
+      { val: '2', label: 'Anchor Groups' },
+      { val: '218°', label: 'Primary θ' },
+      { val: '0.73', label: 'Primary r' },
+      { val: 'seeded', label: 'Randomness' },
+    ],
+    note: 'Anchors are the gravitational centers of the design. All stems are placed relative to their nearest anchor, creating natural visual clusters.'
+  },
+  zone: {
+    icon: '🗺️',
+    title: 'Zone Field Builder',
+    subtitle: '06 — Zone Layer',
+    schema: `{
+  <span class="key">"zones"</span>: <span class="punct">[</span>
+    {
+      <span class="key">"zone_id"</span>:       <span class="str">"focal_arc"</span>,
+      <span class="key">"start_angle"</span>:   <span class="num">210</span>,
+      <span class="key">"end_angle"</span>:     <span class="num">260</span>,
+      <span class="key">"density_target"</span>:<span class="num">0.9</span>,
+      <span class="key">"silence"</span>:       <span class="bool">false</span>
+    },
+    {
+      <span class="key">"zone_id"</span>:       <span class="str">"silence_arc"</span>,
+      <span class="key">"start_angle"</span>:   <span class="num">280</span>,
+      <span class="key">"end_angle"</span>:     <span class="num">330</span>,
+      <span class="key">"density_target"</span>:<span class="num">0.1</span>,
+      <span class="key">"silence"</span>:       <span class="bool">true</span>
+    }
+  <span class="punct">]</span>
+}`,
+    metrics: [
+      { val: '3', label: 'Zone Types' },
+      { val: '0.9', label: 'Focal Density' },
+      { val: '0.1', label: 'Silence Density' },
+      { val: '50°', label: 'Silence Arc' },
+    ],
+    note: 'The silence arc is the intentional negative space that makes the focal cluster feel more powerful. Without silence, there is no focal point.'
+  },
+  allocator: {
+    icon: '⚖️',
+    title: 'Stem Allocator',
+    subtitle: '07 — Allocation Layer',
+    schema: `{
+  <span class="key">"total_stems"</span>: <span class="num">60</span>,
+  <span class="key">"allocation"</span>: {
+    <span class="key">"focal"</span>:    <span class="num">10</span>,
+    <span class="key">"secondary"</span>:<span class="num">11</span>,
+    <span class="key">"accent"</span>:   <span class="num">8</span>,
+    <span class="key">"filler"</span>:   <span class="num">10</span>,
+    <span class="key">"greenery"</span>: <span class="num">21</span>
+  },
+  <span class="key">"ratios"</span>: {
+    <span class="key">"focal"</span>:    <span class="str">"17%"</span>,
+    <span class="key">"secondary"</span>:<span class="str">"18%"</span>,
+    <span class="key">"greenery"</span>: <span class="str">"35%"</span>
+  }
+}`,
+    metrics: [
+      { val: '60', label: 'Total Stems' },
+      { val: '10', label: 'Focal Stems' },
+      { val: '21', label: 'Greenery' },
+      { val: '35%', label: 'Greenery Ratio' },
+    ],
+    note: 'The 60/30/10 rule governs allocation: 60% base greenery forms the skeleton, 30% secondary filler builds depth, 10% focal and accent elements create the statement.'
+  },
+  placement: {
+    icon: '📐',
+    title: 'Placement Solver',
+    subtitle: '08 — Placement Layer',
+    schema: `{
+  <span class="key">"stem_id"</span>: <span class="str">"023"</span>,
+  <span class="key">"sku"</span>:     <span class="str">"96532NT"</span>,
+  <span class="key">"role"</span>:    <span class="str">"secondary"</span>,
+  <span class="key">"angle"</span>:   <span class="num">231.5</span>,
+  <span class="key">"radius"</span>:  <span class="num">0.72</span>,
+  <span class="key">"depth"</span>:   <span class="num">1</span>,
+  <span class="key">"vector"</span>:  <span class="num">245</span>,
+  <span class="key">"spacing"</span>: <span class="num">1.0</span>
+}`,
+    metrics: [
+      { val: '1.3×', label: 'Focal Spacing' },
+      { val: '1.0×', label: 'Secondary Spacing' },
+      { val: '0.6×', label: 'Filler Spacing' },
+      { val: '6', label: 'Depth Layers' },
+    ],
+    note: 'Collision detection enforces minimum spacing as a multiple of bloom diameter. Focal blooms require the most clearance to maintain visual dominance.'
+  },
+  repair: {
+    icon: '🔧',
+    title: 'Repair Engine',
+    subtitle: '09 — Repair Layer',
+    schema: `{
+  <span class="key">"passes_run"</span>:     <span class="num">3</span>,
+  <span class="key">"pass_limit"</span>:     <span class="num">8</span>,
+  <span class="key">"score_before"</span>:   <span class="num">0.64</span>,
+  <span class="key">"score_after"</span>:    <span class="num">0.82</span>,
+  <span class="key">"threshold_met"</span>:  <span class="bool">true</span>,
+  <span class="key">"passes"</span>: <span class="punct">[</span>
+    <span class="str">"density_normalization"</span>,
+    <span class="str">"cluster_cohesion"</span>,
+    <span class="str">"silence_arc_enforcement"</span>,
+    <span class="str">"focal_clarity"</span>
+  <span class="punct">]</span>
+}`,
+    metrics: [
+      { val: '3', label: 'Passes Run' },
+      { val: '0.64', label: 'Score Before' },
+      { val: '0.82', label: 'Score After' },
+      { val: '+0.18', label: 'Improvement' },
+    ],
+    note: 'The repair engine is what separates Evercrafted from random generators. It guarantees professional quality by iteratively improving the design until it passes the threshold.'
+  },
+  blueprint: {
+    icon: '📄',
+    title: 'Blueprint & Render Engine',
+    subtitle: '10 — Output Layer',
+    schema: `{
+  <span class="key">"wreath_size"</span>: <span class="num">24</span>,
+  <span class="key">"formula"</span>:     <span class="str">"crescent"</span>,
+  <span class="key">"elements"</span>: <span class="punct">[</span>
+    {
+      <span class="key">"sku"</span>:    <span class="str">"96532NT"</span>,
+      <span class="key">"role"</span>:   <span class="str">"focal"</span>,
+      <span class="key">"angle"</span>:  <span class="num">220</span>,
+      <span class="key">"radius"</span>: <span class="num">0.72</span>
+    }
+  <span class="punct">]</span>,
+  <span class="key">"outputs"</span>: <span class="punct">[</span>
+    <span class="str">"blueprint_json"</span>,
+    <span class="str">"builder_guide"</span>,
+    <span class="str">"svg_preview"</span>,
+    <span class="str">"render_prompt"</span>
+  <span class="punct">]</span>
+}`,
+    metrics: [
+      { val: '4', label: 'Output Types' },
+      { val: '24"', label: 'Wreath Size' },
+      { val: 'SVG', label: 'Preview Format' },
+      { val: 'JSON', label: 'Blueprint Format' },
+    ],
+    note: 'The blueprint engine serializes the entire solved design into four deliverables: a JSON blueprint, step-by-step builder guide, SVG canvas preview, and a Midjourney render prompt.'
+  }
+};
+
+// ─── Detail Panel Renderer ───────────────────────────────────────────────────
+function renderDetail(engineKey) {
+  const data = ENGINE_DATA[engineKey];
+  if (!data) return;
+
+  const panel = document.getElementById('detailPanel');
+  const empty = document.getElementById('detailEmpty');
+  const content = document.getElementById('detailContent');
+
+  // Update header
+  panel.querySelector('.detail-panel__title').textContent = data.title;
+  panel.querySelector('.detail-panel__subtitle').textContent = data.subtitle;
+  panel.querySelector('.detail-panel__icon').textContent = data.icon;
+  panel.classList.remove('detail-panel--empty');
+
+  // Build metrics HTML
+  const metricsHTML = data.metrics.map(m => `
+    <div class="detail-metric">
+      <div class="detail-metric__val">${m.val}</div>
+      <div class="detail-metric__label">${m.label}</div>
+    </div>
+  `).join('');
+
+  content.innerHTML = `
+    <div class="detail-schema">
+      <pre>${data.schema}</pre>
+    </div>
+    <div class="detail-metrics">${metricsHTML}</div>
+    <div class="detail-note">${data.note}</div>
+  `;
+
+  empty.style.display = 'none';
+  content.style.display = 'block';
+}
+
+// ─── Engine Card Click Handlers ──────────────────────────────────────────────
+document.querySelectorAll('.pipeline-engine').forEach(card => {
+  card.addEventListener('click', () => {
+    // Deactivate all
+    document.querySelectorAll('.pipeline-engine').forEach(c => c.classList.remove('active'));
+    // Activate clicked
+    card.classList.add('active');
+    // Render detail
+    renderDetail(card.dataset.engine);
+  });
+});
+
+// ─── Formula Card Click ──────────────────────────────────────────────────────
+document.querySelectorAll('.formula-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.formula-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+});
+
+// ─── Scroll Reveal ───────────────────────────────────────────────────────────
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ─── Score Bars Animation ────────────────────────────────────────────────────
+const scoreObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.score-bar-fill').forEach(bar => {
+        bar.classList.add('animated');
+      });
+      // Ring
+      const ring = entry.target.querySelector('#scoreRingFill');
+      if (ring) ring.classList.add('animated');
+    }
+  });
+}, { threshold: 0.3 });
+
+const scoringSection = document.getElementById('scoring');
+if (scoringSection) scoreObserver.observe(scoringSection);
+
+// ─── Genome trait bar animation ──────────────────────────────────────────────
+const genomeObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.genome-trait-fill').forEach(bar => {
+        bar.classList.add('animated');
+      });
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.genome-card').forEach(card => genomeObserver.observe(card));
+
+// ─── Active nav link tracking ────────────────────────────────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.header-nav a');
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => navObserver.observe(s));
+
+// ─── Auto-activate first engine on load ──────────────────────────────────────
+setTimeout(() => {
+  const firstEngine = document.querySelector('.pipeline-engine[data-engine="memory"]');
+  if (firstEngine) {
+    firstEngine.classList.add('active');
+    renderDetail('memory');
+  }
+}, 600);
+</script>
+
+</body>
+</html>
