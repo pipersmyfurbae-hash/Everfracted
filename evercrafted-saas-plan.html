@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evercrafted — Platform Architecture & SaaS Plan</title>
+
+  <!-- Evercrafted Brand Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       EVERCRAFTED BRAND TOKENS
+       ============================================================ */
+    :root {
+      --ec-white:        #FFFFFF;
+      --ec-off-white:    #F9F7F4;
+      --ec-paper:        #F2EFE9;
+      --ec-black:        #1A1A1A;
+      --ec-charcoal:     #2E2E2E;
+      --ec-ink:          #4A4A4A;
+
+      --ec-green:        #4A6741;
+      --ec-green-light:  #6B8F67;
+      --ec-green-pale:   #EEF2ED;
+      --ec-green-dim:    rgba(74, 103, 65, 0.12);
+
+      --ec-gray-100:     #F5F5F5;
+      --ec-gray-200:     #E8E8E8;
+      --ec-gray-300:     #D0D0D0;
+      --ec-gray-400:     #A8A8A8;
+      --ec-gray-500:     #787878;
+
+      --ec-warning:      #C4922A;
+      --ec-error:        #B94040;
+      --ec-info:         #4A6785;
+
+      --ec-surface:      var(--ec-white);
+      --ec-surface-alt:  var(--ec-off-white);
+      --ec-surface-warm: var(--ec-paper);
+      --ec-border:       var(--ec-gray-200);
+      --ec-border-dark:  var(--ec-gray-300);
+      --ec-text:         var(--ec-black);
+      --ec-text-muted:   var(--ec-ink);
+      --ec-text-faint:   var(--ec-gray-500);
+
+      /* Typography */
+      --ec-font-serif:  'Cormorant Garamond', Georgia, serif;
+      --ec-font-sans:   'Inter', system-ui, sans-serif;
+      --ec-font-script: 'Dancing Script', cursive;
+      --ec-font-mono:   'DM Mono', monospace;
+
+      /* Spacing */
+      --ec-space-1:  0.25rem;
+      --ec-space-2:  0.5rem;
+      --ec-space-3:  0.75rem;
+      --ec-space-4:  1rem;
+      --ec-space-5:  1.5rem;
+      --ec-space-6:  2rem;
+      --ec-space-8:  2.5rem;
+      --ec-space-10: 3rem;
+      --ec-space-12: 4rem;
+      --ec-space-16: 5rem;
+      --ec-space-20: 7rem;
+
+      --ec-radius-sm:   4px;
+      --ec-radius-md:   8px;
+      --ec-radius-lg:   14px;
+      --ec-radius-xl:   20px;
+      --ec-radius-full: 9999px;
+
+      --ec-shadow-sm:   0 1px 3px rgba(0,0,0,0.06);
+      --ec-shadow-md:   0 4px 16px rgba(0,0,0,0.08);
+      --ec-shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+      --ec-shadow-hero: 0 24px 64px rgba(0,0,0,0.10);
+
+      --ec-transition:  200ms ease;
+
+      /* Tier colors */
+      --ec-tier-bloom-bg:   #EEF2ED;
+      --ec-tier-bloom-text: #4A6741;
+      --ec-tier-craft-bg:   #EEF4F9;
+      --ec-tier-craft-text: #4A6785;
+      --ec-tier-studio-bg:  #F5EEF4;
+      --ec-tier-studio-text:#7A4A85;
+      --ec-tier-atelier-bg: #1A1A1A;
+      --ec-tier-atelier-text:#F2EFE9;
+    }
+
+    [data-theme="dark"] {
+      --ec-surface:      #1A1A1A;
+      --ec-surface-alt:  #222220;
+      --ec-surface-warm: #1E1D1B;
+      --ec-border:       #333330;
+      --ec-border-dark:  #444440;
+      --ec-text:         #E8E5DF;
+      --ec-text-muted:   #A8A5A0;
+      --ec-text-faint:   #666660;
+      --ec-green:        #6B8F67;
+      --ec-green-light:  #8AAF87;
+      --ec-green-pale:   rgba(107, 143, 103, 0.15);
+      --ec-green-dim:    rgba(107, 143, 103, 0.10);
+      --ec-paper:        #1C1B19;
+      --ec-off-white:    #1E1D1B;
+      --ec-shadow-sm:   0 1px 3px rgba(0,0,0,0.25);
+      --ec-shadow-md:   0 4px 16px rgba(0,0,0,0.35);
+      --ec-shadow-lg:   0 8px 32px rgba(0,0,0,0.45);
+      --ec-shadow-hero: 0 24px 64px rgba(0,0,0,0.55);
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    body {
+      font-family: var(--ec-font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      background: var(--ec-surface-warm);
+      color: var(--ec-text);
+      min-height: 100dvh;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; border: none; background: none; }
+    ul { list-style: none; }
+    img, svg { display: block; }
+
+    /* ============================================================
+       LAYOUT SHELL
+       ============================================================ */
+    .shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100dvh;
+    }
+
+    /* ============================================================
+       SIDEBAR
+       ============================================================ */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      padding: var(--ec-space-8) var(--ec-space-6);
+      background: var(--ec-surface);
+      border-right: 1px solid var(--ec-border);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--ec-space-8);
+    }
+
+    /* Brand lockup */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--ec-space-3);
+    }
+    .brand-wreath {
+      width: 40px;
+      height: 40px;
+      color: var(--ec-green);
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-family: var(--ec-font-serif);
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--ec-text);
+    }
+    .brand-sub {
+      font-family: var(--ec-font-sans);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ec-text-faint);
+      margin-top: 2px;
+    }
+
+    /* Nav */
+    .nav-section-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ec-text-faint);
+      padding: 0 0.75rem;
+      margin-bottom: var(--ec-space-2);
+    }
+    .nav-group { display: grid; gap: 2px; margin-bottom: var(--ec-space-5); }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--ec-space-3);
+      padding: 0.6rem 0.75rem;
+      border-radius: var(--ec-radius-md);
+      font-size: 0.875rem;
+      color: var(--ec-text-muted);
+      transition: background var(--ec-transition), color var(--ec-transition);
+    }
+    .nav-link:hover, .nav-link.active {
+      background: var(--ec-green-pale);
+      color: var(--ec-green);
+    }
+    .nav-link svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+    .nav-link.active svg { opacity: 1; }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: var(--ec-space-5);
+      border-top: 1px solid var(--ec-border);
+    }
+    .version-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ec-space-2);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--ec-radius-full);
+      background: var(--ec-green-dim);
+      color: var(--ec-green);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .version-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ec-green);
+    }
+
+    /* ============================================================
+       MAIN CONTENT
+       ============================================================ */
+    .main {
+      padding: var(--ec-space-10) var(--ec-space-10) var(--ec-space-20);
+      max-width: 1000px;
+    }
+
+    /* ============================================================
+       TOPBAR
+       ============================================================ */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--ec-space-6);
+      margin-bottom: var(--ec-space-12);
+    }
+    .topbar-left { flex: 1; }
+
+    .doc-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ec-space-2);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--ec-radius-full);
+      background: var(--ec-green-pale);
+      color: var(--ec-green);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--ec-space-4);
+    }
+
+    .page-headline {
+      font-family: var(--ec-font-serif);
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--ec-text);
+      max-width: 16ch;
+      margin-bottom: var(--ec-space-4);
+    }
+    .page-headline em {
+      font-style: italic;
+      color: var(--ec-green);
+    }
+
+    .page-lede {
+      font-size: 1.05rem;
+      color: var(--ec-text-muted);
+      max-width: 64ch;
+      line-height: 1.7;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--ec-space-3);
+      flex-shrink: 0;
+      padding-top: var(--ec-space-2);
+    }
+
+    .theme-toggle {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--ec-radius-full);
+      border: 1px solid var(--ec-border);
+      background: var(--ec-surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ec-text-muted);
+      transition: background var(--ec-transition), border-color var(--ec-transition);
+    }
+    .theme-toggle:hover {
+      background: var(--ec-green-pale);
+      border-color: var(--ec-green);
+      color: var(--ec-green);
+    }
+
+    /* ============================================================
+       SECTION STRUCTURE
+       ============================================================ */
+    .section {
+      margin-top: var(--ec-space-16);
+      scroll-margin-top: var(--ec-space-8);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: var(--ec-space-4);
+      margin-bottom: var(--ec-space-6);
+      padding-bottom: var(--ec-space-4);
+      border-bottom: 1px solid var(--ec-border);
+    }
+    .section-number {
+      font-family: var(--ec-font-mono);
+      font-size: 0.72rem;
+      color: var(--ec-text-faint);
+      letter-spacing: 0.06em;
+    }
+    .section-title {
+      font-family: var(--ec-font-serif);
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ec-text);
+    }
+    .section-accent {
+      font-family: var(--ec-font-script);
+      font-size: 1.1rem;
+      color: var(--ec-green);
+      margin-left: auto;
+    }
+
+    /* ============================================================
+       CARDS
+       ============================================================ */
+    .card {
+      background: var(--ec-surface);
+      border: 1px solid var(--ec-border);
+      border-radius: var(--ec-radius-xl);
+      padding: var(--ec-space-6);
+      box-shadow: var(--ec-shadow-sm);
+      transition: box-shadow var(--ec-transition), transform var(--ec-transition);
+    }
+    .card:hover {
+      box-shadow: var(--ec-shadow-md);
+      transform: translateY(-2px);
+    }
+    .card-title {
+      font-family: var(--ec-font-serif);
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: var(--ec-space-3);
+      color: var(--ec-text);
+    }
+    .card-body {
+      font-size: 0.9rem;
+      color: var(--ec-text-muted);
+      line-height: 1.7;
+    }
+    .card-body p + p { margin-top: var(--ec-space-3); }
+    .card-body ul { padding-left: 1.1rem; list-style: disc; }
+    .card-body li { margin-bottom: var(--ec-space-2); }
+    .card-body strong { color: var(--ec-text); font-weight: 600; }
+    .card-body h3 {
+      font-family: var(--ec-font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ec-green);
+      margin: var(--ec-space-5) 0 var(--ec-space-2);
+    }
+    .card-body h3:first-child { margin-top: 0; }
+
+    /* Card variants */
+    .card--green {
+      background: var(--ec-green-pale);
+      border-color: rgba(74, 103, 65, 0.2);
+    }
+    .card--dark {
+      background: var(--ec-black);
+      border-color: #333;
+      color: var(--ec-off-white);
+    }
+    .card--dark .card-title { color: var(--ec-off-white); }
+    .card--dark .card-body { color: #A8A5A0; }
+
+    /* ============================================================
+       GRID LAYOUTS
+       ============================================================ */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ec-space-5); }
+    .grid-2 { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: var(--ec-space-5); }
+    .grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ec-space-5); }
+    .grid-1 { display: grid; gap: var(--ec-space-5); }
+
+    /* ============================================================
+       HERO METRIC CARDS
+       ============================================================ */
+    .metric-card {
+      background: var(--ec-surface);
+      border: 1px solid var(--ec-border);
+      border-radius: var(--ec-radius-xl);
+      padding: var(--ec-space-6);
+      box-shadow: var(--ec-shadow-sm);
+      transition: box-shadow var(--ec-transition), transform var(--ec-transition);
+    }
+    .metric-card:hover {
+      box-shadow: var(--ec-shadow-md);
+      transform: translateY(-3px);
+    }
+    .metric-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ec-text-faint);
+      margin-bottom: var(--ec-space-2);
+    }
+    .metric-value {
+      font-family: var(--ec-font-serif);
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ec-text);
+      margin-bottom: var(--ec-space-2);
+    }
+    .metric-desc {
+      font-size: 0.85rem;
+      color: var(--ec-text-muted);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       PIPELINE VISUALIZATION
+       ============================================================ */
+    .pipeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .pipeline-step {
+      display: flex;
+      align-items: stretch;
+      gap: var(--ec-space-4);
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .pipeline-step.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .pipeline-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 32px;
+      flex-shrink: 0;
+    }
+    .pipeline-node {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--ec-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 4px var(--ec-green-dim);
+    }
+    .pipeline-node svg { width: 14px; height: 14px; color: white; }
+    .pipeline-line {
+      flex: 1;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--ec-green), var(--ec-border));
+      margin: 4px 0;
+      min-height: 20px;
+    }
+    .pipeline-step:last-child .pipeline-line { display: none; }
+    .pipeline-content {
+      padding: 0 0 var(--ec-space-5) 0;
+      flex: 1;
+    }
+    .pipeline-name {
+      font-family: var(--ec-font-sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ec-text);
+      margin-bottom: 2px;
+    }
+    .pipeline-desc {
+      font-size: 0.82rem;
+      color: var(--ec-text-muted);
+    }
+
+    /* ============================================================
+       FORMULA / SCHEMA CODE BLOCKS
+       ============================================================ */
+    .code-block {
+      background: var(--ec-black);
+      border-radius: var(--ec-radius-lg);
+      padding: var(--ec-space-5);
+      overflow-x: auto;
+      margin: var(--ec-space-4) 0;
+    }
+    .code-block pre {
+      font-family: var(--ec-font-mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: #B8D4B0;
+      white-space: pre;
+    }
+    .code-block .key { color: #9ECFFF; }
+    .code-block .val { color: #F8C555; }
+    .code-block .str { color: #CE9178; }
+    .code-block .num { color: #B5CEA8; }
+    .code-block .comment { color: #6A9955; font-style: italic; }
+
+    /* ============================================================
+       TABLES
+       ============================================================ */
+    .table-wrap { overflow-x: auto; border-radius: var(--ec-radius-lg); border: 1px solid var(--ec-border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    thead { background: var(--ec-surface-alt); }
+    th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ec-text-faint);
+      border-bottom: 1px solid var(--ec-border);
+    }
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--ec-border);
+      color: var(--ec-text-muted);
+      vertical-align: top;
+    }
+    td strong { color: var(--ec-text); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--ec-surface-alt); }
+    code {
+      font-family: var(--ec-font-mono);
+      font-size: 0.8em;
+      background: var(--ec-green-dim);
+      color: var(--ec-green);
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--ec-radius-sm);
+    }
+
+    /* ============================================================
+       TIER CARDS
+       ============================================================ */
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--ec-space-4);
+      align-items: start;
+    }
+    .tier-card {
+      background: var(--ec-surface);
+      border: 1px solid var(--ec-border);
+      border-radius: var(--ec-radius-xl);
+      padding: var(--ec-space-6);
+      box-shadow: var(--ec-shadow-sm);
+      transition: box-shadow var(--ec-transition), transform var(--ec-transition);
+      position: relative;
+    }
+    .tier-card:hover { box-shadow: var(--ec-shadow-md); transform: translateY(-3px); }
+    .tier-card--recommended {
+      transform: scale(1.04);
+      box-shadow: var(--ec-shadow-hero);
+      border-color: var(--ec-green);
+      z-index: 1;
+    }
+    .tier-card--recommended:hover { transform: scale(1.04) translateY(-3px); }
+    .tier-card--atelier {
+      background: var(--ec-black);
+      border-color: #333;
+    }
+
+    .tier-popular-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ec-green);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--ec-radius-full);
+      white-space: nowrap;
+    }
+
+    .tier-badge {
+      display: inline-flex;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--ec-radius-full);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--ec-space-3);
+    }
+    .tier-badge--bloom  { background: var(--ec-tier-bloom-bg);   color: var(--ec-tier-bloom-text); }
+    .tier-badge--craft  { background: var(--ec-tier-craft-bg);   color: var(--ec-tier-craft-text); }
+    .tier-badge--studio { background: var(--ec-tier-studio-bg);  color: var(--ec-tier-studio-text); }
+    .tier-badge--atelier{ background: rgba(242,239,233,0.15);    color: var(--ec-off-white); }
+
+    .tier-name {
+      font-family: var(--ec-font-serif);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--ec-space-1);
+      color: var(--ec-text);
+    }
+    .tier-card--atelier .tier-name { color: var(--ec-off-white); }
+
+    .tier-price {
+      font-family: var(--ec-font-serif);
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--ec-text);
+      margin-bottom: var(--ec-space-1);
+    }
+    .tier-card--atelier .tier-price { color: var(--ec-off-white); }
+    .tier-price span { font-size: 1rem; font-weight: 400; color: var(--ec-text-faint); }
+
+    .tier-tagline {
+      font-size: 0.82rem;
+      color: var(--ec-text-muted);
+      margin-bottom: var(--ec-space-5);
+      padding-bottom: var(--ec-space-4);
+      border-bottom: 1px solid var(--ec-border);
+    }
+    .tier-card--atelier .tier-tagline { color: #888; border-color: #333; }
+
+    .tier-features { display: grid; gap: var(--ec-space-2); margin-bottom: var(--ec-space-5); }
+    .tier-feature {
+      display: flex;
+      align-items: center;
+      gap: var(--ec-space-2);
+      font-size: 0.82rem;
+      color: var(--ec-text-muted);
+    }
+    .tier-card--atelier .tier-feature { color: #888; }
+    .tier-feature--included { color: var(--ec-text); }
+    .tier-card--atelier .tier-feature--included { color: #CCC; }
+    .tier-feature--included::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--ec-green-pale);
+      border: 1.5px solid var(--ec-green);
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L3.5 6.5L9 1' stroke='%234A6741' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .tier-feature--locked {
+      opacity: 0.5;
+    }
+    .tier-feature--locked::before {
+      content: '🔒';
+      font-size: 0.7rem;
+      width: 16px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .upgrade-hint {
+      font-size: 0.68rem;
+      color: var(--ec-text-faint);
+      margin-left: auto;
+    }
+
+    .tier-cta {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: var(--ec-radius-md);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-align: center;
+      transition: background var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+    }
+    .tier-cta--outline {
+      border: 1.5px solid var(--ec-border-dark);
+      color: var(--ec-text);
+      background: transparent;
+    }
+    .tier-cta--outline:hover {
+      border-color: var(--ec-green);
+      color: var(--ec-green);
+      background: var(--ec-green-pale);
+    }
+    .tier-cta--primary {
+      background: var(--ec-green);
+      color: white;
+      border: 1.5px solid var(--ec-green);
+    }
+    .tier-cta--primary:hover {
+      background: #3a5432;
+      transform: scale(1.02);
+      box-shadow: 0 4px 16px rgba(74,103,65,0.3);
+    }
+    .tier-cta--atelier {
+      background: var(--ec-off-white);
+      color: var(--ec-black);
+      border: 1.5px solid var(--ec-off-white);
+    }
+    .tier-cta--atelier:hover {
+      background: white;
+      transform: scale(1.02);
+    }
+
+    /* ============================================================
+       ROADMAP PHASES
+       ============================================================ */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--ec-space-5);
+    }
+    .roadmap-phase {
+      background: var(--ec-surface);
+      border: 1px solid var(--ec-border);
+      border-radius: var(--ec-radius-xl);
+      padding: var(--ec-space-6);
+      box-shadow: var(--ec-shadow-sm);
+      transition: box-shadow var(--ec-transition), transform var(--ec-transition);
+    }
+    .roadmap-phase:hover { box-shadow: var(--ec-shadow-md); transform: translateY(-2px); }
+    .roadmap-phase--active {
+      border-color: var(--ec-green);
+      background: var(--ec-green-pale);
+    }
+    .phase-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ec-green);
+      margin-bottom: var(--ec-space-2);
+    }
+    .phase-title {
+      font-family: var(--ec-font-serif);
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: var(--ec-space-4);
+      color: var(--ec-text);
+    }
+    .phase-items { display: grid; gap: var(--ec-space-2); }
+    .phase-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--ec-space-2);
+      font-size: 0.82rem;
+      color: var(--ec-text-muted);
+    }
+    .phase-item::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--ec-green);
+      flex-shrink: 0;
+      margin-top: 0.45rem;
+    }
+
+    /* ============================================================
+       FLOW STEPS
+       ============================================================ */
+    .flow-steps { display: grid; gap: var(--ec-space-4); }
+    .flow-step {
+      display: flex;
+      gap: var(--ec-space-4);
+      align-items: flex-start;
+    }
+    .flow-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--ec-green-dim);
+      border: 1.5px solid var(--ec-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ec-font-mono);
+      font-size: 0.7rem;
+      color: var(--ec-green);
+      flex-shrink: 0;
+      font-weight: 600;
+    }
+    .flow-step-content { flex: 1; }
+    .flow-step-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ec-text);
+      margin-bottom: 2px;
+    }
+    .flow-step-desc {
+      font-size: 0.82rem;
+      color: var(--ec-text-muted);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       BOTANICAL DIVIDER
+       ============================================================ */
+    .botanical-divider {
+      display: flex;
+      align-items: center;
+      gap: var(--ec-space-4);
+      margin: var(--ec-space-12) 0;
+      opacity: 0.4;
+    }
+    .botanical-divider::before,
+    .botanical-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ec-border-dark);
+    }
+    .botanical-divider svg { color: var(--ec-green); flex-shrink: 0; }
+
+    /* ============================================================
+       SCORE DISPLAY
+       ============================================================ */
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--ec-space-3);
+    }
+    .score-item {
+      background: var(--ec-surface);
+      border: 1px solid var(--ec-border);
+      border-radius: var(--ec-radius-lg);
+      padding: var(--ec-space-4);
+      text-align: center;
+    }
+    .score-value {
+      font-family: var(--ec-font-serif);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--ec-green);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: var(--ec-space-1);
+    }
+    .score-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ec-text-faint);
+    }
+    .score-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--ec-border);
+      border-radius: var(--ec-radius-full);
+      margin-top: var(--ec-space-2);
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--ec-green-light), var(--ec-green));
+      border-radius: var(--ec-radius-full);
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 1s ease 0.3s;
+    }
+    .score-bar-fill.animate { transform: scaleX(1); }
+
+    /* ============================================================
+       BLUEPRINT POLAR DIAGRAM
+       ============================================================ */
+    .polar-diagram-wrap {
+      background: var(--ec-black);
+      border-radius: var(--ec-radius-xl);
+      padding: var(--ec-space-6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--ec-space-4);
+    }
+    .polar-diagram-label {
+      font-family: var(--ec-font-mono);
+      font-size: 0.7rem;
+      color: #666;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ============================================================
+       STATS BAR
+       ============================================================ */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      background: var(--ec-surface);
+      border: 1px solid var(--ec-border);
+      border-radius: var(--ec-radius-xl);
+      overflow: hidden;
+      box-shadow: var(--ec-shadow-sm);
+    }
+    .stat-item {
+      padding: var(--ec-space-6);
+      text-align: center;
+      border-right: 1px solid var(--ec-border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-family: var(--ec-font-serif);
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      color: var(--ec-text);
+      line-height: 1;
+      margin-bottom: var(--ec-space-1);
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ec-text-faint);
+    }
+
+    /* ============================================================
+       SCROLL REVEAL
+       ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .page-footer {
+      margin-top: var(--ec-space-20);
+      padding-top: var(--ec-space-8);
+      border-top: 1px solid var(--ec-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ec-space-4);
+    }
+    .footer-brand {
+      font-family: var(--ec-font-serif);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ec-text);
+    }
+    .footer-meta {
+      font-size: 0.78rem;
+      color: var(--ec-text-faint);
+    }
+    .footer-script {
+      font-family: var(--ec-font-script);
+      font-size: 1.2rem;
+      color: var(--ec-green);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 1100px) {
+      .tiers-grid { grid-template-columns: repeat(2, 1fr); }
+      .tier-card--recommended { transform: none; }
+      .tier-card--recommended:hover { transform: translateY(-3px); }
+    }
+    @media (max-width: 980px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; flex-direction: row; flex-wrap: wrap; gap: var(--ec-space-5); padding: var(--ec-space-5) var(--ec-space-6); }
+      .sidebar-footer { margin-top: 0; padding-top: 0; border-top: none; }
+      .main { padding: var(--ec-space-8) var(--ec-space-6) var(--ec-space-16); max-width: 100%; }
+      .grid-3, .roadmap-grid { grid-template-columns: 1fr; }
+      .grid-2, .grid-2-equal { grid-template-columns: 1fr; }
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2) { border-right: none; }
+      .stat-item:nth-child(3) { border-top: 1px solid var(--ec-border); }
+      .stat-item:nth-child(4) { border-top: 1px solid var(--ec-border); border-right: none; }
+      .tiers-grid { grid-template-columns: 1fr; }
+      .page-headline { max-width: none; }
+      .topbar { flex-direction: column; }
+      .topbar-actions { align-self: flex-end; }
+    }
+    @media (max-width: 480px) {
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-bar { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--ec-border); }
+      .stat-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ============================================================
+       SIDEBAR
+       ============================================================ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <!-- Evercrafted wreath SVG logo -->
+      <svg class="brand-wreath" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Evercrafted wreath logo">
+        <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.3"/>
+        <circle cx="24" cy="24" r="11" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.3"/>
+        <!-- Leaf clusters around the ring -->
+        <path d="M24 6 C24 6 20 10 24 14 C28 10 24 6 24 6Z" fill="currentColor" opacity="0.7"/>
+        <path d="M38 14 C38 14 34 16 36 20 C40 18 38 14 38 14Z" fill="currentColor" opacity="0.6"/>
+        <path d="M42 24 C42 24 38 22 36 26 C40 28 42 24 42 24Z" fill="currentColor" opacity="0.5"/>
+        <path d="M38 34 C38 34 36 38 40 40 C42 36 38 34 38 34Z" fill="currentColor" opacity="0.6"/>
+        <path d="M24 42 C24 42 20 38 24 36 C28 38 24 42 24 42Z" fill="currentColor" opacity="0.8"/>
+        <path d="M10 34 C10 34 12 38 8 40 C6 36 10 34 10 34Z" fill="currentColor" opacity="0.6"/>
+        <path d="M6 24 C6 24 10 22 12 26 C8 28 6 24 6 24Z" fill="currentColor" opacity="0.5"/>
+        <path d="M10 14 C10 14 14 16 12 20 C8 18 10 14 10 14Z" fill="currentColor" opacity="0.6"/>
+        <!-- Center focal bloom -->
+        <circle cx="24" cy="24" r="3" fill="currentColor" opacity="0.4"/>
+        <circle cx="24" cy="24" r="1.5" fill="currentColor"/>
+      </svg>
+      <div>
+        <div class="brand-name">Evercrafted</div>
+        <div class="brand-sub">Platform Architecture</div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-section-label">Platform</div>
+      <div class="nav-group">
+        <a class="nav-link active" href="#overview">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          Overview
+        </a>
+        <a class="nav-link" href="#engine">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          Composition Engine
+        </a>
+        <a class="nav-link" href="#architecture">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12V4l6-2 6 2v8l-6 2-6-2z"/></svg>
+          Architecture
+        </a>
+        <a class="nav-link" href="#blueprint">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/><path d="M8 2v2M8 12v2M2 8h2M12 8h2"/></svg>
+          Blueprint System
+        </a>
+      </div>
+
+      <div class="nav-section-label">Product</div>
+      <div class="nav-group">
+        <a class="nav-link" href="#users">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+          User Management
+        </a>
+        <a class="nav-link" href="#flows">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          User Flows
+        </a>
+        <a class="nav-link" href="#deploy">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2l4 4H9v5H7V6H4l4-4z"/><path d="M2 13h12"/></svg>
+          Deployment
+        </a>
+        <a class="nav-link" href="#pricing">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v12M5 5h4.5a2.5 2.5 0 0 1 0 5H5"/></svg>
+          Subscription Tiers
+        </a>
+        <a class="nav-link" href="#roadmap">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+          Roadmap
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="version-badge">PRD v1.0</div>
+      <div style="margin-top: 0.5rem; font-size: 0.72rem; color: var(--ec-text-faint);">Author: Bret Baden</div>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="doc-label">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
+          Platform Architecture &amp; SaaS Plan
+        </div>
+        <h1 class="page-headline">
+          Design intelligence,<br><em>engineered</em> from emotion.
+        </h1>
+        <p class="page-lede">
+          Evercrafted is a deterministic floral composition engine — not a random generator. It translates emotional memory and physical inventory into mathematically balanced wreath blueprints, photorealistic render prompts, and builder-ready cut lists.
+        </p>
+      </div>
+      <div class="topbar-actions">
+        <button class="theme-toggle" data-theme-toggle aria-label="Switch theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar reveal">
+      <div class="stat-item">
+        <div class="stat-number">10</div>
+        <div class="stat-label">Core Engines</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">0.78</div>
+        <div class="stat-label">Min Score Target</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Repair Pass Limit</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">4</div>
+        <div class="stat-label">Subscription Tiers</div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         SECTION 01 — OVERVIEW
+         ============================================================ -->
+    <section id="overview" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">01</span>
+        <h2 class="section-title">Platform Overview</h2>
+        <span class="section-accent">The Vision</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="metric-card reveal reveal-delay-1">
+          <div class="metric-label">Core Model</div>
+          <div class="metric-value">AI Design Engine</div>
+          <p class="metric-desc">Wraps the composition pipeline in a multi-tenant product with authentication, billing, saved blueprints, and team collaboration.</p>
+        </div>
+        <div class="metric-card reveal reveal-delay-2">
+          <div class="metric-label">Primary Value</div>
+          <div class="metric-value">Reproducible Output</div>
+          <p class="metric-desc">Deterministic seeded randomness ensures identical inputs always generate identical wreaths — versioned, shareable, and resellable.</p>
+        </div>
+        <div class="metric-card reveal reveal-delay-3">
+          <div class="metric-label">Market Position</div>
+          <div class="metric-value">Floral CAD System</div>
+          <p class="metric-desc">Evercrafted is a design intelligence platform — the first procedural composition engine built specifically for professional wreath artisans.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--ec-space-6);">
+        <div class="card reveal">
+          <div class="card-title">What Evercrafted Produces</div>
+          <div class="card-body">
+            <p>Every generation run outputs five deliverables from a single emotional prompt and inventory snapshot: a <strong>mathematically balanced wreath layout</strong> using polar coordinate placement, a <strong>photorealistic Midjourney render prompt</strong> compiled from the Floral Genome, a <strong>builder-ready step-by-step guide</strong> with stem insertion angles, a <strong>cut list</strong> with SKU quantities per role, and a <strong>Blueprint DNA fingerprint</strong> for product identification and resale.</p>
+            <p>The system is not a chat wrapper or a random generator. It is a deterministic engine: <code>seed = hash(memory_input + inventory_signature + formula_id)</code>. The same inputs always produce the same design.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTANICAL DIVIDER -->
+    <div class="botanical-divider">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <path d="M16 18 C16 18 12 16 10 13" stroke="currentColor" stroke-width="1" fill="none"/>
+        <path d="M16 14 C16 14 20 12 22 9" stroke="currentColor" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- ============================================================
+         SECTION 02 — COMPOSITION ENGINE PIPELINE
+         ============================================================ -->
+    <section id="engine" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Composition Engine Pipeline</h2>
+        <span class="section-accent">10 Engines</span>
+      </div>
+
+      <div class="grid-2">
+        <!-- Pipeline steps -->
+        <div class="card reveal">
+          <div class="card-title">Execution Pipeline</div>
+          <div class="card-body" style="margin-top: var(--ec-space-4);">
+            <div class="pipeline">
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2C5.8 2 4 3.8 4 6c0 3 4 8 4 8s4-5 4-8c0-2.2-1.8-4-4-4z"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Memory Interpreter</div>
+                  <div class="pipeline-desc">Parses emotional prompts into structured signals — energy level, palette bias, symbolic tags.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2 1.5"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Emotion Mapper</div>
+                  <div class="pipeline-desc">Converts emotional intent into design signals: palette, contrast ratio, density bias.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="12" height="8" rx="1"/><path d="M5 4V3M11 4V3"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Inventory Analyzer</div>
+                  <div class="pipeline-desc">Converts stem inventory into role pools: focal, secondary, accent, filler, greenery — with flexibility scoring.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h12M8 2l4 6-4 6"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Formula Selector</div>
+                  <div class="pipeline-desc">Scores formulas across 6 dimensions — inventory feasibility, emotional match, silhouette, negative space, complexity, genome compatibility.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="2"/><path d="M8 2v2M8 12v2M2 8h2M12 8h2"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Anchor Generator + Zone Field Builder</div>
+                  <div class="pipeline-desc">Transforms formula anchors into polar coordinates using seeded randomness. Divides the ring into density zones.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h8M8 4l4 4-4 4"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Placement Solver + Collision Detection</div>
+                  <div class="pipeline-desc">Assigns each stem an angle, radius, depth, and direction vector. Enforces minimum spacing by role: focal 1.3×, secondary 1.0×, filler 0.6× bloom diameter.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Repair Engine</div>
+                  <div class="pipeline-desc">4-pass iterative improvement: density normalization → cluster cohesion → silence arc enforcement → focal clarity. Up to 8 passes until score ≥ 0.78.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 2l1.5 4.5H14l-3.7 2.7 1.4 4.3L8 11l-3.7 2.5 1.4-4.3L2 6.5h4.5z"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Scoring Engine</div>
+                  <div class="pipeline-desc">Evaluates balance, rhythm, contrast, density, focal clarity, negative space, and inventory efficiency.</div>
+                </div>
+              </div>
+              <div class="pipeline-step">
+                <div class="pipeline-connector">
+                  <div class="pipeline-node"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h10v8H3z"/><path d="M6 4V2M10 4V2"/></svg></div>
+                  <div class="pipeline-line"></div>
+                </div>
+                <div class="pipeline-content">
+                  <div class="pipeline-name">Blueprint + Render Engine</div>
+                  <div class="pipeline-desc">Outputs the final blueprint JSON, builder guide, SVG preview, and Midjourney render prompt.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column: Schema + Scoring -->
+        <div style="display: grid; gap: var(--ec-space-5); align-content: start;">
+
+          <!-- Scoring breakdown -->
+          <div class="card reveal reveal-delay-1">
+            <div class="card-title">Scoring Engine Output</div>
+            <div style="margin-top: var(--ec-space-4);">
+              <div class="score-grid">
+                <div class="score-item">
+                  <div class="score-value">0.83</div>
+                  <div class="score-label">Balance</div>
+                  <div class="score-bar"><div class="score-bar-fill" style="width: 83%;"></div></div>
+                </div>
+                <div class="score-item">
+                  <div class="score-value">0.79</div>
+                  <div class="score-label">Rhythm</div>
+                  <div class="score-bar"><div class="score-bar-fill" style="width: 79%;"></div></div>
+                </div>
+                <div class="score-item">
+                  <div class="score-value">0.86</div>
+                  <div class="score-label">Focal</div>
+                  <div class="score-bar"><div class="score-bar-fill" style="width: 86%;"></div></div>
+                </div>
+                <div class="score-item">
+                  <div class="score-value">0.91</div>
+                  <div class="score-label">Inventory</div>
+                  <div class="score-bar"><div class="score-bar-fill" style="width: 91%;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Blueprint DNA -->
+          <div class="card reveal reveal-delay-2">
+            <div class="card-title">Blueprint DNA Fingerprint</div>
+            <div class="code-block">
+              <pre><span class="comment">// Every design receives a unique fingerprint</span>
+{
+  <span class="key">"formula"</span>:       <span class="str">"crescent"</span>,
+  <span class="key">"seed"</span>:          <span class="num">92384723</span>,
+  <span class="key">"cluster_count"</span>: <span class="num">2</span>,
+  <span class="key">"silence_arc"</span>:   [<span class="num">280</span>, <span class="num">330</span>],
+  <span class="key">"stem_count"</span>:    <span class="num">58</span>,
+  <span class="key">"palette"</span>: [
+    <span class="str">"deep_red"</span>,
+    <span class="str">"pine_green"</span>,
+    <span class="str">"gold"</span>
+  ]
+}</pre>
+            </div>
+            <div class="card-body">
+              <p>Used for product identification, blueprint resale, and version control. Identical inputs always regenerate the identical design.</p>
+            </div>
+          </div>
+
+          <!-- Polar coordinate reference -->
+          <div class="card card--green reveal reveal-delay-3">
+            <div class="card-title">Polar Placement System</div>
+            <div class="card-body">
+              <p>Every stem is placed at <strong>(r, θ)</strong> — radius from center and angle from 12 o'clock. The working radius for a 24" wreath sits at <strong>r_work = 9.5"</strong>, with focal blooms at r_work and gesture greenery tucked at r_base = 7.5".</p>
+              <p>The 60/30/10 rule governs role allocation: 60% base greenery, 30% secondary filler, 10% focal and accent elements. Focal blooms must not exceed 1.5× the base width in diameter.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTANICAL DIVIDER -->
+    <div class="botanical-divider">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <path d="M16 18 C16 18 12 16 10 13" stroke="currentColor" stroke-width="1" fill="none"/>
+        <path d="M16 14 C16 14 20 12 22 9" stroke="currentColor" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- ============================================================
+         SECTION 03 — TECHNICAL ARCHITECTURE
+         ============================================================ -->
+    <section id="architecture" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Technical Architecture</h2>
+        <span class="section-accent">The Stack</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card reveal">
+          <div class="card-title">Frontend</div>
+          <div class="card-body">
+            <h3>Recommended Stack</h3>
+            <p><strong>Next.js</strong> with TypeScript, React Server Components, Tailwind or CSS variables for the Evercrafted design system, and TanStack Query for client data fetching.</p>
+            <h3>Primary UI Surfaces</h3>
+            <p>Marketing landing page, authenticated dashboard, project list, blueprint composer, output viewer with SVG canvas, billing page, team settings, and admin panel.</p>
+            <h3>Key Components</h3>
+            <p>Dynamic form builder for memory input, polar coordinate SVG preview canvas, blueprint version diff viewer, prompt preview panel, run status badges, and export controls.</p>
+            <h3>State Model</h3>
+            <p>Optimistic UI for blueprint generation, polling or websockets for repair engine passes, URL-driven filters, and autosave draft state for unfinished input forms.</p>
+          </div>
+        </div>
+
+        <div class="card reveal reveal-delay-1">
+          <div class="card-title">Backend</div>
+          <div class="card-body">
+            <h3>Recommended Stack</h3>
+            <p><strong>Python FastAPI</strong> with Pydantic for the composition engine. Node.js with NestJS or Next.js API routes for auth, billing, and orchestration. Split into dedicated services as throughput grows.</p>
+            <h3>Core Services</h3>
+            <p>Auth service, billing service, AI orchestration service (wraps the composition engine), file service for blueprint exports, notification service, and analytics service.</p>
+            <h3>API Endpoints</h3>
+            <div style="margin-top: var(--ec-space-3);">
+              <code>POST /generate-blueprint</code><br>
+              <code>POST /score-blueprint</code><br>
+              <code>POST /repair-blueprint</code><br>
+              <code>POST /render-blueprint</code><br>
+              <code>POST /export-blueprint</code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database tables -->
+      <div style="margin-top: var(--ec-space-5);">
+        <div class="card reveal">
+          <div class="card-title">Database Schema</div>
+          <div class="card-body">
+            <p style="margin-bottom: var(--ec-space-4);">PostgreSQL for core relational data, Redis for queues and rate limiting, and object storage for blueprint exports and generated render artifacts.</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Table</th>
+                  <th>Purpose</th>
+                  <th>Key Fields</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>users</strong></td><td>Identity and profile</td><td><code>id</code>, <code>email</code>, <code>name</code>, <code>password_hash</code>, <code>tier</code>, <code>last_login_at</code></td></tr>
+                <tr><td><strong>projects</strong></td><td>User workspaces</td><td><code>id</code>, <code>org_id</code>, <code>name</code>, <code>description</code>, <code>created_by</code></td></tr>
+                <tr><td><strong>blueprints</strong></td><td>Generated wreath designs</td><td><code>id</code>, <code>project_id</code>, <code>formula</code>, <code>seed</code>, <code>score_overall</code>, <code>dna_fingerprint</code></td></tr>
+                <tr><td><strong>blueprint_elements</strong></td><td>Individual stem placements</td><td><code>blueprint_id</code>, <code>sku</code>, <code>role</code>, <code>angle</code>, <code>radius</code>, <code>depth</code>, <code>vector</code></td></tr>
+                <tr><td><strong>inventory_items</strong></td><td>User stem inventory</td><td><code>id</code>, <code>user_id</code>, <code>sku</code>, <code>name</code>, <code>role_capabilities</code>, <code>quantity</code></td></tr>
+                <tr><td><strong>genome_records</strong></td><td>Floral genome library</td><td><code>sku</code>, <code>bloom_diameter</code>, <code>gesture_type</code>, <code>emotion_tags</code>, <code>substitution_neighbors</code></td></tr>
+                <tr><td><strong>formula_registry</strong></td><td>Composition formula presets</td><td><code>formula_id</code>, <code>anchor_groups</code>, <code>zone_definitions</code>, <code>density_curve</code>, <code>role_bias</code></td></tr>
+                <tr><td><strong>usage_events</strong></td><td>Metering and billing</td><td><code>id</code>, <code>org_id</code>, <code>blueprint_id</code>, <code>event_type</code>, <code>cost</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 04 — BLUEPRINT SYSTEM (Wreath Fundamentals)
+         ============================================================ -->
+    <section id="blueprint" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Blueprint &amp; Design System</h2>
+        <span class="section-accent">Polar Precision</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card reveal">
+          <div class="card-title">Polar Coordinate Blueprint</div>
+          <div class="card-body">
+            <p>Every element is placed at <strong>(r, θ)</strong> — radial distance from wreath center and angle measured clockwise from 12 o'clock (0°). Canvas coordinates are derived as:</p>
+            <div class="code-block" style="margin: var(--ec-space-4) 0;">
+              <pre><span class="comment">// Polar → Canvas XY conversion</span>
+x_canvas = cx + r × sin(θ)
+y_canvas = cy − r × cos(θ)
+
+<span class="comment">// Working radii for a 24" wreath</span>
+r_inner = 7.5"   <span class="comment">// inner hole edge</span>
+r_outer = 12"    <span class="comment">// outermost edge</span>
+r_work  = 9.75"  <span class="comment">// midpoint — default placement</span>
+r_accent = 11.5" <span class="comment">// near outer edge</span>
+r_base  = 8"     <span class="comment">// tucked stems</span></pre>
+            </div>
+            <h3>Focal Point Placement Rules</h3>
+            <p>A wreath typically has 1 primary focal point at 180° (bottom center). Supporting focal points at 120° intervals create a triangular visual anchor — a fundamental principle from the <strong>Rule of Odds</strong>: group elements in 3s or 5s for natural visual rhythm.</p>
+            <h3>Color Distribution</h3>
+            <p>Minimum angular separation between same-color elements: <strong>45°</strong> for small wreaths, <strong>30°</strong> for large wreaths. Color flow transitions hues gradually around the ring — never scattered randomly.</p>
+          </div>
+        </div>
+
+        <div style="display: grid; gap: var(--ec-space-5); align-content: start;">
+          <!-- Polar diagram SVG -->
+          <div class="polar-diagram-wrap reveal reveal-delay-1">
+            <div class="polar-diagram-label">Blueprint Polar Coordinate System</div>
+            <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Outer ring -->
+              <circle cx="110" cy="110" r="95" stroke="#333" stroke-width="1" stroke-dasharray="4 4"/>
+              <!-- Working ring -->
+              <circle cx="110" cy="110" r="75" stroke="#4A6741" stroke-width="1.5" opacity="0.6"/>
+              <!-- Inner ring -->
+              <circle cx="110" cy="110" r="45" stroke="#333" stroke-width="1" stroke-dasharray="4 4"/>
+              <!-- Center point -->
+              <circle cx="110" cy="110" r="3" fill="#4A6741" opacity="0.5"/>
+
+              <!-- Angle guides -->
+              <line x1="110" y1="15" x2="110" y2="205" stroke="#333" stroke-width="0.5" opacity="0.4"/>
+              <line x1="15" y1="110" x2="205" y2="110" stroke="#333" stroke-width="0.5" opacity="0.4"/>
+              <line x1="43" y1="43" x2="177" y2="177" stroke="#333" stroke-width="0.5" opacity="0.25"/>
+              <line x1="177" y1="43" x2="43" y2="177" stroke="#333" stroke-width="0.5" opacity="0.25"/>
+
+              <!-- Angle labels -->
+              <text x="107" y="11" fill="#666" font-size="9" font-family="DM Mono, monospace" text-anchor="middle">0°</text>
+              <text x="207" y="113" fill="#666" font-size="9" font-family="DM Mono, monospace" text-anchor="start">90°</text>
+              <text x="107" y="213" fill="#666" font-size="9" font-family="DM Mono, monospace" text-anchor="middle">180°</text>
+              <text x="5" y="113" fill="#666" font-size="9" font-family="DM Mono, monospace" text-anchor="start">270°</text>
+
+              <!-- Focal bloom at 180° (bottom) — primary -->
+              <circle cx="110" cy="185" r="10" fill="#4A6741" opacity="0.9"/>
+              <circle cx="110" cy="185" r="4" fill="white" opacity="0.8"/>
+              <!-- Focal at 60° -->
+              <circle cx="175" cy="72" r="8" fill="#4A6741" opacity="0.7"/>
+              <circle cx="175" cy="72" r="3" fill="white" opacity="0.8"/>
+              <!-- Focal at 300° -->
+              <circle cx="45" cy="72" r="8" fill="#4A6741" opacity="0.7"/>
+              <circle cx="45" cy="72" r="3" fill="white" opacity="0.8"/>
+
+              <!-- Secondary clusters -->
+              <circle cx="110" cy="35" r="6" fill="#6B8F67" opacity="0.6"/>
+              <circle cx="175" cy="148" r="6" fill="#6B8F67" opacity="0.6"/>
+              <circle cx="45" cy="148" r="6" fill="#6B8F67" opacity="0.6"/>
+
+              <!-- Accent dots -->
+              <circle cx="148" cy="50" r="4" fill="#C4922A" opacity="0.7"/>
+              <circle cx="72" cy="50" r="4" fill="#C4922A" opacity="0.7"/>
+              <circle cx="190" cy="130" r="4" fill="#C4922A" opacity="0.7"/>
+              <circle cx="30" cy="130" r="4" fill="#C4922A" opacity="0.7"/>
+              <circle cx="148" cy="170" r="4" fill="#C4922A" opacity="0.7"/>
+              <circle cx="72" cy="170" r="4" fill="#C4922A" opacity="0.7"/>
+
+              <!-- Radius label -->
+              <text x="112" y="108" fill="#4A6741" font-size="8" font-family="DM Mono, monospace" opacity="0.8">r_work</text>
+
+              <!-- Legend -->
+              <circle cx="20" cy="195" r="5" fill="#4A6741"/>
+              <text x="28" y="199" fill="#888" font-size="8" font-family="DM Mono, monospace">Focal</text>
+              <circle cx="65" cy="195" r="4" fill="#6B8F67"/>
+              <text x="72" y="199" fill="#888" font-size="8" font-family="DM Mono, monospace">Secondary</text>
+              <circle cx="125" cy="195" r="3" fill="#C4922A"/>
+              <text x="131" y="199" fill="#888" font-size="8" font-family="DM Mono, monospace">Accent</text>
+            </svg>
+            <div class="polar-diagram-label">3-focal triangular layout · 24" wreath</div>
+          </div>
+
+          <!-- Blueprint table -->
+          <div class="card reveal reveal-delay-2">
+            <div class="card-title">Example Blueprint Table</div>
+            <div class="table-wrap" style="margin-top: var(--ec-space-3);">
+              <table>
+                <thead>
+                  <tr><th>Element</th><th>Role</th><th>θ°</th><th>r"</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Garden Rose</td><td>Focal</td><td>180</td><td>9.75</td></tr>
+                  <tr><td>Garden Rose</td><td>Focal</td><td>60</td><td>9.75</td></tr>
+                  <tr><td>Garden Rose</td><td>Focal</td><td>300</td><td>9.75</td></tr>
+                  <tr><td>Ranunculus</td><td>Secondary</td><td>0</td><td>9.5</td></tr>
+                  <tr><td>Ranunculus</td><td>Secondary</td><td>120</td><td>9.5</td></tr>
+                  <tr><td>Eucalyptus</td><td>Filler</td><td>30</td><td>10.2</td></tr>
+                  <tr><td>Baby's Breath</td><td>Base Fill</td><td>every 45°</td><td>8.0</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design Principles callout -->
+      <div style="margin-top: var(--ec-space-5);">
+        <div class="card card--green reveal">
+          <div class="card-title">Core Design Principles Embedded in the Engine</div>
+          <div class="card-body">
+            <div class="grid-3" style="gap: var(--ec-space-4); margin-top: var(--ec-space-3);">
+              <div>
+                <h3>Balance</h3>
+                <p>Radial symmetry repeats elements at equal angular intervals. Asymmetric balance offsets heavier visual weight with spread and density. The Rule of Odds groups elements in 3s or 5s — odd numbers feel more natural than even.</p>
+              </div>
+              <div>
+                <h3>Rhythm &amp; Flow</h3>
+                <p>A dominant direction (clockwise or counter-clockwise stem lean) is established first. Texture levels alternate — fine (baby's breath), medium (eucalyptus), coarse (large blooms). Color transitions gradually around the ring.</p>
+              </div>
+              <div>
+                <h3>Proportion (60/30/10)</h3>
+                <p>60% base greenery forms the skeleton. 30% secondary filler builds depth. 10% focal and accent elements create the emotional statement. Focal blooms must not exceed 1.5× the base width in diameter.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 05 — USER MANAGEMENT
+         ============================================================ -->
+    <section id="users" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">05</span>
+        <h2 class="section-title">User Management</h2>
+        <span class="section-accent">Access &amp; Security</span>
+      </div>
+
+      <div class="grid-2-equal">
+        <div class="card reveal">
+          <div class="card-title">Authentication &amp; Authorization</div>
+          <div class="card-body">
+            <h3>Authentication Methods</h3>
+            <p>Email/password, magic link, Google OAuth for convenience, and optional SSO for enterprise Atelier accounts.</p>
+            <h3>Role-Based Access</h3>
+            <p>At minimum: <strong>Owner</strong>, <strong>Admin</strong>, <strong>Editor</strong>, and <strong>Viewer</strong> roles at the organization level. Tier-gated feature access enforced server-side — never only in the UI.</p>
+            <h3>Account Features</h3>
+            <p>Profile settings, API key management for external blueprint access, team invitations, seat management, and usage dashboards per tier.</p>
+          </div>
+        </div>
+
+        <div class="card reveal reveal-delay-1">
+          <div class="card-title">Security &amp; Privacy</div>
+          <div class="card-body">
+            <h3>Data Protection</h3>
+            <p>TLS in transit, encryption at rest for databases and object storage. Organization scoping on every query and service boundary — tenant data never crosses.</p>
+            <h3>Compliance Controls</h3>
+            <p>Configurable retention policies for blueprint history and uploaded inventory files. PII masking in logs, traces, and error reporting. Rate limits, CAPTCHA on signup, and prompt injection checks.</p>
+            <h3>Enterprise Path</h3>
+            <p>Plan for SOC 2 controls early. Isolate high-risk workflows (bulk export, API access) behind stricter permissioning for Atelier accounts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 06 — USER FLOWS
+         ============================================================ -->
+    <section id="flows" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">06</span>
+        <h2 class="section-title">User Flows</h2>
+        <span class="section-accent">The Journey</span>
+      </div>
+
+      <div class="grid-2-equal">
+        <div class="card reveal">
+          <div class="card-title">Core User Flows</div>
+          <div class="card-body" style="margin-top: var(--ec-space-4);">
+            <div class="flow-steps">
+              <div>
+                <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ec-green); margin-bottom: var(--ec-space-3);">Flow 1 — First-Time Onboarding</div>
+                <div class="flow-steps">
+                  <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <div class="flow-step-content">
+                      <div class="flow-step-title">Sign up &amp; create organization</div>
+                      <div class="flow-step-desc">Email or Google OAuth. Organization name, wreath-making context, and tier selection.</div>
+                    </div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <div class="flow-step-content">
+                      <div class="flow-step-title">Upload or build inventory</div>
+                      <div class="flow-step-desc">Import CSV or manually add stems. Each item is tagged with role capabilities and emotion labels.</div>
+                    </div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <div class="flow-step-content">
+                      <div class="flow-step-title">Guided first blueprint generation</div>
+                      <div class="flow-step-desc">Enter a memory prompt. Watch the pipeline run. Review the scored blueprint and render prompt.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top: var(--ec-space-5);">
+                <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ec-green); margin-bottom: var(--ec-space-3);">Flow 2 — Generate &amp; Save Blueprint</div>
+                <div class="flow-steps">
+                  <div class="flow-step">
+                    <div class="flow-step-num">1</div>
+                    <div class="flow-step-content">
+                      <div class="flow-step-title">Open project, enter memory prompt</div>
+                      <div class="flow-step-desc">Structured input form captures emotion, occasion, size, and inventory snapshot.</div>
+                    </div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="flow-step-num">2</div>
+                    <div class="flow-step-content">
+                      <div class="flow-step-title">Pipeline executes, repair runs</div>
+                      <div class="flow-step-desc">Watch the score climb in real time as the repair engine makes iterative passes.</div>
+                    </div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="flow-step-num">3</div>
+                    <div class="flow-step-content">
+                      <div class="flow-step-title">Save, export, or list on marketplace</div>
+                      <div class="flow-step-desc">Export as PDF builder guide, SVG blueprint, or JSON. List as locked or shell blueprint product.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card reveal reveal-delay-1">
+          <div class="card-title">Operational Flows</div>
+          <div class="card-body">
+            <h3>Repair Engine Convergence</h3>
+            <p>Repair runs up to 8 iterative passes. If the minimum target score of 0.78 is not reached, anchors regenerate and density is recalculated. The UI shows live score progress during each pass.</p>
+            <h3>Genome Substitution</h3>
+            <p>When a required stem is out of inventory, the substitution engine finds the nearest genome neighbor using a weighted similarity score: 30% bloom size, 25% gesture type, 20% texture, 15% color family, 10% emotional tags.</p>
+            <h3>Team Collaboration</h3>
+            <p>A teammate opens a previous blueprint, comments or edits the result, duplicates the configuration into a reusable template, and shares it across the workspace. Blueprint DNA ensures the design is always reproducible.</p>
+            <h3>Billing &amp; Metering</h3>
+            <p>Usage events fire after each completed blueprint generation. Base subscription plus usage-based overages for high-volume Studio and Atelier accounts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 07 — DEPLOYMENT
+         ============================================================ -->
+    <section id="deploy" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">07</span>
+        <h2 class="section-title">Deployment &amp; Scaling</h2>
+        <span class="section-accent">Infrastructure</span>
+      </div>
+
+      <div class="grid-2-equal">
+        <div class="card reveal">
+          <div class="card-title">Hosting &amp; Infrastructure</div>
+          <div class="card-body">
+            <h3>Frontend</h3>
+            <p>Vercel for the Next.js frontend — edge-optimized, zero-config deployments, and preview environments per branch.</p>
+            <h3>Backend</h3>
+            <p>Containerized Python FastAPI composition engine on AWS ECS/Fargate or Railway for MVP. Node.js orchestration layer co-hosted or as a separate service.</p>
+            <h3>Database</h3>
+            <p>Managed PostgreSQL via Neon, RDS, or Supabase. Redis-backed job queues with BullMQ for repair engine passes and render generation. Object storage (S3 or R2) for blueprint exports and SVG artifacts.</p>
+            <h3>Scalability Path</h3>
+            <p>Start as a modular monolith. Split the AI composition engine, billing, and notification workloads into separate services once throughput or reliability needs justify it.</p>
+          </div>
+        </div>
+
+        <div class="card reveal reveal-delay-1">
+          <div class="card-title">Monitoring &amp; Reliability</div>
+          <div class="card-body">
+            <h3>Observability</h3>
+            <p>OpenTelemetry traces, structured logs, error tracking via Sentry, infrastructure dashboards, and token-cost dashboards. SLA alerts on latency and failure rate.</p>
+            <h3>Reliability Controls</h3>
+            <p>Health checks, circuit breakers around the composition engine, dead-letter queues for failed repair passes, nightly backups, and restore drills.</p>
+            <h3>API Integrations</h3>
+            <p>Stripe for subscriptions, usage billing, invoices, and customer portal. Resend or Postmark for auth links and notifications. PostHog for product analytics and feature adoption. Optional Midjourney or image generation API for render output.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTANICAL DIVIDER -->
+    <div class="botanical-divider">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <path d="M16 18 C16 18 12 16 10 13" stroke="currentColor" stroke-width="1" fill="none"/>
+        <path d="M16 14 C16 14 20 12 22 9" stroke="currentColor" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- ============================================================
+         SECTION 08 — SUBSCRIPTION TIERS
+         ============================================================ -->
+    <section id="pricing" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">08</span>
+        <h2 class="section-title">Subscription Tiers</h2>
+        <span class="section-accent">Bloom to Atelier</span>
+      </div>
+
+      <div class="tiers-grid">
+        <!-- Bloom -->
+        <div class="tier-card reveal">
+          <div class="tier-badge tier-badge--bloom">Bloom</div>
+          <div class="tier-name">Bloom</div>
+          <div class="tier-price">$12<span>/mo</span></div>
+          <div class="tier-tagline">For the curious wreath maker</div>
+          <ul class="tier-features">
+            <li class="tier-feature tier-feature--included">Tutorial Guides</li>
+            <li class="tier-feature tier-feature--included">Seasonal Lookbook</li>
+            <li class="tier-feature tier-feature--included">5 Blueprint Saves</li>
+            <li class="tier-feature tier-feature--locked">Inventory Tracker <span class="upgrade-hint">Craft+</span></li>
+            <li class="tier-feature tier-feature--locked">Blueprint Generator <span class="upgrade-hint">Studio+</span></li>
+            <li class="tier-feature tier-feature--locked">AI Visualizer <span class="upgrade-hint">Atelier</span></li>
+          </ul>
+          <button class="tier-cta tier-cta--outline">Get Started</button>
+        </div>
+
+        <!-- Craft -->
+        <div class="tier-card reveal reveal-delay-1">
+          <div class="tier-badge tier-badge--craft">Craft</div>
+          <div class="tier-name">Craft</div>
+          <div class="tier-price">$29<span>/mo</span></div>
+          <div class="tier-tagline">For the working hobbyist</div>
+          <ul class="tier-features">
+            <li class="tier-feature tier-feature--included">Everything in Bloom</li>
+            <li class="tier-feature tier-feature--included">Inventory Tracker</li>
+            <li class="tier-feature tier-feature--included">Pricing Calculator</li>
+            <li class="tier-feature tier-feature--included">25 Blueprint Saves</li>
+            <li class="tier-feature tier-feature--locked">Blueprint Generator <span class="upgrade-hint">Studio+</span></li>
+            <li class="tier-feature tier-feature--locked">AI Visualizer <span class="upgrade-hint">Atelier</span></li>
+          </ul>
+          <button class="tier-cta tier-cta--outline">Get Started</button>
+        </div>
+
+        <!-- Studio — RECOMMENDED -->
+        <div class="tier-card tier-card--recommended reveal reveal-delay-2">
+          <div class="tier-popular-badge">Most Popular</div>
+          <div class="tier-badge tier-badge--studio">Studio</div>
+          <div class="tier-name">Studio</div>
+          <div class="tier-price">$49<span>/mo</span></div>
+          <div class="tier-tagline">For the working wreath artist</div>
+          <ul class="tier-features">
+            <li class="tier-feature tier-feature--included">Everything in Craft</li>
+            <li class="tier-feature tier-feature--included">Blueprint Generator</li>
+            <li class="tier-feature tier-feature--included">Collection Builder</li>
+            <li class="tier-feature tier-feature--included">Unlimited Blueprint Saves</li>
+            <li class="tier-feature tier-feature--included">Marketplace Access</li>
+            <li class="tier-feature tier-feature--locked">AI Visualizer <span class="upgrade-hint">Atelier</span></li>
+          </ul>
+          <button class="tier-cta tier-cta--primary">Get Started</button>
+        </div>
+
+        <!-- Atelier -->
+        <div class="tier-card tier-card--atelier reveal reveal-delay-3">
+          <div class="tier-badge tier-badge--atelier">Atelier</div>
+          <div class="tier-name" style="color: var(--ec-off-white);">Atelier</div>
+          <div class="tier-price" style="color: var(--ec-off-white);">$99<span style="color: #666;">/mo</span></div>
+          <div class="tier-tagline" style="color: #888; border-color: #333;">For the professional studio</div>
+          <ul class="tier-features">
+            <li class="tier-feature tier-feature--included" style="color: #CCC;">Everything in Studio</li>
+            <li class="tier-feature tier-feature--included" style="color: #CCC;">AI Visualizer</li>
+            <li class="tier-feature tier-feature--included" style="color: #CCC;">Prompt Creator</li>
+            <li class="tier-feature tier-feature--included" style="color: #CCC;">All Future Apps</li>
+            <li class="tier-feature tier-feature--included" style="color: #CCC;">API Access</li>
+            <li class="tier-feature tier-feature--included" style="color: #CCC;">Team Collaboration</li>
+          </ul>
+          <button class="tier-cta tier-cta--atelier">Get Started</button>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--ec-space-6);">
+        <div class="card reveal">
+          <div class="card-title">Monetization Strategy</div>
+          <div class="card-body">
+            <p>Price around the business value of the design output, not the token cost. A professionally structured wreath blueprint that saves 2–3 hours of design iteration and eliminates costly stem waste justifies value-based pricing well above cost-plus margins. Include internal cost controls — per-plan blueprint limits, maximum inventory size, and cached result reuse for repeated prompts — to protect margins at scale.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 09 — ROADMAP
+         ============================================================ -->
+    <section id="roadmap" class="section">
+      <div class="section-header reveal">
+        <span class="section-number">09</span>
+        <h2 class="section-title">Development Roadmap</h2>
+        <span class="section-accent">The Build</span>
+      </div>
+
+      <div class="roadmap-grid">
+        <div class="roadmap-phase roadmap-phase--active reveal">
+          <div class="phase-label">MVP · Now</div>
+          <div class="phase-title">Foundation</div>
+          <div class="phase-items">
+            <div class="phase-item">User signup/login, one workspace per account</div>
+            <div class="phase-item">Inventory analyzer and role pool builder</div>
+            <div class="phase-item">Formula selector with scoring model</div>
+            <div class="phase-item">Anchor generator and placement solver</div>
+            <div class="phase-item">Repair engine (4-pass, up to 8 iterations)</div>
+            <div class="phase-item">Scoring engine with 7 metrics</div>
+            <div class="phase-item">Blueprint generator and basic SVG preview</div>
+            <div class="phase-item">Stripe billing and quota enforcement</div>
+          </div>
+        </div>
+
+        <div class="roadmap-phase reveal reveal-delay-1">
+          <div class="phase-label">Phase 2 · Q3</div>
+          <div class="phase-title">Depth</div>
+          <div class="phase-items">
+            <div class="phase-item">Templates, projects, and collection builder</div>
+            <div class="phase-item">Team collaboration and comments</div>
+            <div class="phase-item">PDF builder guide export</div>
+            <div class="phase-item">Background processing and streaming repair</div>
+            <div class="phase-item">Genome substitution engine</div>
+            <div class="phase-item">Marketplace blueprint listing (locked + shell)</div>
+            <div class="phase-item">Richer inventory attachments and audit trails</div>
+          </div>
+        </div>
+
+        <div class="roadmap-phase reveal reveal-delay-2">
+          <div class="phase-label">Phase 3 · Q4+</div>
+          <div class="phase-title">Intelligence</div>
+          <div class="phase-items">
+            <div class="phase-item">AI floral image analyzer</div>
+            <div class="phase-item">Learning memory engine (style evolution)</div>
+            <div class="phase-item">Formula evolution and custom formula registry</div>
+            <div class="phase-item">Advanced team roles and SSO</div>
+            <div class="phase-item">API access and webhook triggers</div>
+            <div class="phase-item">Multi-formula style marketplace</div>
+            <div class="phase-item">Deeper analytics and token-cost dashboards</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer class="page-footer reveal">
+      <div>
+        <div class="footer-brand">Evercrafted</div>
+        <div class="footer-meta">Platform Architecture Document · PRD v1.0 · Author: Bret Baden</div>
+      </div>
+      <div class="footer-script">emotion into design</div>
+    </footer>
+
+  </main>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT — Theme toggle + scroll reveal + score bars
+     ============================================================ -->
+<script>
+  // Theme toggle
+  (function () {
+    const btn = document.querySelector('[data-theme-toggle]');
+    const root = document.documentElement;
+    let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    root.setAttribute('data-theme', theme);
+
+    const sunIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+    const moonIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+    const render = () => { btn.innerHTML = theme === 'dark' ? sunIcon : moonIcon; };
+    render();
+    btn.addEventListener('click', () => {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', theme);
+      render();
+    });
+  })();
+
+  // Scroll reveal
+  (function () {
+    const els = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(el => observer.observe(el));
+  })();
+
+  // Pipeline step reveals
+  (function () {
+    const steps = document.querySelectorAll('.pipeline-step');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, Array.from(steps).indexOf(entry.target) * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    steps.forEach(step => observer.observe(step));
+  })();
+
+  // Score bar animations
+  (function () {
+    const fills = document.querySelectorAll('.score-bar-fill');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    fills.forEach(fill => observer.observe(fill));
+  })();
+
+  // Active nav link on scroll
+  (function () {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    sections.forEach(s => observer.observe(s));
+  })();
+</script>
+
+</body>
+</html>
