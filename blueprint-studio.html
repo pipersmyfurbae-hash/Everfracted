@@ -1,0 +1,2369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint Studio — Evercrafted</title>
+<meta name="description" content="Map every wreath before a single stem is placed. Blueprint Studio is Evercrafted's professional design canvas — layer by layer, element by element, cost by cost.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ec-font-sans);
+  color: var(--ec-black);
+  background: var(--ec-off-white);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BRAND TOKENS
+══════════════════════════════════════════════════════════════ */
+:root {
+  --ec-white:        #FFFFFF;
+  --ec-off-white:    #F9F7F4;
+  --ec-paper:        #F2EFE9;
+  --ec-black:        #1A1A1A;
+  --ec-charcoal:     #2E2E2E;
+  --ec-ink:          #4A4A4A;
+  --ec-green:        #4A6741;
+  --ec-green-light:  #6B8F67;
+  --ec-green-pale:   #EEF2ED;
+  --ec-green-dim:    rgba(74,103,65,0.12);
+  --ec-gray-100:     #F5F5F5;
+  --ec-gray-200:     #E8E8E8;
+  --ec-gray-300:     #D0D0D0;
+  --ec-gray-400:     #A8A8A8;
+  --ec-gray-500:     #787878;
+  --ec-studio-c:     #7A4A85;
+  --ec-studio-pale:  #F3EEF6;
+  --ec-atelier-c:    #1A1A1A;
+  --ec-warning:      #C4922A;
+  --ec-font-serif:   'Cormorant Garamond', Georgia, serif;
+  --ec-font-sans:    'Inter', system-ui, sans-serif;
+  --ec-font-script:  'Dancing Script', cursive;
+  --ec-font-mono:    'DM Mono', monospace;
+  --ec-shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --ec-shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+  --ec-shadow-lg:    0 8px 32px rgba(0,0,0,0.10);
+  --ec-shadow-hero:  0 24px 64px rgba(0,0,0,0.12);
+  --ec-radius-sm:    4px;
+  --ec-radius-md:    8px;
+  --ec-radius-lg:    14px;
+  --ec-radius-xl:    20px;
+  --ec-transition:   200ms ease;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NOISE TEXTURE
+══════════════════════════════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LAYOUT UTILITIES
+══════════════════════════════════════════════════════════════ */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+@media (max-width: 768px) { .wrap { padding: 0 20px; } }
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 60px;
+  display: flex; align-items: center;
+  padding: 0 40px;
+  background: rgba(249,247,244,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+.nav.scrolled {
+  border-bottom-color: var(--ec-gray-200);
+  background: rgba(249,247,244,0.96);
+}
+.nav-inner { display: flex; align-items: center; gap: 0; width: 100%; max-width: 1200px; margin: 0 auto; }
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; margin-right: auto; }
+.nav-logo-leaf { color: var(--ec-green); }
+.nav-logo-name { font-family: var(--ec-font-serif); font-size: 1.25rem; font-weight: 400; color: var(--ec-black); letter-spacing: -0.01em; }
+.nav-links { display: flex; align-items: center; gap: 32px; margin-right: 32px; }
+.nav-links a { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ec-ink); text-decoration: none; transition: color var(--ec-transition); }
+.nav-links a:hover, .nav-links a.active { color: var(--ec-green); }
+.nav-cta { display: flex; align-items: center; gap: 12px; }
+.nav-signin { font-size: 0.75rem; font-weight: 500; color: var(--ec-ink); text-decoration: none; letter-spacing: 0.04em; transition: color var(--ec-transition); }
+.nav-signin:hover { color: var(--ec-black); }
+.nav-btn {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 9px 20px; border-radius: 100px;
+  background: var(--ec-green); color: var(--ec-white);
+  border: none; cursor: pointer; text-decoration: none;
+  transition: background var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.nav-btn:hover { background: var(--ec-green-light); transform: scale(1.02); box-shadow: 0 4px 16px rgba(74,103,65,0.3); }
+@media (max-width: 768px) {
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════════════════════════ */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.reveal-left.visible { opacity: 1; transform: none; }
+.reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.reveal-right.visible { opacity: 1; transform: none; }
+.d1 { transition-delay: 0.08s; }
+.d2 { transition-delay: 0.16s; }
+.d3 { transition-delay: 0.24s; }
+.d4 { transition-delay: 0.32s; }
+.d5 { transition-delay: 0.40s; }
+.d6 { transition-delay: 0.48s; }
+
+/* ══════════════════════════════════════════════════════════════
+   SECTION LABEL
+══════════════════════════════════════════════════════════════ */
+.section-tag {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ec-green); margin-bottom: 20px;
+}
+.section-tag::before { content: ''; display: block; width: 28px; height: 1px; background: var(--ec-green); }
+.section-tag.center { display: flex; justify-content: center; }
+.section-tag.center::before { display: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  background: var(--ec-black);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  overflow: hidden;
+  padding-top: 60px;
+}
+
+/* Atmospheric glow */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 70%;
+  height: 80%;
+  background: radial-gradient(ellipse at center, rgba(74,103,65,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: 5%;
+  width: 50%;
+  height: 60%;
+  background: radial-gradient(ellipse at center, rgba(122,74,133,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Decorative botanical arc */
+.hero-botanical {
+  position: absolute;
+  top: 0; right: 0;
+  width: 420px; height: 420px;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.hero-left {
+  padding: 80px 60px 80px 80px;
+  position: relative; z-index: 1;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ec-green-light); margin-bottom: 28px;
+  opacity: 0; animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
+}
+.hero-eyebrow-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ec-green-light); }
+.hero-tier-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px;
+  background: rgba(122,74,133,0.15); color: #C4A0D0;
+  border: 1px solid rgba(122,74,133,0.25);
+  margin-left: 10px;
+}
+
+.hero-h1 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(3.2rem, 5.5vw, 6rem);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--ec-off-white);
+  margin-bottom: 8px;
+  opacity: 0; animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.35s forwards;
+}
+.hero-h1 em {
+  font-style: italic;
+  color: var(--ec-green-light);
+}
+.hero-h1-script {
+  display: block;
+  font-family: var(--ec-font-script);
+  font-size: clamp(2.4rem, 4vw, 4.5rem);
+  font-weight: 600;
+  color: rgba(249,247,244,0.45);
+  line-height: 1.1;
+  letter-spacing: 0;
+  margin-top: 4px;
+  opacity: 0; animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.45s forwards;
+}
+
+.hero-body {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(249,247,244,0.55);
+  max-width: 460px;
+  margin: 28px 0 40px;
+  opacity: 0; animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.65s forwards;
+}
+.hero-cta-primary {
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 14px 28px; border-radius: 100px;
+  background: var(--ec-green); color: var(--ec-white);
+  border: none; cursor: pointer; text-decoration: none;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.hero-cta-primary:hover { background: var(--ec-green-light); transform: scale(1.02); box-shadow: 0 6px 24px rgba(74,103,65,0.4); }
+.hero-cta-ghost {
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 13px 24px; border-radius: 100px;
+  background: transparent; color: rgba(249,247,244,0.65);
+  border: 1px solid rgba(249,247,244,0.15); cursor: pointer; text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.hero-cta-ghost:hover { border-color: rgba(249,247,244,0.4); color: var(--ec-off-white); }
+
+.hero-proof {
+  display: flex; gap: 32px; margin-top: 52px;
+  opacity: 0; animation: fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.75s forwards;
+}
+.hero-proof-item {}
+.hero-proof-num {
+  font-family: var(--ec-font-serif);
+  font-size: 2rem; font-weight: 300; line-height: 1;
+  color: var(--ec-off-white); letter-spacing: -0.02em;
+}
+.hero-proof-num em { font-style: normal; color: var(--ec-green-light); font-size: 1.2rem; }
+.hero-proof-label { font-size: 0.68rem; color: rgba(249,247,244,0.35); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px; }
+
+/* ── Hero right — Studio mockup ── */
+.hero-right {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 80px 80px 20px;
+  opacity: 0; animation: fadeRight 1s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+}
+
+.studio-mockup {
+  width: 100%;
+  max-width: 580px;
+  background: #1E1E1E;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  overflow: hidden;
+  font-family: var(--ec-font-sans);
+}
+
+/* Mockup chrome bar */
+.mockup-chrome {
+  height: 36px;
+  background: #161616;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; padding: 0 14px; gap: 7px;
+}
+.mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+.mockup-dot-r { background: #FF5F57; }
+.mockup-dot-y { background: #FEBC2E; }
+.mockup-dot-g { background: #28C840; }
+.mockup-title {
+  flex: 1; text-align: center;
+  font-size: 0.65rem; color: rgba(255,255,255,0.25); letter-spacing: 0.06em;
+  font-family: var(--ec-font-mono);
+}
+
+/* Mockup body: sidebar + canvas */
+.mockup-body { display: grid; grid-template-columns: 180px 1fr; height: 380px; }
+
+/* Sidebar */
+.mockup-sidebar {
+  background: #181818;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column;
+  font-size: 0.7rem;
+  overflow: hidden;
+}
+.mockup-sidebar-header {
+  padding: 12px 14px 8px;
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.mockup-sidebar-section { padding: 10px 0 4px; }
+.mockup-sidebar-label {
+  padding: 0 14px 6px;
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.18);
+}
+.mockup-sidebar-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; cursor: pointer;
+  transition: background 0.15s;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.68rem;
+}
+.mockup-sidebar-item:hover { background: rgba(255,255,255,0.04); }
+.mockup-sidebar-item.active {
+  background: rgba(74,103,65,0.15);
+  color: var(--ec-green-light);
+  border-left: 2px solid var(--ec-green);
+}
+.mockup-sidebar-icon { font-size: 0.75rem; opacity: 0.7; width: 14px; text-align: center; }
+.mockup-sidebar-item.active .mockup-sidebar-icon { opacity: 1; }
+.mockup-layer-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.mockup-layer-dot-base { background: #6B8F67; }
+.mockup-layer-dot-focal { background: #C4922A; }
+.mockup-layer-dot-accent { background: #9B7EC8; }
+.mockup-layer-dot-ribbon { background: #7A9EC8; }
+
+/* Canvas area */
+.mockup-canvas {
+  background: #222;
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Wreath canvas SVG */
+.wreath-canvas-svg {
+  width: 260px; height: 260px;
+  animation: slowRotate 40s linear infinite;
+}
+@keyframes slowRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Canvas overlay chips */
+.canvas-chips {
+  position: absolute; bottom: 14px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 8px;
+  padding: 0 14px;
+}
+.canvas-chip {
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.6);
+  font-family: var(--ec-font-mono);
+  backdrop-filter: blur(8px);
+}
+.canvas-chip span { color: var(--ec-green-light); font-weight: 600; }
+
+/* Floating annotation */
+.canvas-annotation {
+  position: absolute;
+  background: rgba(122,74,133,0.85);
+  border: 1px solid rgba(122,74,133,0.5);
+  border-radius: 6px;
+  padding: 5px 9px;
+  font-size: 0.58rem;
+  color: #E8D5F0;
+  font-family: var(--ec-font-mono);
+  backdrop-filter: blur(8px);
+  animation: floatAnnotation 4s ease-in-out infinite;
+}
+@keyframes floatAnnotation {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* ── Hero scroll cue ── */
+.hero-scroll-cue {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.2);
+  opacity: 0; animation: fadeUp 1s ease 1.2s forwards;
+}
+.scroll-cue-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, rgba(249,247,244,0.2), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 0.8; transform: scaleY(1.1); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 80px; }
+  .hero-left { padding: 60px 20px 40px; }
+  .hero-right { padding: 0 20px 60px; }
+  .studio-mockup { max-width: 100%; }
+  .mockup-body { height: 280px; }
+  .hero-botanical { width: 200px; height: 200px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE MARQUEE
+══════════════════════════════════════════════════════════════ */
+.marquee-strip {
+  background: var(--ec-green);
+  padding: 14px 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.marquee-track {
+  display: flex; gap: 0;
+  animation: marqueeScroll 28s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 32px;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.85); white-space: nowrap;
+}
+.marquee-sep { color: rgba(255,255,255,0.3); font-size: 0.5rem; }
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INTRO SECTION — "What is Blueprint Studio"
+══════════════════════════════════════════════════════════════ */
+.intro-section {
+  background: var(--ec-off-white);
+  padding: 120px 0;
+}
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.intro-left {}
+.intro-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 3.5vw, 4rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ec-black);
+  margin-bottom: 24px;
+}
+.intro-h2 em { font-style: italic; color: var(--ec-green); }
+.intro-body {
+  font-size: 1.05rem; line-height: 1.75;
+  color: var(--ec-ink);
+  margin-bottom: 20px;
+}
+.intro-blockquote {
+  border-left: 2px solid var(--ec-green);
+  padding: 14px 20px;
+  background: var(--ec-green-pale);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--ec-green);
+  font-style: italic;
+  margin: 28px 0;
+}
+.intro-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ec-green); text-decoration: none;
+  transition: gap var(--ec-transition);
+}
+.intro-link:hover { gap: 14px; }
+
+/* Intro right — stat cards */
+.intro-right {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.intro-stat-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: 14px;
+  padding: 28px 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.intro-stat-card:hover { transform: translateY(-4px); box-shadow: var(--ec-shadow-lg); }
+.intro-stat-card.tall { grid-row: span 2; display: flex; flex-direction: column; justify-content: flex-end; background: var(--ec-black); }
+.intro-stat-num {
+  font-family: var(--ec-font-serif);
+  font-size: 3.2rem; font-weight: 300; line-height: 1;
+  color: var(--ec-black); letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+.intro-stat-num em { font-style: normal; color: var(--ec-green); }
+.intro-stat-card.tall .intro-stat-num { color: var(--ec-off-white); }
+.intro-stat-label { font-size: 0.78rem; color: var(--ec-gray-500); line-height: 1.4; }
+.intro-stat-card.tall .intro-stat-label { color: rgba(249,247,244,0.4); }
+.intro-stat-icon { font-size: 1.4rem; margin-bottom: 16px; }
+
+@media (max-width: 900px) {
+  .intro-grid { grid-template-columns: 1fr; gap: 48px; }
+  .intro-right { grid-template-columns: 1fr 1fr; }
+  .intro-stat-card.tall { grid-row: auto; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE SECTIONS (alternating)
+══════════════════════════════════════════════════════════════ */
+.feature-section {
+  padding: 120px 0;
+}
+.feature-section.alt { background: var(--ec-paper); }
+.feature-section.dark { background: var(--ec-black); }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.feature-grid.reverse { direction: rtl; }
+.feature-grid.reverse > * { direction: ltr; }
+
+.feature-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ec-green); margin-bottom: 16px;
+}
+.feature-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ec-green); }
+.feature-tag.studio-tag { color: var(--ec-studio-c); }
+.feature-tag.studio-tag .feature-tag-dot { background: var(--ec-studio-c); }
+
+.feature-h3 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  font-weight: 300; line-height: 1.1; letter-spacing: -0.025em;
+  color: var(--ec-black); margin-bottom: 20px;
+}
+.feature-h3 em { font-style: italic; color: var(--ec-green); }
+.feature-section.dark .feature-h3 { color: var(--ec-off-white); }
+.feature-section.dark .feature-h3 em { color: var(--ec-green-light); }
+
+.feature-body {
+  font-size: 1rem; line-height: 1.75; color: var(--ec-ink); margin-bottom: 16px;
+}
+.feature-section.dark .feature-body { color: rgba(249,247,244,0.55); }
+
+.feature-note {
+  border-left: 2px solid var(--ec-green);
+  padding: 12px 18px;
+  background: var(--ec-green-pale);
+  border-radius: 0 8px 8px 0;
+  font-size: 0.88rem; line-height: 1.6;
+  color: var(--ec-green); font-style: italic;
+  margin: 20px 0 28px;
+}
+.feature-section.dark .feature-note {
+  background: rgba(74,103,65,0.12);
+  color: var(--ec-green-light);
+  border-left-color: var(--ec-green-light);
+}
+
+.feature-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ec-green); text-decoration: none;
+  transition: gap var(--ec-transition);
+}
+.feature-link:hover { gap: 14px; }
+.feature-section.dark .feature-link { color: var(--ec-green-light); }
+
+/* Feature panel (right side visual) */
+.feature-panel {
+  background: #1E1E1E;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: var(--ec-shadow-hero);
+  overflow: hidden;
+  font-family: var(--ec-font-sans);
+}
+.feature-panel.light {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  box-shadow: var(--ec-shadow-lg);
+}
+
+/* Panel chrome */
+.panel-chrome {
+  height: 32px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; padding: 0 12px; gap: 6px;
+}
+.feature-panel.light .panel-chrome {
+  background: var(--ec-gray-100);
+  border-bottom-color: var(--ec-gray-200);
+}
+.panel-dot { width: 9px; height: 9px; border-radius: 50%; }
+.panel-dot-r { background: #FF5F57; }
+.panel-dot-y { background: #FEBC2E; }
+.panel-dot-g { background: #28C840; }
+.panel-title {
+  flex: 1; text-align: center;
+  font-size: 0.6rem; color: rgba(255,255,255,0.2); letter-spacing: 0.06em;
+  font-family: var(--ec-font-mono);
+}
+.feature-panel.light .panel-title { color: var(--ec-gray-400); }
+
+.panel-body { padding: 20px; }
+
+@media (max-width: 900px) {
+  .feature-grid { grid-template-columns: 1fr; gap: 48px; }
+  .feature-grid.reverse { direction: ltr; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LAYER SYSTEM PANEL (Feature 1)
+══════════════════════════════════════════════════════════════ */
+.layer-list { display: flex; flex-direction: column; gap: 8px; }
+.layer-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.layer-row:hover { background: rgba(255,255,255,0.07); }
+.layer-row.active { background: rgba(74,103,65,0.15); border-color: rgba(74,103,65,0.3); }
+.layer-swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.layer-name { font-size: 0.72rem; color: rgba(255,255,255,0.7); flex: 1; }
+.layer-row.active .layer-name { color: var(--ec-green-light); }
+.layer-count {
+  font-size: 0.6rem; color: rgba(255,255,255,0.25);
+  font-family: var(--ec-font-mono); background: rgba(255,255,255,0.06);
+  padding: 2px 7px; border-radius: 4px;
+}
+.layer-row.active .layer-count { background: rgba(74,103,65,0.2); color: var(--ec-green-light); }
+.layer-visibility { font-size: 0.65rem; color: rgba(255,255,255,0.2); cursor: pointer; }
+.layer-visibility:hover { color: rgba(255,255,255,0.5); }
+
+.layer-canvas-preview {
+  margin-top: 16px;
+  background: #1A1A1A;
+  border-radius: 8px;
+  height: 120px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,255,255,0.05);
+  position: relative; overflow: hidden;
+}
+.layer-canvas-label {
+  font-size: 0.58rem; color: rgba(255,255,255,0.15);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  font-family: var(--ec-font-mono);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COST PANEL (Feature 2)
+══════════════════════════════════════════════════════════════ */
+.cost-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cost-panel-title { font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.6); letter-spacing: 0.06em; text-transform: uppercase; }
+.cost-live-badge {
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 100px;
+  background: rgba(74,103,65,0.2); color: var(--ec-green-light);
+  border: 1px solid rgba(74,103,65,0.3);
+}
+.cost-rows { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.cost-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.cost-row-label { font-size: 0.68rem; color: rgba(255,255,255,0.45); }
+.cost-row-val { font-size: 0.68rem; color: rgba(255,255,255,0.7); font-family: var(--ec-font-mono); }
+.cost-row-val.green { color: var(--ec-green-light); }
+.cost-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 10px 0; }
+.cost-total-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(74,103,65,0.12);
+  border-radius: 6px;
+  border: 1px solid rgba(74,103,65,0.2);
+}
+.cost-total-label { font-size: 0.72rem; font-weight: 600; color: var(--ec-green-light); }
+.cost-total-val { font-size: 1.1rem; font-weight: 600; color: var(--ec-off-white); font-family: var(--ec-font-serif); }
+
+/* ══════════════════════════════════════════════════════════════
+   EXPORT PANEL (Feature 3)
+══════════════════════════════════════════════════════════════ */
+.export-options { display: flex; flex-direction: column; gap: 10px; }
+.export-option {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  background: var(--ec-gray-100);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.export-option:hover { background: var(--ec-white); border-color: var(--ec-gray-300); transform: translateX(4px); }
+.export-option.primary { background: var(--ec-green-pale); border-color: rgba(74,103,65,0.2); }
+.export-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--ec-white); border: 1px solid var(--ec-gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.export-option.primary .export-icon { background: var(--ec-green-pale); border-color: rgba(74,103,65,0.2); }
+.export-info { flex: 1; }
+.export-name { font-size: 0.78rem; font-weight: 600; color: var(--ec-black); margin-bottom: 2px; }
+.export-desc { font-size: 0.65rem; color: var(--ec-gray-500); }
+.export-option.primary .export-name { color: var(--ec-green); }
+.export-arrow { font-size: 0.7rem; color: var(--ec-gray-400); }
+
+/* ══════════════════════════════════════════════════════════════
+   BLUEPRINT CANVAS FEATURE (Feature 4 — dark)
+══════════════════════════════════════════════════════════════ */
+.canvas-feature-panel {
+  background: #181818;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: var(--ec-shadow-hero);
+  overflow: hidden;
+  position: relative;
+}
+.canvas-feature-chrome {
+  height: 38px;
+  background: #141414;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; padding: 0 14px; gap: 8px;
+}
+.canvas-feature-chrome-dots { display: flex; gap: 6px; }
+.canvas-feature-toolbar {
+  flex: 1; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+}
+.canvas-tool-btn {
+  width: 26px; height: 26px; border-radius: 5px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; color: rgba(255,255,255,0.4); cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.canvas-tool-btn:hover, .canvas-tool-btn.active { background: rgba(74,103,65,0.2); color: var(--ec-green-light); border-color: rgba(74,103,65,0.3); }
+.canvas-feature-body {
+  display: grid; grid-template-columns: 1fr 160px;
+  height: 320px;
+}
+.canvas-main {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  background: #1C1C1C;
+}
+.canvas-grid-bg {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.canvas-wreath-svg {
+  width: 220px; height: 220px;
+  position: relative; z-index: 1;
+  filter: drop-shadow(0 0 24px rgba(74,103,65,0.3));
+  animation: slowRotate 50s linear infinite;
+}
+.canvas-properties {
+  background: #161616;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  padding: 14px;
+  overflow-y: auto;
+}
+.canvas-prop-section { margin-bottom: 16px; }
+.canvas-prop-label {
+  font-size: 0.55rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2); margin-bottom: 8px;
+}
+.canvas-prop-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.canvas-prop-key { font-size: 0.62rem; color: rgba(255,255,255,0.35); }
+.canvas-prop-val { font-size: 0.62rem; color: rgba(255,255,255,0.65); font-family: var(--ec-font-mono); }
+.canvas-prop-swatch-row { display: flex; gap: 5px; margin-top: 6px; }
+.canvas-prop-swatch {
+  width: 18px; height: 18px; border-radius: 4px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: transform 0.15s;
+}
+.canvas-prop-swatch:hover { transform: scale(1.15); }
+.canvas-prop-swatch.selected { border-color: var(--ec-green-light); box-shadow: 0 0 0 2px rgba(107,143,103,0.3); }
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE PILLS ROW
+══════════════════════════════════════════════════════════════ */
+.features-pills-section {
+  background: var(--ec-off-white);
+  padding: 80px 0;
+  border-top: 1px solid var(--ec-gray-200);
+  border-bottom: 1px solid var(--ec-gray-200);
+}
+.pills-header {
+  text-align: center; margin-bottom: 48px;
+}
+.pills-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+  font-weight: 300; line-height: 1.1; letter-spacing: -0.02em;
+  color: var(--ec-black);
+}
+.pills-h2 em { font-style: italic; color: var(--ec-green); }
+.pills-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.pill-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: 14px;
+  padding: 28px 24px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.pill-card:hover { transform: translateY(-4px); box-shadow: var(--ec-shadow-lg); border-color: var(--ec-gray-300); }
+.pill-icon { font-size: 1.6rem; margin-bottom: 16px; }
+.pill-name { font-size: 0.88rem; font-weight: 600; color: var(--ec-black); margin-bottom: 8px; }
+.pill-desc { font-size: 0.78rem; line-height: 1.6; color: var(--ec-gray-500); }
+
+@media (max-width: 900px) { .pills-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .pills-grid { grid-template-columns: 1fr; } }
+
+/* ══════════════════════════════════════════════════════════════
+   WORKFLOW TIMELINE
+══════════════════════════════════════════════════════════════ */
+.workflow-section {
+  background: var(--ec-black);
+  padding: 120px 0;
+  position: relative;
+  overflow: hidden;
+}
+.workflow-section::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(74,103,65,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.workflow-header { text-align: center; margin-bottom: 72px; }
+.workflow-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2rem, 3vw, 3.5rem);
+  font-weight: 300; line-height: 1.1; letter-spacing: -0.025em;
+  color: var(--ec-off-white); margin-bottom: 16px;
+}
+.workflow-h2 em { font-style: italic; color: var(--ec-green-light); }
+.workflow-sub { font-size: 1rem; color: rgba(249,247,244,0.4); max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+.workflow-timeline {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.workflow-timeline::before {
+  content: '';
+  position: absolute; left: 28px; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(74,103,65,0.4) 10%, rgba(74,103,65,0.4) 90%, transparent);
+}
+.workflow-step {
+  display: flex; gap: 32px; align-items: flex-start;
+  margin-bottom: 48px; position: relative;
+}
+.workflow-step:last-child { margin-bottom: 0; }
+.workflow-step-num {
+  width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+  background: #1E1E1E;
+  border: 1px solid rgba(74,103,65,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ec-font-serif);
+  font-size: 1.4rem; font-weight: 300;
+  color: var(--ec-green-light);
+  position: relative; z-index: 1;
+  transition: background 0.3s, border-color 0.3s;
+}
+.workflow-step:hover .workflow-step-num { background: rgba(74,103,65,0.15); border-color: rgba(74,103,65,0.5); }
+.workflow-step-content { flex: 1; padding-top: 10px; }
+.workflow-step-title {
+  font-family: var(--ec-font-serif);
+  font-size: 1.4rem; font-weight: 400; letter-spacing: -0.01em;
+  color: var(--ec-off-white); margin-bottom: 8px;
+}
+.workflow-step-title em { font-style: italic; color: var(--ec-green-light); }
+.workflow-step-desc { font-size: 0.9rem; line-height: 1.7; color: rgba(249,247,244,0.45); }
+.workflow-step-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 100px;
+  margin-top: 10px;
+}
+.badge-studio { background: rgba(122,74,133,0.15); color: #C4A0D0; border: 1px solid rgba(122,74,133,0.25); }
+.badge-craft  { background: rgba(74,103,133,0.15); color: #A0C0D0; border: 1px solid rgba(74,103,133,0.25); }
+.badge-bloom  { background: rgba(74,103,65,0.15);  color: var(--ec-green-light); border: 1px solid rgba(74,103,65,0.25); }
+.badge-atelier { background: rgba(249,247,244,0.08); color: rgba(249,247,244,0.5); border: 1px solid rgba(249,247,244,0.12); }
+
+/* ══════════════════════════════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════════════════════════════ */
+.testimonials-section {
+  background: var(--ec-off-white);
+  padding: 120px 0;
+}
+.testimonials-header { text-align: center; margin-bottom: 64px; }
+.testimonials-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  font-weight: 300; line-height: 1.1; letter-spacing: -0.025em;
+  color: var(--ec-black);
+}
+.testimonials-h2 em { font-style: italic; color: var(--ec-green); }
+.testimonials-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.testi-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: 14px;
+  padding: 32px 28px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.testi-card:hover { transform: translateY(-4px); box-shadow: var(--ec-shadow-lg); }
+.testi-stars { display: flex; gap: 3px; margin-bottom: 16px; }
+.testi-star { width: 13px; height: 13px; color: var(--ec-warning); }
+.testi-quote {
+  font-family: var(--ec-font-serif);
+  font-size: 1.05rem; font-style: italic; font-weight: 300;
+  line-height: 1.6; color: var(--ec-black); margin-bottom: 24px;
+}
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--ec-green-pale);
+  border: 1px solid rgba(74,103,65,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 600; color: var(--ec-green);
+  flex-shrink: 0;
+}
+.testi-name { font-size: 0.82rem; font-weight: 600; color: var(--ec-black); }
+.testi-handle { font-size: 0.7rem; color: var(--ec-gray-500); margin-top: 2px; }
+@media (max-width: 900px) { .testimonials-grid { grid-template-columns: 1fr; } }
+
+/* ══════════════════════════════════════════════════════════════
+   TIER SECTION
+══════════════════════════════════════════════════════════════ */
+.tier-section {
+  background: var(--ec-paper);
+  padding: 120px 0;
+  border-top: 1px solid var(--ec-gray-200);
+}
+.tier-header { text-align: center; margin-bottom: 64px; }
+.tier-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  font-weight: 300; line-height: 1.1; letter-spacing: -0.025em;
+  color: var(--ec-black); margin-bottom: 12px;
+}
+.tier-h2 em { font-style: italic; color: var(--ec-green); }
+.tier-sub { font-size: 0.9rem; color: var(--ec-gray-500); }
+
+.tier-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+}
+.tier-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: 16px;
+  padding: 32px 24px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.tier-card:hover { transform: translateY(-4px); box-shadow: var(--ec-shadow-lg); }
+.tier-card.recommended {
+  border-color: var(--ec-studio-c);
+  box-shadow: 0 0 0 2px rgba(122,74,133,0.15), var(--ec-shadow-hero);
+  transform: scale(1.03);
+}
+.tier-card.recommended:hover { transform: scale(1.03) translateY(-4px); }
+.tier-card.atelier-card { background: var(--ec-black); border-color: rgba(255,255,255,0.08); }
+
+.tier-popular-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 100px;
+  background: var(--ec-studio-c); color: var(--ec-white);
+  white-space: nowrap;
+}
+.tier-badge {
+  display: inline-flex; align-items: center;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px; margin-bottom: 16px;
+}
+.tier-badge-bloom  { background: var(--ec-green-pale); color: var(--ec-green); }
+.tier-badge-craft  { background: #EEF4F9; color: #4A6785; }
+.tier-badge-studio { background: var(--ec-studio-pale); color: var(--ec-studio-c); }
+.tier-badge-atelier { background: rgba(249,247,244,0.1); color: rgba(249,247,244,0.6); }
+
+.tier-name { font-family: var(--ec-font-serif); font-size: 1.6rem; font-weight: 300; letter-spacing: -0.02em; color: var(--ec-black); margin-bottom: 6px; }
+.tier-card.atelier-card .tier-name { color: var(--ec-off-white); }
+.tier-tagline { font-size: 0.78rem; color: var(--ec-gray-500); line-height: 1.5; margin-bottom: 20px; }
+.tier-card.atelier-card .tier-tagline { color: rgba(249,247,244,0.35); }
+.tier-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px; }
+.tier-price-amount { font-family: var(--ec-font-serif); font-size: 2.4rem; font-weight: 300; color: var(--ec-black); letter-spacing: -0.03em; }
+.tier-card.atelier-card .tier-price-amount { color: var(--ec-off-white); }
+.tier-price-period { font-size: 0.78rem; color: var(--ec-gray-500); }
+.tier-card.atelier-card .tier-price-period { color: rgba(249,247,244,0.35); }
+
+.tier-cta {
+  width: 100%; padding: 11px 16px; border-radius: 100px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  border: none; cursor: pointer; text-decoration: none; display: block; text-align: center;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 24px;
+}
+.tier-cta-outline { background: transparent; color: var(--ec-green); border: 1.5px solid var(--ec-green); }
+.tier-cta-outline:hover { background: var(--ec-green-pale); }
+.tier-cta-primary { background: var(--ec-studio-c); color: var(--ec-white); }
+.tier-cta-primary:hover { background: #8A5A95; transform: scale(1.02); box-shadow: 0 4px 16px rgba(122,74,133,0.3); }
+.tier-cta-dark { background: rgba(249,247,244,0.1); color: rgba(249,247,244,0.7); border: 1px solid rgba(249,247,244,0.12); }
+.tier-cta-dark:hover { background: rgba(249,247,244,0.15); }
+
+.tier-divider { height: 1px; background: var(--ec-gray-200); margin-bottom: 20px; }
+.tier-card.atelier-card .tier-divider { background: rgba(255,255,255,0.08); }
+
+.tier-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.tier-feature-item { display: flex; align-items: flex-start; gap: 10px; font-size: 0.78rem; color: var(--ec-ink); line-height: 1.4; }
+.tier-card.atelier-card .tier-feature-item { color: rgba(249,247,244,0.6); }
+.tier-check {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  background: var(--ec-green-pale);
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.tier-check svg { width: 10px; height: 10px; stroke: var(--ec-green); stroke-width: 2.5; fill: none; }
+.tier-lock-item { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--ec-gray-400); }
+.tier-lock-icon { font-size: 0.7rem; }
+.tier-upgrade-hint {
+  margin-left: auto;
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 100px;
+  background: var(--ec-green-pale); color: var(--ec-green);
+}
+
+.tier-highlight-note {
+  text-align: center; margin-top: 40px;
+  font-size: 0.82rem; color: var(--ec-gray-500);
+}
+.tier-highlight-note a { color: var(--ec-green); text-decoration: none; }
+.tier-highlight-note a:hover { text-decoration: underline; }
+
+@media (max-width: 1000px) { .tier-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .tier-grid { grid-template-columns: 1fr; } }
+
+/* ══════════════════════════════════════════════════════════════
+   CTA SECTION
+══════════════════════════════════════════════════════════════ */
+.cta-section {
+  background: var(--ec-black);
+  padding: 140px 0;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; top: -30%; left: 50%; transform: translateX(-50%);
+  width: 80%; height: 100%;
+  background: radial-gradient(ellipse at center, rgba(74,103,65,0.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+.cta-inner { text-align: center; position: relative; z-index: 1; }
+.cta-script {
+  font-family: var(--ec-font-script);
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  color: rgba(249,247,244,0.25);
+  display: block; margin-bottom: 8px;
+}
+.cta-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.8rem, 5vw, 5.5rem);
+  font-weight: 300; line-height: 1.0; letter-spacing: -0.03em;
+  color: var(--ec-off-white); margin-bottom: 24px;
+}
+.cta-h2 em { font-style: italic; color: var(--ec-green-light); }
+.cta-sub {
+  font-size: 1.05rem; line-height: 1.7;
+  color: rgba(249,247,244,0.4);
+  max-width: 520px; margin: 0 auto 48px;
+}
+.cta-actions { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.cta-btn-primary {
+  font-size: 0.82rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 16px 36px; border-radius: 100px;
+  background: var(--ec-green); color: var(--ec-white);
+  border: none; cursor: pointer; text-decoration: none;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.cta-btn-primary:hover { background: var(--ec-green-light); transform: scale(1.02); box-shadow: 0 8px 32px rgba(74,103,65,0.4); }
+.cta-btn-ghost {
+  font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 15px 32px; border-radius: 100px;
+  background: transparent; color: rgba(249,247,244,0.55);
+  border: 1px solid rgba(249,247,244,0.15); cursor: pointer; text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.cta-btn-ghost:hover { border-color: rgba(249,247,244,0.4); color: var(--ec-off-white); }
+.cta-note { margin-top: 20px; font-size: 0.75rem; color: rgba(249,247,244,0.2); }
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════════ */
+.footer {
+  background: #141414;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 64px 0 32px;
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+  margin-bottom: 48px;
+}
+.footer-brand-name {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--ec-font-serif); font-size: 1.1rem; font-weight: 400;
+  color: var(--ec-off-white); margin-bottom: 12px;
+}
+.footer-brand-desc { font-size: 0.8rem; line-height: 1.7; color: rgba(249,247,244,0.3); max-width: 280px; }
+.footer-col-title {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.25); margin-bottom: 16px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a { font-size: 0.8rem; color: rgba(249,247,244,0.4); text-decoration: none; transition: color var(--ec-transition); }
+.footer-links a:hover { color: rgba(249,247,244,0.75); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-copy { font-size: 0.72rem; color: rgba(249,247,244,0.2); }
+.footer-legal { display: flex; gap: 20px; }
+.footer-legal a { font-size: 0.72rem; color: rgba(249,247,244,0.2); text-decoration: none; transition: color var(--ec-transition); }
+.footer-legal a:hover { color: rgba(249,247,244,0.5); }
+@media (max-width: 768px) {
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .footer-inner { padding: 0 20px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BOTANICAL DIVIDER
+══════════════════════════════════════════════════════════════ */
+.leaf-divider {
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  padding: 0;
+}
+.leaf-divider::before, .leaf-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--ec-gray-200); max-width: 200px;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg class="nav-logo-leaf" width="18" height="22" viewBox="0 0 32 40" fill="none">
+        <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 38L16 8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <path d="M16 22C16 22 10 18 8 13" stroke="currentColor" stroke-width="1" fill="none"/>
+        <path d="M16 16C16 16 22 12 24 7" stroke="currentColor" stroke-width="1" fill="none"/>
+      </svg>
+      <span class="nav-logo-name">Evercrafted</span>
+    </a>
+    <div class="nav-links">
+      <a href="evercrafted-home-hiw.html#how-it-works">How it works</a>
+      <a href="evercrafted-apps.html" class="active">Apps</a>
+      <a href="evercrafted-marketplace.html">Marketplace</a>
+      <a href="evercrafted-home-hiw.html#pricing">Pricing</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="nav-signin">Sign in</a>
+      <a href="#trial" class="nav-btn">Start free trial</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════════ -->
+<section class="hero">
+
+  <!-- Decorative botanical arc -->
+  <svg class="hero-botanical" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="210" cy="210" r="160" stroke="white" stroke-width="0.5"/>
+    <circle cx="210" cy="210" r="120" stroke="white" stroke-width="0.3"/>
+    <circle cx="210" cy="210" r="80" stroke="white" stroke-width="0.2"/>
+    <path d="M210 50 C210 50 170 90 150 130 C130 170 140 210 160 230 C180 250 210 260 210 260" stroke="white" stroke-width="0.8" fill="none"/>
+    <path d="M210 50 C210 50 250 90 270 130 C290 170 280 210 260 230 C240 250 210 260 210 260" stroke="white" stroke-width="0.8" fill="none"/>
+    <ellipse cx="210" cy="50" rx="8" ry="12" stroke="white" stroke-width="0.6" fill="none"/>
+    <ellipse cx="150" cy="130" rx="6" ry="9" stroke="white" stroke-width="0.5" fill="none" transform="rotate(-30 150 130)"/>
+    <ellipse cx="270" cy="130" rx="6" ry="9" stroke="white" stroke-width="0.5" fill="none" transform="rotate(30 270 130)"/>
+    <ellipse cx="160" cy="230" rx="5" ry="8" stroke="white" stroke-width="0.4" fill="none" transform="rotate(-45 160 230)"/>
+    <ellipse cx="260" cy="230" rx="5" ry="8" stroke="white" stroke-width="0.4" fill="none" transform="rotate(45 260 230)"/>
+  </svg>
+
+  <!-- Left: copy -->
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Blueprint Studio
+      <span class="hero-tier-pill">Studio &amp; above</span>
+    </div>
+
+    <h1 class="hero-h1">
+      Map every wreath<br>
+      before a <em>single stem</em><br>
+      is placed.
+    </h1>
+    <span class="hero-h1-script">layer by layer, cost by cost.</span>
+
+    <p class="hero-body">
+      Blueprint Studio is Evercrafted's professional design canvas. Define your structural layers, map element placement around the form, establish your colour story, and calculate material costs — all before you touch a single stem. Export a shareable layout diagram your clients can review and approve before production begins.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#trial" class="hero-cta-primary">Start free trial</a>
+      <a href="#features" class="hero-cta-ghost">Explore features</a>
+    </div>
+
+    <div class="hero-proof">
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">5<em>+</em></div>
+        <div class="hero-proof-label">Design layers</div>
+      </div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">18</div>
+        <div class="hero-proof-label">Free templates</div>
+      </div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">100<em>%</em></div>
+        <div class="hero-proof-label">Live cost data</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Studio mockup -->
+  <div class="hero-right">
+    <div class="studio-mockup">
+      <!-- Chrome bar -->
+      <div class="mockup-chrome">
+        <div class="mockup-dot mockup-dot-r"></div>
+        <div class="mockup-dot mockup-dot-y"></div>
+        <div class="mockup-dot mockup-dot-g"></div>
+        <div class="mockup-title">Blueprint Studio — Autumn Harvest Wreath</div>
+      </div>
+      <!-- Body: sidebar + canvas -->
+      <div class="mockup-body">
+        <!-- Sidebar -->
+        <div class="mockup-sidebar">
+          <div class="mockup-sidebar-header">Workspace</div>
+          <div class="mockup-sidebar-section">
+            <div class="mockup-sidebar-label">Canvas</div>
+            <div class="mockup-sidebar-item active">
+              <span class="mockup-sidebar-icon">⬡</span> Blueprint view
+            </div>
+            <div class="mockup-sidebar-item">
+              <span class="mockup-sidebar-icon">◎</span> Color story
+            </div>
+            <div class="mockup-sidebar-item">
+              <span class="mockup-sidebar-icon">≡</span> Element list
+            </div>
+          </div>
+          <div class="mockup-sidebar-section">
+            <div class="mockup-sidebar-label">Layers</div>
+            <div class="mockup-sidebar-item active">
+              <div class="mockup-layer-dot mockup-layer-dot-base"></div> Base layer
+            </div>
+            <div class="mockup-sidebar-item">
+              <div class="mockup-layer-dot mockup-layer-dot-focal"></div> Focal points
+            </div>
+            <div class="mockup-sidebar-item">
+              <div class="mockup-layer-dot mockup-layer-dot-accent"></div> Accents
+            </div>
+            <div class="mockup-sidebar-item">
+              <div class="mockup-layer-dot mockup-layer-dot-ribbon"></div> Ribbon
+            </div>
+          </div>
+          <div class="mockup-sidebar-section">
+            <div class="mockup-sidebar-label">Output</div>
+            <div class="mockup-sidebar-item">
+              <span class="mockup-sidebar-icon">↗</span> Export PDF
+            </div>
+            <div class="mockup-sidebar-item">
+              <span class="mockup-sidebar-icon">🔗</span> Share link
+            </div>
+          </div>
+        </div>
+        <!-- Canvas -->
+        <div class="mockup-canvas">
+          <!-- Animated wreath SVG -->
+          <svg class="wreath-canvas-svg" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Outer ring -->
+            <circle cx="130" cy="130" r="110" stroke="rgba(107,143,103,0.15)" stroke-width="1"/>
+            <!-- Base layer: grapevine -->
+            <circle cx="130" cy="130" r="90" stroke="rgba(107,143,103,0.35)" stroke-width="14" stroke-dasharray="6 4"/>
+            <!-- Foliage layer -->
+            <g opacity="0.7">
+              <ellipse cx="130" cy="42" rx="10" ry="16" fill="rgba(74,103,65,0.6)" transform="rotate(0 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(30 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(60 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="10" ry="16" fill="rgba(74,103,65,0.6)" transform="rotate(90 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(120 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(150 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="10" ry="16" fill="rgba(74,103,65,0.6)" transform="rotate(180 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(210 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(240 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="10" ry="16" fill="rgba(74,103,65,0.6)" transform="rotate(270 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(300 130 130) translate(0,-88)"/>
+              <ellipse cx="130" cy="42" rx="9" ry="14" fill="rgba(74,103,65,0.5)" transform="rotate(330 130 130) translate(0,-88)"/>
+            </g>
+            <!-- Focal flowers -->
+            <circle cx="130" cy="44" r="10" fill="rgba(196,146,42,0.8)" transform="rotate(0 130 130) translate(0,-86)"/>
+            <circle cx="130" cy="44" r="10" fill="rgba(196,146,42,0.8)" transform="rotate(120 130 130) translate(0,-86)"/>
+            <circle cx="130" cy="44" r="10" fill="rgba(196,146,42,0.8)" transform="rotate(240 130 130) translate(0,-86)"/>
+            <!-- Accent dots -->
+            <circle cx="130" cy="44" r="5" fill="rgba(155,126,200,0.7)" transform="rotate(60 130 130) translate(0,-86)"/>
+            <circle cx="130" cy="44" r="5" fill="rgba(155,126,200,0.7)" transform="rotate(180 130 130) translate(0,-86)"/>
+            <circle cx="130" cy="44" r="5" fill="rgba(155,126,200,0.7)" transform="rotate(300 130 130) translate(0,-86)"/>
+            <!-- Center -->
+            <circle cx="130" cy="130" r="28" stroke="rgba(107,143,103,0.2)" stroke-width="1" fill="rgba(26,26,26,0.5)"/>
+            <text x="130" y="126" text-anchor="middle" fill="rgba(107,143,103,0.6)" font-size="8" font-family="'DM Mono', monospace" letter-spacing="0.5">AUTUMN</text>
+            <text x="130" y="137" text-anchor="middle" fill="rgba(107,143,103,0.6)" font-size="8" font-family="'DM Mono', monospace" letter-spacing="0.5">HARVEST</text>
+          </svg>
+          <!-- Floating annotation -->
+          <div class="canvas-annotation" style="top:18px; right:18px;">
+            24 elements · $68.40
+          </div>
+          <!-- Bottom chips -->
+          <div class="canvas-chips">
+            <div class="canvas-chip"><span>24</span> elements</div>
+            <div class="canvas-chip"><span>$68</span> mat. cost</div>
+            <div class="canvas-chip"><span>3.2h</span> build time</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="hero-scroll-cue">
+    <div class="scroll-cue-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE MARQUEE
+══════════════════════════════════════════════════════════════ -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <div class="marquee-item">Blueprint Studio <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Layer-by-layer design <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Live cost calculation <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Client-shareable PDFs <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Inventory integration <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">18 free templates <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Blueprint Marketplace <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Studio &amp; Atelier tiers <span class="marquee-sep">◆</span></div>
+    <!-- Duplicate for seamless loop -->
+    <div class="marquee-item">Blueprint Studio <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Layer-by-layer design <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Live cost calculation <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Client-shareable PDFs <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Inventory integration <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">18 free templates <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Blueprint Marketplace <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Studio &amp; Atelier tiers <span class="marquee-sep">◆</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTRO — What is Blueprint Studio
+══════════════════════════════════════════════════════════════ -->
+<section class="intro-section" id="features">
+  <div class="wrap">
+    <div class="intro-grid">
+      <div class="intro-left">
+        <div class="section-tag reveal">What it is</div>
+        <h2 class="intro-h2 reveal d1">
+          Your wreath exists on<br>
+          paper <em>before</em> it exists<br>
+          in the world.
+        </h2>
+        <p class="intro-body reveal d2">
+          Blueprint Studio is the design canvas at the heart of Evercrafted. Before you commit a single stem, Blueprint Studio lets you map the entire structure of your wreath — layer by layer, element by element, cost by cost.
+        </p>
+        <p class="intro-body reveal d3">
+          Every element you place on the canvas is drawn directly from your inventory, so material costs are calculated in real time as you design. There are no surprises when you reach the workbench.
+        </p>
+        <blockquote class="intro-blockquote reveal d4">
+          "Blueprint Studio changed how I quote clients. I used to guess at material costs — now I know exactly what every wreath costs before I commit to a price."
+          <br><strong style="font-style:normal;font-size:0.8rem;color:var(--ec-green);display:block;margin-top:8px;">— Margaret L., Studio tier</strong>
+        </blockquote>
+        <a href="#trial" class="intro-link reveal d5">
+          Start your free trial
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="intro-right">
+        <div class="intro-stat-card tall reveal-right d1">
+          <div class="intro-stat-icon">🌿</div>
+          <div class="intro-stat-num" style="color:var(--ec-off-white);">18<em style="color:var(--ec-green-light);">+</em></div>
+          <div class="intro-stat-label" style="color:rgba(249,247,244,0.4);">Free blueprint templates included with every Studio subscription</div>
+        </div>
+        <div class="intro-stat-card reveal-right d2">
+          <div class="intro-stat-icon">📐</div>
+          <div class="intro-stat-num">5<em>×</em></div>
+          <div class="intro-stat-label">Design layers per blueprint</div>
+        </div>
+        <div class="intro-stat-card reveal-right d3">
+          <div class="intro-stat-icon">⚡</div>
+          <div class="intro-stat-num">100<em>%</em></div>
+          <div class="intro-stat-label">Live cost data from your inventory</div>
+        </div>
+        <div class="intro-stat-card reveal-right d4">
+          <div class="intro-stat-icon">📤</div>
+          <div class="intro-stat-num">PDF</div>
+          <div class="intro-stat-label">Shareable client-ready exports</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 1 — Layer System
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section">
+  <div class="wrap">
+    <div class="feature-grid">
+      <!-- Left: copy -->
+      <div class="reveal-left">
+        <div class="feature-tag studio-tag">
+          <span class="feature-tag-dot"></span>
+          Layer system
+        </div>
+        <h3 class="feature-h3">
+          Build your design<br>
+          from the <em>ground up.</em>
+        </h3>
+        <p class="feature-body">
+          Every wreath has a structure. Blueprint Studio mirrors that structure with a five-layer design system: Base, Foliage, Focal Points, Accents, and Ribbon. Each layer is independently toggleable, reorderable, and individually costed.
+        </p>
+        <p class="feature-body">
+          Work on one layer at a time without losing sight of the whole. Toggle layers on and off to focus on placement, then reveal the full composition to check balance and proportion.
+        </p>
+        <div class="feature-note">
+          Layer visibility is non-destructive — hiding a layer never removes its elements or costs from your blueprint.
+        </div>
+        <a href="#trial" class="feature-link">
+          Try Blueprint Studio
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <!-- Right: layer panel -->
+      <div class="feature-panel reveal-right">
+        <div class="panel-chrome">
+          <div class="panel-dot panel-dot-r"></div>
+          <div class="panel-dot panel-dot-y"></div>
+          <div class="panel-dot panel-dot-g"></div>
+          <div class="panel-title">Blueprint Studio — Layer Manager</div>
+        </div>
+        <div class="panel-body">
+          <div class="layer-list">
+            <div class="layer-row">
+              <div class="layer-swatch" style="background:#6B8F67;"></div>
+              <span class="layer-name">Base layer</span>
+              <span class="layer-count">1 item</span>
+              <span class="layer-visibility">👁</span>
+            </div>
+            <div class="layer-row active">
+              <div class="layer-swatch" style="background:#6B8F67;opacity:0.7;"></div>
+              <span class="layer-name">Foliage</span>
+              <span class="layer-count">12 items</span>
+              <span class="layer-visibility">👁</span>
+            </div>
+            <div class="layer-row">
+              <div class="layer-swatch" style="background:#C4922A;"></div>
+              <span class="layer-name">Focal points</span>
+              <span class="layer-count">3 items</span>
+              <span class="layer-visibility">👁</span>
+            </div>
+            <div class="layer-row">
+              <div class="layer-swatch" style="background:#9B7EC8;"></div>
+              <span class="layer-name">Accents</span>
+              <span class="layer-count">6 items</span>
+              <span class="layer-visibility">👁</span>
+            </div>
+            <div class="layer-row">
+              <div class="layer-swatch" style="background:#7A9EC8;"></div>
+              <span class="layer-name">Ribbon</span>
+              <span class="layer-count">2 items</span>
+              <span class="layer-visibility">👁</span>
+            </div>
+          </div>
+          <div class="layer-canvas-preview">
+            <svg width="80" height="80" viewBox="0 0 260 260" fill="none" style="opacity:0.5;">
+              <circle cx="130" cy="130" r="90" stroke="rgba(107,143,103,0.5)" stroke-width="12" stroke-dasharray="6 4"/>
+              <circle cx="130" cy="44" r="8" fill="rgba(196,146,42,0.7)" transform="rotate(0 130 130) translate(0,-86)"/>
+              <circle cx="130" cy="44" r="8" fill="rgba(196,146,42,0.7)" transform="rotate(120 130 130) translate(0,-86)"/>
+              <circle cx="130" cy="44" r="8" fill="rgba(196,146,42,0.7)" transform="rotate(240 130 130) translate(0,-86)"/>
+            </svg>
+            <span class="layer-canvas-label" style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);">Foliage layer active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 2 — Live Cost Calculation (alt bg, reversed)
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section alt">
+  <div class="wrap">
+    <div class="feature-grid reverse">
+      <!-- Left (visually right): copy -->
+      <div class="reveal-right">
+        <div class="feature-tag">
+          <span class="feature-tag-dot"></span>
+          Live cost engine
+        </div>
+        <h3 class="feature-h3">
+          Every element you add<br>
+          is <em>costed instantly.</em>
+        </h3>
+        <p class="feature-body">
+          Blueprint Studio is connected directly to your Inventory Tracker. As you add elements to your canvas, their unit costs are pulled from your live inventory and totalled in real time. You see your material cost grow with every placement decision.
+        </p>
+        <p class="feature-body">
+          When inventory prices change — because your supplier raised their rates, or you found a better source — your blueprint costs update automatically. No manual recalculation required.
+        </p>
+        <div class="feature-note">
+          Low-stock items are flagged directly in the canvas with a warning indicator, so you can substitute before you commit to a design.
+        </div>
+        <a href="#trial" class="feature-link">
+          See the cost engine in action
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <!-- Right (visually left): cost panel -->
+      <div class="feature-panel reveal-left">
+        <div class="panel-chrome">
+          <div class="panel-dot panel-dot-r"></div>
+          <div class="panel-dot panel-dot-y"></div>
+          <div class="panel-dot panel-dot-g"></div>
+          <div class="panel-title">Blueprint Studio — Cost Breakdown</div>
+        </div>
+        <div class="panel-body">
+          <div class="cost-panel-header">
+            <span class="cost-panel-title">Material costs</span>
+            <span class="cost-live-badge">● Live from inventory</span>
+          </div>
+          <div class="cost-rows">
+            <div class="cost-row">
+              <span class="cost-row-label">Eucalyptus, seeded (24 stems)</span>
+              <span class="cost-row-val">$28.80</span>
+            </div>
+            <div class="cost-row">
+              <span class="cost-row-label">White ranunculus (8 stems)</span>
+              <span class="cost-row-val green">$19.20 ⚠ low</span>
+            </div>
+            <div class="cost-row">
+              <span class="cost-row-label">Dried pampas grass (12 stems)</span>
+              <span class="cost-row-val">$10.20</span>
+            </div>
+            <div class="cost-row">
+              <span class="cost-row-label">Wired ribbon, 2.5" (2 rolls)</span>
+              <span class="cost-row-val">$7.00</span>
+            </div>
+            <div class="cost-row">
+              <span class="cost-row-label">Grapevine base, 18" (1 unit)</span>
+              <span class="cost-row-val">$4.20</span>
+            </div>
+          </div>
+          <div class="cost-divider"></div>
+          <div class="cost-total-row">
+            <span class="cost-total-label">Total material cost</span>
+            <span class="cost-total-val">$69.40</span>
+          </div>
+          <div style="margin-top:12px;padding:10px 12px;background:rgba(196,146,42,0.1);border:1px solid rgba(196,146,42,0.2);border-radius:6px;">
+            <div style="font-size:0.62rem;color:rgba(196,146,42,0.9);font-family:var(--ec-font-mono);">⚠ White ranunculus is low stock (2 remaining). Consider substituting with cream garden roses.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 3 — The Canvas (dark, full-width feel)
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section dark" id="canvas">
+  <div class="wrap">
+    <div class="feature-grid">
+      <!-- Left: copy -->
+      <div class="reveal-left">
+        <div class="feature-tag">
+          <span class="feature-tag-dot" style="background:var(--ec-green-light);"></span>
+          Design canvas
+        </div>
+        <h3 class="feature-h3">
+          A canvas built for<br>
+          the <em>circular form.</em>
+        </h3>
+        <p class="feature-body">
+          Blueprint Studio's canvas is designed specifically for wreath construction. The circular form is the primary unit — elements are placed radially, with snap-to-ring guides that mirror how a real wreath is built: from the base outward, layer by layer.
+        </p>
+        <p class="feature-body">
+          Adjust the canvas to any standard wreath size, from 12" to 36", and the element placement scales proportionally. Switch between blueprint view, colour story view, and element list view without leaving the canvas.
+        </p>
+        <div class="feature-note">
+          The canvas is non-destructive. Every placement decision is undoable, and blueprint versions are saved automatically so you can always return to an earlier state.
+        </div>
+        <a href="#trial" class="feature-link">
+          Open the canvas
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <!-- Right: canvas panel -->
+      <div class="canvas-feature-panel reveal-right">
+        <div class="canvas-feature-chrome">
+          <div class="canvas-feature-chrome-dots">
+            <div class="mockup-dot mockup-dot-r"></div>
+            <div class="mockup-dot mockup-dot-y"></div>
+            <div class="mockup-dot mockup-dot-g"></div>
+          </div>
+          <div class="canvas-feature-toolbar">
+            <div class="canvas-tool-btn active" title="Select">↖</div>
+            <div class="canvas-tool-btn" title="Place element">⊕</div>
+            <div class="canvas-tool-btn" title="Rotate">↻</div>
+            <div class="canvas-tool-btn" title="Zoom">⊙</div>
+            <div class="canvas-tool-btn" title="Undo">↩</div>
+          </div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.2);font-family:var(--ec-font-mono);padding-right:4px;">18" · Blueprint view</div>
+        </div>
+        <div class="canvas-feature-body">
+          <div class="canvas-main">
+            <div class="canvas-grid-bg"></div>
+            <svg class="canvas-wreath-svg" viewBox="0 0 260 260" fill="none">
+              <circle cx="130" cy="130" r="110" stroke="rgba(107,143,103,0.08)" stroke-width="1"/>
+              <circle cx="130" cy="130" r="90" stroke="rgba(107,143,103,0.12)" stroke-width="1" stroke-dasharray="4 4"/>
+              <circle cx="130" cy="130" r="70" stroke="rgba(107,143,103,0.08)" stroke-width="1" stroke-dasharray="2 6"/>
+              <!-- Base -->
+              <circle cx="130" cy="130" r="90" stroke="rgba(107,143,103,0.4)" stroke-width="16" stroke-dasharray="8 5"/>
+              <!-- Foliage -->
+              <g opacity="0.75">
+                <ellipse cx="130" cy="42" rx="9" ry="15" fill="rgba(74,103,65,0.65)" transform="rotate(0 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(24 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(48 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="9" ry="15" fill="rgba(74,103,65,0.65)" transform="rotate(72 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(96 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(120 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="9" ry="15" fill="rgba(74,103,65,0.65)" transform="rotate(144 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(168 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(192 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="9" ry="15" fill="rgba(74,103,65,0.65)" transform="rotate(216 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(240 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(264 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="9" ry="15" fill="rgba(74,103,65,0.65)" transform="rotate(288 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(312 130 130) translate(0,-88)"/>
+                <ellipse cx="130" cy="42" rx="8" ry="13" fill="rgba(74,103,65,0.5)" transform="rotate(336 130 130) translate(0,-88)"/>
+              </g>
+              <!-- Focal flowers -->
+              <circle cx="130" cy="44" r="11" fill="rgba(196,146,42,0.85)" transform="rotate(0 130 130) translate(0,-86)"/>
+              <circle cx="130" cy="44" r="11" fill="rgba(196,146,42,0.85)" transform="rotate(120 130 130) translate(0,-86)"/>
+              <circle cx="130" cy="44" r="11" fill="rgba(196,146,42,0.85)" transform="rotate(240 130 130) translate(0,-86)"/>
+              <!-- Accents -->
+              <circle cx="130" cy="44" r="6" fill="rgba(155,126,200,0.75)" transform="rotate(60 130 130) translate(0,-86)"/>
+              <circle cx="130" cy="44" r="6" fill="rgba(155,126,200,0.75)" transform="rotate(180 130 130) translate(0,-86)"/>
+              <circle cx="130" cy="44" r="6" fill="rgba(155,126,200,0.75)" transform="rotate(300 130 130) translate(0,-86)"/>
+              <!-- Selection ring on one focal -->
+              <circle cx="130" cy="44" r="15" stroke="rgba(107,143,103,0.8)" stroke-width="1.5" fill="none" transform="rotate(0 130 130) translate(0,-86)" stroke-dasharray="3 2"/>
+              <!-- Center -->
+              <circle cx="130" cy="130" r="30" fill="rgba(20,20,20,0.7)" stroke="rgba(107,143,103,0.15)" stroke-width="1"/>
+              <text x="130" y="127" text-anchor="middle" fill="rgba(107,143,103,0.5)" font-size="7" font-family="'DM Mono',monospace" letter-spacing="0.5">AUTUMN</text>
+              <text x="130" y="137" text-anchor="middle" fill="rgba(107,143,103,0.5)" font-size="7" font-family="'DM Mono',monospace" letter-spacing="0.5">HARVEST</text>
+            </svg>
+          </div>
+          <!-- Properties panel -->
+          <div class="canvas-properties">
+            <div class="canvas-prop-section">
+              <div class="canvas-prop-label">Selection</div>
+              <div class="canvas-prop-row">
+                <span class="canvas-prop-key">Element</span>
+                <span class="canvas-prop-val">Ranunculus</span>
+              </div>
+              <div class="canvas-prop-row">
+                <span class="canvas-prop-key">Layer</span>
+                <span class="canvas-prop-val">Focal</span>
+              </div>
+              <div class="canvas-prop-row">
+                <span class="canvas-prop-key">Position</span>
+                <span class="canvas-prop-val">12 o'clock</span>
+              </div>
+              <div class="canvas-prop-row">
+                <span class="canvas-prop-key">Unit cost</span>
+                <span class="canvas-prop-val">$2.40</span>
+              </div>
+            </div>
+            <div class="canvas-prop-section">
+              <div class="canvas-prop-label">Colour</div>
+              <div class="canvas-prop-swatch-row">
+                <div class="canvas-prop-swatch selected" style="background:#F5F0E8;"></div>
+                <div class="canvas-prop-swatch" style="background:#C4922A;"></div>
+                <div class="canvas-prop-swatch" style="background:#9B7EC8;"></div>
+                <div class="canvas-prop-swatch" style="background:#6B8F67;"></div>
+                <div class="canvas-prop-swatch" style="background:#7A9EC8;"></div>
+              </div>
+            </div>
+            <div class="canvas-prop-section">
+              <div class="canvas-prop-label">Canvas</div>
+              <div class="canvas-prop-row">
+                <span class="canvas-prop-key">Size</span>
+                <span class="canvas-prop-val">18"</span>
+              </div>
+              <div class="canvas-prop-row">
+                <span class="canvas-prop-key">Elements</span>
+                <span class="canvas-prop-val">24</span>
+              </div>
+              <div class="canvas-prop-row">
+                <span class="canvas-prop-key">Total cost</span>
+                <span class="canvas-prop-val" style="color:var(--ec-green-light);">$69.40</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 4 — Export & Share (light bg, reversed)
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section">
+  <div class="wrap">
+    <div class="feature-grid reverse">
+      <!-- Left (visually right): copy -->
+      <div class="reveal-right">
+        <div class="feature-tag">
+          <span class="feature-tag-dot"></span>
+          Export &amp; share
+        </div>
+        <h3 class="feature-h3">
+          Share your blueprint<br>
+          before you <em>build it.</em>
+        </h3>
+        <p class="feature-body">
+          When your blueprint is ready, export it as a client-ready PDF — a professional layout diagram that shows element placement, layer structure, colour story, and material costs. No design software required on the client's end.
+        </p>
+        <p class="feature-body">
+          Or generate a shareable link that lets clients view the blueprint in their browser, leave comments, and give approval — all without needing an Evercrafted account. Reduce revision cycles before a single stem is cut.
+        </p>
+        <div class="feature-note">
+          Approved blueprints can be published directly to the Evercrafted Marketplace, where other makers can purchase and build from your design.
+        </div>
+        <a href="#trial" class="feature-link">
+          Try Blueprint Studio free
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <!-- Right (visually left): export panel -->
+      <div class="feature-panel light reveal-left">
+        <div class="panel-chrome">
+          <div class="panel-dot panel-dot-r"></div>
+          <div class="panel-dot panel-dot-y"></div>
+          <div class="panel-dot panel-dot-g"></div>
+          <div class="panel-title">Blueprint Studio — Export</div>
+        </div>
+        <div class="panel-body">
+          <div style="font-size:0.7rem;font-weight:600;color:var(--ec-black);margin-bottom:16px;letter-spacing:0.04em;">Autumn Harvest Wreath · 24 elements</div>
+          <div class="export-options">
+            <div class="export-option primary">
+              <div class="export-icon">📄</div>
+              <div class="export-info">
+                <div class="export-name">Client PDF</div>
+                <div class="export-desc">Layout diagram with element list and costs</div>
+              </div>
+              <span class="export-arrow">→</span>
+            </div>
+            <div class="export-option">
+              <div class="export-icon">🔗</div>
+              <div class="export-info">
+                <div class="export-name">Share link</div>
+                <div class="export-desc">Browser-viewable blueprint, no account needed</div>
+              </div>
+              <span class="export-arrow">→</span>
+            </div>
+            <div class="export-option">
+              <div class="export-icon">🛒</div>
+              <div class="export-info">
+                <div class="export-name">Publish to Marketplace</div>
+                <div class="export-desc">Sell your blueprint to other makers</div>
+              </div>
+              <span class="export-arrow">→</span>
+            </div>
+            <div class="export-option">
+              <div class="export-icon">📁</div>
+              <div class="export-info">
+                <div class="export-name">Save to library</div>
+                <div class="export-desc">Add to your personal blueprint collection</div>
+              </div>
+              <span class="export-arrow">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE PILLS — Full feature list
+══════════════════════════════════════════════════════════════ -->
+<section class="features-pills-section">
+  <div class="wrap">
+    <div class="pills-header">
+      <div class="section-tag center reveal">Everything included</div>
+      <h2 class="pills-h2 reveal d1">Blueprint Studio is <em>complete</em> by design.</h2>
+    </div>
+    <div class="pills-grid">
+      <div class="pill-card reveal d1">
+        <div class="pill-icon">⬡</div>
+        <div class="pill-name">Five-layer canvas</div>
+        <div class="pill-desc">Base, Foliage, Focal Points, Accents, and Ribbon — each independently manageable.</div>
+      </div>
+      <div class="pill-card reveal d2">
+        <div class="pill-icon">⚡</div>
+        <div class="pill-name">Live cost engine</div>
+        <div class="pill-desc">Material costs calculated in real time from your live inventory as you design.</div>
+      </div>
+      <div class="pill-card reveal d3">
+        <div class="pill-icon">📐</div>
+        <div class="pill-name">Size-adaptive canvas</div>
+        <div class="pill-desc">Design for any wreath size from 12" to 36" — elements scale proportionally.</div>
+      </div>
+      <div class="pill-card reveal d4">
+        <div class="pill-icon">📄</div>
+        <div class="pill-name">Client PDF export</div>
+        <div class="pill-desc">Professional layout diagrams your clients can review and approve before production.</div>
+      </div>
+      <div class="pill-card reveal d1">
+        <div class="pill-icon">🔗</div>
+        <div class="pill-name">Shareable preview links</div>
+        <div class="pill-desc">Browser-viewable blueprints — no Evercrafted account required on the client's end.</div>
+      </div>
+      <div class="pill-card reveal d2">
+        <div class="pill-icon">⚠</div>
+        <div class="pill-name">Low-stock alerts</div>
+        <div class="pill-desc">Canvas flags low-stock items inline so you can substitute before committing.</div>
+      </div>
+      <div class="pill-card reveal d3">
+        <div class="pill-icon">🛒</div>
+        <div class="pill-name">Marketplace publishing</div>
+        <div class="pill-desc">Publish finished blueprints to the Evercrafted Marketplace and earn royalties.</div>
+      </div>
+      <div class="pill-card reveal d4">
+        <div class="pill-icon">📚</div>
+        <div class="pill-name">18 free templates</div>
+        <div class="pill-desc">Start from a professionally designed blueprint and customise it to your style.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     WORKFLOW TIMELINE
+══════════════════════════════════════════════════════════════ -->
+<section class="workflow-section">
+  <div class="wrap">
+    <div class="workflow-header">
+      <div class="section-tag center reveal" style="color:var(--ec-green-light);">The Blueprint Studio workflow</div>
+      <h2 class="workflow-h2 reveal d1">
+        From <em>blank canvas</em><br>to finished blueprint.
+      </h2>
+      <p class="workflow-sub reveal d2">Five steps from opening Blueprint Studio to having a client-approved design ready for the workbench.</p>
+    </div>
+    <div class="workflow-timeline">
+      <div class="workflow-step reveal d1">
+        <div class="workflow-step-num">1</div>
+        <div class="workflow-step-content">
+          <div class="workflow-step-title">Choose a <em>template or start fresh</em></div>
+          <p class="workflow-step-desc">Select one of 18 professionally designed blueprint templates, or open a blank canvas at your preferred wreath size. Templates include seasonal designs, classic styles, and structural archetypes.</p>
+          <span class="workflow-step-badge badge-studio">Studio &amp; above</span>
+        </div>
+      </div>
+      <div class="workflow-step reveal d2">
+        <div class="workflow-step-num">2</div>
+        <div class="workflow-step-content">
+          <div class="workflow-step-title">Build your <em>layer structure</em></div>
+          <p class="workflow-step-desc">Start with the base layer and work outward. Add foliage elements from your inventory, place focal flowers, scatter accents, and finish with ribbon. Each layer is independently editable.</p>
+          <span class="workflow-step-badge badge-studio">Studio &amp; above</span>
+        </div>
+      </div>
+      <div class="workflow-step reveal d3">
+        <div class="workflow-step-num">3</div>
+        <div class="workflow-step-content">
+          <div class="workflow-step-title">Review <em>costs and stock</em></div>
+          <p class="workflow-step-desc">As you design, the cost engine totals your material costs in real time. Low-stock items are flagged inline. Adjust your design until the cost and availability are exactly right.</p>
+          <span class="workflow-step-badge badge-craft">Craft &amp; above</span>
+        </div>
+      </div>
+      <div class="workflow-step reveal d4">
+        <div class="workflow-step-num">4</div>
+        <div class="workflow-step-content">
+          <div class="workflow-step-title">Export and <em>share with your client</em></div>
+          <p class="workflow-step-desc">Export a PDF or generate a shareable link. Your client can review the blueprint, see the element list and colour story, and give approval — all before you start building.</p>
+          <span class="workflow-step-badge badge-studio">Studio &amp; above</span>
+        </div>
+      </div>
+      <div class="workflow-step reveal d5">
+        <div class="workflow-step-num">5</div>
+        <div class="workflow-step-content">
+          <div class="workflow-step-title">Publish to the <em>Marketplace</em></div>
+          <p class="workflow-step-desc">Once your blueprint is complete, publish it to the Evercrafted Marketplace. Other makers can purchase your design, download the layout, and build it themselves — you earn a royalty on every sale.</p>
+          <span class="workflow-step-badge badge-bloom">All tiers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════════════ -->
+<section class="testimonials-section">
+  <div class="wrap">
+    <div class="testimonials-header">
+      <div class="section-tag center reveal">From Blueprint Studio users</div>
+      <h2 class="testimonials-h2 reveal d1">Makers who design with <em>intention.</em></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal d1">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"The layer system is the thing that changed my process the most. I used to sketch on paper and then just wing it. Now I have a real plan before I touch a single stem."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">ML</div>
+          <div>
+            <div class="testi-name">Margaret L.</div>
+            <div class="testi-handle">Studio tier · Wreath designer, Vermont</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d2">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"The live cost engine is worth the subscription price on its own. I stopped under-charging for my work the moment I could see exactly what every wreath actually costs me."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">RD</div>
+          <div>
+            <div class="testi-name">Rachel D.</div>
+            <div class="testi-handle">Atelier tier · Botanical artist, North Carolina</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d3">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"Sharing a PDF blueprint with my clients before I build has completely eliminated the 'that's not what I imagined' conversation. Approval before production is a game changer."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">TW</div>
+          <div>
+            <div class="testi-name">Theresa W.</div>
+            <div class="testi-handle">Studio tier · Floral designer, Colorado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Botanical divider -->
+<div style="padding:56px 0;background:var(--ec-paper);border-top:1px solid var(--ec-gray-200);">
+  <div class="leaf-divider">
+    <svg width="22" height="28" viewBox="0 0 32 40" fill="none">
+      <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="var(--ec-green)" stroke-width="1.2" fill="none"/>
+      <path d="M16 38L16 8" stroke="var(--ec-green)" stroke-width="0.8" stroke-dasharray="2 2"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TIER SECTION
+══════════════════════════════════════════════════════════════ -->
+<section class="tier-section" id="trial">
+  <div class="wrap">
+    <div class="tier-header">
+      <div class="section-tag center reveal">Get started</div>
+      <h2 class="tier-h2 reveal d1">Blueprint Studio is available on <em>Studio</em> and above.</h2>
+      <p class="tier-sub reveal d2">14-day free trial on all paid plans. No credit card required.</p>
+    </div>
+    <div class="tier-grid">
+
+      <!-- Bloom -->
+      <div class="tier-card reveal d1">
+        <div class="tier-badge tier-badge-bloom">Bloom</div>
+        <div class="tier-name">Bloom</div>
+        <div class="tier-tagline">For makers just getting started with professional tools.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$19</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#" class="tier-cta tier-cta-outline">Start free trial</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Inventory Tracker (up to 100 items)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            18 free blueprint templates (view only)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Marketplace access (browse &amp; buy)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-lock-item">
+              <span class="tier-lock-icon">🔒</span>
+              <span>Blueprint Studio canvas</span>
+              <span class="tier-upgrade-hint">Studio+</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Craft -->
+      <div class="tier-card reveal d2">
+        <div class="tier-badge tier-badge-craft">Craft</div>
+        <div class="tier-name">Craft</div>
+        <div class="tier-tagline">For makers ready to price their work professionally.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$39</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#" class="tier-cta tier-cta-outline">Start free trial</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Everything in Bloom
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Unlimited inventory items
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Pricing Calculator
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-lock-item">
+              <span class="tier-lock-icon">🔒</span>
+              <span>Blueprint Studio canvas</span>
+              <span class="tier-upgrade-hint">Studio+</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Studio — recommended -->
+      <div class="tier-card recommended reveal d3">
+        <div class="tier-popular-badge">Includes Blueprint Studio</div>
+        <div class="tier-badge tier-badge-studio">Studio</div>
+        <div class="tier-name">Studio</div>
+        <div class="tier-tagline">For professional makers who design and sell regularly.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$59</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#" class="tier-cta tier-cta-primary">Start free trial</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Everything in Craft
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <strong>Blueprint Studio — full access</strong>
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Client-shareable blueprint PDFs
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Marketplace selling (publish blueprints)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-lock-item">
+              <span class="tier-lock-icon">🔒</span>
+              <span>AI Visualizer</span>
+              <span class="tier-upgrade-hint">Atelier only</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Atelier -->
+      <div class="tier-card atelier-card reveal d4">
+        <div class="tier-badge tier-badge-atelier">Atelier</div>
+        <div class="tier-name">Atelier</div>
+        <div class="tier-tagline" style="color:rgba(249,247,244,0.35);">The complete suite for serious design professionals.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$99</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#" class="tier-cta tier-cta-dark">Start free trial</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Everything in Studio
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            AI Visualizer (unlimited generations)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Prompt Creator &amp; AI style library
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            All 16+ apps, early access to new tools
+          </li>
+        </ul>
+      </div>
+
+    </div>
+    <p class="tier-highlight-note reveal">Compare all features on the <a href="evercrafted-home-hiw.html#pricing">full pricing page</a>.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CTA SECTION
+══════════════════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="wrap">
+    <div class="cta-inner">
+      <span class="cta-script reveal">Start designing</span>
+      <h2 class="cta-h2 reveal d1">
+        Your next wreath<br>
+        begins with a <em>blueprint.</em>
+      </h2>
+      <p class="cta-sub reveal d2">
+        Blueprint Studio is available on the Studio tier and above. Start your 14-day free trial today — no credit card required. Your first blueprint is waiting.
+      </p>
+      <div class="cta-actions reveal d3">
+        <a href="#" class="cta-btn-primary">Start free trial — Studio</a>
+        <a href="evercrafted-home-hiw.html" class="cta-btn-ghost">See all features</a>
+      </div>
+      <p class="cta-note reveal d4">14-day free trial · No credit card · Cancel any time</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">
+          <svg width="16" height="16" viewBox="0 0 32 32" fill="none" style="color:var(--ec-green-light)">
+            <path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M16 28L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+          </svg>
+          Evercrafted
+        </div>
+        <p class="footer-brand-desc">The professional design suite for wreath makers. Blueprint generation, inventory tracking, AI visualization, and a marketplace — built for the craft you love.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="evercrafted-home-hiw.html#how-it-works">How it works</a></li>
+          <li><a href="evercrafted-apps.html">All apps</a></li>
+          <li><a href="evercrafted-marketplace.html">Marketplace</a></li>
+          <li><a href="evercrafted-home-hiw.html#pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Support</div>
+        <ul class="footer-links">
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Status</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Evercrafted. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script>
+/* ── Nav scroll state ──────────────────────────────────────── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+/* ── Scroll reveal ─────────────────────────────────────────── */
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ── Layer row interactivity ───────────────────────────────── */
+document.querySelectorAll('.layer-row').forEach(row => {
+  row.addEventListener('click', () => {
+    document.querySelectorAll('.layer-row').forEach(r => r.classList.remove('active'));
+    row.classList.add('active');
+  });
+});
+
+/* ── Canvas tool buttons ───────────────────────────────────── */
+document.querySelectorAll('.canvas-tool-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.canvas-tool-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+/* ── Export option hover ───────────────────────────────────── */
+document.querySelectorAll('.export-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.export-option').forEach(o => o.classList.remove('primary'));
+    opt.classList.add('primary');
+  });
+});
+
+/* ── Smooth anchor links ───────────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      const offset = 80;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
