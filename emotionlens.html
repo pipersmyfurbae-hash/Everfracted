@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmotionLens — AI Prompt Composer for Wreath Designers · Evercrafted</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   BRAND TOKENS
+══════════════════════════════════════════════════════════════ */
+:root {
+  --ec-white:        #FFFFFF;
+  --ec-off-white:    #F9F7F4;
+  --ec-paper:        #F2EFE9;
+  --ec-black:        #1A1A1A;
+  --ec-charcoal:     #2E2E2E;
+  --ec-ink:          #4A4A4A;
+  --ec-green:        #4A6741;
+  --ec-green-light:  #6B8F67;
+  --ec-green-pale:   #EEF2ED;
+  --ec-green-dim:    rgba(74,103,65,0.12);
+  --ec-gray-200:     #E8E8E8;
+  --ec-gray-300:     #D0D0D0;
+  --ec-gray-400:     #A8A8A8;
+  --ec-gray-500:     #787878;
+  --ec-font-serif:   'Cormorant Garamond', Georgia, serif;
+  --ec-font-sans:    'Inter', system-ui, sans-serif;
+  --ec-font-script:  'Dancing Script', cursive;
+  --ec-font-mono:    'DM Mono', monospace;
+  --ec-radius-sm:    4px;
+  --ec-radius-md:    8px;
+  --ec-radius-lg:    14px;
+  --ec-radius-xl:    20px;
+  --ec-radius-full:  9999px;
+  --ec-shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --ec-shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+  --ec-shadow-lg:    0 8px 32px rgba(0,0,0,0.10);
+  --ec-transition:   200ms ease;
+
+  /* EmotionLens accent palette */
+  --el-violet:       #7A5EA7;
+  --el-violet-light: #A68FCA;
+  --el-violet-pale:  #F0EBF8;
+  --el-gold:         #C9A84C;
+  --el-gold-pale:    #FBF5E6;
+  --el-sage:         #6B8F67;
+  --el-blush:        #D4849A;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ec-font-sans);
+  background: var(--ec-black);
+  color: var(--ec-off-white);
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── UTILITY ── */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.section-tag {
+  font-family: var(--ec-font-sans);
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--el-violet-light);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-tag::before {
+  content: ''; display: block; width: 28px; height: 1px;
+  background: currentColor; opacity: 0.5;
+}
+.section-tag.center { justify-content: center; }
+.section-tag.center::before { display: none; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-left {
+  opacity: 0; transform: translateX(-32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-right {
+  opacity: 0; transform: translateX(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible, .reveal-left.visible, .reveal-right.visible {
+  opacity: 1; transform: none;
+}
+.d1 { transition-delay: 0.10s; }
+.d2 { transition-delay: 0.20s; }
+.d3 { transition-delay: 0.30s; }
+.d4 { transition-delay: 0.40s; }
+.d5 { transition-delay: 0.50s; }
+
+/* ══════════════════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 0 40px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.3s, border-color 0.3s;
+  border-bottom: 1px solid transparent;
+}
+.nav.scrolled {
+  background: rgba(26,26,26,0.88);
+  backdrop-filter: blur(16px);
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+.nav-logo {
+  font-family: var(--ec-font-serif);
+  font-size: 1.2rem; font-weight: 600;
+  color: var(--ec-off-white);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  letter-spacing: 0.02em;
+}
+.nav-logo-leaf { color: var(--ec-green-light); }
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+}
+.nav-links a {
+  font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(249,247,244,0.45);
+  text-decoration: none;
+  transition: color var(--ec-transition);
+}
+.nav-links a:hover, .nav-links a.active { color: var(--ec-off-white); }
+.nav-cta {
+  padding: 9px 22px;
+  background: var(--el-violet);
+  color: var(--ec-off-white) !important;
+  border-radius: var(--ec-radius-sm);
+  font-size: 0.65rem !important;
+  letter-spacing: 0.14em !important;
+  transition: background var(--ec-transition), transform var(--ec-transition) !important;
+}
+.nav-cta:hover { background: var(--el-violet-light) !important; transform: translateY(-1px); }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  padding: 120px 0 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+/* Violet atmospheric glow */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%; left: -10%;
+  width: 60%; height: 80%;
+  background: radial-gradient(ellipse at center, rgba(122,94,167,0.14) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 50%; height: 60%;
+  background: radial-gradient(ellipse at bottom right, rgba(74,103,65,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-left { padding-left: 40px; position: relative; z-index: 1; }
+
+.hero-app-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 14px 5px 5px;
+  background: rgba(122,94,167,0.12);
+  border: 1px solid rgba(122,94,167,0.28);
+  border-radius: var(--ec-radius-full);
+  margin-bottom: 28px;
+}
+.hero-app-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--el-violet-light);
+}
+.hero-app-badge-text {
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--el-violet-light);
+}
+.hero-tier-pill {
+  font-size: 0.55rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: var(--ec-radius-full);
+  background: rgba(249,247,244,0.08);
+  color: rgba(249,247,244,0.4);
+}
+
+.hero-h1 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(3rem, 5.5vw, 5.2rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ec-off-white);
+  margin-bottom: 24px;
+}
+.hero-h1 em {
+  font-style: italic;
+  color: var(--el-violet-light);
+}
+.hero-h1 .script-accent {
+  font-family: var(--ec-font-script);
+  font-size: 0.85em;
+  color: var(--el-gold);
+  display: block;
+  line-height: 1.1;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: rgba(249,247,244,0.5);
+  line-height: 1.75;
+  max-width: 460px;
+  margin-bottom: 36px;
+}
+
+.hero-actions {
+  display: flex; gap: 14px; align-items: center;
+  margin-bottom: 48px;
+}
+.hero-btn-primary {
+  padding: 14px 32px;
+  background: var(--el-violet);
+  color: var(--ec-off-white);
+  border: none; border-radius: var(--ec-radius-sm);
+  font-family: var(--ec-font-sans);
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; text-decoration: none;
+  transition: background var(--ec-transition), transform var(--ec-transition);
+}
+.hero-btn-primary:hover { background: var(--el-violet-light); transform: translateY(-2px); }
+.hero-btn-ghost {
+  padding: 14px 24px;
+  background: transparent;
+  color: rgba(249,247,244,0.5);
+  border: 1px solid rgba(249,247,244,0.14);
+  border-radius: var(--ec-radius-sm);
+  font-family: var(--ec-font-sans);
+  font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; text-decoration: none;
+  transition: border-color var(--ec-transition), color var(--ec-transition);
+}
+.hero-btn-ghost:hover { border-color: rgba(249,247,244,0.35); color: var(--ec-off-white); }
+
+.hero-proof {
+  display: flex; gap: 36px;
+}
+.hero-proof-item {}
+.hero-proof-num {
+  font-family: var(--ec-font-serif);
+  font-size: 2.2rem; font-weight: 300;
+  color: var(--ec-off-white); line-height: 1;
+  margin-bottom: 4px;
+}
+.hero-proof-label {
+  font-size: 0.6rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.3);
+}
+
+/* Hero right — composer mockup */
+.hero-right {
+  position: relative; z-index: 1;
+  padding-right: 40px;
+}
+.hero-composer-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+}
+.hcp-chrome {
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hcp-dot { width: 10px; height: 10px; border-radius: 50%; }
+.hcp-dot-r { background: #FF5F57; }
+.hcp-dot-y { background: #FFBD2E; }
+.hcp-dot-g { background: #28C840; }
+.hcp-title {
+  font-family: var(--ec-font-mono);
+  font-size: 0.6rem;
+  color: rgba(249,247,244,0.25);
+  margin-left: 6px;
+}
+.hcp-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  min-height: 380px;
+}
+.hcp-sidebar {
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding: 16px;
+}
+.hcp-sidebar-label {
+  font-size: 0.52rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(249,247,244,0.2);
+  margin-bottom: 10px; margin-top: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.hcp-sidebar-label:first-child { margin-top: 0; }
+.hcp-emo-row {
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 8px;
+}
+.hcp-emo-name {
+  font-size: 0.6rem; color: rgba(249,247,244,0.55);
+  width: 62px; flex-shrink: 0;
+}
+.hcp-emo-track {
+  flex: 1; height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  position: relative;
+}
+.hcp-emo-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--el-violet-light);
+}
+.hcp-emo-val {
+  font-family: var(--ec-font-mono);
+  font-size: 0.52rem;
+  color: rgba(249,247,244,0.3);
+  width: 22px; text-align: right;
+}
+.hcp-chip-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.hcp-chip {
+  font-size: 0.55rem; padding: 3px 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 3px;
+  color: rgba(249,247,244,0.4);
+}
+.hcp-chip.on {
+  background: rgba(122,94,167,0.2);
+  border-color: rgba(122,94,167,0.4);
+  color: var(--el-violet-light);
+}
+.hcp-main { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.hcp-output-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 12px;
+}
+.hcp-output-label {
+  font-size: 0.52rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.2);
+  margin-bottom: 8px;
+}
+.hcp-natural-text {
+  font-family: var(--ec-font-serif);
+  font-size: 0.85rem; font-style: italic;
+  color: rgba(249,247,244,0.7);
+  line-height: 1.6;
+}
+.hcp-mj-text {
+  font-family: var(--ec-font-mono);
+  font-size: 0.6rem;
+  color: var(--el-violet-light);
+  line-height: 1.7;
+  word-break: break-all;
+}
+.hcp-mj-text strong { color: var(--el-gold); }
+.hcp-emo-viz {
+  display: flex; gap: 5px; align-items: flex-end;
+  height: 48px;
+}
+.hcp-emo-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.hcp-emo-bar {
+  width: 100%; border-radius: 2px 2px 0 0;
+  background: var(--el-violet-light);
+  transition: height 0.4s ease;
+}
+.hcp-emo-bar-label { font-size: 0.48rem; color: rgba(249,247,244,0.25); }
+.hcp-gen-btn {
+  width: 100%; padding: 10px;
+  background: var(--el-violet);
+  color: var(--ec-off-white);
+  border: none; border-radius: 5px;
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; font-family: var(--ec-font-sans);
+  transition: background var(--ec-transition);
+}
+.hcp-gen-btn:hover { background: var(--el-violet-light); }
+
+/* ══════════════════════════════════════════════════════════════
+   MARQUEE
+══════════════════════════════════════════════════════════════ */
+.marquee-strip {
+  background: var(--el-violet);
+  padding: 14px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-inner {
+  display: inline-flex; gap: 0;
+  animation: marquee 28s linear infinite;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-item {
+  font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.85);
+  padding: 0 28px;
+}
+.marquee-item::after {
+  content: '◆';
+  margin-left: 28px;
+  opacity: 0.4;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INTRO SECTION (light)
+══════════════════════════════════════════════════════════════ */
+.intro-section {
+  background: var(--ec-paper);
+  padding: 120px 0;
+}
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.intro-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 24px;
+}
+.intro-h2 em { font-style: italic; color: var(--el-violet); }
+.intro-body {
+  font-size: 1rem;
+  color: var(--ec-ink);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.intro-blockquote {
+  border-left: 2px solid var(--el-violet);
+  padding-left: 20px;
+  margin: 28px 0;
+}
+.intro-blockquote p {
+  font-family: var(--ec-font-serif);
+  font-size: 1.15rem; font-style: italic;
+  color: var(--ec-charcoal);
+  line-height: 1.7;
+}
+.intro-blockquote cite {
+  display: block;
+  font-size: 0.7rem; font-style: normal;
+  font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--el-violet);
+  margin-top: 10px;
+}
+.intro-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--el-violet);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(122,94,167,0.3);
+  padding-bottom: 2px;
+  transition: border-color var(--ec-transition), color var(--ec-transition);
+}
+.intro-link:hover { border-color: var(--el-violet); }
+
+.intro-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.intro-stat-card {
+  background: var(--ec-off-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: var(--ec-radius-md);
+  padding: 24px 20px;
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.intro-stat-card:hover { transform: translateY(-3px); box-shadow: var(--ec-shadow-md); }
+.intro-stat-icon { font-size: 1.4rem; margin-bottom: 10px; }
+.intro-stat-num {
+  font-family: var(--ec-font-serif);
+  font-size: 2.2rem; font-weight: 300;
+  color: var(--ec-black); line-height: 1;
+  margin-bottom: 6px;
+}
+.intro-stat-num sup { font-size: 1rem; }
+.intro-stat-label {
+  font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ec-gray-500);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EMOTION PROFILES SECTION
+══════════════════════════════════════════════════════════════ */
+.emotions-section {
+  background: var(--ec-black);
+  padding: 120px 0;
+}
+.emotions-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.emotions-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-off-white);
+  margin-bottom: 16px;
+}
+.emotions-h2 em { font-style: italic; color: var(--el-violet-light); }
+.emotions-sub {
+  font-size: 1rem;
+  color: rgba(249,247,244,0.35);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+.emotions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.emotion-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--ec-radius-md);
+  padding: 24px 20px;
+  cursor: pointer;
+  transition: background var(--ec-transition), border-color var(--ec-transition), transform var(--ec-transition);
+}
+.emotion-card:hover {
+  background: rgba(122,94,167,0.08);
+  border-color: rgba(122,94,167,0.3);
+  transform: translateY(-2px);
+}
+.emotion-card.active {
+  background: rgba(122,94,167,0.12);
+  border-color: rgba(122,94,167,0.45);
+}
+.emotion-card-icon { font-size: 1.6rem; margin-bottom: 10px; }
+.emotion-card-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.2rem; font-weight: 400;
+  color: var(--ec-off-white);
+  margin-bottom: 4px;
+}
+.emotion-card-phrase {
+  font-family: var(--ec-font-serif);
+  font-size: 0.85rem; font-style: italic;
+  color: var(--el-violet-light);
+  margin-bottom: 8px;
+}
+.emotion-card-desc {
+  font-size: 0.72rem;
+  color: rgba(249,247,244,0.35);
+  line-height: 1.6;
+}
+
+/* Emotion detail panel */
+.emotion-detail {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(122,94,167,0.25);
+  border-radius: var(--ec-radius-md);
+  padding: 28px 32px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: start;
+}
+.emotion-detail-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.5rem; font-weight: 400;
+  color: var(--ec-off-white);
+  margin-bottom: 8px;
+}
+.emotion-detail-name em { font-style: italic; color: var(--el-violet-light); }
+.emotion-detail-desc {
+  font-size: 0.85rem;
+  color: rgba(249,247,244,0.45);
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+.emotion-palette-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.emotion-palette-pill {
+  font-size: 0.6rem; font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 4px 12px;
+  border-radius: var(--ec-radius-full);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(249,247,244,0.55);
+}
+.emotion-palette-pill.primary {
+  background: rgba(122,94,167,0.15);
+  border-color: rgba(122,94,167,0.35);
+  color: var(--el-violet-light);
+}
+.emotion-weight-bars {
+  display: flex; flex-direction: column; gap: 8px;
+  min-width: 180px;
+}
+.ewb-row { display: flex; align-items: center; gap: 8px; }
+.ewb-label {
+  font-size: 0.6rem; color: rgba(249,247,244,0.3);
+  width: 64px; flex-shrink: 0;
+}
+.ewb-track {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+}
+.ewb-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--el-violet-light);
+  transition: width 0.5s ease;
+}
+.ewb-val {
+  font-family: var(--ec-font-mono);
+  font-size: 0.55rem;
+  color: rgba(249,247,244,0.25);
+  width: 28px; text-align: right;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE SECTIONS
+══════════════════════════════════════════════════════════════ */
+.feature-section {
+  padding: 120px 0;
+  background: var(--ec-paper);
+}
+.feature-section.dark { background: var(--ec-black); }
+.feature-section.charcoal { background: var(--ec-charcoal); }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.feature-grid.reverse { direction: rtl; }
+.feature-grid.reverse > * { direction: ltr; }
+
+.feature-tag {
+  font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--el-violet);
+  margin-bottom: 16px;
+}
+.feature-tag.gold-tag { color: var(--el-gold); }
+.feature-tag.green-tag { color: var(--ec-green-light); }
+
+.feature-h3 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 20px;
+}
+.feature-section.dark .feature-h3,
+.feature-section.charcoal .feature-h3 { color: var(--ec-off-white); }
+.feature-h3 em { font-style: italic; color: var(--el-violet); }
+.feature-section.dark .feature-h3 em { color: var(--el-violet-light); }
+
+.feature-body {
+  font-size: 0.95rem;
+  color: var(--ec-ink);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+.feature-section.dark .feature-body,
+.feature-section.charcoal .feature-body { color: rgba(249,247,244,0.45); }
+
+.feature-note {
+  font-size: 0.8rem;
+  color: var(--ec-ink);
+  line-height: 1.7;
+  border-left: 2px solid var(--el-violet);
+  padding-left: 16px;
+  margin: 24px 0;
+  background: rgba(122,94,167,0.05);
+  padding: 12px 16px;
+  border-radius: 0 var(--ec-radius-sm) var(--ec-radius-sm) 0;
+}
+.feature-section.dark .feature-note { color: rgba(249,247,244,0.35); background: rgba(122,94,167,0.07); }
+
+.feature-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--el-violet);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(122,94,167,0.3);
+  padding-bottom: 2px;
+  transition: border-color var(--ec-transition);
+}
+.feature-section.dark .feature-link { color: var(--el-violet-light); border-color: rgba(166,143,202,0.3); }
+.feature-link:hover { border-color: currentColor; }
+
+/* Feature panel (dark app mockup) */
+.feature-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+}
+.feature-section .feature-panel {
+  background: var(--ec-black);
+  border-color: rgba(255,255,255,0.08);
+}
+.panel-chrome {
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 7px;
+}
+.panel-dot { width: 10px; height: 10px; border-radius: 50%; }
+.panel-dot-r { background: #FF5F57; }
+.panel-dot-y { background: #FFBD2E; }
+.panel-dot-g { background: #28C840; }
+.panel-title {
+  font-family: var(--ec-font-mono);
+  font-size: 0.58rem;
+  color: rgba(249,247,244,0.22);
+  margin-left: 6px;
+}
+.panel-body { padding: 20px; }
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURES GRID (6-card)
+══════════════════════════════════════════════════════════════ */
+.features-grid-section {
+  background: var(--ec-off-white);
+  padding: 120px 0;
+}
+.features-grid-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.features-grid-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 16px;
+}
+.features-grid-h2 em { font-style: italic; color: var(--el-violet); }
+.features-grid-sub {
+  font-size: 1rem;
+  color: var(--ec-gray-500);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+.features-6-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--ec-gray-200);
+  border: 2px solid var(--ec-gray-200);
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+}
+.feat-card {
+  background: var(--ec-off-white);
+  padding: 36px 28px;
+  transition: background var(--ec-transition);
+}
+.feat-card:hover { background: var(--el-violet-pale); }
+.feat-card-icon {
+  width: 44px; height: 44px;
+  background: var(--el-violet-pale);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 18px;
+  font-size: 1.2rem;
+}
+.feat-card-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.2rem; font-weight: 400;
+  color: var(--ec-black);
+  margin-bottom: 10px;
+}
+.feat-card-desc {
+  font-size: 0.82rem;
+  color: var(--ec-gray-500);
+  line-height: 1.75;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WORKFLOW TIMELINE
+══════════════════════════════════════════════════════════════ */
+.workflow-section {
+  background: var(--ec-black);
+  padding: 120px 0;
+}
+.workflow-header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+.workflow-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-off-white);
+  margin-bottom: 16px;
+}
+.workflow-h2 em { font-style: italic; color: var(--el-violet-light); }
+.workflow-sub {
+  font-size: 1rem;
+  color: rgba(249,247,244,0.3);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+.workflow-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  position: relative;
+}
+.workflow-steps::before {
+  content: '';
+  position: absolute;
+  top: 28px; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(122,94,167,0.4) 20%, rgba(122,94,167,0.4) 80%, transparent);
+}
+.workflow-step {
+  text-align: center;
+  padding: 0 16px;
+  position: relative;
+}
+.workflow-step-num-wrap {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(122,94,167,0.12);
+  border: 1px solid rgba(122,94,167,0.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  position: relative; z-index: 1;
+}
+.workflow-step-num {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem; font-weight: 300;
+  color: var(--el-violet-light);
+}
+.workflow-step-icon { font-size: 1.4rem; margin-bottom: 12px; }
+.workflow-step-title {
+  font-family: var(--ec-font-serif);
+  font-size: 1rem; font-weight: 400;
+  color: var(--ec-off-white);
+  margin-bottom: 8px;
+}
+.workflow-step-title em { font-style: italic; color: var(--el-violet-light); }
+.workflow-step-desc {
+  font-size: 0.72rem;
+  color: rgba(249,247,244,0.3);
+  line-height: 1.65;
+}
+.workflow-step-badge {
+  display: inline-block;
+  font-size: 0.52rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--ec-radius-full);
+  margin-top: 8px;
+}
+.badge-bloom { background: #EEF2ED; color: #4A6741; }
+.badge-craft { background: #EEF4F9; color: #4A6785; }
+.badge-studio { background: #F5EEF4; color: #7A4A85; }
+.badge-atelier { background: rgba(249,247,244,0.08); color: rgba(249,247,244,0.5); border: 1px solid rgba(249,247,244,0.12); }
+
+/* ══════════════════════════════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════════════════════════════ */
+.testimonials-section {
+  background: var(--ec-paper);
+  padding: 120px 0;
+}
+.testimonials-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.testimonials-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 12px;
+}
+.testimonials-h2 em { font-style: italic; color: var(--el-violet); }
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.testi-card {
+  background: var(--ec-off-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: var(--ec-radius-md);
+  padding: 28px;
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.testi-card:hover { transform: translateY(-4px); box-shadow: var(--ec-shadow-lg); }
+.testi-stars { display: flex; gap: 3px; margin-bottom: 14px; }
+.testi-star { width: 13px; height: 13px; fill: var(--el-gold); }
+.testi-quote {
+  font-family: var(--ec-font-serif);
+  font-size: 1.05rem; font-style: italic;
+  color: var(--ec-charcoal);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--el-violet-pale);
+  color: var(--el-violet);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 600;
+  flex-shrink: 0;
+}
+.testi-name { font-size: 0.78rem; font-weight: 600; color: var(--ec-black); }
+.testi-handle { font-size: 0.65rem; color: var(--ec-gray-500); margin-top: 2px; }
+
+/* ══════════════════════════════════════════════════════════════
+   PRICING TIERS
+══════════════════════════════════════════════════════════════ */
+.tier-section {
+  background: var(--ec-off-white);
+  padding: 120px 0;
+}
+.tier-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+.tier-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 12px;
+}
+.tier-h2 em { font-style: italic; color: var(--el-violet); }
+.tier-sub {
+  font-size: 0.95rem;
+  color: var(--ec-gray-500);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+.tier-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: var(--ec-radius-lg);
+  padding: 28px 24px;
+  position: relative;
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.tier-card:hover { transform: translateY(-4px); box-shadow: var(--ec-shadow-lg); }
+.tier-card.recommended {
+  border-color: var(--el-violet);
+  box-shadow: 0 0 0 1px var(--el-violet), var(--ec-shadow-lg);
+}
+.tier-card.atelier-card {
+  background: var(--ec-black);
+  border-color: rgba(249,247,244,0.1);
+}
+.tier-popular-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--el-violet);
+  color: var(--ec-off-white);
+  font-size: 0.55rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 16px; border-radius: var(--ec-radius-full);
+  white-space: nowrap;
+}
+.tier-badge {
+  display: inline-block;
+  font-size: 0.55rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: var(--ec-radius-full);
+  margin-bottom: 12px;
+}
+.tier-badge-bloom { background: #EEF2ED; color: #4A6741; }
+.tier-badge-craft { background: #EEF4F9; color: #4A6785; }
+.tier-badge-studio { background: #F5EEF4; color: #7A4A85; }
+.tier-badge-atelier { background: rgba(249,247,244,0.08); color: rgba(249,247,244,0.5); border: 1px solid rgba(249,247,244,0.12); }
+.tier-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.5rem; font-weight: 400;
+  color: var(--ec-black);
+  margin-bottom: 6px;
+}
+.tier-tagline { font-size: 0.75rem; color: var(--ec-gray-500); line-height: 1.5; margin-bottom: 20px; }
+.tier-price { margin-bottom: 20px; }
+.tier-price-amount {
+  font-family: var(--ec-font-serif);
+  font-size: 2.8rem; font-weight: 300;
+  color: var(--ec-black); line-height: 1;
+}
+.tier-price-period { font-size: 0.72rem; color: var(--ec-gray-500); margin-left: 4px; }
+.tier-cta {
+  display: block; width: 100%;
+  padding: 11px;
+  text-align: center;
+  border-radius: var(--ec-radius-sm);
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+  transition: all var(--ec-transition);
+  font-family: var(--ec-font-sans);
+  border: none;
+}
+.tier-cta-outline {
+  background: transparent;
+  color: var(--ec-black);
+  border: 1px solid var(--ec-gray-300);
+}
+.tier-cta-outline:hover { border-color: var(--ec-black); }
+.tier-cta-primary {
+  background: var(--el-violet);
+  color: var(--ec-off-white);
+}
+.tier-cta-primary:hover { background: var(--el-violet-light); }
+.tier-cta-dark {
+  background: rgba(249,247,244,0.08);
+  color: rgba(249,247,244,0.6);
+  border: 1px solid rgba(249,247,244,0.12);
+}
+.tier-cta-dark:hover { background: rgba(249,247,244,0.12); }
+.tier-divider { height: 1px; background: var(--ec-gray-200); margin: 20px 0; }
+.tier-card.atelier-card .tier-divider { background: rgba(249,247,244,0.08); }
+.tier-features { list-style: none; }
+.tier-feature-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.75rem; color: var(--ec-ink);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ec-gray-200);
+}
+.tier-card.atelier-card .tier-feature-item { color: rgba(249,247,244,0.5); border-bottom-color: rgba(249,247,244,0.07); }
+.tier-feature-item:last-child { border-bottom: none; }
+.tier-check {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--el-violet-pale);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.tier-check svg { width: 8px; height: 8px; stroke: var(--el-violet); fill: none; stroke-width: 2.5; }
+.tier-lock-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; color: var(--ec-gray-400);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ec-gray-200);
+}
+.tier-lock-item:last-child { border-bottom: none; }
+.tier-lock-icon { font-size: 0.65rem; opacity: 0.5; }
+.tier-upgrade-hint {
+  margin-left: auto;
+  font-size: 0.52rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 6px; border-radius: var(--ec-radius-full);
+  background: var(--el-violet-pale);
+  color: var(--el-violet);
+}
+.tier-highlight-note {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--ec-gray-500);
+  margin-top: 16px;
+}
+.tier-highlight-note a { color: var(--el-violet); text-decoration: none; }
+.tier-highlight-note a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════════════════════════════
+   CTA SECTION
+══════════════════════════════════════════════════════════════ */
+.cta-section {
+  background: var(--ec-black);
+  padding: 120px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 60%; height: 80%;
+  background: radial-gradient(ellipse at center, rgba(122,94,167,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-inner { position: relative; z-index: 1; }
+.cta-script {
+  display: block;
+  font-family: var(--ec-font-script);
+  font-size: 1.6rem;
+  color: var(--el-gold);
+  margin-bottom: 16px;
+}
+.cta-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-off-white);
+  margin-bottom: 20px;
+}
+.cta-h2 em { font-style: italic; color: var(--el-violet-light); }
+.cta-sub {
+  font-size: 1rem;
+  color: rgba(249,247,244,0.35);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.75;
+}
+.cta-actions { display: flex; gap: 16px; justify-content: center; margin-bottom: 20px; }
+.cta-btn-primary {
+  padding: 16px 40px;
+  background: var(--el-violet);
+  color: var(--ec-off-white);
+  border: none; border-radius: var(--ec-radius-sm);
+  font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--ec-font-sans);
+  transition: background var(--ec-transition), transform var(--ec-transition);
+}
+.cta-btn-primary:hover { background: var(--el-violet-light); transform: translateY(-2px); }
+.cta-btn-ghost {
+  padding: 16px 32px;
+  background: transparent;
+  color: rgba(249,247,244,0.45);
+  border: 1px solid rgba(249,247,244,0.14);
+  border-radius: var(--ec-radius-sm);
+  font-size: 0.72rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--ec-font-sans);
+  transition: border-color var(--ec-transition), color var(--ec-transition);
+}
+.cta-btn-ghost:hover { border-color: rgba(249,247,244,0.35); color: var(--ec-off-white); }
+.cta-note {
+  font-size: 0.7rem;
+  color: rgba(249,247,244,0.2);
+  letter-spacing: 0.06em;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════════ */
+.footer {
+  background: var(--ec-charcoal);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 64px 0 32px;
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+.footer-brand-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem; font-weight: 600;
+  color: var(--ec-off-white);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.footer-brand-desc {
+  font-size: 0.78rem;
+  color: rgba(249,247,244,0.3);
+  line-height: 1.7;
+  max-width: 280px;
+}
+.footer-col-title {
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.25);
+  margin-bottom: 16px;
+}
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 10px; }
+.footer-links a {
+  font-size: 0.8rem;
+  color: rgba(249,247,244,0.4);
+  text-decoration: none;
+  transition: color var(--ec-transition);
+}
+.footer-links a:hover { color: var(--ec-off-white); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 24px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-copy { font-size: 0.72rem; color: rgba(249,247,244,0.2); }
+.footer-legal { display: flex; gap: 24px; }
+.footer-legal a {
+  font-size: 0.72rem;
+  color: rgba(249,247,244,0.2);
+  text-decoration: none;
+  transition: color var(--ec-transition);
+}
+.footer-legal a:hover { color: rgba(249,247,244,0.5); }
+
+/* ══════════════════════════════════════════════════════════════
+   LEAF DIVIDER
+══════════════════════════════════════════════════════════════ */
+.leaf-divider {
+  display: flex; align-items: center; justify-content: center;
+  gap: 20px;
+}
+.leaf-divider::before, .leaf-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ec-gray-300));
+}
+.leaf-divider::after {
+  background: linear-gradient(90deg, var(--ec-gray-300), transparent);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .hero { grid-template-columns: 1fr; padding: 100px 0 60px; }
+  .hero-left { padding-left: 0; }
+  .hero-right { padding-right: 0; }
+  .intro-grid, .feature-grid, .feature-grid.reverse { grid-template-columns: 1fr; gap: 48px; direction: ltr; }
+  .emotions-grid { grid-template-columns: repeat(2, 1fr); }
+  .emotion-detail { grid-template-columns: 1fr; }
+  .features-6-grid { grid-template-columns: repeat(2, 1fr); }
+  .workflow-steps { grid-template-columns: repeat(3, 1fr); }
+  .workflow-steps::before { display: none; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .tier-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 0 20px; }
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero-proof { gap: 20px; }
+  .emotions-grid { grid-template-columns: 1fr; }
+  .features-6-grid { grid-template-columns: 1fr; }
+  .workflow-steps { grid-template-columns: 1fr; }
+  .tier-grid { grid-template-columns: 1fr; }
+  .cta-actions { flex-direction: column; align-items: center; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <a href="evercrafted-home-hiw.html" class="nav-logo">
+    <svg width="14" height="18" viewBox="0 0 32 40" fill="none" class="nav-logo-leaf">
+      <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      <path d="M16 38L16 8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+      <path d="M16 22C16 22 10 18 8 13" stroke="currentColor" stroke-width="1" fill="none"/>
+      <path d="M16 16C16 16 22 12 24 7" stroke="currentColor" stroke-width="1" fill="none"/>
+    </svg>
+    Evercrafted
+  </a>
+  <div class="nav-links">
+    <a href="evercrafted-home-hiw.html#how-it-works">How it works</a>
+    <a href="evercrafted-apps.html" class="active">Apps</a>
+    <a href="evercrafted-marketplace.html">Marketplace</a>
+    <a href="evercrafted-home-hiw.html#pricing">Pricing</a>
+    <a href="#">Sign in</a>
+    <a href="#try-emotionlens" class="nav-cta">Try EmotionLens</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-left wrap" style="padding-right:0;max-width:none;">
+    <div class="hero-app-badge reveal">
+      <div class="hero-app-dot"></div>
+      <span class="hero-app-badge-text">EmotionLens</span>
+      <span class="hero-tier-pill">All tiers</span>
+    </div>
+    <h1 class="hero-h1 reveal d1">
+      Turn <em>feeling</em><br>into
+      <span class="script-accent">visual language.</span>
+    </h1>
+    <p class="hero-sub reveal d2">EmotionLens is Evercrafted's AI prompt composer — it maps your emotional intent, materials, and design parameters into Midjourney-ready wreath prompts that speak directly to your customers.</p>
+    <div class="hero-actions reveal d3">
+      <a href="#try-emotionlens" class="hero-btn-primary">Start composing free</a>
+      <a href="#how-it-works" class="hero-btn-ghost">See how it works</a>
+    </div>
+    <div class="hero-proof reveal d4">
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">2,400<sup>+</sup></div>
+        <div class="hero-proof-label">Designers</div>
+      </div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">18k</div>
+        <div class="hero-proof-label">Prompts generated</div>
+      </div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">6</div>
+        <div class="hero-proof-label">Core emotions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Composer mockup -->
+  <div class="hero-right">
+    <div class="hero-composer-panel reveal-right d1">
+      <div class="hcp-chrome">
+        <div class="hcp-dot hcp-dot-r"></div>
+        <div class="hcp-dot hcp-dot-y"></div>
+        <div class="hcp-dot hcp-dot-g"></div>
+        <div class="hcp-title">EmotionLens Composer · Bloom tier</div>
+      </div>
+      <div class="hcp-body">
+        <!-- Sidebar -->
+        <div class="hcp-sidebar">
+          <div class="hcp-sidebar-label">Emotion weights</div>
+          <div class="hcp-emo-row">
+            <span class="hcp-emo-name">Gratitude</span>
+            <div class="hcp-emo-track"><div class="hcp-emo-fill" style="width:90%;"></div></div>
+            <span class="hcp-emo-val">0.9</span>
+          </div>
+          <div class="hcp-emo-row">
+            <span class="hcp-emo-name">Calm</span>
+            <div class="hcp-emo-track"><div class="hcp-emo-fill" style="width:60%;"></div></div>
+            <span class="hcp-emo-val">0.6</span>
+          </div>
+          <div class="hcp-emo-row">
+            <span class="hcp-emo-name">Nostalgia</span>
+            <div class="hcp-emo-track"><div class="hcp-emo-fill" style="width:40%;"></div></div>
+            <span class="hcp-emo-val">0.4</span>
+          </div>
+          <div class="hcp-emo-row">
+            <span class="hcp-emo-name">Hope</span>
+            <div class="hcp-emo-track"><div class="hcp-emo-fill" style="width:20%;"></div></div>
+            <span class="hcp-emo-val">0.2</span>
+          </div>
+          <div class="hcp-sidebar-label">Season</div>
+          <div class="hcp-chip-row">
+            <span class="hcp-chip on">Autumn</span>
+            <span class="hcp-chip">Winter</span>
+            <span class="hcp-chip">Spring</span>
+          </div>
+          <div class="hcp-sidebar-label">Style</div>
+          <div class="hcp-chip-row">
+            <span class="hcp-chip on">Farmhouse</span>
+            <span class="hcp-chip">Luxe</span>
+            <span class="hcp-chip">Organic</span>
+          </div>
+          <div class="hcp-sidebar-label">Materials</div>
+          <div class="hcp-chip-row">
+            <span class="hcp-chip on">Eucalyptus</span>
+            <span class="hcp-chip on">Dried florals</span>
+            <span class="hcp-chip">Berry clusters</span>
+          </div>
+        </div>
+        <!-- Main output -->
+        <div class="hcp-main">
+          <div class="hcp-output-card">
+            <div class="hcp-output-label">Emotion profile</div>
+            <div class="hcp-emo-viz">
+              <div class="hcp-emo-bar-wrap">
+                <div class="hcp-emo-bar" style="height:43px;"></div>
+                <span class="hcp-emo-bar-label">Gratitude</span>
+              </div>
+              <div class="hcp-emo-bar-wrap">
+                <div class="hcp-emo-bar" style="height:29px;background:var(--el-sage);"></div>
+                <span class="hcp-emo-bar-label">Calm</span>
+              </div>
+              <div class="hcp-emo-bar-wrap">
+                <div class="hcp-emo-bar" style="height:19px;background:var(--el-blush);"></div>
+                <span class="hcp-emo-bar-label">Nostalgia</span>
+              </div>
+              <div class="hcp-emo-bar-wrap">
+                <div class="hcp-emo-bar" style="height:10px;background:var(--el-gold);"></div>
+                <span class="hcp-emo-bar-label">Hope</span>
+              </div>
+            </div>
+          </div>
+          <div class="hcp-output-card">
+            <div class="hcp-output-label">Natural language description</div>
+            <div class="hcp-natural-text">A handcrafted autumn eucalyptus wreath with muted amber and cream palette, soft linen ribbon, dried florals in faded rose and aged ivory.</div>
+          </div>
+          <div class="hcp-output-card">
+            <div class="hcp-output-label">Midjourney prompt</div>
+            <div class="hcp-mj-text">handcrafted autumn eucalyptus wreath, <strong>muted amber and cream palette</strong>, soft linen ribbon ::1.6 <strong>gentle gratitude::1.4</strong> soothing calm::1.1 nostalgic warmth::0.9 --ar 1:1 --style raw</div>
+          </div>
+          <button class="hcp-gen-btn">Generate Prompt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MARQUEE
+══════════════════════════════════════════════════════════════ -->
+<div class="marquee-strip">
+  <div class="marquee-inner">
+    <span class="marquee-item">Emotion Mapping</span>
+    <span class="marquee-item">Midjourney Formatter</span>
+    <span class="marquee-item">Blueprint Sync</span>
+    <span class="marquee-item">Brand Presets</span>
+    <span class="marquee-item">Prompt History</span>
+    <span class="marquee-item">Negative Weights</span>
+    <span class="marquee-item">Bulk CSV Export</span>
+    <span class="marquee-item">6 Core Emotions</span>
+    <span class="marquee-item">Emotion Mapping</span>
+    <span class="marquee-item">Midjourney Formatter</span>
+    <span class="marquee-item">Blueprint Sync</span>
+    <span class="marquee-item">Brand Presets</span>
+    <span class="marquee-item">Prompt History</span>
+    <span class="marquee-item">Negative Weights</span>
+    <span class="marquee-item">Bulk CSV Export</span>
+    <span class="marquee-item">6 Core Emotions</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTRO SECTION
+══════════════════════════════════════════════════════════════ -->
+<section class="intro-section">
+  <div class="wrap">
+    <div class="intro-grid">
+      <div>
+        <div class="section-tag reveal">About EmotionLens</div>
+        <h2 class="intro-h2 reveal d1">Florists think in <em>feeling</em>, not keywords.</h2>
+        <p class="intro-body reveal d2">When a customer says "I want something that feels like a Sunday morning in October," they are not describing a product — they are describing an emotion. EmotionLens is built to receive that kind of input and translate it into the precise visual language that AI image tools understand.</p>
+        <p class="intro-body reveal d2">Every output is structured with weighted emotion phrases, palette descriptors, material vocabulary, and Midjourney-native syntax — ready to paste, not ready to edit.</p>
+        <div class="intro-blockquote reveal d3">
+          <p>"The first time I generated a prompt with EmotionLens, I got a client-ready render on the third try. Before, I was spending 45 minutes per prompt."</p>
+          <cite>— Sarah M., Wreath Designer, Studio tier</cite>
+        </div>
+        <a href="#how-it-works" class="intro-link reveal d4">See how it works →</a>
+      </div>
+      <div class="intro-stats-grid reveal-right">
+        <div class="intro-stat-card">
+          <div class="intro-stat-icon">🎭</div>
+          <div class="intro-stat-num">6</div>
+          <div class="intro-stat-label">Core emotions</div>
+        </div>
+        <div class="intro-stat-card">
+          <div class="intro-stat-icon">⚡</div>
+          <div class="intro-stat-num">&lt;3<sup>min</sup></div>
+          <div class="intro-stat-label">To first prompt</div>
+        </div>
+        <div class="intro-stat-card">
+          <div class="intro-stat-icon">🎨</div>
+          <div class="intro-stat-num">12<sup>+</sup></div>
+          <div class="intro-stat-label">Style archetypes</div>
+        </div>
+        <div class="intro-stat-card">
+          <div class="intro-stat-icon">📋</div>
+          <div class="intro-stat-num">∞</div>
+          <div class="intro-stat-label">Prompt history (Craft+)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     EMOTION PROFILES SECTION
+══════════════════════════════════════════════════════════════ -->
+<section class="emotions-section">
+  <div class="wrap">
+    <div class="emotions-header">
+      <div class="section-tag center reveal">The Emotion Library</div>
+      <h2 class="emotions-h2 reveal d1">Six emotional <em>frequencies</em>,<br>infinite wreath expressions.</h2>
+      <p class="emotions-sub reveal d2">Each emotion maps to a curated set of palette descriptors, texture vocabularies, and material affinities — grounded in professional floristry language, not generic AI keywords.</p>
+    </div>
+
+    <div class="emotions-grid reveal">
+      <div class="emotion-card active" onclick="selectEmotion('gratitude')">
+        <div class="emotion-card-icon">🌾</div>
+        <div class="emotion-card-name">Gratitude</div>
+        <div class="emotion-card-phrase">"gentle gratitude"</div>
+        <div class="emotion-card-desc">Muted amber and warm neutrals, soft cream accents, natural dried textures.</div>
+      </div>
+      <div class="emotion-card" onclick="selectEmotion('calm')">
+        <div class="emotion-card-icon">🌿</div>
+        <div class="emotion-card-name">Calm</div>
+        <div class="emotion-card-phrase">"soothing calm"</div>
+        <div class="emotion-card-desc">Sage green and muted ivory, dusty blue accents, airy wispy silhouettes.</div>
+      </div>
+      <div class="emotion-card" onclick="selectEmotion('joy')">
+        <div class="emotion-card-icon">🌸</div>
+        <div class="emotion-card-name">Joy</div>
+        <div class="emotion-card-phrase">"joyful celebration"</div>
+        <div class="emotion-card-desc">Warm coral and sunlit gold, fresh white accents, lush fullness and bold blooms.</div>
+      </div>
+      <div class="emotion-card" onclick="selectEmotion('nostalgia')">
+        <div class="emotion-card-icon">🍂</div>
+        <div class="emotion-card-name">Nostalgia</div>
+        <div class="emotion-card-phrase">"nostalgic warmth"</div>
+        <div class="emotion-card-desc">Faded rose and aged ivory, dusty mauve accents, slightly faded florals and worn ribbon.</div>
+      </div>
+      <div class="emotion-card" onclick="selectEmotion('serenity')">
+        <div class="emotion-card-icon">🕊️</div>
+        <div class="emotion-card-name">Serenity</div>
+        <div class="emotion-card-phrase">"serene calm"</div>
+        <div class="emotion-card-desc">Soft grey-green and white, pale sage accents, minimal botanical and quiet spacing.</div>
+      </div>
+      <div class="emotion-card" onclick="selectEmotion('hope')">
+        <div class="emotion-card-icon">✨</div>
+        <div class="emotion-card-name">Hope</div>
+        <div class="emotion-card-phrase">"fragile hope"</div>
+        <div class="emotion-card-desc">Pale blush and soft gold, ivory white accents, gentle mixed blooms and soft openness.</div>
+      </div>
+    </div>
+
+    <!-- Emotion detail panel -->
+    <div class="emotion-detail reveal" id="emotion-detail">
+      <div>
+        <div class="emotion-detail-name" id="ed-name">Gratitude <em>— gentle gratitude</em></div>
+        <div class="emotion-detail-desc" id="ed-desc">Maps to muted amber and warm neutral palettes with soft cream accents. Texture vocabulary includes natural dried textures, aged ribbon, and organic layering — the visual language of a handmade gift given with quiet sincerity.</div>
+        <div class="emotion-palette-row" id="ed-palette">
+          <span class="emotion-palette-pill primary">muted amber</span>
+          <span class="emotion-palette-pill primary">warm neutrals</span>
+          <span class="emotion-palette-pill">soft cream</span>
+          <span class="emotion-palette-pill">dried textures</span>
+          <span class="emotion-palette-pill">aged ribbon</span>
+          <span class="emotion-palette-pill">organic layering</span>
+        </div>
+      </div>
+      <div class="emotion-weight-bars" id="ed-weights">
+        <div class="ewb-row">
+          <span class="ewb-label">Gratitude</span>
+          <div class="ewb-track"><div class="ewb-fill" style="width:90%;"></div></div>
+          <span class="ewb-val">0.9</span>
+        </div>
+        <div class="ewb-row">
+          <span class="ewb-label">Calm</span>
+          <div class="ewb-track"><div class="ewb-fill" style="width:30%;background:var(--el-sage);"></div></div>
+          <span class="ewb-val">0.3</span>
+        </div>
+        <div class="ewb-row">
+          <span class="ewb-label">Nostalgia</span>
+          <div class="ewb-track"><div class="ewb-fill" style="width:50%;background:var(--el-blush);"></div></div>
+          <span class="ewb-val">0.5</span>
+        </div>
+        <div class="ewb-row">
+          <span class="ewb-label">Hope</span>
+          <div class="ewb-track"><div class="ewb-fill" style="width:20%;background:var(--el-gold);"></div></div>
+          <span class="ewb-val">0.2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 1 — EMOTION MAPPING ENGINE (light bg)
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section" id="how-it-works">
+  <div class="wrap">
+    <div class="feature-grid">
+      <!-- Copy -->
+      <div>
+        <div class="feature-tag reveal">Feature 01 — Emotion Mapping</div>
+        <h3 class="feature-h3 reveal d1">A vocabulary built for <em>florists</em>, not engineers.</h3>
+        <p class="feature-body reveal d2">EmotionLens does not ask you to describe your design in AI terms. It asks you how the wreath should feel — and then does the translation work for you. Each emotion slider adjusts the weight of a curated phrase cluster in the final prompt, controlling palette bias, texture vocabulary, and material affinities simultaneously.</p>
+        <p class="feature-body reveal d2">The emotion library is built from professional floristry language — the same vocabulary used in high-end editorial styling and luxury event design. Every phrase has been tested against Midjourney v6 to ensure consistent, predictable output.</p>
+        <div class="feature-note reveal d3">
+          <strong>Bloom tier:</strong> Access to all 6 core emotions with standard weight controls. <strong>Craft tier</strong> unlocks custom emotion phrases and negative weight modifiers.
+        </div>
+        <a href="#tier-section" class="feature-link reveal d4">View tier access →</a>
+      </div>
+      <!-- Panel -->
+      <div class="reveal-right d1">
+        <div class="feature-panel">
+          <div class="panel-chrome">
+            <div class="panel-dot panel-dot-r"></div>
+            <div class="panel-dot panel-dot-y"></div>
+            <div class="panel-dot panel-dot-g"></div>
+            <div class="panel-title">Emotion Mapping — EmotionLens</div>
+          </div>
+          <div class="panel-body">
+            <!-- Emotion sliders mockup -->
+            <div style="margin-bottom:16px;">
+              <div style="font-size:0.55rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.05);">Emotion Weights</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:0.65rem;color:rgba(249,247,244,0.55);width:72px;">Gratitude</span>
+                  <div style="flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                    <div style="width:90%;height:100%;background:var(--el-violet-light);border-radius:2px;"></div>
+                    <div style="position:absolute;top:50%;right:10%;transform:translate(50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--el-violet-light);border:2px solid var(--ec-black);"></div>
+                  </div>
+                  <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.3);width:28px;text-align:right;">0.9</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:0.65rem;color:rgba(249,247,244,0.55);width:72px;">Calm</span>
+                  <div style="flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                    <div style="width:60%;height:100%;background:var(--el-sage);border-radius:2px;"></div>
+                    <div style="position:absolute;top:50%;left:60%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--el-sage);border:2px solid var(--ec-black);"></div>
+                  </div>
+                  <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.3);width:28px;text-align:right;">0.6</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:0.65rem;color:rgba(249,247,244,0.55);width:72px;">Nostalgia</span>
+                  <div style="flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                    <div style="width:40%;height:100%;background:var(--el-blush);border-radius:2px;"></div>
+                    <div style="position:absolute;top:50%;left:40%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--el-blush);border:2px solid var(--ec-black);"></div>
+                  </div>
+                  <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.3);width:28px;text-align:right;">0.4</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-size:0.65rem;color:rgba(249,247,244,0.55);width:72px;">Hope</span>
+                  <div style="flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;position:relative;">
+                    <div style="width:20%;height:100%;background:var(--el-gold);border-radius:2px;"></div>
+                    <div style="position:absolute;top:50%;left:20%;transform:translate(-50%,-50%);width:12px;height:12px;border-radius:50%;background:var(--el-gold);border:2px solid var(--ec-black);"></div>
+                  </div>
+                  <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.3);width:28px;text-align:right;">0.2</span>
+                </div>
+              </div>
+            </div>
+            <!-- Palette output -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:12px;">
+              <div style="font-size:0.52rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);margin-bottom:10px;">Mapped palette output</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="font-size:0.6rem;padding:3px 10px;border-radius:3px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);color:var(--el-gold);">muted amber</span>
+                <span style="font-size:0.6rem;padding:3px 10px;border-radius:3px;background:rgba(122,94,167,0.12);border:1px solid rgba(122,94,167,0.3);color:var(--el-violet-light);">warm neutrals</span>
+                <span style="font-size:0.6rem;padding:3px 10px;border-radius:3px;background:rgba(107,143,103,0.12);border:1px solid rgba(107,143,103,0.3);color:var(--el-sage);">sage green</span>
+                <span style="font-size:0.6rem;padding:3px 10px;border-radius:3px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(249,247,244,0.45);">dusty blue</span>
+                <span style="font-size:0.6rem;padding:3px 10px;border-radius:3px;background:rgba(212,132,154,0.12);border:1px solid rgba(212,132,154,0.25);color:var(--el-blush);">faded rose</span>
+                <span style="font-size:0.6rem;padding:3px 10px;border-radius:3px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(249,247,244,0.45);">aged ivory</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 2 — BLUEPRINT SYNC (dark bg)
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section dark">
+  <div class="wrap">
+    <div class="feature-grid reverse">
+      <!-- Panel -->
+      <div class="reveal-left d1">
+        <div class="feature-panel">
+          <div class="panel-chrome">
+            <div class="panel-dot panel-dot-r"></div>
+            <div class="panel-dot panel-dot-y"></div>
+            <div class="panel-dot panel-dot-g"></div>
+            <div class="panel-title">Blueprint Sync — EmotionLens</div>
+          </div>
+          <div class="panel-body">
+            <!-- Blueprint data being pulled -->
+            <div style="font-size:0.52rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);margin-bottom:12px;">Blueprint parameters imported</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:10px;">
+                <div style="font-size:0.52rem;color:rgba(249,247,244,0.2);margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase;">Wreath size</div>
+                <div style="font-family:var(--ec-font-mono);font-size:0.8rem;color:var(--el-violet-light);">24 in</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:10px;">
+                <div style="font-size:0.52rem;color:rgba(249,247,244,0.2);margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase;">Formula</div>
+                <div style="font-family:var(--ec-font-mono);font-size:0.8rem;color:var(--el-violet-light);">crescent</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:10px;">
+                <div style="font-size:0.52rem;color:rgba(249,247,244,0.2);margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase;">Stem count</div>
+                <div style="font-family:var(--ec-font-mono);font-size:0.8rem;color:var(--el-violet-light);">58 stems</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:10px;">
+                <div style="font-size:0.52rem;color:rgba(249,247,244,0.2);margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase;">Density</div>
+                <div style="font-family:var(--ec-font-mono);font-size:0.8rem;color:var(--el-violet-light);">moderate</div>
+              </div>
+            </div>
+            <!-- Role ratio bars -->
+            <div style="font-size:0.52rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);margin-bottom:8px;">Material ratio → prompt weight</div>
+            <div style="display:flex;flex-direction:column;gap:7px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.6rem;color:rgba(249,247,244,0.4);width:64px;">Greenery</span>
+                <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;"><div style="width:36%;height:100%;background:var(--el-sage);border-radius:3px;"></div></div>
+                <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.25);">36%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.6rem;color:rgba(249,247,244,0.4);width:64px;">Focal</span>
+                <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;"><div style="width:17%;height:100%;background:var(--el-violet-light);border-radius:3px;"></div></div>
+                <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.25);">17%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.6rem;color:rgba(249,247,244,0.4);width:64px;">Secondary</span>
+                <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;"><div style="width:19%;height:100%;background:var(--el-gold);border-radius:3px;"></div></div>
+                <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.25);">19%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:0.6rem;color:rgba(249,247,244,0.4);width:64px;">Filler</span>
+                <div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;"><div style="width:17%;height:100%;background:var(--el-blush);border-radius:3px;"></div></div>
+                <span style="font-family:var(--ec-font-mono);font-size:0.55rem;color:rgba(249,247,244,0.25);">17%</span>
+              </div>
+            </div>
+            <!-- Output snippet -->
+            <div style="margin-top:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:10px;">
+              <div style="font-size:0.52rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);margin-bottom:6px;">Injected into prompt</div>
+              <div style="font-family:var(--ec-font-mono);font-size:0.6rem;color:var(--el-violet-light);line-height:1.6;">...lush eucalyptus base, <span style="color:var(--el-gold);">crescent silhouette</span>, moderate density, focal rose clusters, dried accent sprigs --ar 1:1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Copy -->
+      <div>
+        <div class="feature-tag reveal">Feature 02 — Blueprint Sync</div>
+        <h3 class="feature-h3 reveal d1">Your blueprint's structure, <em>embedded</em> in every prompt.</h3>
+        <p class="feature-body reveal d2">When EmotionLens is connected to Blueprint Studio, it reads your active blueprint's parameters — wreath size, formula type, stem count, material ratios, and density — and embeds them directly into the prompt structure. The result is a render that matches your actual build, not a generic wreath.</p>
+        <p class="feature-body reveal d2">This means your client preview and your builder guide describe the same object. No more renders that look nothing like the finished piece.</p>
+        <div class="feature-note reveal d3">
+          <strong>Craft tier and above.</strong> Blueprint Sync requires an active Blueprint Studio project. Material ratios are pulled live from your current blueprint's stem allocation.
+        </div>
+        <a href="blueprint-studio.html" class="feature-link reveal d4">Explore Blueprint Studio →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 3 — MIDJOURNEY FORMATTER (light bg)
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section">
+  <div class="wrap">
+    <div class="feature-grid">
+      <!-- Copy -->
+      <div>
+        <div class="feature-tag reveal">Feature 03 — Midjourney Formatter</div>
+        <h3 class="feature-h3 reveal d1">Paste-ready syntax, <em>every time</em>.</h3>
+        <p class="feature-body reveal d2">EmotionLens outputs structured Midjourney v6 syntax — weighted emotion phrases with <code style="font-family:var(--ec-font-mono);font-size:0.85em;background:rgba(122,94,167,0.1);padding:1px 5px;border-radius:3px;">:: weight</code> notation, aspect ratio flags, style modifiers, and chaos parameters — all assembled in the correct order and ready to paste directly into Midjourney without any manual editing.</p>
+        <p class="feature-body reveal d2">You control the aspect ratio, style preset, and chaos level from dropdown selectors. The formatter handles the rest — including ensuring that dominant emotions receive higher weights and that conflicting palette descriptors are resolved before output.</p>
+        <div class="feature-note reveal d3">
+          <strong>All tiers:</strong> Standard Midjourney v6 output. <strong>Craft tier</strong> adds negative weight modifiers (<code style="font-family:var(--ec-font-mono);font-size:0.85em;">--no</code> flags) and bulk CSV export for batch generation.
+        </div>
+        <a href="#tier-section" class="feature-link reveal d4">Compare tier features →</a>
+      </div>
+      <!-- Panel -->
+      <div class="reveal-right d1">
+        <div class="feature-panel">
+          <div class="panel-chrome">
+            <div class="panel-dot panel-dot-r"></div>
+            <div class="panel-dot panel-dot-y"></div>
+            <div class="panel-dot panel-dot-g"></div>
+            <div class="panel-title">Prompt Output — EmotionLens</div>
+          </div>
+          <div class="panel-body">
+            <!-- Natural language output -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:14px;margin-bottom:10px;">
+              <div style="font-size:0.52rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);margin-bottom:8px;">Natural language description</div>
+              <div style="font-family:var(--ec-font-serif);font-size:0.9rem;font-style:italic;color:rgba(249,247,244,0.65);line-height:1.65;">A handcrafted autumn eucalyptus wreath with muted amber and cream palette, soft linen ribbon, dried florals in faded rose and aged ivory, crescent silhouette.</div>
+            </div>
+            <!-- MJ prompt output -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(122,94,167,0.25);border-radius:6px;padding:14px;margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div style="font-size:0.52rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);">Midjourney prompt</div>
+                <div style="display:flex;gap:6px;">
+                  <button style="font-size:0.55rem;padding:3px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:3px;background:transparent;color:rgba(249,247,244,0.35);cursor:pointer;font-family:var(--ec-font-sans);">Copy</button>
+                  <button style="font-size:0.55rem;padding:3px 10px;border:1px solid rgba(122,94,167,0.4);border-radius:3px;background:rgba(122,94,167,0.12);color:var(--el-violet-light);cursor:pointer;font-family:var(--ec-font-sans);">Regenerate</button>
+                </div>
+              </div>
+              <div style="font-family:var(--ec-font-mono);font-size:0.62rem;color:var(--el-violet-light);line-height:1.75;word-break:break-all;">handcrafted autumn eucalyptus wreath, <span style="color:var(--el-gold);">muted amber and cream palette</span>, soft linen ribbon ::1.6 <span style="color:var(--el-violet-light);">gentle gratitude::1.4</span> soothing calm::1.1 nostalgic warmth::0.9 <span style="color:rgba(249,247,244,0.35);">--ar 1:1 --style raw</span></div>
+            </div>
+            <!-- Parameters row -->
+            <div style="display:flex;gap:8px;">
+              <select style="flex:1;padding:6px 10px;font-size:0.6rem;font-family:var(--ec-font-sans);border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(249,247,244,0.5);">
+                <option>1:1</option><option>4:5</option><option>3:4</option>
+              </select>
+              <select style="flex:1;padding:6px 10px;font-size:0.6rem;font-family:var(--ec-font-sans);border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(249,247,244,0.5);">
+                <option>raw</option><option>expressive</option>
+              </select>
+              <select style="flex:1;padding:6px 10px;font-size:0.6rem;font-family:var(--ec-font-sans);border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(249,247,244,0.5);">
+                <option>no chaos</option><option>chaos 10</option><option>chaos 25</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 4 — BRAND PRESETS (dark bg)
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section dark">
+  <div class="wrap">
+    <div class="feature-grid reverse">
+      <!-- Panel -->
+      <div class="reveal-left d1">
+        <div class="feature-panel">
+          <div class="panel-chrome">
+            <div class="panel-dot panel-dot-r"></div>
+            <div class="panel-dot panel-dot-y"></div>
+            <div class="panel-dot panel-dot-g"></div>
+            <div class="panel-title">Brand Presets — EmotionLens</div>
+          </div>
+          <div class="panel-body">
+            <div style="font-size:0.52rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(249,247,244,0.2);margin-bottom:12px;">Saved presets</div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+              <div style="background:rgba(122,94,167,0.12);border:1px solid rgba(122,94,167,0.3);border-radius:6px;padding:12px;cursor:pointer;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-family:var(--ec-font-serif);font-size:0.9rem;color:var(--ec-off-white);">Autumn Signature</span>
+                  <span style="font-size:0.52rem;padding:2px 8px;background:rgba(249,247,244,0.08);border-radius:3px;color:rgba(249,247,244,0.35);">Active</span>
+                </div>
+                <div style="font-size:0.6rem;color:rgba(249,247,244,0.3);">Gratitude 0.9 · Calm 0.6 · Farmhouse · Autumn</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:12px;cursor:pointer;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-family:var(--ec-font-serif);font-size:0.9rem;color:rgba(249,247,244,0.7);">Holiday Luxe</span>
+                  <span style="font-size:0.52rem;padding:2px 8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:3px;color:var(--el-gold);">Craft</span>
+                </div>
+                <div style="font-size:0.6rem;color:rgba(249,247,244,0.25);">Joy 0.8 · Nostalgia 0.5 · Luxe · Winter</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:12px;cursor:pointer;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-family:var(--ec-font-serif);font-size:0.9rem;color:rgba(249,247,244,0.7);">Spring Market</span>
+                  <span style="font-size:0.52rem;padding:2px 8px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:3px;color:var(--el-gold);">Craft</span>
+                </div>
+                <div style="font-size:0.6rem;color:rgba(249,247,244,0.25);">Hope 0.9 · Joy 0.6 · Organic · Spring</div>
+              </div>
+            </div>
+            <button style="width:100%;padding:10px;background:var(--el-violet);color:var(--ec-off-white);border:none;border-radius:5px;font-size:0.6rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:var(--ec-font-sans);">Load Preset</button>
+          </div>
+        </div>
+      </div>
+      <!-- Copy -->
+      <div>
+        <div class="feature-tag reveal">Feature 04 — Brand Presets</div>
+        <h3 class="feature-h3 reveal d1">Your signature style, <em>one click</em> away.</h3>
+        <p class="feature-body reveal d2">Brand Presets let you save your entire EmotionLens configuration — emotion weights, season, style archetype, materials, and lighting — as a named profile that loads instantly. Build your Autumn Signature, your Holiday Luxe, your Spring Market style once, and apply it to every new project in a single click.</p>
+        <p class="feature-body reveal d2">For designers with a consistent brand voice, presets eliminate the reconfiguration overhead that makes AI tools feel slow. Your first prompt of the day is as good as your hundredth.</p>
+        <div class="feature-note reveal d3">
+          <strong>Craft tier:</strong> Up to 3 saved presets. <strong>Studio tier:</strong> Unlimited presets with team sharing. <strong>Atelier:</strong> White-label preset export for client delivery.
+        </div>
+        <a href="#tier-section" class="feature-link reveal d4">Compare preset limits →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURES 6-CARD GRID
+══════════════════════════════════════════════════════════════ -->
+<section class="features-grid-section">
+  <div class="wrap">
+    <div class="features-grid-header">
+      <div class="section-tag center reveal" style="color:var(--el-violet);">All EmotionLens capabilities</div>
+      <h2 class="features-grid-h2 reveal d1">Everything you need to compose with <em>intention</em>.</h2>
+      <p class="features-grid-sub reveal d2">Six core capabilities, built for professional wreath designers who want client-ready visuals without the prompt-engineering overhead.</p>
+    </div>
+    <div class="features-6-grid reveal">
+      <div class="feat-card">
+        <div class="feat-card-icon">🎭</div>
+        <div class="feat-card-name">Emotion Mapping</div>
+        <div class="feat-card-desc">Map gratitude, calm, joy, nostalgia, serenity, and hope to curated palette and texture vocabularies using a hand-crafted floristry language library.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">🔗</div>
+        <div class="feat-card-name">Blueprint Sync</div>
+        <div class="feat-card-desc">Import your active Blueprint Studio parameters — size, formula, material ratios — directly into the prompt for production-accurate visual output.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">⚡</div>
+        <div class="feat-card-name">Midjourney Formatter</div>
+        <div class="feat-card-desc">Outputs structured ::weight syntax, aspect ratios, style flags, and chaos parameters — ready to paste, no manual editing required.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">💾</div>
+        <div class="feat-card-name">Brand Presets</div>
+        <div class="feat-card-desc">Save your signature emotion profiles, palette mixes, and material selections as named presets for instant one-click consistency across every project.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">📚</div>
+        <div class="feat-card-name">Prompt History</div>
+        <div class="feat-card-desc">Every prompt is saved to your library with full parameters — emotion weights, materials, season, style — so you can revisit, iterate, and build on successes.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">📤</div>
+        <div class="feat-card-name">Bulk CSV Export</div>
+        <div class="feat-card-desc">Export your entire prompt library as a structured CSV for batch generation workflows, client deliverables, or archival. Craft tier and above.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     WORKFLOW TIMELINE
+══════════════════════════════════════════════════════════════ -->
+<section class="workflow-section" id="how-it-works-steps">
+  <div class="wrap">
+    <div class="workflow-header">
+      <div class="section-tag center reveal" style="color:var(--el-violet-light);">The EmotionLens workflow</div>
+      <h2 class="workflow-h2 reveal d1">From feeling to <em>render</em> in five steps.</h2>
+      <p class="workflow-sub reveal d2">EmotionLens is designed to be fast. Most designers reach their first usable prompt in under three minutes.</p>
+    </div>
+    <div class="workflow-steps reveal">
+      <div class="workflow-step">
+        <div class="workflow-step-num-wrap">
+          <div class="workflow-step-num">01</div>
+        </div>
+        <div class="workflow-step-icon">🎭</div>
+        <div class="workflow-step-title">Set <em>emotion weights</em></div>
+        <div class="workflow-step-desc">Dial in the emotional frequency of your design using the six core emotion sliders.</div>
+        <span class="workflow-step-badge badge-bloom">Bloom</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num-wrap">
+          <div class="workflow-step-num">02</div>
+        </div>
+        <div class="workflow-step-icon">🌿</div>
+        <div class="workflow-step-title">Select <em>season &amp; style</em></div>
+        <div class="workflow-step-desc">Choose your season, design style archetype, shape, materials, and lighting mood.</div>
+        <span class="workflow-step-badge badge-bloom">Bloom</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num-wrap">
+          <div class="workflow-step-num">03</div>
+        </div>
+        <div class="workflow-step-icon">🔗</div>
+        <div class="workflow-step-title">Sync <em>blueprint data</em></div>
+        <div class="workflow-step-desc">Import your active Blueprint Studio parameters for a production-accurate render.</div>
+        <span class="workflow-step-badge badge-craft">Craft+</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num-wrap">
+          <div class="workflow-step-num">04</div>
+        </div>
+        <div class="workflow-step-icon">⚡</div>
+        <div class="workflow-step-title">Generate <em>prompt</em></div>
+        <div class="workflow-step-desc">One click produces a structured Midjourney v6 prompt with weighted emotion phrases and all parameters.</div>
+        <span class="workflow-step-badge badge-bloom">Bloom</span>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-step-num-wrap">
+          <div class="workflow-step-num">05</div>
+        </div>
+        <div class="workflow-step-icon">🎨</div>
+        <div class="workflow-step-title">Save as <em>preset</em></div>
+        <div class="workflow-step-desc">Save your configuration as a named brand preset for instant reuse on future projects.</div>
+        <span class="workflow-step-badge badge-craft">Craft+</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════════════ -->
+<section class="testimonials-section">
+  <div class="wrap">
+    <div class="testimonials-header">
+      <div class="section-tag center reveal" style="color:var(--el-violet);">Designer voices</div>
+      <h2 class="testimonials-h2 reveal d1">What designers say about <em>EmotionLens</em>.</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="testi-quote">"The first time I generated a prompt with EmotionLens, I got a client-ready render on the third try. Before, I was spending 45 minutes per prompt and still not getting the feeling right."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">SM</div>
+          <div>
+            <div class="testi-name">Sarah M.</div>
+            <div class="testi-handle">Wreath designer · Studio tier</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d1">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="testi-quote">"Blueprint Sync is the feature I didn't know I needed. My renders now actually look like my wreaths — same silhouette, same density, same palette. My clients stopped asking for revisions."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">RK</div>
+          <div>
+            <div class="testi-name">Rachel K.</div>
+            <div class="testi-handle">Floral stylist · Craft tier</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d2">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="testi-quote">"I have three brand presets saved — one for each of my seasonal collections. I open EmotionLens, load a preset, hit generate, and I have a client-ready visual in under two minutes."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">JL</div>
+          <div>
+            <div class="testi-name">James L.</div>
+            <div class="testi-handle">Event florist · Atelier tier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BOTANICAL DIVIDER
+══════════════════════════════════════════════════════════════ -->
+<div style="background:var(--ec-off-white);padding:32px 0;">
+  <div class="wrap">
+    <div class="leaf-divider">
+      <svg width="28" height="36" viewBox="0 0 32 40" fill="none" style="color:var(--ec-green);">
+        <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 38L16 8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <path d="M16 22C16 22 10 18 8 13" stroke="currentColor" stroke-width="1" fill="none"/>
+        <path d="M16 16C16 16 22 12 24 7" stroke="currentColor" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PRICING TIERS
+══════════════════════════════════════════════════════════════ -->
+<section class="tier-section" id="tier-section">
+  <div class="wrap">
+    <div class="tier-header">
+      <div class="section-tag center reveal" style="color:var(--el-violet);">Subscription tiers</div>
+      <h2 class="tier-h2 reveal d1">EmotionLens is included in <em>every</em> Evercrafted plan.</h2>
+      <p class="tier-sub reveal d2">Start free on Bloom. Upgrade when you need brand presets, Blueprint Sync, or bulk export — which most designers do by the second week.</p>
+    </div>
+    <div class="tier-grid">
+      <!-- Bloom -->
+      <div class="tier-card reveal">
+        <span class="tier-badge tier-badge-bloom">Bloom</span>
+        <div class="tier-name">Bloom</div>
+        <div class="tier-tagline">For designers just getting started with AI-assisted wreath visualization.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$19</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <button class="tier-cta tier-cta-outline">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            All 6 core emotions
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Standard Midjourney v6 output
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Season, style &amp; material selectors
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            7-day prompt history
+          </li>
+          <li class="tier-lock-item">
+            <span class="tier-lock-icon">🔒</span>
+            Blueprint Sync
+            <span class="tier-upgrade-hint">Craft+</span>
+          </li>
+          <li class="tier-lock-item">
+            <span class="tier-lock-icon">🔒</span>
+            Brand presets
+            <span class="tier-upgrade-hint">Craft+</span>
+          </li>
+        </ul>
+      </div>
+      <!-- Craft -->
+      <div class="tier-card reveal d1">
+        <span class="tier-badge tier-badge-craft">Craft</span>
+        <div class="tier-name">Craft</div>
+        <div class="tier-tagline">For active designers who need brand consistency and production-accurate renders.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$39</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <button class="tier-cta tier-cta-outline">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Everything in Bloom
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Blueprint Sync
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            3 brand presets
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Negative weight modifiers
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Unlimited prompt history
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Bulk CSV export
+          </li>
+          <li class="tier-lock-item">
+            <span class="tier-lock-icon">🔒</span>
+            Unlimited presets
+            <span class="tier-upgrade-hint">Studio+</span>
+          </li>
+        </ul>
+      </div>
+      <!-- Studio (recommended) -->
+      <div class="tier-card recommended reveal d2">
+        <div class="tier-popular-badge">Most popular</div>
+        <span class="tier-badge tier-badge-studio">Studio</span>
+        <div class="tier-name">Studio</div>
+        <div class="tier-tagline">For professional designers and small studios who need unlimited presets and team access.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$59</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <button class="tier-cta tier-cta-primary">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Everything in Craft
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Unlimited brand presets
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Team preset sharing
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Custom emotion phrases
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Priority support
+          </li>
+          <li class="tier-lock-item">
+            <span class="tier-lock-icon">🔒</span>
+            White-label export
+            <span class="tier-upgrade-hint">Atelier</span>
+          </li>
+        </ul>
+      </div>
+      <!-- Atelier -->
+      <div class="tier-card atelier-card reveal d3">
+        <span class="tier-badge tier-badge-atelier">Atelier</span>
+        <div class="tier-name" style="color:var(--ec-off-white);">Atelier</div>
+        <div class="tier-tagline" style="color:rgba(249,247,244,0.3);">For luxury studios, educators, and agencies who need white-label client deliverables.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount" style="color:var(--ec-off-white);">$99</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <button class="tier-cta tier-cta-dark">Contact us</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(249,247,244,0.06);"><svg viewBox="0 0 12 12" style="stroke:rgba(249,247,244,0.4);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Everything in Studio
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(249,247,244,0.06);"><svg viewBox="0 0 12 12" style="stroke:rgba(249,247,244,0.4);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            White-label prompt export
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(249,247,244,0.06);"><svg viewBox="0 0 12 12" style="stroke:rgba(249,247,244,0.4);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            API access (beta)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(249,247,244,0.06);"><svg viewBox="0 0 12 12" style="stroke:rgba(249,247,244,0.4);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Custom emotion library
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(249,247,244,0.06);"><svg viewBox="0 0 12 12" style="stroke:rgba(249,247,244,0.4);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Dedicated account manager
+          </li>
+        </ul>
+      </div>
+    </div>
+    <p class="tier-highlight-note reveal">All plans include a 14-day free trial. No credit card required. <a href="#">Compare all features →</a></p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CTA SECTION
+══════════════════════════════════════════════════════════════ -->
+<section class="cta-section" id="try-emotionlens">
+  <div class="wrap">
+    <div class="cta-inner">
+      <span class="cta-script reveal">start composing</span>
+      <h2 class="cta-h2 reveal d1">Your first prompt is<br><em>three minutes away</em>.</h2>
+      <p class="cta-sub reveal d2">EmotionLens is available on every Evercrafted plan. Start with Bloom — free for 14 days — and compose your first Midjourney-ready wreath prompt before your next client call.</p>
+      <div class="cta-actions reveal d3">
+        <a href="#" class="cta-btn-primary">Start free trial — Bloom</a>
+        <a href="evercrafted-apps.html" class="cta-btn-ghost">Explore all apps</a>
+      </div>
+      <p class="cta-note reveal d4">14-day free trial · No credit card required · Cancel anytime</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">
+          <svg width="12" height="16" viewBox="0 0 32 40" fill="none" style="color:var(--ec-green-light);">
+            <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M16 38L16 8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+          </svg>
+          Evercrafted
+        </div>
+        <p class="footer-brand-desc">A procedural floral composition engine that generates professionally structured wreath designs using emotional prompts, inventory constraints, and professional composition formulas.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <ul class="footer-links">
+          <li><a href="evercrafted-home-hiw.html#how-it-works">How it works</a></li>
+          <li><a href="evercrafted-apps.html">All apps</a></li>
+          <li><a href="blueprint-studio.html">Blueprint Studio</a></li>
+          <li><a href="moodoor.html">Moodoor</a></li>
+          <li><a href="emotionlens.html">EmotionLens</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Plans</div>
+        <ul class="footer-links">
+          <li><a href="#">Bloom — $19/mo</a></li>
+          <li><a href="#">Craft — $39/mo</a></li>
+          <li><a href="#">Studio — $59/mo</a></li>
+          <li><a href="#">Atelier — $99/mo</a></li>
+          <li><a href="#">Compare plans</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Evercrafted. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script>
+// ── NAV SCROLL ──────────────────────────────────────────────────
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ── SCROLL REVEAL ───────────────────────────────────────────────
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+// ── EMOTION PROFILES ────────────────────────────────────────────
+const EMOTION_DATA = {
+  gratitude: {
+    name: 'Gratitude',
+    phrase: 'gentle gratitude',
+    desc: 'Maps to muted amber and warm neutral palettes with soft cream accents. Texture vocabulary includes natural dried textures, aged ribbon, and organic layering — the visual language of a handmade gift given with quiet sincerity.',
+    palette: ['muted amber', 'warm neutrals', 'soft cream', 'dried textures', 'aged ribbon', 'organic layering'],
+    primary: ['muted amber', 'warm neutrals'],
+    weights: { Gratitude: 0.9, Calm: 0.3, Nostalgia: 0.5, Hope: 0.2 }
+  },
+  calm: {
+    name: 'Calm',
+    phrase: 'soothing calm',
+    desc: 'Maps to sage green and muted ivory palettes with dusty blue accents. Texture vocabulary includes airy wispy sprigs, fine tendrils, and delicate silhouettes — the visual language of a quiet afternoon in a garden.',
+    palette: ['sage green', 'muted ivory', 'dusty blue', 'wispy sprigs', 'fine tendrils', 'delicate silhouette'],
+    primary: ['sage green', 'muted ivory'],
+    weights: { Calm: 0.9, Serenity: 0.6, Gratitude: 0.2, Hope: 0.3 }
+  },
+  joy: {
+    name: 'Joy',
+    phrase: 'joyful celebration',
+    desc: 'Maps to warm coral and sunlit gold palettes with fresh white accents. Texture vocabulary includes lush fullness, bold blooms, and rich layering — the visual language of a celebration in full bloom.',
+    palette: ['warm coral', 'sunlit gold', 'fresh white', 'lush fullness', 'bold blooms', 'rich layering'],
+    primary: ['warm coral', 'sunlit gold'],
+    weights: { Joy: 0.9, Hope: 0.5, Gratitude: 0.3, Calm: 0.1 }
+  },
+  nostalgia: {
+    name: 'Nostalgia',
+    phrase: 'nostalgic warmth',
+    desc: 'Maps to faded rose and aged ivory palettes with dusty mauve accents. Texture vocabulary includes slightly faded florals, aged greenery, and worn ribbon — the visual language of a cherished memory.',
+    palette: ['faded rose', 'aged ivory', 'dusty mauve', 'faded florals', 'aged greenery', 'worn ribbon'],
+    primary: ['faded rose', 'aged ivory'],
+    weights: { Nostalgia: 0.9, Gratitude: 0.5, Calm: 0.3, Serenity: 0.2 }
+  },
+  serenity: {
+    name: 'Serenity',
+    phrase: 'serene calm',
+    desc: 'Maps to soft grey-green and white palettes with pale sage accents. Texture vocabulary includes minimal botanical, quiet spacing, and sparse elegance — the visual language of a meditative stillness.',
+    palette: ['soft grey-green', 'white', 'pale sage', 'minimal botanical', 'quiet spacing', 'sparse elegance'],
+    primary: ['soft grey-green', 'white'],
+    weights: { Serenity: 0.9, Calm: 0.7, Hope: 0.2, Gratitude: 0.1 }
+  },
+  hope: {
+    name: 'Hope',
+    phrase: 'fragile hope',
+    desc: 'Maps to pale blush and soft gold palettes with ivory white accents. Texture vocabulary includes gentle mixed blooms, light layering, and soft openness — the visual language of a new beginning.',
+    palette: ['pale blush', 'soft gold', 'ivory white', 'gentle blooms', 'light layering', 'soft openness'],
+    primary: ['pale blush', 'soft gold'],
+    weights: { Hope: 0.9, Joy: 0.4, Serenity: 0.3, Calm: 0.2 }
+  }
+};
+
+function selectEmotion(id) {
+  // Update active card
+  document.querySelectorAll('.emotion-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  const data = EMOTION_DATA[id];
+  if (!data) return;
+
+  // Update detail panel
+  document.getElementById('ed-name').innerHTML = `${data.name} <em>— ${data.phrase}</em>`;
+  document.getElementById('ed-desc').textContent = data.desc;
+
+  // Update palette pills
+  const paletteEl = document.getElementById('ed-palette');
+  paletteEl.innerHTML = data.palette.map(p =>
+    `<span class="emotion-palette-pill${data.primary.includes(p) ? ' primary' : ''}">${p}</span>`
+  ).join('');
+
+  // Update weight bars
+  const weightKeys = Object.keys(data.weights);
+  const weightColors = ['var(--el-violet-light)', 'var(--el-sage)', 'var(--el-blush)', 'var(--el-gold)'];
+  document.getElementById('ed-weights').innerHTML = weightKeys.map((k, i) =>
+    `<div class="ewb-row">
+      <span class="ewb-label">${k}</span>
+      <div class="ewb-track"><div class="ewb-fill" style="width:${data.weights[k]*100}%;background:${weightColors[i]||'var(--el-violet-light)'};"></div></div>
+      <span class="ewb-val">${data.weights[k].toFixed(1)}</span>
+    </div>`
+  ).join('');
+}
+</script>
+</body>
+</html>
