@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pipeline Data Visualization — Evercrafted</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --ec-white:       #FFFFFF;
+      --ec-off-white:   #F9F7F4;
+      --ec-paper:       #F2EFE9;
+      --ec-black:       #1A1A1A;
+      --ec-charcoal:    #2E2E2E;
+      --ec-ink:         #4A4A4A;
+      --ec-green:       #4A6741;
+      --ec-green-light: #6B8F67;
+      --ec-green-pale:  #EEF2ED;
+      --ec-gray-200:    #E8E8E8;
+      --ec-gray-300:    #D0D0D0;
+      --ec-gray-400:    #A8A8A8;
+      --ec-gray-500:    #787878;
+      --ec-gold:        #C4922A;
+      --ec-gold-pale:   rgba(196,146,42,0.12);
+      --ec-font-serif:  'Cormorant Garamond', Georgia, serif;
+      --ec-font-sans:   'Inter', system-ui, sans-serif;
+      --ec-font-mono:   'DM Mono', monospace;
+      --ec-shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+      --ec-transition:  200ms ease;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ec-off-white);
+      color: var(--ec-black);
+      font-family: var(--ec-font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(26,26,26,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      height: 64px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--ec-font-serif);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ec-white);
+    }
+    .nav-logo span { color: var(--ec-green-light); font-style: italic; }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ec-gray-400);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color var(--ec-transition);
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--ec-green-light); }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      min-height: 56vh;
+      display: flex;
+      align-items: flex-end;
+      background: var(--ec-black);
+      padding-top: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-noise {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(74,103,65,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,103,65,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .hero-glow {
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(74,103,65,0.14) 0%, transparent 65%);
+    }
+    .hero-inner {
+      position: relative; z-index: 2;
+      max-width: 1280px; margin: 0 auto;
+      padding: 0 48px 72px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: flex-end;
+    }
+    .hero-eyebrow {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ec-green-light);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 28px; height: 1px;
+      background: var(--ec-green-light);
+      display: block;
+    }
+    .hero-title {
+      font-family: var(--ec-font-serif);
+      font-size: clamp(44px, 4.5vw, 68px);
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ec-white);
+      margin-bottom: 20px;
+    }
+    .hero-title em { font-style: italic; color: var(--ec-green-light); }
+    .hero-sub {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--ec-gray-400);
+      max-width: 560px;
+    }
+    .hero-dataset-count {
+      text-align: right;
+    }
+    .hero-count-num {
+      font-family: var(--ec-font-serif);
+      font-size: 80px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--ec-white);
+    }
+    .hero-count-num span { color: var(--ec-green-light); }
+    .hero-count-label {
+      font-size: 13px;
+      color: var(--ec-gray-400);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ─── LAYOUT ─────────────────────────────────────────────── */
+    .page-body {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 48px 120px;
+    }
+    .viz-section {
+      margin-bottom: 96px;
+    }
+    .viz-section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--ec-gray-200);
+      gap: 40px;
+    }
+    .viz-section-left { flex: 1; }
+    .viz-section-tag {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ec-green);
+      margin-bottom: 8px;
+    }
+    .viz-section-title {
+      font-family: var(--ec-font-serif);
+      font-size: clamp(28px, 2.5vw, 38px);
+      font-weight: 600;
+      line-height: 1.15;
+      color: var(--ec-black);
+      margin-bottom: 10px;
+    }
+    .viz-section-desc {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--ec-ink);
+      max-width: 520px;
+    }
+    .viz-section-meta {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      color: var(--ec-gray-400);
+      text-align: right;
+      white-space: nowrap;
+    }
+    .viz-section-meta span {
+      display: block;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ec-green);
+      margin-bottom: 4px;
+    }
+
+    /* Chart containers */
+    .chart-wrap {
+      background: var(--ec-white);
+      border: 1px solid var(--ec-gray-200);
+      padding: 40px;
+      position: relative;
+    }
+    .chart-wrap.dark {
+      background: var(--ec-black);
+      border-color: rgba(255,255,255,0.06);
+    }
+    .chart-wrap.paper {
+      background: var(--ec-paper);
+      border-color: var(--ec-gray-200);
+    }
+    .chart-title {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ec-gray-400);
+      margin-bottom: 28px;
+    }
+    .chart-title.light { color: var(--ec-gray-500); }
+
+    /* Grid layouts */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 2px; }
+    .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 2px; }
+
+    /* ─── REVEAL ─────────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── CHART 1: SCORING RADAR / BARS ─────────────────────── */
+    .score-bars-wrap { }
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .score-label {
+      width: 160px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ec-ink);
+      flex-shrink: 0;
+    }
+    .score-track {
+      flex: 1;
+      height: 8px;
+      background: var(--ec-gray-200);
+      position: relative;
+    }
+    .score-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    .score-val {
+      font-family: var(--ec-font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ec-black);
+      width: 36px;
+      text-align: right;
+    }
+    .threshold-line {
+      position: absolute;
+      left: 78%;
+      top: -6px; bottom: -6px;
+      width: 2px;
+      background: var(--ec-gold);
+      opacity: 0.7;
+    }
+    .threshold-label {
+      position: absolute;
+      left: 78%;
+      top: -24px;
+      font-family: var(--ec-font-mono);
+      font-size: 10px;
+      color: var(--ec-gold);
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    /* ─── CHART 3: STEM ALLOCATION DONUT ────────────────────── */
+    .donut-layout {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+    }
+    .donut-canvas-wrap {
+      width: 240px; height: 240px;
+      flex-shrink: 0;
+    }
+    .donut-legend {
+      flex: 1;
+    }
+    .donut-legend-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--ec-gray-200);
+    }
+    .donut-legend-row:last-child { border-bottom: none; }
+    .donut-swatch {
+      width: 12px; height: 12px;
+      flex-shrink: 0;
+    }
+    .donut-legend-label {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ec-ink);
+    }
+    .donut-legend-count {
+      font-family: var(--ec-font-mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ec-black);
+    }
+    .donut-legend-pct {
+      font-family: var(--ec-font-mono);
+      font-size: 13px;
+      color: var(--ec-gray-400);
+      width: 40px;
+      text-align: right;
+    }
+
+    /* ─── CHART 4: POLAR WREATH DIAGRAM ─────────────────────── */
+    #polarDiagram {
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ─── CHART 5: FORMULA CONFIDENCE ───────────────────────── */
+    .formula-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .formula-bar-name {
+      width: 180px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ec-ink);
+      flex-shrink: 0;
+    }
+    .formula-bar-track {
+      flex: 1;
+      height: 28px;
+      background: var(--ec-gray-200);
+      position: relative;
+      overflow: hidden;
+    }
+    .formula-bar-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+      display: flex;
+      align-items: center;
+      padding-left: 12px;
+    }
+    .formula-bar-fill-label {
+      font-family: var(--ec-font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ec-white);
+      white-space: nowrap;
+    }
+    .formula-bar-id {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      color: var(--ec-gray-400);
+      width: 48px;
+      text-align: right;
+    }
+
+    /* ─── CHART 6: REPAIR CONVERGENCE ───────────────────────── */
+    .repair-chart-wrap { height: 280px; }
+
+    /* ─── CHART 7: GENOME SIMILARITY WEIGHTS ────────────────── */
+    .genome-weight-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .genome-weight-pct {
+      font-family: var(--ec-font-mono);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--ec-green);
+      width: 56px;
+      flex-shrink: 0;
+    }
+    .genome-weight-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ec-black);
+      flex: 1;
+    }
+    .genome-weight-track {
+      width: 120px;
+      height: 6px;
+      background: var(--ec-gray-200);
+      position: relative;
+    }
+    .genome-weight-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--ec-green);
+      transition: width 1.2s ease;
+    }
+
+    /* ─── CHART 8: FORMULA SELECTOR SCORING MODEL ───────────── */
+    .selector-model-wrap { height: 300px; }
+
+    /* ─── CHART 9: PIPELINE FLOW SANKEY ─────────────────────── */
+    #sankeyDiagram { display: block; width: 100%; }
+
+    /* ─── CHART 10: COLLISION SPACING TABLE ─────────────────── */
+    .spacing-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .spacing-table th {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ec-gray-400);
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--ec-gray-200);
+    }
+    .spacing-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--ec-gray-200);
+      font-size: 15px;
+      color: var(--ec-ink);
+      vertical-align: middle;
+    }
+    .spacing-table tr:last-child td { border-bottom: none; }
+    .spacing-table .role-badge {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      display: inline-block;
+    }
+    .spacing-table .mult-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .spacing-table .mult-track {
+      flex: 1;
+      height: 8px;
+      background: var(--ec-gray-200);
+      max-width: 200px;
+    }
+    .spacing-table .mult-fill {
+      height: 100%;
+      background: var(--ec-green);
+      transition: width 1.2s ease;
+    }
+    .spacing-table .mult-val {
+      font-family: var(--ec-font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ec-black);
+    }
+
+    /* ─── STAT CALLOUT ───────────────────────────────────────── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-bottom: 2px;
+    }
+    .stat-card {
+      background: var(--ec-black);
+      color: var(--ec-white);
+      padding: 32px 28px;
+      border-left: 3px solid var(--ec-green);
+    }
+    .stat-card.gold { border-left-color: var(--ec-gold); }
+    .stat-num {
+      font-family: var(--ec-font-serif);
+      font-size: 52px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--ec-white);
+      margin-bottom: 8px;
+    }
+    .stat-num span { color: var(--ec-green-light); }
+    .stat-num.gold-num span { color: var(--ec-gold); }
+    .stat-label {
+      font-size: 13px;
+      color: var(--ec-gray-400);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── ZONE DENSITY DIAGRAM ───────────────────────────────── */
+    #zoneDiagram { display: block; margin: 0 auto; }
+
+    /* ─── DEPTH LAYER DIAGRAM ────────────────────────────────── */
+    .depth-layers {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .depth-layer-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--ec-gray-200);
+      transition: background var(--ec-transition);
+    }
+    .depth-layer-row:hover { background: var(--ec-green-pale); }
+    .depth-layer-num {
+      font-family: var(--ec-font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ec-green);
+      width: 28px;
+    }
+    .depth-layer-bar {
+      height: 16px;
+      background: var(--ec-green);
+      transition: width 1.2s ease;
+    }
+    .depth-layer-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ec-black);
+      width: 120px;
+    }
+    .depth-layer-desc {
+      font-size: 13px;
+      color: var(--ec-ink);
+      flex: 1;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    footer {
+      background: var(--ec-black);
+      padding: 48px 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-brand {
+      font-family: var(--ec-font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ec-white);
+    }
+    .footer-brand span { color: var(--ec-green-light); font-style: italic; }
+    .footer-meta {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      color: var(--ec-gray-400);
+      text-align: right;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .grid-2, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-dataset-count { text-align: left; }
+    }
+    @media (max-width: 640px) {
+      .page-body { padding: 48px 24px 80px; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─────────────────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo">Ever<span>crafted</span></div>
+      <ul class="nav-links">
+        <li><a href="#scoring">Scoring</a></li>
+        <li><a href="#inventory">Inventory</a></li>
+        <li><a href="#polar">Polar Layout</a></li>
+        <li><a href="#formulas">Formulas</a></li>
+        <li><a href="#repair">Repair</a></li>
+        <li><a href="#genome">Genome</a></li>
+        <li><a href="#zones">Zones</a></li>
+        <li><a href="#depth">Depth</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-noise"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow">Data Visualization</div>
+        <h1 class="hero-title">Every number<br>behind the <em>engine.</em></h1>
+        <p class="hero-sub">Ten charts and diagrams visualizing every quantitative dataset extracted from the Evercrafted Composition Engine Pipeline — from scoring metrics and stem allocation to polar placement geometry and repair convergence.</p>
+      </div>
+      <div class="hero-dataset-count">
+        <div class="hero-count-num">10<span>×</span></div>
+        <div class="hero-count-label">Datasets visualized</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PAGE BODY ─────────────────────────────────────────────── -->
+  <div class="page-body">
+
+    <!-- ── STAT ROW ─────────────────────────────────────────────── -->
+    <div class="stat-row reveal" style="margin-bottom: 80px;">
+      <div class="stat-card">
+        <div class="stat-num">0<span>.82</span></div>
+        <div class="stat-label">Overall design score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">60</div>
+        <div class="stat-label">Total stems placed</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-num gold-num">0<span>.84</span></div>
+        <div class="stat-label">Formula confidence (Crescent)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Repair passes to convergence</div>
+      </div>
+    </div>
+
+    <!-- ── 01: SCORING ENGINE ────────────────────────────────────── -->
+    <div class="viz-section reveal" id="scoring">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 01 — Scoring Engine</div>
+          <h2 class="viz-section-title">Quality Gate: 7-Metric Score Breakdown</h2>
+          <p class="viz-section-desc">Every blueprint is evaluated across seven professional composition metrics. The minimum threshold is 0.78. Scores below threshold trigger the Repair Engine.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>0.82</span>Overall Score
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-wrap">
+          <div class="chart-title">Horizontal Score Bars — Threshold at 0.78</div>
+          <div class="score-bars-wrap" id="scoreBars">
+            <div class="score-row">
+              <div class="score-label">Inv. Efficiency</div>
+              <div class="score-track">
+                <div class="threshold-label">0.78</div>
+                <div class="threshold-line"></div>
+                <div class="score-fill" data-val="91" style="background:#4A6741;"></div>
+              </div>
+              <div class="score-val">0.91</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Focal Clarity</div>
+              <div class="score-track">
+                <div class="threshold-line"></div>
+                <div class="score-fill" data-val="86" style="background:#4A6741;"></div>
+              </div>
+              <div class="score-val">0.86</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Balance</div>
+              <div class="score-track">
+                <div class="threshold-line"></div>
+                <div class="score-fill" data-val="83" style="background:#4A6741;"></div>
+              </div>
+              <div class="score-val">0.83</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Density</div>
+              <div class="score-track">
+                <div class="threshold-line"></div>
+                <div class="score-fill" data-val="81" style="background:#4A6741;"></div>
+              </div>
+              <div class="score-val">0.81</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Rhythm</div>
+              <div class="score-track">
+                <div class="threshold-line"></div>
+                <div class="score-fill" data-val="79" style="background:#6B8F67;"></div>
+              </div>
+              <div class="score-val">0.79</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Negative Space</div>
+              <div class="score-track">
+                <div class="threshold-line"></div>
+                <div class="score-fill" data-val="77" style="background:#C4922A;"></div>
+              </div>
+              <div class="score-val">0.77</div>
+            </div>
+            <div class="score-row">
+              <div class="score-label">Contrast</div>
+              <div class="score-track">
+                <div class="threshold-line"></div>
+                <div class="score-fill" data-val="74" style="background:#C4922A;"></div>
+              </div>
+              <div class="score-val">0.74</div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap dark">
+          <div class="chart-title light">Radar Chart — Score Profile</div>
+          <div style="height:320px;">
+            <canvas id="scoreRadar"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 02: FORMULA SELECTOR MODEL ───────────────────────────── -->
+    <div class="viz-section reveal" id="formulas">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 02 — Formula Selector</div>
+          <h2 class="viz-section-title">Formula Confidence Rankings & Selector Weights</h2>
+          <p class="viz-section-desc">All six registered formulas scored and ranked. The Crescent Sweep wins at 0.84 confidence. The selector model weights six dimensions: inventory feasibility (30%), emotional match (20%), silhouette (15%), negative space (15%), complexity (10%), genome compatibility (10%).</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>crescent</span>Selected Formula
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-wrap">
+          <div class="chart-title">Formula Confidence — Ranked Horizontal Bars</div>
+          <div id="formulaBars">
+            <div class="formula-bar-row">
+              <div class="formula-bar-name">Crescent Sweep</div>
+              <div class="formula-bar-track">
+                <div class="formula-bar-fill" data-val="84" style="background:#4A6741;">
+                  <span class="formula-bar-fill-label">0.84 — Selected</span>
+                </div>
+              </div>
+              <div class="formula-bar-id">crescent</div>
+            </div>
+            <div class="formula-bar-row">
+              <div class="formula-bar-name">Focal Trio</div>
+              <div class="formula-bar-track">
+                <div class="formula-bar-fill" data-val="81" style="background:#6B8F67;">
+                  <span class="formula-bar-fill-label">0.81</span>
+                </div>
+              </div>
+              <div class="formula-bar-id">focal_trio</div>
+            </div>
+            <div class="formula-bar-row">
+              <div class="formula-bar-name">Triangular Balance</div>
+              <div class="formula-bar-track">
+                <div class="formula-bar-fill" data-val="79" style="background:#6B8F67;">
+                  <span class="formula-bar-fill-label">0.79</span>
+                </div>
+              </div>
+              <div class="formula-bar-id">triangular</div>
+            </div>
+            <div class="formula-bar-row">
+              <div class="formula-bar-name">Asymmetric Weight</div>
+              <div class="formula-bar-track">
+                <div class="formula-bar-fill" data-val="76" style="background:#A8A8A8;">
+                  <span class="formula-bar-fill-label">0.76</span>
+                </div>
+              </div>
+              <div class="formula-bar-id">asymmetric</div>
+            </div>
+            <div class="formula-bar-row">
+              <div class="formula-bar-name">Full Ring</div>
+              <div class="formula-bar-track">
+                <div class="formula-bar-fill" data-val="71" style="background:#A8A8A8;">
+                  <span class="formula-bar-fill-label">0.71</span>
+                </div>
+              </div>
+              <div class="formula-bar-id">full_ring</div>
+            </div>
+            <div class="formula-bar-row">
+              <div class="formula-bar-name">Cascade Drop</div>
+              <div class="formula-bar-track">
+                <div class="formula-bar-fill" data-val="67" style="background:#787878;">
+                  <span class="formula-bar-fill-label">0.67</span>
+                </div>
+              </div>
+              <div class="formula-bar-id">cascade</div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap paper">
+          <div class="chart-title">Formula Selector Scoring Model — Weight Distribution</div>
+          <div class="selector-model-wrap">
+            <canvas id="selectorModel"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 03: STEM ALLOCATION ───────────────────────────────────── -->
+    <div class="viz-section reveal" id="inventory">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 03 — Stem Allocation</div>
+          <h2 class="viz-section-title">60-Stem Role Distribution</h2>
+          <p class="viz-section-desc">The Stem Allocator distributes 60 total stems across five roles using the formula's role bias ratios, adjusted for available inventory. Greenery dominates at 35% per the 60/30/10 proportion rule.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>60</span>Total Stems
+        </div>
+      </div>
+      <div class="grid-1-2">
+        <div class="chart-wrap dark">
+          <div class="chart-title light">Donut Chart — Role Distribution</div>
+          <div class="donut-layout" style="flex-direction:column; align-items:center;">
+            <div class="donut-canvas-wrap">
+              <canvas id="stemDonut"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Stacked Bar — Inventory Pool vs. Allocated Stems</div>
+          <div style="height:280px;">
+            <canvas id="stemAlloc"></canvas>
+          </div>
+          <div style="margin-top:24px;">
+            <div class="donut-legend">
+              <div class="donut-legend-row">
+                <div class="donut-swatch" style="background:#4A6741;"></div>
+                <div class="donut-legend-label">Greenery</div>
+                <div class="donut-legend-count">21</div>
+                <div class="donut-legend-pct">35%</div>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-swatch" style="background:#6B8F67;"></div>
+                <div class="donut-legend-label">Secondary</div>
+                <div class="donut-legend-count">11</div>
+                <div class="donut-legend-pct">18%</div>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-swatch" style="background:#C4922A;"></div>
+                <div class="donut-legend-label">Filler</div>
+                <div class="donut-legend-count">10</div>
+                <div class="donut-legend-pct">17%</div>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-swatch" style="background:#A8A8A8;"></div>
+                <div class="donut-legend-label">Focal</div>
+                <div class="donut-legend-count">10</div>
+                <div class="donut-legend-pct">17%</div>
+              </div>
+              <div class="donut-legend-row">
+                <div class="donut-swatch" style="background:#787878;"></div>
+                <div class="donut-legend-label">Accent</div>
+                <div class="donut-legend-count">8</div>
+                <div class="donut-legend-pct">13%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 04: POLAR PLACEMENT DIAGRAM ──────────────────────────── -->
+    <div class="viz-section reveal" id="polar">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 04 — Polar Placement Diagram</div>
+          <h2 class="viz-section-title">Crescent Sweep Blueprint — Polar Layout</h2>
+          <p class="viz-section-desc">The Placement Solver assigns every stem a polar address (θ, r). The crescent formula clusters focal stems at 220° with a silence arc from 280–330°. Each ring represents a working radius from 0.5 to 1.0.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>220°</span>Focal Anchor
+        </div>
+      </div>
+      <div class="chart-wrap dark">
+        <div class="chart-title light">Polar Coordinate Map — 24" Crescent Wreath Blueprint</div>
+        <svg id="polarDiagram" width="700" height="700" viewBox="0 0 700 700"></svg>
+      </div>
+    </div>
+
+    <!-- ── 05: REPAIR CONVERGENCE ────────────────────────────────── -->
+    <div class="viz-section reveal" id="repair">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 05 — Repair Engine</div>
+          <h2 class="viz-section-title">Score Convergence Across Repair Passes</h2>
+          <p class="viz-section-desc">Starting at 0.64, the Repair Engine runs 3 passes to reach 0.82 — above the 0.78 threshold. Each pass targets a specific composition flaw: density, cohesion, silence arc, and focal clarity.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>+0.18</span>Score Gain
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-wrap dark">
+          <div class="chart-title light">Line Chart — Score per Pass with Threshold</div>
+          <div class="repair-chart-wrap">
+            <canvas id="repairLine"></canvas>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Bar Chart — Score Gain per Repair Pass</div>
+          <div style="height:280px;">
+            <canvas id="repairGain"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 06: GENOME SUBSTITUTION WEIGHTS ──────────────────────── -->
+    <div class="viz-section reveal" id="genome">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 06 — Floral Genome Engine</div>
+          <h2 class="viz-section-title">Substitution Similarity Weight Distribution</h2>
+          <p class="viz-section-desc">When a stem is unavailable, the Genome Engine selects the closest neighbor using a weighted similarity score across five dimensions. Bloom size carries the highest weight at 30%.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>5</span>Genome Dimensions
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-wrap paper">
+          <div class="chart-title">Weighted Bar Chart — Similarity Dimensions</div>
+          <div id="genomeWeights">
+            <div class="genome-weight-row">
+              <div class="genome-weight-pct">30%</div>
+              <div class="genome-weight-label">Bloom Size</div>
+              <div class="genome-weight-track"><div class="genome-weight-fill" data-val="100"></div></div>
+            </div>
+            <div class="genome-weight-row">
+              <div class="genome-weight-pct">25%</div>
+              <div class="genome-weight-label">Gesture Type</div>
+              <div class="genome-weight-track"><div class="genome-weight-fill" data-val="83"></div></div>
+            </div>
+            <div class="genome-weight-row">
+              <div class="genome-weight-pct">20%</div>
+              <div class="genome-weight-label">Texture</div>
+              <div class="genome-weight-track"><div class="genome-weight-fill" data-val="67"></div></div>
+            </div>
+            <div class="genome-weight-row">
+              <div class="genome-weight-pct">15%</div>
+              <div class="genome-weight-label">Color Family</div>
+              <div class="genome-weight-track"><div class="genome-weight-fill" data-val="50"></div></div>
+            </div>
+            <div class="genome-weight-row">
+              <div class="genome-weight-pct">10%</div>
+              <div class="genome-weight-label">Emotion Tags</div>
+              <div class="genome-weight-track"><div class="genome-weight-fill" data-val="33"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap dark">
+          <div class="chart-title light">Doughnut — Genome Similarity Weight Share</div>
+          <div style="height:300px;">
+            <canvas id="genomeDonut"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 07: ZONE DENSITY DIAGRAM ──────────────────────────────── -->
+    <div class="viz-section reveal" id="zones">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 07 — Zone Field Builder</div>
+          <h2 class="viz-section-title">Angular Zone Density Map</h2>
+          <p class="viz-section-desc">The Zone Field Builder divides the 360° ring into sectors with specific density targets. The focal arc (210–260°) targets 0.9 density. The silence arc (280–330°) targets 0.1 — intentional negative space.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>5</span>Zone Sectors
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-wrap dark">
+          <div class="chart-title light">Polar Zone Density Ring</div>
+          <svg id="zoneDiagram" width="460" height="460" viewBox="0 0 460 460"></svg>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Zone Density Targets — Bar Chart</div>
+          <div style="height:300px;">
+            <canvas id="zoneBars"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 08: COLLISION DETECTION SPACING ──────────────────────── -->
+    <div class="viz-section reveal">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 08 — Collision Detection</div>
+          <h2 class="viz-section-title">Minimum Spacing Rules by Role</h2>
+          <p class="viz-section-desc">The Placement Solver enforces minimum spacing as a multiplier of each stem's bloom diameter. Focal stems require the most clearance (1.3×), filler stems the least (0.6×).</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>1.3×</span>Focal Clearance
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-wrap">
+          <div class="chart-title">Spacing Multiplier by Role</div>
+          <table class="spacing-table">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Multiplier</th>
+                <th>Visual Scale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="role-badge" style="background:#EEF2ED;color:#4A6741;">Focal</span></td>
+                <td><strong>1.3×</strong> bloom diameter</td>
+                <td>
+                  <div class="mult-bar">
+                    <div class="mult-track"><div class="mult-fill" data-val="100" style="width:0%;"></div></div>
+                    <div class="mult-val">1.3</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="role-badge" style="background:#EEF2ED;color:#6B8F67;">Secondary</span></td>
+                <td><strong>1.0×</strong> bloom diameter</td>
+                <td>
+                  <div class="mult-bar">
+                    <div class="mult-track"><div class="mult-fill" data-val="77" style="width:0%;"></div></div>
+                    <div class="mult-val">1.0</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="role-badge" style="background:#F5F5F5;color:#787878;">Accent</span></td>
+                <td><strong>0.8×</strong> bloom diameter</td>
+                <td>
+                  <div class="mult-bar">
+                    <div class="mult-track"><div class="mult-fill" data-val="62" style="width:0%;background:#A8A8A8;"></div></div>
+                    <div class="mult-val">0.8</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="role-badge" style="background:#F5F5F5;color:#787878;">Filler</span></td>
+                <td><strong>0.6×</strong> bloom diameter</td>
+                <td>
+                  <div class="mult-bar">
+                    <div class="mult-track"><div class="mult-fill" data-val="46" style="width:0%;background:#D0D0D0;"></div></div>
+                    <div class="mult-val">0.6</div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="chart-wrap dark">
+          <div class="chart-title light">Spacing Multiplier — Visual Bar Chart</div>
+          <div style="height:280px;">
+            <canvas id="spacingChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 09: DEPTH LAYERING ─────────────────────────────────────── -->
+    <div class="viz-section reveal" id="depth">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 09 — Depth Layering</div>
+          <h2 class="viz-section-title">6-Layer Depth Hierarchy</h2>
+          <p class="viz-section-desc">Stems are placed in depth order from bottom to top. Gesture and greenery form the structural base; focal blooms are placed last to ensure they are unobstructed and visually dominant.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>6</span>Depth Layers
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-wrap">
+          <div class="chart-title">Depth Layer Stack — Bottom to Top</div>
+          <div class="depth-layers" id="depthLayers">
+            <!-- injected by JS -->
+          </div>
+        </div>
+        <div class="chart-wrap dark">
+          <div class="chart-title light">Stem Count per Depth Layer</div>
+          <div style="height:300px;">
+            <canvas id="depthChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 10: PIPELINE FLOW ──────────────────────────────────────── -->
+    <div class="viz-section reveal">
+      <div class="viz-section-header">
+        <div class="viz-section-left">
+          <div class="viz-section-tag">Chart 10 — Pipeline Flow</div>
+          <h2 class="viz-section-title">10-Engine Execution Flow</h2>
+          <p class="viz-section-desc">The complete pipeline from memory input to blueprint output. Each engine passes a structured data object to the next. The Repair Engine loops back to the Scoring Engine until the 0.78 threshold is met.</p>
+        </div>
+        <div class="viz-section-meta">
+          <span>10</span>Engines
+        </div>
+      </div>
+      <div class="chart-wrap dark">
+        <div class="chart-title light">Pipeline Flow Diagram — D3.js</div>
+        <svg id="sankeyDiagram" height="520"></svg>
+      </div>
+    </div>
+
+  </div><!-- /page-body -->
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">Ever<span>crafted</span></div>
+      <div class="footer-meta">Pipeline Data Visualization · Engine V1.0</div>
+    </div>
+  </footer>
+
+  <!-- ─── SCRIPTS ───────────────────────────────────────────────── -->
+  <script>
+  /* ── Scroll Reveal ───────────────────────────────────────────── */
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  /* ── Chart.js Defaults ───────────────────────────────────────── */
+  Chart.defaults.font.family = "'DM Mono', monospace";
+  Chart.defaults.color = '#787878';
+
+  const GREEN       = '#4A6741';
+  const GREEN_LIGHT = '#6B8F67';
+  const GREEN_PALE  = '#EEF2ED';
+  const GOLD        = '#C4922A';
+  const GRAY_300    = '#D0D0D0';
+  const GRAY_400    = '#A8A8A8';
+  const WHITE       = '#F9F7F4';
+  const BLACK       = '#1A1A1A';
+
+  /* ── 01a: Score Bars Animation ───────────────────────────────── */
+  const scoreObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      document.querySelectorAll('.score-fill').forEach(el => {
+        el.style.width = el.dataset.val + '%';
+      });
+      scoreObs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  scoreObs.observe(document.getElementById('scoreBars'));
+
+  /* ── 01b: Score Radar ────────────────────────────────────────── */
+  new Chart(document.getElementById('scoreRadar'), {
+    type: 'bar',
+    data: {
+      labels: ['Balance','Rhythm','Contrast','Density','Focal Clarity','Neg. Space','Inv. Eff.'],
+      datasets: [{
+        label: 'Score',
+        data: [0.83, 0.79, 0.74, 0.81, 0.86, 0.77, 0.91],
+        backgroundColor: [
+          'rgba(74,103,65,0.85)','rgba(107,143,103,0.85)','rgba(196,146,42,0.85)',
+          'rgba(74,103,65,0.85)','rgba(74,103,65,0.85)','rgba(196,146,42,0.85)',
+          'rgba(74,103,65,0.85)'
+        ],
+        borderColor: 'transparent',
+        borderRadius: 0
+      }, {
+        label: 'Threshold',
+        data: [0.78,0.78,0.78,0.78,0.78,0.78,0.78],
+        type: 'line',
+        borderColor: GOLD,
+        borderWidth: 1.5,
+        borderDash: [6,4],
+        pointRadius: 0,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#2E2E2E', titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: GRAY_400, font: { size: 11 } } },
+        y: { min: 0.6, max: 1.0, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: GRAY_400, font: { size: 11 } } }
+      }
+    }
+  });
+
+  /* ── 02a: Formula Bars Animation ─────────────────────────────── */
+  const formulaObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      document.querySelectorAll('.formula-bar-fill').forEach(el => {
+        el.style.width = el.dataset.val + '%';
+      });
+      formulaObs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  formulaObs.observe(document.getElementById('formulaBars'));
+
+  /* ── 02b: Selector Model Doughnut ────────────────────────────── */
+  new Chart(document.getElementById('selectorModel'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Inv. Feasibility','Emotional Match','Silhouette','Negative Space','Complexity','Genome Compat.'],
+      datasets: [{
+        data: [30, 20, 15, 15, 10, 10],
+        backgroundColor: [GREEN, GREEN_LIGHT, GOLD, '#4A6785', GRAY_400, GRAY_300],
+        borderColor: '#F2EFE9',
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: '#4A4A4A', font: { size: 12 }, padding: 16, boxWidth: 12 }
+        },
+        tooltip: { backgroundColor: BLACK, titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      }
+    }
+  });
+
+  /* ── 03a: Stem Donut ─────────────────────────────────────────── */
+  new Chart(document.getElementById('stemDonut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Greenery','Secondary','Filler','Focal','Accent'],
+      datasets: [{
+        data: [21, 11, 10, 10, 8],
+        backgroundColor: [GREEN, GREEN_LIGHT, GOLD, GRAY_400, '#787878'],
+        borderColor: BLACK,
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '58%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#2E2E2E', titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      }
+    }
+  });
+
+  /* ── 03b: Stem Alloc Bar ─────────────────────────────────────── */
+  new Chart(document.getElementById('stemAlloc'), {
+    type: 'bar',
+    data: {
+      labels: ['Greenery','Secondary','Filler','Focal','Accent'],
+      datasets: [
+        {
+          label: 'Available',
+          data: [33, 12, 15, 7, 9],
+          backgroundColor: 'rgba(74,103,65,0.25)',
+          borderColor: GREEN,
+          borderWidth: 1.5
+        },
+        {
+          label: 'Allocated',
+          data: [21, 11, 10, 10, 8],
+          backgroundColor: [GREEN, GREEN_LIGHT, GOLD, GRAY_400, '#787878'],
+          borderColor: 'transparent'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#4A4A4A', font: { size: 12 }, boxWidth: 12 } },
+        tooltip: { backgroundColor: BLACK, titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#787878' } },
+        y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#787878' } }
+      }
+    }
+  });
+
+  /* ── 04: Polar Placement Diagram (D3) ────────────────────────── */
+  (function() {
+    const svg = d3.select('#polarDiagram');
+    const W = 700, H = 700, cx = W/2, cy = H/2;
+    const maxR = 280;
+
+    // Background
+    svg.append('rect').attr('width', W).attr('height', H).attr('fill', BLACK);
+
+    // Grid rings
+    [0.5, 0.6, 0.7, 0.8, 0.9, 1.0].forEach(r => {
+      svg.append('circle')
+        .attr('cx', cx).attr('cy', cy)
+        .attr('r', r * maxR)
+        .attr('fill', 'none')
+        .attr('stroke', 'rgba(255,255,255,0.07)')
+        .attr('stroke-width', 1);
+      svg.append('text')
+        .attr('x', cx + r * maxR + 6).attr('y', cy + 4)
+        .attr('fill', 'rgba(255,255,255,0.25)')
+        .attr('font-size', '11px')
+        .attr('font-family', 'DM Mono, monospace')
+        .text('r=' + r.toFixed(1));
+    });
+
+    // Angle spokes every 30°
+    for (let a = 0; a < 360; a += 30) {
+      const rad = (a - 90) * Math.PI / 180;
+      svg.append('line')
+        .attr('x1', cx).attr('y1', cy)
+        .attr('x2', cx + Math.cos(rad) * maxR)
+        .attr('y2', cy + Math.sin(rad) * maxR)
+        .attr('stroke', 'rgba(255,255,255,0.05)')
+        .attr('stroke-width', 1);
+      const labelR = maxR + 20;
+      svg.append('text')
+        .attr('x', cx + Math.cos(rad) * labelR)
+        .attr('y', cy + Math.sin(rad) * labelR + 4)
+        .attr('fill', 'rgba(255,255,255,0.3)')
+        .attr('font-size', '11px')
+        .attr('font-family', 'DM Mono, monospace')
+        .attr('text-anchor', 'middle')
+        .text(a + '°');
+    }
+
+    // Silence arc fill (280–330°)
+    const silenceArc = d3.arc()
+      .innerRadius(0.5 * maxR)
+      .outerRadius(1.0 * maxR)
+      .startAngle((280 - 90) * Math.PI / 180)
+      .endAngle((330 - 90) * Math.PI / 180);
+    svg.append('path')
+      .attr('d', silenceArc())
+      .attr('transform', `translate(${cx},${cy})`)
+      .attr('fill', 'rgba(196,146,42,0.07)')
+      .attr('stroke', GOLD)
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '4 3');
+
+    svg.append('text')
+      .attr('x', cx + Math.cos((305 - 90) * Math.PI / 180) * (maxR * 0.75))
+      .attr('y', cy + Math.sin((305 - 90) * Math.PI / 180) * (maxR * 0.75))
+      .attr('fill', GOLD).attr('font-size', '11px')
+      .attr('font-family', 'DM Mono, monospace')
+      .attr('text-anchor', 'middle')
+      .text('SILENCE');
+
+    // Focal arc fill (210–260°)
+    const focalArc = d3.arc()
+      .innerRadius(0.62 * maxR)
+      .outerRadius(0.88 * maxR)
+      .startAngle((210 - 90) * Math.PI / 180)
+      .endAngle((260 - 90) * Math.PI / 180);
+    svg.append('path')
+      .attr('d', focalArc())
+      .attr('transform', `translate(${cx},${cy})`)
+      .attr('fill', 'rgba(74,103,65,0.15)')
+      .attr('stroke', GREEN_LIGHT)
+      .attr('stroke-width', 1);
+
+    svg.append('text')
+      .attr('x', cx + Math.cos((235 - 90) * Math.PI / 180) * (maxR * 0.75))
+      .attr('y', cy + Math.sin((235 - 90) * Math.PI / 180) * (maxR * 0.75))
+      .attr('fill', GREEN_LIGHT).attr('font-size', '11px')
+      .attr('font-family', 'DM Mono, monospace')
+      .attr('text-anchor', 'middle')
+      .text('FOCAL ARC');
+
+    // Seeded pseudo-random stem placement
+    function seededRand(seed) {
+      let s = seed;
+      return function() {
+        s = (s * 1664525 + 1013904223) & 0xffffffff;
+        return (s >>> 0) / 0xffffffff;
+      };
+    }
+    const rand = seededRand(92384723);
+
+    const stems = [
+      // Focal stems (10) — clustered around 220°, r 0.68–0.78
+      ...Array.from({length:10}, (_,i) => ({
+        role:'focal', angle: 195 + rand()*50, radius: 0.66 + rand()*0.14,
+        color: GREEN, size: 7
+      })),
+      // Secondary (11) — wider spread around focal
+      ...Array.from({length:11}, (_,i) => ({
+        role:'secondary', angle: 180 + rand()*80, radius: 0.60 + rand()*0.22,
+        color: GREEN_LIGHT, size: 5
+      })),
+      // Accent (8)
+      ...Array.from({length:8}, (_,i) => ({
+        role:'accent', angle: 160 + rand()*100, radius: 0.55 + rand()*0.30,
+        color: GOLD, size: 4
+      })),
+      // Filler (10)
+      ...Array.from({length:10}, (_,i) => ({
+        role:'filler', angle: rand()*280, radius: 0.52 + rand()*0.35,
+        color: GRAY_400, size: 3
+      })),
+      // Greenery (21) — full ring but sparse in silence arc
+      ...Array.from({length:21}, (_,i) => {
+        let a = rand() * 360;
+        // avoid silence arc
+        if (a > 280 && a < 330) a = (a + 60) % 360;
+        return { role:'greenery', angle: a, radius: 0.50 + rand()*0.42, color: '#2E4A2A', size: 3 };
+      })
+    ];
+
+    stems.forEach(s => {
+      const rad = (s.angle - 90) * Math.PI / 180;
+      const x = cx + Math.cos(rad) * s.radius * maxR;
+      const y = cy + Math.sin(rad) * s.radius * maxR;
+      svg.append('circle')
+        .attr('cx', x).attr('cy', y)
+        .attr('r', s.size)
+        .attr('fill', s.color)
+        .attr('opacity', 0.85);
+    });
+
+    // Primary anchor marker
+    const anchorRad = (220 - 90) * Math.PI / 180;
+    const ax = cx + Math.cos(anchorRad) * 0.73 * maxR;
+    const ay = cy + Math.sin(anchorRad) * 0.73 * maxR;
+    svg.append('circle').attr('cx', ax).attr('cy', ay).attr('r', 10)
+      .attr('fill', 'none').attr('stroke', WHITE).attr('stroke-width', 1.5);
+    svg.append('text').attr('x', ax + 14).attr('y', ay + 4)
+      .attr('fill', WHITE).attr('font-size', '11px')
+      .attr('font-family', 'DM Mono, monospace')
+      .text('θ=218.3° r=0.73');
+
+    // Legend
+    const legendItems = [
+      { color: GREEN, label: 'Focal (10)' },
+      { color: GREEN_LIGHT, label: 'Secondary (11)' },
+      { color: GOLD, label: 'Accent (8)' },
+      { color: GRAY_400, label: 'Filler (10)' },
+      { color: '#2E4A2A', label: 'Greenery (21)' }
+    ];
+    legendItems.forEach((item, i) => {
+      svg.append('circle').attr('cx', 32).attr('cy', H - 100 + i * 20).attr('r', 5).attr('fill', item.color);
+      svg.append('text').attr('x', 44).attr('y', H - 96 + i * 20)
+        .attr('fill', 'rgba(255,255,255,0.6)').attr('font-size', '12px')
+        .attr('font-family', 'DM Mono, monospace').text(item.label);
+    });
+  })();
+
+  /* ── 05a: Repair Line Chart ──────────────────────────────────── */
+  new Chart(document.getElementById('repairLine'), {
+    type: 'line',
+    data: {
+      labels: ['Initial','Pass 1\nDensity','Pass 2\nCohesion','Pass 3\nSilence Arc'],
+      datasets: [
+        {
+          label: 'Score',
+          data: [0.64, 0.71, 0.77, 0.82],
+          borderColor: GREEN,
+          backgroundColor: 'rgba(74,103,65,0.12)',
+          borderWidth: 2.5,
+          pointBackgroundColor: GREEN,
+          pointRadius: 6,
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: 'Threshold (0.78)',
+          data: [0.78, 0.78, 0.78, 0.78],
+          borderColor: GOLD,
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: GRAY_400, font: { size: 12 }, boxWidth: 12 } },
+        tooltip: { backgroundColor: '#2E2E2E', titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: GRAY_400 } },
+        y: { min: 0.58, max: 0.88, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: GRAY_400 } }
+      }
+    }
+  });
+
+  /* ── 05b: Repair Gain Bar ────────────────────────────────────── */
+  new Chart(document.getElementById('repairGain'), {
+    type: 'bar',
+    data: {
+      labels: ['Pass 1: Density','Pass 2: Cohesion','Pass 3: Silence Arc'],
+      datasets: [{
+        label: 'Score Gain',
+        data: [0.07, 0.06, 0.05],
+        backgroundColor: [GREEN, GREEN_LIGHT, GOLD],
+        borderColor: 'transparent',
+        borderRadius: 0
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: BLACK, titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#787878' } },
+        y: { min: 0, max: 0.12, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#787878' } }
+      }
+    }
+  });
+
+  /* ── 06: Genome Weights Animation ───────────────────────────── */
+  const genomeObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      document.querySelectorAll('.genome-weight-fill').forEach(el => {
+        el.style.width = el.dataset.val + '%';
+      });
+      genomeObs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  genomeObs.observe(document.getElementById('genomeWeights'));
+
+  /* ── 06b: Genome Donut ───────────────────────────────────────── */
+  new Chart(document.getElementById('genomeDonut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Bloom Size','Gesture Type','Texture','Color Family','Emotion Tags'],
+      datasets: [{
+        data: [30, 25, 20, 15, 10],
+        backgroundColor: [GREEN, GREEN_LIGHT, GOLD, '#4A6785', GRAY_400],
+        borderColor: BLACK,
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: GRAY_400, font: { size: 12 }, padding: 12, boxWidth: 12 }
+        },
+        tooltip: { backgroundColor: '#2E2E2E', titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      }
+    }
+  });
+
+  /* ── 07: Zone Density Diagram (D3) ───────────────────────────── */
+  (function() {
+    const svg = d3.select('#zoneDiagram');
+    const W = 460, H = 460, cx = W/2, cy = H/2, R = 180;
+
+    svg.append('rect').attr('width', W).attr('height', H).attr('fill', BLACK);
+
+    const zones = [
+      { id:'focal_arc',      start:210, end:260, density:0.9, color:GREEN,        label:'Focal Arc\n0.9' },
+      { id:'transition_in',  start:260, end:280, density:0.6, color:GREEN_LIGHT,  label:'Trans.\n0.6' },
+      { id:'silence_arc',    start:280, end:330, density:0.1, color:GOLD,         label:'Silence\n0.1' },
+      { id:'transition_out', start:330, end:360, density:0.4, color:GRAY_400,     label:'Trans.\n0.4' },
+      { id:'fill_arc',       start:0,   end:210, density:0.55, color:'#4A6785',   label:'Fill Arc\n0.55' }
+    ];
+
+    zones.forEach(z => {
+      const arc = d3.arc()
+        .innerRadius(R * 0.38)
+        .outerRadius(R * (0.38 + z.density * 0.55))
+        .startAngle((z.start - 90) * Math.PI / 180)
+        .endAngle((z.end - 90) * Math.PI / 180);
+
+      svg.append('path')
+        .attr('d', arc())
+        .attr('transform', `translate(${cx},${cy})`)
+        .attr('fill', z.color)
+        .attr('opacity', 0.75);
+
+      // Label at midpoint
+      const mid = ((z.start + z.end) / 2 - 90) * Math.PI / 180;
+      const lr = R * (0.38 + z.density * 0.55 / 2 + 0.05);
+      const lines = z.label.split('\n');
+      lines.forEach((line, li) => {
+        svg.append('text')
+          .attr('x', cx + Math.cos(mid) * lr)
+          .attr('y', cy + Math.sin(mid) * lr + (li - 0.5) * 14)
+          .attr('fill', WHITE)
+          .attr('font-size', '11px')
+          .attr('font-family', 'DM Mono, monospace')
+          .attr('text-anchor', 'middle')
+          .text(line);
+      });
+    });
+
+    // Center ring
+    svg.append('circle').attr('cx', cx).attr('cy', cy)
+      .attr('r', R * 0.38).attr('fill', 'rgba(255,255,255,0.03)')
+      .attr('stroke', 'rgba(255,255,255,0.1)').attr('stroke-width', 1);
+
+    svg.append('text').attr('x', cx).attr('y', cy + 5)
+      .attr('fill', 'rgba(255,255,255,0.3)').attr('font-size', '12px')
+      .attr('font-family', 'DM Mono, monospace').attr('text-anchor', 'middle')
+      .text('24" wreath');
+  })();
+
+  /* ── 07b: Zone Density Bars ──────────────────────────────────── */
+  new Chart(document.getElementById('zoneBars'), {
+    type: 'bar',
+    data: {
+      labels: ['Focal Arc\n210–260°','Trans. In\n260–280°','Silence Arc\n280–330°','Trans. Out\n330–360°','Fill Arc\n0–210°'],
+      datasets: [{
+        label: 'Density Target',
+        data: [0.9, 0.6, 0.1, 0.4, 0.55],
+        backgroundColor: [GREEN, GREEN_LIGHT, GOLD, GRAY_400, '#4A6785'],
+        borderColor: 'transparent'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: BLACK, titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#787878', font: { size: 11 } } },
+        y: { min: 0, max: 1.0, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#787878' } }
+      }
+    }
+  });
+
+  /* ── 08: Collision Spacing Bars Animation ────────────────────── */
+  const spacingObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      document.querySelectorAll('.mult-fill').forEach(el => {
+        el.style.width = el.dataset.val + '%';
+      });
+      spacingObs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  spacingObs.observe(document.querySelector('.spacing-table'));
+
+  new Chart(document.getElementById('spacingChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Focal','Secondary','Accent','Filler'],
+      datasets: [{
+        label: 'Spacing Multiplier (× bloom diameter)',
+        data: [1.3, 1.0, 0.8, 0.6],
+        backgroundColor: [GREEN, GREEN_LIGHT, GRAY_400, GRAY_300],
+        borderColor: 'transparent'
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#2E2E2E', titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      },
+      scales: {
+        x: { min: 0, max: 1.6, grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: GRAY_400 } },
+        y: { grid: { display: false }, ticks: { color: GRAY_400 } }
+      }
+    }
+  });
+
+  /* ── 09: Depth Layers ────────────────────────────────────────── */
+  const depthData = [
+    { layer: 1, name: 'Gesture',  count: 3,  desc: 'Structural movement stems — define the overall silhouette and directional flow.', color: '#2E4A2A' },
+    { layer: 2, name: 'Greenery', count: 21, desc: 'Base coverage layer — establishes the working radius and density foundation.', color: GREEN },
+    { layer: 3, name: 'Filler',   count: 10, desc: 'Gap-closing layer — smooths transitions between major bloom masses.', color: GREEN_LIGHT },
+    { layer: 4, name: 'Accent',   count: 8,  desc: 'Texture and color punctuation — introduces contrast and directional movement.', color: GOLD },
+    { layer: 5, name: 'Secondary',count: 11, desc: 'Supporting blooms — frame and reinforce the focal cluster.', color: GRAY_400 },
+    { layer: 6, name: 'Focal',    count: 10, desc: 'Top layer — placed last, unobstructed, visually dominant.', color: '#C4922A' }
+  ];
+  const depthContainer = document.getElementById('depthLayers');
+  depthData.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'depth-layer-row';
+    row.innerHTML = `
+      <div class="depth-layer-num">${d.layer}</div>
+      <div class="depth-layer-name">${d.name}</div>
+      <div class="depth-layer-bar" data-val="${(d.count/21)*100}" style="width:0;background:${d.color};"></div>
+      <div class="depth-layer-desc">${d.desc}</div>`;
+    depthContainer.appendChild(row);
+  });
+
+  const depthObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      document.querySelectorAll('.depth-layer-bar').forEach(el => {
+        el.style.width = Math.max(el.dataset.val * 1.2, 16) + 'px';
+      });
+      depthObs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  depthObs.observe(depthContainer);
+
+  new Chart(document.getElementById('depthChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Gesture','Greenery','Filler','Accent','Secondary','Focal'],
+      datasets: [{
+        label: 'Stem Count',
+        data: [3, 21, 10, 8, 11, 10],
+        backgroundColor: ['#2E4A2A', GREEN, GREEN_LIGHT, GOLD, GRAY_400, '#C4922A'],
+        borderColor: 'transparent'
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#2E2E2E', titleColor: GREEN_LIGHT, bodyColor: WHITE }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: GRAY_400 } },
+        y: { grid: { display: false }, ticks: { color: GRAY_400 } }
+      }
+    }
+  });
+
+  /* ── 10: Pipeline Flow (D3) ──────────────────────────────────── */
+  (function() {
+    const container = document.getElementById('sankeyDiagram');
+    const W = container.parentElement.clientWidth || 1100;
+    container.setAttribute('width', W);
+    const H = 520;
+    const svg = d3.select('#sankeyDiagram');
+    svg.append('rect').attr('width', W).attr('height', H).attr('fill', BLACK);
+
+    const engines = [
+      { id:0, label:'Memory\nInterpreter',  layer:'Input',      x:0 },
+      { id:1, label:'Emotion\nMapper',      layer:'Signal',     x:1 },
+      { id:2, label:'Inventory\nAnalyzer',  layer:'Inventory',  x:1 },
+      { id:3, label:'Formula\nSelector',    layer:'Selection',  x:2 },
+      { id:4, label:'Anchor\nGenerator',    layer:'Geometry',   x:3 },
+      { id:5, label:'Zone Field\nBuilder',  layer:'Zone',       x:3 },
+      { id:6, label:'Stem\nAllocator',      layer:'Allocation', x:4 },
+      { id:7, label:'Placement\nSolver',    layer:'Placement',  x:5 },
+      { id:8, label:'Repair\nEngine',       layer:'Repair',     x:6 },
+      { id:9, label:'Blueprint\nGenerator', layer:'Output',     x:7 }
+    ];
+
+    const cols = [0,1,1,2,3,3,4,5,6,7];
+    const maxCol = 7;
+    const colW = (W - 120) / maxCol;
+    const nodeW = 90, nodeH = 52;
+
+    // Assign y positions per column
+    const colCount = {};
+    engines.forEach(e => { colCount[e.x] = (colCount[e.x] || 0) + 1; });
+    const colIdx = {};
+    engines.forEach(e => {
+      colIdx[e.x] = (colIdx[e.x] || 0);
+      const total = colCount[e.x];
+      e.px = 60 + e.x * colW;
+      e.py = H/2 - (total * 70)/2 + colIdx[e.x] * 70 + 35;
+      colIdx[e.x]++;
+    });
+
+    const connections = [
+      [0,1],[0,2],[1,3],[2,3],[3,4],[3,5],[4,6],[5,6],[6,7],[7,8],[8,9]
+    ];
+
+    // Draw connections
+    connections.forEach(([a,b]) => {
+      const ea = engines[a], eb = engines[b];
+      const path = d3.path();
+      path.moveTo(ea.px + nodeW, ea.py);
+      path.bezierCurveTo(
+        ea.px + nodeW + 30, ea.py,
+        eb.px - 30, eb.py,
+        eb.px, eb.py
+      );
+      svg.append('path')
+        .attr('d', path.toString())
+        .attr('fill', 'none')
+        .attr('stroke', 'rgba(74,103,65,0.35)')
+        .attr('stroke-width', 1.5);
+    });
+
+    // Repair loop arrow
+    const re = engines[8], sc = engines[7];
+    svg.append('path')
+      .attr('d', `M ${re.px + nodeW/2} ${re.py + nodeH/2 + 4} Q ${re.px + nodeW/2} ${re.py + 80} ${sc.px + nodeW/2} ${sc.py + 80} L ${sc.px + nodeW/2} ${sc.py + nodeH/2 + 4}`)
+      .attr('fill', 'none')
+      .attr('stroke', GOLD)
+      .attr('stroke-width', 1.2)
+      .attr('stroke-dasharray', '5 3')
+      .attr('marker-end', 'url(#arrowGold)');
+
+    svg.append('text')
+      .attr('x', (re.px + sc.px)/2 + nodeW/2)
+      .attr('y', re.py + 96)
+      .attr('fill', GOLD).attr('font-size', '10px')
+      .attr('font-family', 'DM Mono, monospace')
+      .attr('text-anchor', 'middle')
+      .text('score < 0.78 → re-run');
+
+    // Arrow marker
+    const defs = svg.append('defs');
+    defs.append('marker')
+      .attr('id', 'arrowGold').attr('markerWidth', 8).attr('markerHeight', 8)
+      .attr('refX', 4).attr('refY', 4).attr('orient', 'auto')
+      .append('path').attr('d', 'M0,0 L0,8 L8,4 Z').attr('fill', GOLD);
+
+    // Draw nodes
+    engines.forEach((e, i) => {
+      const isOutput = i === 9;
+      const isRepair = i === 8;
+      const bg = isOutput ? GREEN : isRepair ? GOLD : 'rgba(255,255,255,0.05)';
+      const border = isOutput ? GREEN : isRepair ? GOLD : 'rgba(255,255,255,0.12)';
+
+      svg.append('rect')
+        .attr('x', e.px).attr('y', e.py - nodeH/2)
+        .attr('width', nodeW).attr('height', nodeH)
+        .attr('fill', bg)
+        .attr('stroke', border)
+        .attr('stroke-width', 1);
+
+      const lines = e.label.split('\n');
+      lines.forEach((line, li) => {
+        svg.append('text')
+          .attr('x', e.px + nodeW/2)
+          .attr('y', e.py + (li - (lines.length-1)/2) * 15 + 1)
+          .attr('fill', isOutput || isRepair ? WHITE : 'rgba(255,255,255,0.75)')
+          .attr('font-size', '12px')
+          .attr('font-family', 'DM Mono, monospace')
+          .attr('text-anchor', 'middle')
+          .text(line);
+      });
+
+      // Layer label above
+      svg.append('text')
+        .attr('x', e.px + nodeW/2)
+        .attr('y', e.py - nodeH/2 - 8)
+        .attr('fill', 'rgba(255,255,255,0.25)')
+        .attr('font-size', '9px')
+        .attr('font-family', 'DM Mono, monospace')
+        .attr('text-anchor', 'middle')
+        .text(e.layer.toUpperCase());
+    });
+  })();
+
+  /* ── Active Nav ──────────────────────────────────────────────── */
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const navObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => navObs.observe(s));
+  </script>
+</body>
+</html>
