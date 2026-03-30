@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Composition Engine Pipeline — Evercrafted</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --ec-white:       #FFFFFF;
+      --ec-off-white:   #F9F7F4;
+      --ec-paper:       #F2EFE9;
+      --ec-black:       #1A1A1A;
+      --ec-charcoal:    #2E2E2E;
+      --ec-ink:         #4A4A4A;
+      --ec-green:       #4A6741;
+      --ec-green-light: #6B8F67;
+      --ec-green-pale:  #EEF2ED;
+      --ec-gray-200:    #E8E8E8;
+      --ec-gray-300:    #D0D0D0;
+      --ec-gray-400:    #A8A8A8;
+      --ec-gold:        #C4922A;
+      --ec-font-serif:  'Cormorant Garamond', Georgia, serif;
+      --ec-font-sans:   'Inter', system-ui, sans-serif;
+      --ec-font-script: 'Dancing Script', cursive;
+      --ec-font-mono:   'DM Mono', monospace;
+      --ec-shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+      --ec-shadow-hero: 0 24px 64px rgba(0,0,0,0.10);
+      --ec-transition:  200ms ease;
+    }
+
+    /* ─── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ec-off-white);
+      color: var(--ec-black);
+      font-family: var(--ec-font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── UTILITY ────────────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+    .overline {
+      font-family: var(--ec-font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ec-green);
+      display: block;
+      margin-bottom: 16px;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(249,247,244,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--ec-gray-200);
+      height: 64px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--ec-font-serif);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--ec-black);
+    }
+    .nav-logo span { color: var(--ec-green); font-style: italic; }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ec-ink);
+      letter-spacing: 0.04em;
+      transition: color var(--ec-transition);
+    }
+    .nav-links a:hover { color: var(--ec-green); }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 64px;
+      background: var(--ec-black);
+    }
+    .hero-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(74,103,65,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,103,65,0.06) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-bg-glow {
+      position: absolute;
+      top: -200px; left: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(74,103,65,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-bg-glow-right {
+      position: absolute;
+      bottom: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(196,146,42,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .hero-left { }
+    .hero-eyebrow {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ec-green-light);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--ec-green-light);
+    }
+    .hero-headline {
+      font-family: var(--ec-font-serif);
+      font-size: clamp(48px, 5vw, 72px);
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ec-white);
+      margin-bottom: 28px;
+    }
+    .hero-headline em {
+      font-style: italic;
+      color: var(--ec-green-light);
+    }
+    .hero-sub {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ec-gray-400);
+      max-width: 480px;
+      margin-bottom: 48px;
+    }
+    .hero-cta-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ec-green);
+      color: var(--ec-white);
+      font-family: var(--ec-font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 14px 28px;
+      border: none;
+      cursor: pointer;
+      transition: background var(--ec-transition), transform var(--ec-transition);
+    }
+    .btn-primary:hover { background: var(--ec-green-light); transform: translateY(-2px); }
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--ec-gray-400);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 14px 0;
+      border: none;
+      cursor: pointer;
+      transition: color var(--ec-transition);
+    }
+    .btn-ghost:hover { color: var(--ec-white); }
+
+    /* Hero stats */
+    .hero-right {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+    .hero-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-stat::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--ec-green);
+      opacity: 0;
+      transition: opacity var(--ec-transition);
+    }
+    .hero-stat:hover::before { opacity: 1; }
+    .hero-stat-num {
+      font-family: var(--ec-font-serif);
+      font-size: 52px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--ec-white);
+      margin-bottom: 8px;
+    }
+    .hero-stat-num span { color: var(--ec-green-light); }
+    .hero-stat-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ec-gray-400);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── SECTION BASE ───────────────────────────────────────── */
+    section { padding: 120px 0; }
+    .section-header { margin-bottom: 72px; }
+    .section-title {
+      font-family: var(--ec-font-serif);
+      font-size: clamp(36px, 3.5vw, 52px);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--ec-black);
+      margin-bottom: 20px;
+    }
+    .section-body {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ec-ink);
+      max-width: 600px;
+    }
+
+    /* ─── PIPELINE SECTION ───────────────────────────────────── */
+    #pipeline { background: var(--ec-off-white); }
+    .pipeline-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 80px;
+      align-items: start;
+    }
+    .pipeline-steps { }
+    .pipeline-step {
+      display: flex;
+      gap: 28px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--ec-gray-200);
+      cursor: pointer;
+      transition: background var(--ec-transition);
+      position: relative;
+    }
+    .pipeline-step:first-child { border-top: 1px solid var(--ec-gray-200); }
+    .pipeline-step:hover .step-num { background: var(--ec-green); color: var(--ec-white); }
+    .step-num {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      border: 1.5px solid var(--ec-gray-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ec-font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ec-green);
+      transition: background var(--ec-transition), color var(--ec-transition), border-color var(--ec-transition);
+      margin-top: 2px;
+    }
+    .step-body { flex: 1; }
+    .step-layer {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ec-gold);
+      margin-bottom: 4px;
+    }
+    .step-title {
+      font-family: var(--ec-font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ec-black);
+      margin-bottom: 6px;
+    }
+    .step-desc {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ec-ink);
+    }
+    .step-io {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .step-io-tag {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      padding: 4px 10px;
+      background: var(--ec-green-pale);
+      color: var(--ec-green);
+      letter-spacing: 0.04em;
+    }
+    .step-io-tag.out {
+      background: rgba(196,146,42,0.10);
+      color: var(--ec-gold);
+    }
+
+    /* Sticky panel */
+    .pipeline-panel {
+      position: sticky;
+      top: 88px;
+    }
+    .panel-card {
+      background: var(--ec-black);
+      color: var(--ec-white);
+      padding: 40px;
+      border-left: 3px solid var(--ec-green);
+    }
+    .panel-overline {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ec-green-light);
+      margin-bottom: 16px;
+    }
+    .panel-title {
+      font-family: var(--ec-font-serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--ec-white);
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+    .panel-json {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 20px;
+      font-family: var(--ec-font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre;
+      overflow-x: auto;
+      margin-bottom: 24px;
+    }
+    .json-k { color: var(--ec-green-light); }
+    .json-s { color: var(--ec-gold); }
+    .json-n { color: var(--ec-gray-400); }
+    .panel-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .panel-metric {
+      border-top: 1px solid rgba(255,255,255,0.10);
+      padding-top: 12px;
+    }
+    .panel-metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ec-gray-400);
+      margin-bottom: 4px;
+    }
+    .panel-metric-val {
+      font-family: var(--ec-font-mono);
+      font-size: 18px;
+      color: var(--ec-white);
+      font-weight: 600;
+    }
+
+    /* ─── SCORING SECTION ────────────────────────────────────── */
+    #scoring { background: var(--ec-paper); }
+    .scoring-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .score-bars { }
+    .score-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .score-bar-label {
+      width: 180px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ec-ink);
+      flex-shrink: 0;
+    }
+    .score-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--ec-gray-200);
+      position: relative;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--ec-green);
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .score-bar-fill.low { background: var(--ec-gold); }
+    .score-bar-val {
+      font-family: var(--ec-font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ec-black);
+      width: 40px;
+      text-align: right;
+    }
+    .score-overall {
+      background: var(--ec-black);
+      color: var(--ec-white);
+      padding: 48px;
+      text-align: center;
+    }
+    .score-overall-label {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ec-green-light);
+      margin-bottom: 16px;
+    }
+    .score-overall-num {
+      font-family: var(--ec-font-serif);
+      font-size: 96px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--ec-white);
+      margin-bottom: 8px;
+    }
+    .score-overall-num span { color: var(--ec-green-light); }
+    .score-threshold {
+      font-size: 14px;
+      color: var(--ec-gray-400);
+      margin-bottom: 32px;
+    }
+    .score-gate {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(74,103,65,0.15);
+      color: var(--ec-green-light);
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── GENOME SECTION ─────────────────────────────────────── */
+    #genome { background: var(--ec-off-white); }
+    .genome-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .genome-card {
+      background: var(--ec-white);
+      border: 1px solid var(--ec-gray-200);
+      border-top: 3px solid var(--ec-green);
+      padding: 40px;
+      box-shadow: var(--ec-shadow-lg);
+    }
+    .genome-card-header {
+      margin-bottom: 28px;
+    }
+    .genome-name {
+      font-family: var(--ec-font-serif);
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--ec-black);
+      margin-bottom: 4px;
+    }
+    .genome-sku {
+      font-family: var(--ec-font-mono);
+      font-size: 13px;
+      color: var(--ec-green);
+      letter-spacing: 0.06em;
+    }
+    .genome-traits {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .genome-trait-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ec-gray-400);
+      margin-bottom: 4px;
+    }
+    .genome-trait-val {
+      font-family: var(--ec-font-mono);
+      font-size: 15px;
+      color: var(--ec-black);
+    }
+    .genome-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .genome-tag {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      background: var(--ec-green-pale);
+      color: var(--ec-green);
+      letter-spacing: 0.04em;
+    }
+    .substitution-chain {
+      margin-top: 28px;
+      padding-top: 28px;
+      border-top: 1px solid var(--ec-gray-200);
+    }
+    .sub-chain-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ec-gray-400);
+      margin-bottom: 16px;
+    }
+    .sub-chain-flow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .sub-chain-item {
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: var(--ec-black);
+      color: var(--ec-white);
+    }
+    .sub-chain-item.active {
+      background: var(--ec-green);
+    }
+    .sub-chain-arrow {
+      color: var(--ec-gray-300);
+      font-size: 16px;
+    }
+
+    /* Substitution weights */
+    .weights-panel {
+      padding: 40px;
+      background: var(--ec-green-pale);
+      border-left: 3px solid var(--ec-green);
+    }
+    .weights-title {
+      font-family: var(--ec-font-serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--ec-black);
+      margin-bottom: 8px;
+    }
+    .weights-sub {
+      font-size: 15px;
+      color: var(--ec-ink);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .weight-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .weight-pct {
+      font-family: var(--ec-font-mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ec-green);
+      width: 48px;
+      flex-shrink: 0;
+    }
+    .weight-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ec-black);
+      flex: 1;
+    }
+    .weight-bar-track {
+      width: 80px;
+      height: 4px;
+      background: var(--ec-gray-200);
+      position: relative;
+    }
+    .weight-bar-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--ec-green);
+    }
+
+    /* ─── FORMULA SECTION ────────────────────────────────────── */
+    #formulas { background: var(--ec-paper); }
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .formula-card {
+      background: var(--ec-white);
+      padding: 32px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+      border-bottom: 3px solid transparent;
+    }
+    .formula-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--ec-shadow-lg);
+      border-bottom-color: var(--ec-green);
+    }
+    .formula-card.selected {
+      border-bottom-color: var(--ec-green);
+      background: var(--ec-green-pale);
+    }
+    .formula-card-id {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ec-green);
+      margin-bottom: 8px;
+    }
+    .formula-card-name {
+      font-family: var(--ec-font-serif);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--ec-black);
+      margin-bottom: 12px;
+    }
+    .formula-card-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ec-ink);
+      margin-bottom: 20px;
+    }
+    .formula-confidence {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .formula-conf-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ec-gray-400);
+    }
+    .formula-conf-val {
+      font-family: var(--ec-font-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ec-green);
+    }
+    .formula-conf-val.selected-val { color: var(--ec-gold); }
+    .formula-selected-badge {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: var(--ec-green);
+      color: var(--ec-white);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+    }
+
+    /* ─── BLUEPRINT DNA ──────────────────────────────────────── */
+    #dna { background: var(--ec-black); }
+    #dna .section-title { color: var(--ec-white); }
+    #dna .section-body { color: var(--ec-gray-400); }
+    #dna .overline { color: var(--ec-green-light); }
+    .dna-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .dna-seed-block {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-left: 3px solid var(--ec-gold);
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+    .dna-seed-label {
+      font-family: var(--ec-font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ec-gold);
+      margin-bottom: 12px;
+    }
+    .dna-seed-formula {
+      font-family: var(--ec-font-mono);
+      font-size: 15px;
+      color: var(--ec-white);
+      line-height: 1.8;
+    }
+    .dna-seed-formula .highlight { color: var(--ec-green-light); }
+    .dna-use-cases {
+      list-style: none;
+    }
+    .dna-use-case {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .dna-use-case:last-child { border-bottom: none; }
+    .dna-use-icon {
+      width: 6px; height: 6px;
+      background: var(--ec-green);
+      border-radius: 50%;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .dna-use-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--ec-gray-400);
+    }
+    .dna-use-text strong { color: var(--ec-white); }
+    .dna-json-block {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 36px;
+      font-family: var(--ec-font-mono);
+      font-size: 15px;
+      line-height: 1.8;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* ─── OUTPUTS SECTION ────────────────────────────────────── */
+    #outputs { background: var(--ec-off-white); }
+    .outputs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+    .output-card {
+      background: var(--ec-white);
+      padding: 40px 32px;
+      border-top: 3px solid transparent;
+      transition: border-color var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+    }
+    .output-card:hover {
+      border-top-color: var(--ec-green);
+      transform: translateY(-4px);
+      box-shadow: var(--ec-shadow-lg);
+    }
+    .output-format {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ec-green);
+      background: var(--ec-green-pale);
+      display: inline-block;
+      padding: 4px 10px;
+      margin-bottom: 20px;
+    }
+    .output-title {
+      font-family: var(--ec-font-serif);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--ec-black);
+      margin-bottom: 12px;
+    }
+    .output-desc {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--ec-ink);
+    }
+
+    /* ─── REPAIR SECTION ─────────────────────────────────────── */
+    #repair { background: var(--ec-paper); }
+    .repair-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .repair-passes {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .repair-pass {
+      display: flex;
+      gap: 24px;
+      padding: 28px 0;
+      border-bottom: 1px solid var(--ec-gray-200);
+    }
+    .repair-pass:first-child { border-top: 1px solid var(--ec-gray-200); }
+    .repair-pass-num {
+      font-family: var(--ec-font-mono);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--ec-green);
+      flex-shrink: 0;
+      line-height: 1;
+      width: 40px;
+    }
+    .repair-pass-body { flex: 1; }
+    .repair-pass-title {
+      font-family: var(--ec-font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ec-black);
+      margin-bottom: 6px;
+    }
+    .repair-pass-desc {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ec-ink);
+    }
+    .repair-convergence {
+      background: var(--ec-black);
+      color: var(--ec-white);
+      padding: 40px;
+    }
+    .repair-conv-title {
+      font-family: var(--ec-font-serif);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--ec-white);
+      margin-bottom: 8px;
+    }
+    .repair-conv-sub {
+      font-size: 14px;
+      color: var(--ec-gray-400);
+      margin-bottom: 32px;
+    }
+    .repair-chart-wrap {
+      height: 220px;
+      margin-bottom: 32px;
+    }
+    .repair-params {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .repair-param {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 12px;
+    }
+    .repair-param-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ec-gray-400);
+      margin-bottom: 4px;
+    }
+    .repair-param-val {
+      font-family: var(--ec-font-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ec-white);
+    }
+    .repair-param-val.pass { color: var(--ec-green-light); }
+
+    /* ─── BUILDER GUIDE ──────────────────────────────────────── */
+    #builder { background: var(--ec-off-white); }
+    .builder-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .builder-steps {
+      position: relative;
+    }
+    .builder-steps::before {
+      content: '';
+      position: absolute;
+      top: 20px; bottom: 20px;
+      left: 19px;
+      width: 2px;
+      background: var(--ec-gray-200);
+    }
+    .builder-step {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+    }
+    .builder-step:last-child { margin-bottom: 0; }
+    .builder-step-dot {
+      width: 40px; height: 40px;
+      background: var(--ec-white);
+      border: 2px solid var(--ec-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--ec-font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ec-green);
+      flex-shrink: 0;
+    }
+    .builder-step-body { flex: 1; padding-top: 8px; }
+    .builder-step-title {
+      font-family: var(--ec-font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ec-black);
+      margin-bottom: 4px;
+    }
+    .builder-step-desc {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ec-ink);
+    }
+    .builder-info {
+      background: var(--ec-green);
+      color: var(--ec-white);
+      padding: 48px;
+    }
+    .builder-info-title {
+      font-family: var(--ec-font-serif);
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--ec-white);
+      margin-bottom: 20px;
+    }
+    .builder-info-body {
+      font-size: 16px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.80);
+      margin-bottom: 32px;
+    }
+    .builder-api-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .builder-api-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.70);
+    }
+    .builder-api-method {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.15);
+      color: var(--ec-white);
+      padding: 3px 8px;
+      letter-spacing: 0.06em;
+    }
+    .builder-api-path {
+      font-family: var(--ec-font-mono);
+      font-size: 14px;
+      color: rgba(255,255,255,0.90);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    footer {
+      background: var(--ec-black);
+      color: var(--ec-white);
+      padding: 64px 0 40px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .footer-brand {
+      font-family: var(--ec-font-serif);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--ec-white);
+      margin-bottom: 8px;
+    }
+    .footer-brand span { color: var(--ec-green-light); font-style: italic; }
+    .footer-tagline {
+      font-size: 14px;
+      color: var(--ec-gray-400);
+    }
+    .footer-meta {
+      font-family: var(--ec-font-mono);
+      font-size: 12px;
+      color: var(--ec-gray-400);
+      letter-spacing: 0.06em;
+      text-align: right;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .hero-content,
+      .pipeline-layout,
+      .scoring-layout,
+      .genome-layout,
+      .dna-layout,
+      .repair-layout,
+      .builder-layout { grid-template-columns: 1fr; gap: 48px; }
+      .hero-right { display: none; }
+      .outputs-grid { grid-template-columns: 1fr 1fr; }
+      .formula-grid { grid-template-columns: 1fr 1fr; }
+      .pipeline-panel { position: static; }
+    }
+    @media (max-width: 640px) {
+      .container { padding: 0 24px; }
+      section { padding: 80px 0; }
+      .outputs-grid,
+      .formula-grid { grid-template-columns: 1fr; }
+      .hero-headline { font-size: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─────────────────────────────────────────────────── -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo">Ever<span>crafted</span></div>
+      <ul class="nav-links">
+        <li><a href="#pipeline">Pipeline</a></li>
+        <li><a href="#scoring">Scoring</a></li>
+        <li><a href="#genome">Genome</a></li>
+        <li><a href="#formulas">Formulas</a></li>
+        <li><a href="#dna">Blueprint DNA</a></li>
+        <li><a href="#outputs">Outputs</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────────────── -->
+  <section class="hero" id="top">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-bg-glow"></div>
+    <div class="hero-bg-glow-right"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-eyebrow">Composition Engine — Summary</div>
+        <h1 class="hero-headline">Emotion becomes<br><em>engineered</em> design.</h1>
+        <p class="hero-sub">A deterministic 10-engine pipeline that translates human memory and physical inventory into mathematically balanced, professionally scored, builder-ready wreath blueprints.</p>
+        <div class="hero-cta-row">
+          <a href="#pipeline" class="btn-primary">Explore the Pipeline →</a>
+          <a href="#dna" class="btn-ghost">Blueprint DNA ↓</a>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-stat">
+          <div class="hero-stat-num">10<span>×</span></div>
+          <div class="hero-stat-label">Deterministic engines</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">0<span>.78</span></div>
+          <div class="hero-stat-label">Minimum quality score</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">8</div>
+          <div class="hero-stat-label">Max repair passes</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">7</div>
+          <div class="hero-stat-label">Scoring metrics</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PIPELINE ─────────────────────────────────────────────── -->
+  <section id="pipeline">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">The 10-Engine Pipeline</span>
+        <h2 class="section-title">From a single memory to a<br>builder-ready blueprint.</h2>
+        <p class="section-body">Every wreath begins with a feeling. The pipeline transforms that feeling — and whatever stems are available — into a mathematically balanced, reproducible design. Click any step to inspect its schema.</p>
+      </div>
+      <div class="pipeline-layout">
+        <div class="pipeline-steps" id="pipelineSteps">
+          <!-- Steps injected by JS -->
+        </div>
+        <div class="pipeline-panel">
+          <div class="panel-card" id="panelCard">
+            <div class="panel-overline" id="panelOverline">01 — Input Layer</div>
+            <div class="panel-title" id="panelTitle">Memory Interpreter</div>
+            <div class="panel-json" id="panelJson"><span class="json-k">"emotion"</span>:      <span class="json-s">"nostalgia"</span>,
+<span class="json-k">"energy"</span>:       <span class="json-n">0.4</span>,
+<span class="json-k">"palette_bias"</span>: <span class="json-s">"warm"</span>,
+<span class="json-k">"symbolic_tags"</span>: [
+  <span class="json-s">"evergreen"</span>,
+  <span class="json-s">"berries"</span>
+]</div>
+            <div class="panel-metrics" id="panelMetrics">
+              <div class="panel-metric"><div class="panel-metric-label">Energy</div><div class="panel-metric-val">0.4</div></div>
+              <div class="panel-metric"><div class="panel-metric-label">Palette Bias</div><div class="panel-metric-val">warm</div></div>
+              <div class="panel-metric"><div class="panel-metric-label">Symbolic Tags</div><div class="panel-metric-val">3</div></div>
+              <div class="panel-metric"><div class="panel-metric-label">Parse Method</div><div class="panel-metric-val">NLP</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SCORING ───────────────────────────────────────────────── -->
+  <section id="scoring">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">Quality Gate</span>
+        <h2 class="section-title">No blueprint ships below 0.78.</h2>
+        <p class="section-body">Every generated design is evaluated across seven professional composition metrics. Designs that fail the threshold are returned to the Repair Engine for iterative improvement.</p>
+      </div>
+      <div class="scoring-layout">
+        <div class="score-bars reveal" id="scoreBars">
+          <div class="score-bar-row">
+            <div class="score-bar-label">Balance</div>
+            <div class="score-bar-track"><div class="score-bar-fill" data-target="83"></div></div>
+            <div class="score-bar-val">0.83</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label">Rhythm</div>
+            <div class="score-bar-track"><div class="score-bar-fill" data-target="79"></div></div>
+            <div class="score-bar-val">0.79</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label">Contrast</div>
+            <div class="score-bar-track"><div class="score-bar-fill low" data-target="74"></div></div>
+            <div class="score-bar-val">0.74</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label">Density</div>
+            <div class="score-bar-track"><div class="score-bar-fill" data-target="81"></div></div>
+            <div class="score-bar-val">0.81</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label">Focal Clarity</div>
+            <div class="score-bar-track"><div class="score-bar-fill" data-target="86"></div></div>
+            <div class="score-bar-val">0.86</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label">Negative Space</div>
+            <div class="score-bar-track"><div class="score-bar-fill low" data-target="77"></div></div>
+            <div class="score-bar-val">0.77</div>
+          </div>
+          <div class="score-bar-row">
+            <div class="score-bar-label">Inv. Efficiency</div>
+            <div class="score-bar-track"><div class="score-bar-fill" data-target="91"></div></div>
+            <div class="score-bar-val">0.91</div>
+          </div>
+        </div>
+        <div class="score-overall reveal">
+          <div class="score-overall-label">Overall Score</div>
+          <div class="score-overall-num">0<span>.82</span></div>
+          <div class="score-threshold">Minimum threshold: 0.78</div>
+          <div class="score-gate">✓ Blueprint Approved</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── REPAIR ────────────────────────────────────────────────── -->
+  <section id="repair">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">Repair Engine</span>
+        <h2 class="section-title">Iterative improvement until<br>the design is professional.</h2>
+        <p class="section-body">The Repair Engine runs up to 8 iterative passes. If the minimum score of 0.78 is not reached, anchors regenerate with a new seed offset and the pipeline restarts from scratch.</p>
+      </div>
+      <div class="repair-layout">
+        <div class="repair-passes reveal">
+          <div class="repair-pass">
+            <div class="repair-pass-num">01</div>
+            <div class="repair-pass-body">
+              <div class="repair-pass-title">Density Normalization</div>
+              <div class="repair-pass-desc">Redistributes stems to match zone field density targets. Overcrowded zones shed stems; sparse zones absorb them.</div>
+            </div>
+          </div>
+          <div class="repair-pass">
+            <div class="repair-pass-num">02</div>
+            <div class="repair-pass-body">
+              <div class="repair-pass-title">Cluster Cohesion</div>
+              <div class="repair-pass-desc">Pulls scattered stems toward their nearest anchor point, strengthening visual groupings and reinforcing the focal cluster.</div>
+            </div>
+          </div>
+          <div class="repair-pass">
+            <div class="repair-pass-num">03</div>
+            <div class="repair-pass-body">
+              <div class="repair-pass-title">Silence Arc Enforcement</div>
+              <div class="repair-pass-desc">Clears the designated silence arc of non-greenery stems, creating the intentional negative space that makes the focal cluster feel powerful.</div>
+            </div>
+          </div>
+          <div class="repair-pass">
+            <div class="repair-pass-num">04</div>
+            <div class="repair-pass-body">
+              <div class="repair-pass-title">Focal Clarity</div>
+              <div class="repair-pass-desc">Ensures focal blooms are unobstructed, correctly depth-layered, and meet minimum angular separation requirements.</div>
+            </div>
+          </div>
+        </div>
+        <div class="repair-convergence reveal">
+          <div class="repair-conv-title">Convergence Chart</div>
+          <div class="repair-conv-sub">Score trajectory across repair passes — threshold at 0.78</div>
+          <div class="repair-chart-wrap">
+            <canvas id="repairChart"></canvas>
+          </div>
+          <div class="repair-params">
+            <div class="repair-param">
+              <div class="repair-param-label">Pass Limit</div>
+              <div class="repair-param-val">8</div>
+            </div>
+            <div class="repair-param">
+              <div class="repair-param-label">Min Target Score</div>
+              <div class="repair-param-val">0.78</div>
+            </div>
+            <div class="repair-param">
+              <div class="repair-param-label">Passes Run</div>
+              <div class="repair-param-val pass">3</div>
+            </div>
+            <div class="repair-param">
+              <div class="repair-param-label">Final Score</div>
+              <div class="repair-param-val pass">0.82</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── GENOME ────────────────────────────────────────────────── -->
+  <section id="genome">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">Floral Genome Engine</span>
+        <h2 class="section-title">Every stem behaves like a<br>design organism.</h2>
+        <p class="section-body">Each flower in the system carries a genome record — physical traits, emotional resonance, role capabilities, and a substitution chain. When inventory is missing an item, the engine finds the closest genomic neighbor.</p>
+      </div>
+      <div class="genome-layout">
+        <div class="genome-card reveal">
+          <div class="genome-card-header">
+            <div class="genome-name">Rose Tamora</div>
+            <div class="genome-sku">SKU: 96532NT</div>
+          </div>
+          <div class="genome-traits">
+            <div>
+              <div class="genome-trait-label">Bloom Diameter</div>
+              <div class="genome-trait-val">3.8"</div>
+            </div>
+            <div>
+              <div class="genome-trait-label">Stem Length</div>
+              <div class="genome-trait-val">18"</div>
+            </div>
+            <div>
+              <div class="genome-trait-label">Gesture Type</div>
+              <div class="genome-trait-val">Cluster</div>
+            </div>
+            <div>
+              <div class="genome-trait-label">Texture</div>
+              <div class="genome-trait-val">Velvet</div>
+            </div>
+            <div>
+              <div class="genome-trait-label">Role Capabilities</div>
+              <div class="genome-tags">
+                <span class="genome-tag">focal</span>
+                <span class="genome-tag">secondary</span>
+              </div>
+            </div>
+            <div>
+              <div class="genome-trait-label">Emotion Tags</div>
+              <div class="genome-tags">
+                <span class="genome-tag">romantic</span>
+                <span class="genome-tag">luxury</span>
+              </div>
+            </div>
+          </div>
+          <div class="substitution-chain">
+            <div class="sub-chain-title">Substitution Neighbors</div>
+            <div class="sub-chain-flow">
+              <div class="sub-chain-item active">English Garden Rose</div>
+              <div class="sub-chain-arrow">→</div>
+              <div class="sub-chain-item">Cabbage Rose</div>
+              <div class="sub-chain-arrow">→</div>
+              <div class="sub-chain-item">Ranunculus</div>
+            </div>
+          </div>
+        </div>
+        <div class="weights-panel reveal">
+          <div class="weights-title">Substitution Similarity Weights</div>
+          <div class="weights-sub">When a stem is unavailable, the engine selects the closest neighbor using a weighted similarity score across five genome dimensions.</div>
+          <div class="weight-row">
+            <div class="weight-pct">30%</div>
+            <div class="weight-label">Bloom Size</div>
+            <div class="weight-bar-track"><div class="weight-bar-fill" style="width:100%"></div></div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-pct">25%</div>
+            <div class="weight-label">Gesture Type</div>
+            <div class="weight-bar-track"><div class="weight-bar-fill" style="width:83%"></div></div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-pct">20%</div>
+            <div class="weight-label">Texture</div>
+            <div class="weight-bar-track"><div class="weight-bar-fill" style="width:67%"></div></div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-pct">15%</div>
+            <div class="weight-label">Color Family</div>
+            <div class="weight-bar-track"><div class="weight-bar-fill" style="width:50%"></div></div>
+          </div>
+          <div class="weight-row">
+            <div class="weight-pct">10%</div>
+            <div class="weight-label">Emotion Tags</div>
+            <div class="weight-bar-track"><div class="weight-bar-fill" style="width:33%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FORMULAS ──────────────────────────────────────────────── -->
+  <section id="formulas">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">Formula Registry</span>
+        <h2 class="section-title">Six structural formulas.<br>One optimal selection.</h2>
+        <p class="section-body">The Formula Selector scores all registered formulas across six weighted dimensions — inventory feasibility, emotional match, silhouette, negative space, complexity, and genome compatibility — then selects the highest-confidence match.</p>
+      </div>
+      <div class="formula-grid reveal">
+        <div class="formula-card selected">
+          <div class="formula-selected-badge">Selected</div>
+          <div class="formula-card-id">crescent</div>
+          <div class="formula-card-name">Crescent Sweep</div>
+          <div class="formula-card-desc">Asymmetric arc with a dominant focal cluster at 220° and a deliberate silence arc from 280–330°. The most emotionally resonant formula for warm, nostalgic palettes.</div>
+          <div class="formula-confidence">
+            <div class="formula-conf-label">Confidence</div>
+            <div class="formula-conf-val selected-val">0.84</div>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-card-id">focal_trio</div>
+          <div class="formula-card-name">Focal Trio</div>
+          <div class="formula-card-desc">Three focal anchor points arranged in a triangular distribution. High visual rhythm and strong balance across the ring.</div>
+          <div class="formula-confidence">
+            <div class="formula-conf-label">Confidence</div>
+            <div class="formula-conf-val">0.81</div>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-card-id">triangular</div>
+          <div class="formula-card-name">Triangular Balance</div>
+          <div class="formula-card-desc">Evenly distributed focal points at 120° intervals. Maximizes visual balance and works well with high-inventory designs.</div>
+          <div class="formula-confidence">
+            <div class="formula-conf-label">Confidence</div>
+            <div class="formula-conf-val">0.79</div>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-card-id">asymmetric</div>
+          <div class="formula-card-name">Asymmetric Weight</div>
+          <div class="formula-card-desc">Heavy focal mass on one side with a long trailing accent arc. Creates dramatic movement and editorial tension.</div>
+          <div class="formula-confidence">
+            <div class="formula-conf-label">Confidence</div>
+            <div class="formula-conf-val">0.76</div>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-card-id">full_ring</div>
+          <div class="formula-card-name">Full Ring</div>
+          <div class="formula-card-desc">Uniform density across the full 360° ring. Best suited for high-inventory designs with a formal, symmetrical aesthetic.</div>
+          <div class="formula-confidence">
+            <div class="formula-conf-label">Confidence</div>
+            <div class="formula-conf-val">0.71</div>
+          </div>
+        </div>
+        <div class="formula-card">
+          <div class="formula-card-id">cascade</div>
+          <div class="formula-card-name">Cascade Drop</div>
+          <div class="formula-card-desc">Vertical focal cluster with a trailing cascade. High complexity; requires a large secondary and filler pool to execute cleanly.</div>
+          <div class="formula-confidence">
+            <div class="formula-conf-label">Confidence</div>
+            <div class="formula-conf-val">0.67</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── BLUEPRINT DNA ─────────────────────────────────────────── -->
+  <section id="dna">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">Blueprint DNA</span>
+        <h2 class="section-title">Every design is deterministic,<br>versioned, and reproducible.</h2>
+        <p class="section-body">Evercrafted is not a random generator. Identical inputs always produce identical designs. Every wreath receives a Blueprint DNA fingerprint — a cryptographic record of the design's structural identity.</p>
+      </div>
+      <div class="dna-layout">
+        <div class="reveal">
+          <div class="dna-seed-block">
+            <div class="dna-seed-label">Deterministic Seed Generation Rule</div>
+            <div class="dna-seed-formula">seed = hash(<br>&nbsp;&nbsp;<span class="highlight">memory_input</span> +<br>&nbsp;&nbsp;<span class="highlight">inventory_signature</span> +<br>&nbsp;&nbsp;<span class="highlight">formula_id</span><br>)</div>
+          </div>
+          <ul class="dna-use-cases">
+            <li class="dna-use-case">
+              <div class="dna-use-icon"></div>
+              <div class="dna-use-text"><strong>Product identification</strong> — every blueprint has a unique, human-readable fingerprint for cataloging and search.</div>
+            </li>
+            <li class="dna-use-case">
+              <div class="dna-use-icon"></div>
+              <div class="dna-use-text"><strong>Blueprint resale</strong> — designs can be licensed and resold because they are fully reproducible from the seed alone.</div>
+            </li>
+            <li class="dna-use-case">
+              <div class="dna-use-icon"></div>
+              <div class="dna-use-text"><strong>Version control</strong> — design iterations are tracked by seed, enabling rollback and comparison across versions.</div>
+            </li>
+          </ul>
+        </div>
+        <div class="dna-json-block reveal"><span class="json-k">"formula"</span>:       <span class="json-s">"crescent"</span>,
+<span class="json-k">"seed"</span>:          <span class="json-n">92384723</span>,
+<span class="json-k">"cluster_count"</span>: <span class="json-n">2</span>,
+<span class="json-k">"silence_arc"</span>:   [<span class="json-n">280</span>, <span class="json-n">330</span>],
+<span class="json-k">"stem_count"</span>:    <span class="json-n">58</span>,
+<span class="json-k">"palette"</span>: [
+  <span class="json-s">"deep_red"</span>,
+  <span class="json-s">"pine_green"</span>,
+  <span class="json-s">"gold"</span>
+]</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── OUTPUTS ───────────────────────────────────────────────── -->
+  <section id="outputs">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">Engine Output Layer</span>
+        <h2 class="section-title">One solved design.<br>Four deliverables.</h2>
+        <p class="section-body">The Blueprint & Render Engine serializes the complete solved placement set into four distinct output types — each serving a different user need, from hands-on building to photorealistic visualization.</p>
+      </div>
+      <div class="outputs-grid reveal">
+        <div class="output-card">
+          <div class="output-format">.json</div>
+          <div class="output-title">Blueprint JSON</div>
+          <div class="output-desc">Machine-readable design record containing every stem's polar coordinates, role, depth, and direction vector. Versionable, resellable, and fully reproducible from the seed.</div>
+        </div>
+        <div class="output-card">
+          <div class="output-format">Markdown / PDF</div>
+          <div class="output-title">Builder Guide</div>
+          <div class="output-desc">Step-by-step placement instructions for the wreath maker. Sequenced from greenery skeleton through focal blooms, secondary, accents, and filler. Human-readable and printable.</div>
+        </div>
+        <div class="output-card">
+          <div class="output-format">.svg</div>
+          <div class="output-title">SVG Preview</div>
+          <div class="output-desc">Visual canvas preview of the polar placement layout. Shows the full ring with stem positions, depth layers, and zone boundaries rendered as a scalable vector graphic.</div>
+        </div>
+        <div class="output-card">
+          <div class="output-format">Text Prompt</div>
+          <div class="output-title">Render Prompt</div>
+          <div class="output-desc">Midjourney-ready photorealistic render prompt generated from the palette, formula, and genome data. Produces a photorealistic visualization of the finished wreath.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── BUILDER GUIDE ─────────────────────────────────────────── -->
+  <section id="builder">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="overline">Builder Guide Sequence</span>
+        <h2 class="section-title">Five steps from frame<br>to finished wreath.</h2>
+        <p class="section-body">The Builder Guide sequences placement instructions in depth-layer order — starting with the structural skeleton and ending with the focal statement. This ensures every layer is set before the next is placed.</p>
+      </div>
+      <div class="builder-layout">
+        <div class="builder-steps reveal">
+          <div class="builder-step">
+            <div class="builder-step-dot">1</div>
+            <div class="builder-step-body">
+              <div class="builder-step-title">Place Greenery Skeleton</div>
+              <div class="builder-step-desc">Establish the structural base with gesture and greenery stems. This defines the wreath's silhouette, working radius, and overall density distribution.</div>
+            </div>
+          </div>
+          <div class="builder-step">
+            <div class="builder-step-dot">2</div>
+            <div class="builder-step-body">
+              <div class="builder-step-title">Place Focal Blooms</div>
+              <div class="builder-step-desc">Position the primary focal stems at their designated polar coordinates within the focal arc. These are the visual anchors of the entire design.</div>
+            </div>
+          </div>
+          <div class="builder-step">
+            <div class="builder-step-dot">3</div>
+            <div class="builder-step-body">
+              <div class="builder-step-title">Place Secondary Blooms</div>
+              <div class="builder-step-desc">Add secondary blooms to support and frame the focal cluster, building depth and visual rhythm around the primary anchor points.</div>
+            </div>
+          </div>
+          <div class="builder-step">
+            <div class="builder-step-dot">4</div>
+            <div class="builder-step-body">
+              <div class="builder-step-title">Add Accents</div>
+              <div class="builder-step-desc">Place accent stems to introduce texture contrast, color punctuation, and directional movement between the larger bloom masses.</div>
+            </div>
+          </div>
+          <div class="builder-step">
+            <div class="builder-step-dot">5</div>
+            <div class="builder-step-body">
+              <div class="builder-step-title">Fill with Filler Stems</div>
+              <div class="builder-step-desc">Complete the design with filler stems to close gaps, smooth transitions, and achieve the target density in each zone field.</div>
+            </div>
+          </div>
+        </div>
+        <div class="builder-info reveal">
+          <div class="builder-info-title">Exposed as a headless API</div>
+          <div class="builder-info-body">Every stage of the pipeline — from generation to scoring, repair, rendering, and export — is accessible via a RESTful API. Evercrafted is designed to be embedded in any frontend, e-commerce platform, or third-party system.</div>
+          <ul class="builder-api-list">
+            <li class="builder-api-item">
+              <span class="builder-api-method">POST</span>
+              <span class="builder-api-path">/generate-blueprint</span>
+            </li>
+            <li class="builder-api-item">
+              <span class="builder-api-method">POST</span>
+              <span class="builder-api-path">/score-blueprint</span>
+            </li>
+            <li class="builder-api-item">
+              <span class="builder-api-method">POST</span>
+              <span class="builder-api-path">/repair-blueprint</span>
+            </li>
+            <li class="builder-api-item">
+              <span class="builder-api-method">POST</span>
+              <span class="builder-api-path">/render-blueprint</span>
+            </li>
+            <li class="builder-api-item">
+              <span class="builder-api-method">POST</span>
+              <span class="builder-api-path">/export-blueprint</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Ever<span>crafted</span></div>
+        <div class="footer-tagline">Emotion-Driven Wreath Design Platform</div>
+      </div>
+      <div class="footer-meta">
+        Composition Engine Pipeline — Summary<br>
+        Engine V1.0 // PRD v1.0
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─── SCRIPTS ───────────────────────────────────────────────── -->
+  <script>
+    /* ── Scroll Reveal ─────────────────────────────────────────── */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    /* ── Pipeline Steps Data ───────────────────────────────────── */
+    const steps = [
+      {
+        num: '01', layer: 'Input Layer', title: 'Memory Interpreter',
+        desc: 'Parses free-form emotional text into structured design intent. Extracts emotion, energy level, palette bias, and symbolic tags.',
+        inTags: ['Raw text prompt'], outTags: ['emotion', 'energy', 'palette_bias', 'symbolic_tags'],
+        json: `<span class="json-k">"emotion"</span>:      <span class="json-s">"nostalgia"</span>,\n<span class="json-k">"energy"</span>:       <span class="json-n">0.4</span>,\n<span class="json-k">"palette_bias"</span>: <span class="json-s">"warm"</span>,\n<span class="json-k">"symbolic_tags"</span>: [\n  <span class="json-s">"evergreen"</span>,\n  <span class="json-s">"berries"</span>\n]`,
+        metrics: [['Energy','0.4'],['Palette Bias','warm'],['Symbolic Tags','3'],['Parse Method','NLP']]
+      },
+      {
+        num: '02', layer: 'Signal Layer', title: 'Emotion Mapper',
+        desc: 'Converts emotional intent into concrete design signals — palette, contrast ratio, and density bias — that every downstream engine can consume.',
+        inTags: ['emotion', 'energy'], outTags: ['palette', 'contrast', 'density_bias'],
+        json: `<span class="json-k">"palette"</span>: [\n  <span class="json-s">"deep_red"</span>,\n  <span class="json-s">"pine_green"</span>,\n  <span class="json-s">"gold"</span>\n],\n<span class="json-k">"contrast"</span>:     <span class="json-n">0.7</span>,\n<span class="json-k">"density_bias"</span>: <span class="json-s">"moderate"</span>`,
+        metrics: [['Palette Colors','3'],['Contrast','0.7'],['Density Bias','moderate'],['Palette Bias','warm']]
+      },
+      {
+        num: '03', layer: 'Inventory Layer', title: 'Inventory Analyzer',
+        desc: 'Converts raw stem inventory into five role pools. Calculates average bloom diameter, stem length, and a flexibility score.',
+        inTags: ['Raw inventory'], outTags: ['focal','secondary','accent','filler','greenery'],
+        json: `<span class="json-k">"focal"</span>:     <span class="json-n">7</span>,\n<span class="json-k">"secondary"</span>: <span class="json-n">12</span>,\n<span class="json-k">"accent"</span>:    <span class="json-n">9</span>,\n<span class="json-k">"filler"</span>:    <span class="json-n">15</span>,\n<span class="json-k">"greenery"</span>:  <span class="json-n">33</span>`,
+        metrics: [['Total Stems','76'],['Focal Pool','7'],['Greenery Pool','33'],['Flexibility','0.73']]
+      },
+      {
+        num: '04', layer: 'Selection Layer', title: 'Formula Selector',
+        desc: 'Scores every registered formula across six weighted dimensions and selects the optimal structural match. Confidence is recorded in the Blueprint DNA.',
+        inTags: ['inventory pools','emotion signals'], outTags: ['selected_formula','confidence'],
+        json: `<span class="json-k">"selected_formula"</span>: <span class="json-s">"crescent"</span>,\n<span class="json-k">"confidence"</span>:       <span class="json-n">0.84</span>`,
+        metrics: [['Formula','crescent'],['Confidence','0.84'],['Inv. Feasibility','30%'],['Emotional Match','20%']]
+      },
+      {
+        num: '05', layer: 'Geometry Layer', title: 'Anchor Generator',
+        desc: 'Transforms formula anchor group definitions into actual polar coordinates using seeded randomness. Every anchor is reproducible from the same seed.',
+        inTags: ['formula anchor_groups','seed'], outTags: ['anchor_id','theta','radius'],
+        json: `<span class="json-k">"anchor_id"</span>: <span class="json-s">"primary"</span>,\n<span class="json-k">"theta"</span>:     <span class="json-n">218.3</span>,\n<span class="json-k">"radius"</span>:    <span class="json-n">0.73</span>`,
+        metrics: [['Seed','92384723'],['Primary θ','218.3°'],['Primary r','0.73'],['Clusters','2']]
+      },
+      {
+        num: '06', layer: 'Zone Layer', title: 'Zone Field Builder',
+        desc: 'Divides the wreath ring into angular sectors with specific density targets. The silence arc — intentional negative space — receives a density target of 0.1.',
+        inTags: ['formula zone_definitions'], outTags: ['zone_id','density','silence'],
+        json: `<span class="json-k">"zone_id"</span>:    <span class="json-s">"focal_arc"</span>,\n<span class="json-k">"start_angle"</span>: <span class="json-n">210</span>,\n<span class="json-k">"end_angle"</span>:   <span class="json-n">260</span>,\n<span class="json-k">"density"</span>:    <span class="json-n">0.9</span>,\n<span class="json-k">"silence"</span>:    <span class="json-n">false</span>`,
+        metrics: [['Focal Arc','210–260°'],['Silence Arc','280–330°'],['Focal Density','0.9'],['Silence Density','0.1']]
+      },
+      {
+        num: '07', layer: 'Allocation Layer', title: 'Stem Allocator',
+        desc: 'Distributes the total stem count across five roles using formula role bias ratios, adjusted for available inventory. Enforces the 60/30/10 proportion rule.',
+        inTags: ['inventory pools','formula role_bias'], outTags: ['role','count','ratio'],
+        json: `<span class="json-k">"focal"</span>:     <span class="json-n">10</span>,\n<span class="json-k">"secondary"</span>: <span class="json-n">11</span>,\n<span class="json-k">"accent"</span>:    <span class="json-n">8</span>,\n<span class="json-k">"filler"</span>:    <span class="json-n">10</span>,\n<span class="json-k">"greenery"</span>:  <span class="json-n">21</span>`,
+        metrics: [['Total Stems','60'],['Greenery','35%'],['Focal','17%'],['Proportion Rule','60/30/10']]
+      },
+      {
+        num: '08', layer: 'Placement Layer', title: 'Placement Solver',
+        desc: 'Assigns every stem a precise polar address, depth layer, and direction vector. Collision detection enforces minimum spacing as a multiple of bloom diameter.',
+        inTags: ['stem pool','anchors','zone field'], outTags: ['angle','radius','depth','vector'],
+        json: `<span class="json-k">"stem_id"</span>: <span class="json-s">"023"</span>,\n<span class="json-k">"role"</span>:    <span class="json-s">"secondary"</span>,\n<span class="json-k">"angle"</span>:   <span class="json-n">231.5</span>,\n<span class="json-k">"radius"</span>:  <span class="json-n">0.72</span>,\n<span class="json-k">"depth"</span>:   <span class="json-n">1</span>,\n<span class="json-k">"vector"</span>:  <span class="json-n">245</span>`,
+        metrics: [['Focal Spacing','1.3× diam.'],['Secondary','1.0× diam.'],['Filler','0.6× diam.'],['Depth Layers','6']]
+      },
+      {
+        num: '09', layer: 'Repair Layer', title: 'Repair Engine',
+        desc: 'Runs up to 8 iterative improvement passes until the design scores ≥ 0.78. Four passes address density, cohesion, silence arc, and focal clarity.',
+        inTags: ['placed stems','score'], outTags: ['repaired_blueprint','score'],
+        json: `<span class="json-k">"pass_limit"</span>:    <span class="json-n">8</span>,\n<span class="json-k">"min_score"</span>:     <span class="json-n">0.78</span>,\n<span class="json-k">"passes_run"</span>:    <span class="json-n">3</span>,\n<span class="json-k">"score_before"</span>: <span class="json-n">0.64</span>,\n<span class="json-k">"score_after"</span>:  <span class="json-n">0.82</span>`,
+        metrics: [['Pass Limit','8'],['Min Score','0.78'],['Passes Run','3'],['Final Score','0.82']]
+      },
+      {
+        num: '10', layer: 'Output Layer', title: 'Blueprint Generator',
+        desc: 'Serializes the complete solved placement set into four output types: Blueprint JSON, Builder Guide, SVG Preview, and Render Prompt.',
+        inTags: ['repaired_blueprint'], outTags: ['JSON','Builder Guide','SVG','Render Prompt'],
+        json: `<span class="json-k">"wreath_size"</span>: <span class="json-n">24</span>,\n<span class="json-k">"formula"</span>:     <span class="json-s">"crescent"</span>,\n<span class="json-k">"elements"</span>: [{\n  <span class="json-k">"sku"</span>:    <span class="json-s">"96532NT"</span>,\n  <span class="json-k">"role"</span>:   <span class="json-s">"focal"</span>,\n  <span class="json-k">"angle"</span>:  <span class="json-n">220</span>,\n  <span class="json-k">"radius"</span>: <span class="json-n">0.72</span>\n}]`,
+        metrics: [['Outputs','4'],['Wreath Size','24"'],['Total Stems','60'],['Score','0.82']]
+      }
+    ];
+
+    /* ── Render Pipeline Steps ─────────────────────────────────── */
+    const stepsContainer = document.getElementById('pipelineSteps');
+    steps.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'pipeline-step reveal';
+      div.innerHTML = `
+        <div class="step-num">${s.num}</div>
+        <div class="step-body">
+          <div class="step-layer">${s.layer}</div>
+          <div class="step-title">${s.title}</div>
+          <div class="step-desc">${s.desc}</div>
+          <div class="step-io">
+            ${s.inTags.map(t => `<span class="step-io-tag">IN: ${t}</span>`).join('')}
+            ${s.outTags.map(t => `<span class="step-io-tag out">OUT: ${t}</span>`).join('')}
+          </div>
+        </div>`;
+      div.addEventListener('click', () => updatePanel(s));
+      stepsContainer.appendChild(div);
+    });
+
+    /* Re-observe newly added elements */
+    document.querySelectorAll('.pipeline-step.reveal').forEach(el => revealObserver.observe(el));
+
+    /* ── Panel Update ──────────────────────────────────────────── */
+    function updatePanel(s) {
+      document.getElementById('panelOverline').textContent = `${s.num} — ${s.layer}`;
+      document.getElementById('panelTitle').textContent = s.title;
+      document.getElementById('panelJson').innerHTML = s.json;
+      const metricsEl = document.getElementById('panelMetrics');
+      metricsEl.innerHTML = s.metrics.map(([label, val]) =>
+        `<div class="panel-metric"><div class="panel-metric-label">${label}</div><div class="panel-metric-val">${val}</div></div>`
+      ).join('');
+    }
+
+    /* ── Score Bars Animation ──────────────────────────────────── */
+    const scoreBarsEl = document.getElementById('scoreBars');
+    const scoreObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        document.querySelectorAll('.score-bar-fill').forEach(bar => {
+          const target = bar.getAttribute('data-target');
+          setTimeout(() => { bar.style.width = target + '%'; }, 200);
+        });
+        scoreObserver.disconnect();
+      }
+    }, { threshold: 0.3 });
+    scoreObserver.observe(scoreBarsEl);
+
+    /* ── Repair Convergence Chart ──────────────────────────────── */
+    const repairCtx = document.getElementById('repairChart').getContext('2d');
+    new Chart(repairCtx, {
+      type: 'line',
+      data: {
+        labels: ['Start', 'Pass 1', 'Pass 2', 'Pass 3'],
+        datasets: [
+          {
+            label: 'Score',
+            data: [0.64, 0.71, 0.77, 0.82],
+            borderColor: '#4A6741',
+            backgroundColor: 'rgba(74,103,65,0.10)',
+            borderWidth: 2,
+            pointBackgroundColor: '#4A6741',
+            pointRadius: 5,
+            fill: true,
+            tension: 0.35
+          },
+          {
+            label: 'Threshold',
+            data: [0.78, 0.78, 0.78, 0.78],
+            borderColor: '#C4922A',
+            borderWidth: 1.5,
+            borderDash: [6, 4],
+            pointRadius: 0,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1200 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1A1A1A',
+            titleColor: '#6B8F67',
+            bodyColor: '#F9F7F4',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.06)' },
+            ticks: { color: '#787878', font: { family: 'DM Mono', size: 12 } }
+          },
+          y: {
+            min: 0.55, max: 0.90,
+            grid: { color: 'rgba(255,255,255,0.06)' },
+            ticks: { color: '#787878', font: { family: 'DM Mono', size: 12 } }
+          }
+        }
+      }
+    });
+
+    /* ── Active Nav ────────────────────────────────────────────── */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(a => {
+            a.style.color = a.getAttribute('href') === '#' + entry.target.id
+              ? 'var(--ec-green)' : '';
+          });
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    sections.forEach(s => navObserver.observe(s));
+  </script>
+</body>
+</html>
