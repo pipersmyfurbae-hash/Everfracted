@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — Design Tools for Wreath Makers</title>
+<meta name="description" content="The professional design suite for wreath makers. Blueprint generation, inventory tracking, AI visualization, and a marketplace — built for the craft you love.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   EVERCRAFTED BRAND TOKENS
+═══════════════════════════════════════════════════════ */
+:root {
+  --ec-white:        #FFFFFF;
+  --ec-off-white:    #F9F7F4;
+  --ec-paper:        #F2EFE9;
+  --ec-black:        #1A1A1A;
+  --ec-charcoal:     #2E2E2E;
+  --ec-ink:          #4A4A4A;
+
+  --ec-green:        #4A6741;
+  --ec-green-light:  #6B8F67;
+  --ec-green-pale:   #EEF2ED;
+  --ec-green-dim:    rgba(74,103,65,0.12);
+
+  --ec-gray-100:     #F5F5F5;
+  --ec-gray-200:     #E8E8E8;
+  --ec-gray-300:     #D0D0D0;
+  --ec-gray-400:     #A8A8A8;
+  --ec-gray-500:     #787878;
+
+  --ec-warning:      #C4922A;
+  --ec-error:        #B94040;
+  --ec-info:         #4A6785;
+
+  --ec-surface:      var(--ec-white);
+  --ec-surface-alt:  var(--ec-off-white);
+  --ec-surface-warm: var(--ec-paper);
+  --ec-border:       var(--ec-gray-200);
+  --ec-border-dark:  var(--ec-gray-300);
+  --ec-text:         var(--ec-black);
+  --ec-text-muted:   var(--ec-ink);
+  --ec-text-faint:   var(--ec-gray-500);
+
+  --ec-font-serif:   'Cormorant Garamond', Georgia, serif;
+  --ec-font-sans:    'Inter', system-ui, sans-serif;
+  --ec-font-script:  'Dancing Script', cursive;
+  --ec-font-mono:    'DM Mono', monospace;
+
+  --ec-shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --ec-shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+  --ec-shadow-lg:    0 8px 32px rgba(0,0,0,0.10);
+  --ec-shadow-hero:  0 24px 64px rgba(0,0,0,0.12);
+  --ec-transition:   200ms ease;
+
+  --tier-bloom-bg:   #EEF2ED; --tier-bloom-fg:   #4A6741;
+  --tier-craft-bg:   #EEF4F9; --tier-craft-fg:   #4A6785;
+  --tier-studio-bg:  #F5EEF4; --tier-studio-fg:  #7A4A85;
+  --tier-atelier-bg: #1A1A1A; --tier-atelier-fg: #F2EFE9;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--ec-font-sans);
+  background: var(--ec-off-white);
+  color: var(--ec-text);
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+::selection { background: var(--ec-green-pale); color: var(--ec-green); }
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCROLL REVEAL SYSTEM
+═══════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left {
+  opacity: 0; transform: translateX(-32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right {
+  opacity: 0; transform: translateX(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+/* ═══════════════════════════════════════════════════════
+   STICKY NAV
+═══════════════════════════════════════════════════════ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 58px;
+  background: rgba(249,247,244,0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--ec-border);
+  transition: box-shadow 0.3s ease;
+}
+.nav.scrolled { box-shadow: 0 2px 24px rgba(0,0,0,0.06); }
+.nav-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 40px;
+  height: 100%; display: flex; align-items: center;
+}
+.nav-logo {
+  font-family: var(--ec-font-serif);
+  font-size: 18px; font-weight: 400; letter-spacing: 0.06em;
+  color: var(--ec-black); text-decoration: none;
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.nav-logo-leaf { width: 20px; height: 20px; color: var(--ec-green); flex-shrink: 0; }
+.nav-links { display: flex; gap: 4px; margin-left: 36px; list-style: none; }
+.nav-links a {
+  font-size: 11.5px; font-weight: 500; letter-spacing: 0.04em;
+  color: var(--ec-text-faint); text-decoration: none;
+  padding: 6px 12px; border-radius: 4px;
+  transition: color var(--ec-transition), background var(--ec-transition);
+}
+.nav-links a:hover { color: var(--ec-green); background: var(--ec-green-pale); }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.nav-btn-ghost {
+  font-size: 11.5px; font-weight: 500; letter-spacing: 0.04em;
+  color: var(--ec-text-muted); background: none; border: none;
+  padding: 7px 14px; border-radius: 4px; cursor: pointer;
+  font-family: var(--ec-font-sans);
+  transition: color var(--ec-transition), background var(--ec-transition);
+}
+.nav-btn-ghost:hover { color: var(--ec-black); background: var(--ec-gray-100); }
+.nav-btn-cta {
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--ec-off-white); background: var(--ec-green);
+  border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer;
+  font-family: var(--ec-font-sans);
+  transition: background var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.nav-btn-cta:hover {
+  background: var(--ec-green-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74,103,65,0.3);
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO — CINEMATIC DARK
+═══════════════════════════════════════════════════════ */
+.hero {
+  min-height: 96vh;
+  padding-top: 58px;
+  background: var(--ec-black);
+  position: relative; overflow: hidden;
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -10%; left: -5%;
+  width: 55%; height: 120%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(74,103,65,0.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -10%; right: -5%;
+  width: 50%; height: 80%;
+  background: radial-gradient(ellipse at 70% 80%, rgba(196,146,42,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-bg-wreath {
+  position: absolute; right: -80px; top: 50%;
+  transform: translateY(-50%);
+  width: 680px; height: 680px;
+  opacity: 0.04; pointer-events: none;
+}
+.hero-left {
+  padding: 80px 48px 80px 80px;
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.hero-overline {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--ec-font-sans);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ec-green-light);
+  margin-bottom: 28px;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 0.7s ease forwards 0.15s;
+}
+.hero-overline::before {
+  content: ''; display: block; width: 28px; height: 1px;
+  background: var(--ec-green-light); flex-shrink: 0;
+}
+.hero-h1 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(46px, 5.2vw, 80px);
+  font-weight: 300; line-height: 1.04; letter-spacing: -0.03em;
+  color: var(--ec-off-white); margin-bottom: 28px;
+  opacity: 0; transform: translateY(28px);
+  animation: fadeUp 0.85s ease forwards 0.3s;
+}
+.hero-h1 em { font-style: italic; color: var(--ec-green-light); }
+.hero-h1 .script-accent {
+  font-family: var(--ec-font-script);
+  font-size: 0.88em; color: rgba(196,146,42,0.85);
+  letter-spacing: 0;
+}
+.hero-sub {
+  font-size: 16px; font-weight: 400; line-height: 1.8;
+  color: rgba(249,247,244,0.52);
+  max-width: 440px; margin-bottom: 44px;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 0.8s ease forwards 0.48s;
+}
+.hero-actions {
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 56px;
+  opacity: 0; transform: translateY(16px);
+  animation: fadeUp 0.7s ease forwards 0.62s;
+}
+.btn-hero-primary {
+  padding: 14px 32px;
+  background: var(--ec-green); color: var(--ec-off-white);
+  border: none; border-radius: 4px;
+  font-family: var(--ec-font-sans);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+  box-shadow: 0 4px 20px rgba(74,103,65,0.35);
+}
+.btn-hero-primary:hover {
+  background: var(--ec-green-light);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 28px rgba(74,103,65,0.45);
+}
+.btn-hero-secondary {
+  padding: 13px 24px;
+  background: transparent; color: rgba(249,247,244,0.65);
+  border: 1px solid rgba(249,247,244,0.18); border-radius: 4px;
+  font-family: var(--ec-font-sans);
+  font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
+  cursor: pointer; transition: all var(--ec-transition);
+}
+.btn-hero-secondary:hover {
+  color: var(--ec-off-white);
+  border-color: rgba(249,247,244,0.38);
+  background: rgba(249,247,244,0.06);
+}
+.hero-proof {
+  display: flex; gap: 36px; flex-wrap: wrap;
+  opacity: 0; transform: translateY(14px);
+  animation: fadeUp 0.7s ease forwards 0.75s;
+}
+.hero-proof-item { display: flex; flex-direction: column; gap: 3px; }
+.hero-proof-num {
+  font-family: var(--ec-font-serif);
+  font-size: 28px; font-weight: 300; line-height: 1;
+  color: rgba(249,247,244,0.85);
+}
+.hero-proof-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: rgba(249,247,244,0.3);
+}
+.hero-proof-divider {
+  width: 1px; height: 40px; background: rgba(249,247,244,0.1);
+  align-self: center;
+}
+.hero-right {
+  padding: 80px 80px 80px 40px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+  opacity: 0; transform: translateX(36px);
+  animation: fadeLeft 0.95s ease forwards 0.55s;
+}
+.app-mockup {
+  width: 100%; max-width: 460px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.05);
+  backdrop-filter: blur(4px);
+}
+.mockup-titlebar {
+  height: 38px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; padding: 0 14px; gap: 8px;
+}
+.mockup-dots { display: flex; gap: 5px; }
+.mockup-dot { width: 9px; height: 9px; border-radius: 50%; }
+.mockup-dot:nth-child(1) { background: rgba(255,255,255,0.15); }
+.mockup-dot:nth-child(2) { background: rgba(255,255,255,0.10); }
+.mockup-dot:nth-child(3) { background: rgba(255,255,255,0.07); }
+.mockup-title-text {
+  font-family: var(--ec-font-serif);
+  font-size: 12px; font-style: italic;
+  color: rgba(249,247,244,0.4); margin: 0 auto;
+}
+.mockup-body {
+  display: grid; grid-template-columns: 152px 1fr;
+  min-height: 340px;
+}
+.mockup-sidebar {
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding: 14px 8px; display: flex; flex-direction: column; gap: 2px;
+}
+.mockup-nav-label {
+  font-family: var(--ec-font-mono);
+  font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.2); padding: 0 8px; margin: 8px 0 4px;
+}
+.mockup-nav-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 8px; border-radius: 4px;
+  font-size: 10px; font-weight: 400;
+  color: rgba(249,247,244,0.35); cursor: pointer;
+  transition: all 0.15s;
+}
+.mockup-nav-item.active { background: rgba(74,103,65,0.2); color: var(--ec-green-light); }
+.mockup-nav-item:hover:not(.active) {
+  background: rgba(255,255,255,0.05); color: rgba(249,247,244,0.65);
+}
+.mockup-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; flex-shrink: 0; opacity: 0.7; }
+.mockup-main { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.mockup-canvas {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; height: 188px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.mockup-canvas-label {
+  position: absolute; top: 10px; left: 12px;
+  font-family: var(--ec-font-mono);
+  font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.2);
+}
+.canvas-wreath {
+  width: 120px; height: 120px; opacity: 0.55;
+  animation: slowSpin 28s linear infinite;
+}
+.mockup-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.mockup-stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 5px; padding: 8px 10px;
+}
+.mockup-stat-num {
+  font-family: var(--ec-font-serif);
+  font-size: 18px; font-weight: 300;
+  color: rgba(249,247,244,0.75); line-height: 1;
+}
+.mockup-stat-label { font-size: 8px; color: rgba(249,247,244,0.28); margin-top: 2px; letter-spacing: 0.04em; }
+
+/* ═══════════════════════════════════════════════════════
+   FEATURE MARQUEE STRIP
+═══════════════════════════════════════════════════════ */
+.marquee-strip { background: var(--ec-green); padding: 14px 0; overflow: hidden; }
+.marquee-track {
+  display: flex; gap: 0;
+  animation: marqueeScroll 32s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 32px;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(249,247,244,0.75);
+  white-space: nowrap; flex-shrink: 0;
+}
+.marquee-item::after {
+  content: ''; display: block; width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(249,247,244,0.35); margin-left: 32px;
+}
+.marquee-leaf { width: 14px; height: 14px; opacity: 0.6; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════════════
+   SECTION SCAFFOLD
+═══════════════════════════════════════════════════════ */
+.section { padding: 120px 0; position: relative; }
+.section--alt { background: var(--ec-surface-warm); }
+.section--dark { background: var(--ec-charcoal); }
+.section--paper { background: var(--ec-paper); }
+.section--black { background: var(--ec-black); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.section-overline {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ec-green); margin-bottom: 16px;
+}
+.section-overline::before {
+  content: ''; display: block; width: 24px; height: 1px;
+  background: var(--ec-green); flex-shrink: 0;
+}
+.section-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(34px, 3.8vw, 54px);
+  font-weight: 300; line-height: 1.08; letter-spacing: -0.025em;
+  color: var(--ec-black); margin-bottom: 18px;
+}
+.section-h2 em { font-style: italic; color: var(--ec-green); }
+.section-lead {
+  font-size: 17px; font-weight: 400; line-height: 1.8;
+  color: var(--ec-text-muted); max-width: 600px;
+}
+.section--dark .section-h2,
+.section--black .section-h2 { color: var(--ec-off-white); }
+.section--dark .section-overline,
+.section--black .section-overline { color: var(--ec-green-light); }
+.section--dark .section-overline::before,
+.section--black .section-overline::before { background: var(--ec-green-light); }
+.section--dark .section-lead,
+.section--black .section-lead { color: rgba(249,247,244,0.52); }
+.botanical-divider {
+  display: flex; align-items: center; gap: 16px;
+  max-width: 180px; margin: 0 auto; padding: 52px 0;
+}
+.botanical-divider::before,
+.botanical-divider::after { content: ''; flex: 1; height: 1px; background: var(--ec-border); }
+.botanical-divider svg { width: 18px; height: 18px; color: var(--ec-green); flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════════════════════ */
+.how-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  margin-top: 72px;
+  border: 1px solid var(--ec-border); border-radius: 12px;
+  overflow: hidden; background: var(--ec-border);
+}
+.how-step {
+  background: var(--ec-white); padding: 44px 40px;
+  position: relative; transition: background var(--ec-transition);
+}
+.how-step:hover { background: var(--ec-green-pale); }
+.how-step-num {
+  font-family: var(--ec-font-serif);
+  font-size: 64px; font-weight: 300;
+  color: var(--ec-gray-200); line-height: 1; margin-bottom: 20px;
+  transition: color var(--ec-transition);
+}
+.how-step:hover .how-step-num { color: rgba(74,103,65,0.2); }
+.how-step-title {
+  font-family: var(--ec-font-serif);
+  font-size: 22px; font-weight: 400; color: var(--ec-black);
+  margin-bottom: 10px; letter-spacing: -0.01em;
+}
+.how-step-desc {
+  font-size: 14px; font-weight: 400;
+  color: var(--ec-text-muted); line-height: 1.75;
+}
+.how-step-tag {
+  display: inline-flex; align-items: center; margin-top: 16px;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ec-green);
+  background: var(--ec-green-pale); padding: 4px 10px; border-radius: 99px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   APPS SHOWCASE — EDITORIAL ASYMMETRIC GRID
+═══════════════════════════════════════════════════════ */
+.apps-editorial {
+  margin-top: 72px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; background: var(--ec-border);
+  border-radius: 14px; overflow: hidden;
+}
+.app-feature-card {
+  background: var(--ec-white); padding: 44px 40px;
+  position: relative; overflow: hidden;
+  transition: background var(--ec-transition); cursor: default;
+}
+.app-feature-card:hover { background: var(--ec-off-white); }
+.app-feature-card.card-tall {
+  grid-row: span 2; background: var(--ec-black);
+}
+.app-feature-card.card-tall:hover { background: var(--ec-charcoal); }
+.app-feature-card.card-accent { background: var(--ec-green); }
+.app-feature-card.card-accent:hover { background: var(--ec-green-light); }
+.app-card-tier {
+  display: inline-flex; align-items: center;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 99px;
+  margin-bottom: 20px;
+}
+.tier-bloom  { background: var(--tier-bloom-bg);  color: var(--tier-bloom-fg); }
+.tier-craft  { background: var(--tier-craft-bg);  color: var(--tier-craft-fg); }
+.tier-studio { background: var(--tier-studio-bg); color: var(--tier-studio-fg); }
+.tier-accent-badge { background: rgba(249,247,244,0.2); color: rgba(249,247,244,0.85); }
+.app-card-icon {
+  width: 48px; height: 48px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px; flex-shrink: 0;
+}
+.app-card-icon svg { width: 22px; height: 22px; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.app-card-name {
+  font-family: var(--ec-font-serif);
+  font-size: 24px; font-weight: 400; color: var(--ec-black);
+  margin-bottom: 10px; letter-spacing: -0.01em;
+}
+.card-tall .app-card-name,
+.card-accent .app-card-name { color: var(--ec-off-white); }
+.app-card-desc {
+  font-size: 14px; font-weight: 400;
+  color: var(--ec-text-muted); line-height: 1.75; max-width: 320px;
+}
+.card-tall .app-card-desc { color: rgba(249,247,244,0.5); }
+.card-accent .app-card-desc { color: rgba(249,247,244,0.75); }
+.card-tall-deco {
+  position: absolute; bottom: -20px; right: -20px;
+  width: 200px; height: 200px; opacity: 0.06; pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   STATS BAR
+═══════════════════════════════════════════════════════ */
+.stats-bar { background: var(--ec-black); padding: 56px 0; }
+.stats-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 40px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; overflow: hidden;
+}
+.stat-item {
+  padding: 40px 36px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  transition: background var(--ec-transition);
+}
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: rgba(255,255,255,0.03); }
+.stat-num {
+  font-family: var(--ec-font-serif);
+  font-size: 52px; font-weight: 300; line-height: 1;
+  color: var(--ec-off-white); margin-bottom: 8px; letter-spacing: -0.02em;
+}
+.stat-num em { font-style: italic; color: var(--ec-green-light); }
+.stat-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(249,247,244,0.3);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TESTIMONIALS
+═══════════════════════════════════════════════════════ */
+.testimonials-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px; margin-top: 64px;
+}
+.testi-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-border);
+  border-radius: 12px; padding: 32px; position: relative;
+  transition: box-shadow var(--ec-transition), transform var(--ec-transition);
+}
+.testi-card:hover { box-shadow: var(--ec-shadow-lg); transform: translateY(-4px); }
+.testi-stars { display: flex; gap: 3px; margin-bottom: 18px; }
+.testi-star { width: 12px; height: 12px; color: var(--ec-warning); }
+.testi-quote {
+  font-family: var(--ec-font-serif);
+  font-size: 19px; font-weight: 300; font-style: italic;
+  line-height: 1.65; color: var(--ec-black); margin-bottom: 24px;
+}
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--ec-green-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: var(--ec-green); flex-shrink: 0;
+}
+.testi-name { font-size: 13px; font-weight: 600; color: var(--ec-black); }
+.testi-handle { font-size: 11px; color: var(--ec-text-faint); margin-top: 1px; }
+
+/* ═══════════════════════════════════════════════════════
+   PRICING TIERS
+═══════════════════════════════════════════════════════ */
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-top: 64px; align-items: start;
+}
+.tier-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-border);
+  border-radius: 14px; padding: 32px 28px; position: relative;
+  transition: box-shadow var(--ec-transition), transform var(--ec-transition);
+}
+.tier-card:hover { box-shadow: var(--ec-shadow-lg); transform: translateY(-4px); }
+.tier-card.recommended {
+  transform: scale(1.04);
+  box-shadow: var(--ec-shadow-hero);
+  border-color: var(--ec-green); z-index: 2;
+}
+.tier-card.recommended:hover { transform: scale(1.04) translateY(-4px); }
+.tier-card.atelier-card { background: var(--ec-black); border-color: rgba(249,247,244,0.12); }
+.tier-popular-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--ec-green); color: var(--ec-off-white);
+  font-size: 9px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 99px; white-space: nowrap;
+}
+.tier-badge {
+  display: inline-flex; align-items: center;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 99px; margin-bottom: 16px;
+}
+.tier-name {
+  font-family: var(--ec-font-serif);
+  font-size: 26px; font-weight: 400; color: var(--ec-black);
+  margin-bottom: 6px; letter-spacing: -0.01em;
+}
+.atelier-card .tier-name { color: var(--ec-off-white); }
+.tier-tagline {
+  font-size: 13px; color: var(--ec-text-faint);
+  margin-bottom: 24px; line-height: 1.5; min-height: 38px;
+}
+.atelier-card .tier-tagline { color: rgba(249,247,244,0.4); }
+.tier-price { margin-bottom: 24px; }
+.tier-price-amount {
+  font-family: var(--ec-font-serif);
+  font-size: 44px; font-weight: 300; line-height: 1;
+  color: var(--ec-black); letter-spacing: -0.02em;
+}
+.atelier-card .tier-price-amount { color: var(--ec-off-white); }
+.tier-price-period { font-size: 13px; color: var(--ec-text-faint); margin-left: 4px; }
+.tier-cta {
+  width: 100%; padding: 11px;
+  font-family: var(--ec-font-sans);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; border-radius: 4px; cursor: pointer;
+  margin-bottom: 24px; transition: all var(--ec-transition);
+}
+.tier-cta-outline {
+  background: transparent; color: var(--ec-black);
+  border: 1px solid var(--ec-border-dark);
+}
+.tier-cta-outline:hover { background: var(--ec-green-pale); border-color: var(--ec-green); color: var(--ec-green); }
+.tier-cta-primary {
+  background: var(--ec-green); color: var(--ec-off-white);
+  border: 1px solid var(--ec-green);
+}
+.tier-cta-primary:hover { background: var(--ec-green-light); box-shadow: 0 4px 16px rgba(74,103,65,0.35); }
+.tier-cta-atelier {
+  background: rgba(249,247,244,0.1); color: var(--ec-off-white);
+  border: 1px solid rgba(249,247,244,0.2);
+}
+.tier-cta-atelier:hover { background: rgba(249,247,244,0.18); }
+.tier-divider { height: 1px; background: var(--ec-border); margin-bottom: 20px; }
+.atelier-card .tier-divider { background: rgba(249,247,244,0.1); }
+.tier-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.tier-feature {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: var(--ec-text-muted); line-height: 1.5;
+}
+.atelier-card .tier-feature { color: rgba(249,247,244,0.6); }
+.tier-feature-check {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--ec-green-pale);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.tier-feature-check svg { width: 8px; height: 8px; stroke: var(--ec-green); stroke-width: 2.5; fill: none; }
+.tier-feature-lock { display: flex; align-items: center; gap: 6px; opacity: 0.45; }
+.tier-feature-lock-icon { font-size: 10px; flex-shrink: 0; }
+.tier-upgrade-hint { font-size: 10px; color: var(--ec-text-faint); margin-left: 2px; }
+
+/* ═══════════════════════════════════════════════════════
+   WAITLIST / EMAIL CAPTURE
+═══════════════════════════════════════════════════════ */
+.waitlist-section {
+  background: var(--ec-black); padding: 120px 0;
+  position: relative; overflow: hidden;
+}
+.waitlist-section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(74,103,65,0.2) 0%, transparent 65%);
+  pointer-events: none;
+}
+.waitlist-inner {
+  max-width: 640px; margin: 0 auto; padding: 0 40px;
+  text-align: center; position: relative; z-index: 1;
+}
+.waitlist-script {
+  font-family: var(--ec-font-script);
+  font-size: 28px; color: rgba(196,146,42,0.75);
+  margin-bottom: 8px; display: block;
+}
+.waitlist-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 300; line-height: 1.08; letter-spacing: -0.025em;
+  color: var(--ec-off-white); margin-bottom: 18px;
+}
+.waitlist-h2 em { font-style: italic; color: var(--ec-green-light); }
+.waitlist-sub { font-size: 16px; color: rgba(249,247,244,0.48); line-height: 1.75; margin-bottom: 44px; }
+.waitlist-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
+.waitlist-input {
+  flex: 1; padding: 14px 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.14); border-radius: 4px;
+  color: var(--ec-off-white); font-family: var(--ec-font-sans); font-size: 14px;
+  outline: none; transition: border-color var(--ec-transition), background var(--ec-transition);
+}
+.waitlist-input::placeholder { color: rgba(249,247,244,0.3); }
+.waitlist-input:focus { border-color: var(--ec-green-light); background: rgba(255,255,255,0.1); }
+.waitlist-submit {
+  padding: 14px 28px; background: var(--ec-green); color: var(--ec-off-white);
+  border: none; border-radius: 4px; font-family: var(--ec-font-sans);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+  cursor: pointer; white-space: nowrap;
+  transition: background var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.waitlist-submit:hover {
+  background: var(--ec-green-light);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(74,103,65,0.4);
+}
+.waitlist-note { font-size: 12px; color: rgba(249,247,244,0.28); margin-top: 16px; }
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+.footer {
+  background: var(--ec-charcoal); padding: 64px 0 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px; margin-bottom: 56px;
+}
+.footer-brand-name {
+  font-family: var(--ec-font-serif);
+  font-size: 20px; font-weight: 400; letter-spacing: 0.06em;
+  color: var(--ec-off-white);
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.footer-brand-desc {
+  font-size: 13px; color: rgba(249,247,244,0.38);
+  line-height: 1.75; max-width: 260px;
+}
+.footer-col-title {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: rgba(249,247,244,0.3); margin-bottom: 16px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a {
+  font-size: 13px; color: rgba(249,247,244,0.45); text-decoration: none;
+  transition: color var(--ec-transition);
+}
+.footer-links a:hover { color: var(--ec-green-light); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.07); padding-top: 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-copy { font-size: 12px; color: rgba(249,247,244,0.25); }
+.footer-legal { display: flex; gap: 20px; }
+.footer-legal a {
+  font-size: 12px; color: rgba(249,247,244,0.25); text-decoration: none;
+  transition: color var(--ec-transition);
+}
+.footer-legal a:hover { color: rgba(249,247,244,0.5); }
+
+/* ═══════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(36px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes slowSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .pricing-grid { grid-template-columns: 1fr 1fr; }
+  .tier-card.recommended { transform: scale(1.02); }
+  .stats-inner { grid-template-columns: 1fr 1fr; }
+  .stat-item { border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .stat-item:nth-child(2n) { border-right: none; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-left { padding: 64px 24px 40px; }
+  .hero-right { display: none; }
+  .how-grid { grid-template-columns: 1fr; }
+  .apps-editorial { grid-template-columns: 1fr; }
+  .app-feature-card.card-tall { grid-row: span 1; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .tier-card.recommended { transform: scale(1); }
+  .stats-inner { grid-template-columns: 1fr 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .waitlist-form { flex-direction: column; }
+  .section { padding: 72px 0; }
+  .wrap { padding: 0 24px; }
+  .nav-inner { padding: 0 24px; }
+}
+@media (max-width: 480px) {
+  .hero-proof { gap: 20px; }
+  .stats-inner { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════════════════ -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="home-v2.html" class="nav-logo">
+      <svg class="nav-logo-leaf" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <path d="M16 18 C16 18 12 16 10 13" stroke="currentColor" stroke-width="1" fill="none"/>
+        <path d="M16 14 C16 14 20 12 22 9" stroke="currentColor" stroke-width="1" fill="none"/>
+      </svg>
+      Evercrafted
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#apps">Apps</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="evercrafted-marketplace.html">Marketplace</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="nav-btn-ghost" onclick="window.location.href='evercrafted-auth.html'">Sign in</button>
+      <button class="nav-btn-cta" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <!-- Background decorative wreath -->
+  <svg class="hero-bg-wreath" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="200" cy="200" r="160" stroke="white" stroke-width="1"/>
+    <circle cx="200" cy="200" r="140" stroke="white" stroke-width="0.5"/>
+    <circle cx="200" cy="200" r="120" stroke="white" stroke-width="0.3"/>
+  </svg>
+
+  <!-- Left: copy -->
+  <div class="hero-left">
+    <div class="hero-overline">
+      <svg width="14" height="14" viewBox="0 0 32 32" fill="none" style="color:currentColor;flex-shrink:0">
+        <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+      </svg>
+      Professional tools for wreath makers
+    </div>
+
+    <h1 class="hero-h1">
+      Design every wreath<br>
+      with <em>intention</em><br>
+      and <span class="script-accent">precision.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Evercrafted is the design suite built for professional wreath makers — from blueprint generation and inventory tracking to AI visualization and a marketplace for your finished designs.
+    </p>
+
+    <div class="hero-actions">
+      <button class="btn-hero-primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">
+        Join the waitlist
+      </button>
+      <button class="btn-hero-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+        See how it works
+      </button>
+    </div>
+
+    <div class="hero-proof">
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">16</div>
+        <div class="hero-proof-label">Design apps</div>
+      </div>
+      <div class="hero-proof-divider"></div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">18</div>
+        <div class="hero-proof-label">Free blueprints</div>
+      </div>
+      <div class="hero-proof-divider"></div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">14</div>
+        <div class="hero-proof-label">Day free trial</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: app mockup -->
+  <div class="hero-right">
+    <div class="app-mockup">
+      <div class="mockup-titlebar">
+        <div class="mockup-dots">
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+          <div class="mockup-dot"></div>
+        </div>
+        <div class="mockup-title-text">Blueprint Studio — Autumn Harvest</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="mockup-nav-label">Workspace</div>
+          <div class="mockup-nav-item active">
+            <div class="mockup-nav-dot"></div>Blueprint Studio
+          </div>
+          <div class="mockup-nav-item">
+            <div class="mockup-nav-dot"></div>Memory Weaver
+          </div>
+          <div class="mockup-nav-item">
+            <div class="mockup-nav-dot"></div>Layout Studio
+          </div>
+          <div class="mockup-nav-label">Library</div>
+          <div class="mockup-nav-item">
+            <div class="mockup-nav-dot"></div>Design Library
+          </div>
+          <div class="mockup-nav-item">
+            <div class="mockup-nav-dot"></div>Inventory
+          </div>
+          <div class="mockup-nav-label">Tools</div>
+          <div class="mockup-nav-item">
+            <div class="mockup-nav-dot"></div>AI Visualizer
+          </div>
+          <div class="mockup-nav-item">
+            <div class="mockup-nav-dot"></div>Pricing Calc
+          </div>
+        </div>
+        <div class="mockup-main">
+          <div class="mockup-canvas">
+            <div class="mockup-canvas-label">Canvas · Blueprint view</div>
+            <svg class="canvas-wreath" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="100" r="72" stroke="rgba(107,143,103,0.5)" stroke-width="1.5"/>
+              <circle cx="100" cy="100" r="58" stroke="rgba(107,143,103,0.3)" stroke-width="1"/>
+              <g transform="translate(100,28)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(30, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(60, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(90, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(120, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(150, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(180, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(210, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(240, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(270, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(300, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <g transform="translate(100,28) rotate(330, 0, 72)"><path d="M0 0 C0 0 -6 -9 0 -15 C6 -9 0 0 0 0Z" stroke="rgba(107,143,103,0.8)" stroke-width="1" fill="rgba(107,143,103,0.15)"/></g>
+              <circle cx="100" cy="100" r="4" fill="rgba(107,143,103,0.3)"/>
+              <circle cx="100" cy="100" r="2" fill="rgba(107,143,103,0.6)"/>
+            </svg>
+          </div>
+          <div class="mockup-stats">
+            <div class="mockup-stat">
+              <div class="mockup-stat-num">24</div>
+              <div class="mockup-stat-label">Elements</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="mockup-stat-num">$68</div>
+              <div class="mockup-stat-label">Est. cost</div>
+            </div>
+            <div class="mockup-stat">
+              <div class="mockup-stat-num">3.2h</div>
+              <div class="mockup-stat-label">Build time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     FEATURE MARQUEE STRIP
+═══════════════════════════════════════════════════ -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Generator</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Memory Weaver</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Inventory Tracker</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>AI Visualizer</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Layout Studio</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Pricing Calculator</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Design Library</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Marketplace</div>
+    <!-- Duplicate for seamless loop -->
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Generator</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Memory Weaver</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Inventory Tracker</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>AI Visualizer</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Layout Studio</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Pricing Calculator</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Design Library</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Marketplace</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════════════════ -->
+<section class="section section--alt" id="how-it-works">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-overline">How it works</div>
+      <h2 class="section-h2">From concept to <em>finished design</em><br>in four steps</h2>
+      <p class="section-lead">Evercrafted guides you from initial inspiration through a structured design process — so every wreath you make is intentional, repeatable, and profitable.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-step reveal reveal-delay-1">
+        <div class="how-step-num">01</div>
+        <div class="how-step-title">Build your inventory</div>
+        <p class="how-step-desc">Log your florals, foliage, ribbons, and embellishments. Track quantities, costs, and seasonal availability — all in one place.</p>
+        <div class="how-step-tag">Bloom &amp; above</div>
+      </div>
+      <div class="how-step reveal reveal-delay-2">
+        <div class="how-step-num">02</div>
+        <div class="how-step-title">Generate a blueprint</div>
+        <p class="how-step-desc">Use the Blueprint Studio to map out your design — element placement, color story, structural layers. Export a shareable layout diagram.</p>
+        <div class="how-step-tag">Studio &amp; above</div>
+      </div>
+      <div class="how-step reveal reveal-delay-3">
+        <div class="how-step-num">03</div>
+        <div class="how-step-title">Visualize with AI</div>
+        <p class="how-step-desc">Feed your blueprint into the AI Visualizer. Generate photorealistic previews, explore colorway variations, and share with clients before a single stem is cut.</p>
+        <div class="how-step-tag">Atelier only</div>
+      </div>
+      <div class="how-step reveal reveal-delay-4">
+        <div class="how-step-num">04</div>
+        <div class="how-step-title">Sell your designs</div>
+        <p class="how-step-desc">Publish finished blueprints to the Evercrafted Marketplace. Earn passive income from your expertise — other makers buy your designs, you get paid.</p>
+        <div class="how-step-tag">All tiers</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     STATS BAR
+═══════════════════════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item reveal">
+      <div class="stat-num">16<em>+</em></div>
+      <div class="stat-label">Specialized apps</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-1">
+      <div class="stat-num">18</div>
+      <div class="stat-label">Free blueprints</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-2">
+      <div class="stat-num">14</div>
+      <div class="stat-label">Day free trial</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-3">
+      <div class="stat-num">65<em>%</em></div>
+      <div class="stat-label">Activation rate goal</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     APPS SHOWCASE
+═══════════════════════════════════════════════════ -->
+<section class="section" id="apps">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="section-overline">The apps</div>
+      <h2 class="section-h2">Every tool your practice <em>deserves</em></h2>
+      <p class="section-lead">Sixteen purpose-built apps covering every stage of the wreath-making workflow. Pick the four that fit your practice, or go all-in with Atelier.</p>
+    </div>
+
+    <div class="apps-editorial">
+      <!-- Tall card — Blueprint Studio (featured) -->
+      <div class="app-feature-card card-tall reveal-left">
+        <div class="app-card-tier tier-studio">Studio</div>
+        <div class="app-card-icon" style="background:rgba(107,143,103,0.15);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(107,143,103,0.9)">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18M9 21V9"/>
+            <circle cx="15" cy="15" r="2"/>
+          </svg>
+        </div>
+        <div class="app-card-name">Blueprint Studio</div>
+        <p class="app-card-desc">Map every element of your design before a single stem is placed. Define structure, color story, and material quantities — then export a shareable layout diagram your clients can actually understand.</p>
+        <!-- Decorative wreath -->
+        <svg class="card-tall-deco" viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="80" stroke="white" stroke-width="2"/>
+          <circle cx="100" cy="100" r="60" stroke="white" stroke-width="1"/>
+          <g transform="translate(100,20)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+          <g transform="translate(100,20) rotate(45, 0, 80)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+          <g transform="translate(100,20) rotate(90, 0, 80)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+          <g transform="translate(100,20) rotate(135, 0, 80)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+          <g transform="translate(100,20) rotate(180, 0, 80)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+          <g transform="translate(100,20) rotate(225, 0, 80)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+          <g transform="translate(100,20) rotate(270, 0, 80)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+          <g transform="translate(100,20) rotate(315, 0, 80)"><path d="M0 0 C0 0 -10 -15 0 -25 C10 -15 0 0 0 0Z" stroke="white" stroke-width="1.5" fill="none"/></g>
+        </svg>
+      </div>
+
+      <!-- Right column: 3 cards -->
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <div class="app-feature-card reveal reveal-delay-1">
+          <div class="app-card-tier tier-bloom">Bloom</div>
+          <div class="app-card-name" style="font-size:20px;">Memory Weaver</div>
+          <p class="app-card-desc" style="font-size:13px;">Capture the story behind each wreath — the occasion, the recipient, the season. Build a living archive of your creative history.</p>
+        </div>
+        <div class="app-feature-card reveal reveal-delay-2">
+          <div class="app-card-tier tier-craft">Craft</div>
+          <div class="app-card-name" style="font-size:20px;">Inventory Tracker</div>
+          <p class="app-card-desc" style="font-size:13px;">Know exactly what you have, what you need, and what it costs. Never over-order or run short mid-project again.</p>
+        </div>
+        <div class="app-feature-card card-accent reveal reveal-delay-3">
+          <div class="app-card-tier tier-accent-badge">Atelier</div>
+          <div class="app-card-name" style="font-size:20px;">AI Visualizer</div>
+          <p class="app-card-desc" style="font-size:13px;">Generate photorealistic previews from your blueprint. Share with clients before a single stem is placed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:40px;" class="reveal">
+      <a href="evercrafted-apps.html" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--ec-green);text-decoration:none;letter-spacing:0.04em;border-bottom:1px solid var(--ec-green-pale);padding-bottom:2px;transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--ec-green)'" onmouseout="this.style.borderColor='var(--ec-green-pale)'">
+        Explore all 16 apps
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     TESTIMONIALS
+═══════════════════════════════════════════════════ -->
+<section class="section section--paper">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:560px;margin:0 auto 0;">
+      <div class="section-overline" style="justify-content:center;">
+        <span style="width:24px;height:1px;background:var(--ec-green);display:block;flex-shrink:0;"></span>
+        From the community
+        <span style="width:24px;height:1px;background:var(--ec-green);display:block;flex-shrink:0;"></span>
+      </div>
+      <h2 class="section-h2">Makers who design <em>with intention</em></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal reveal-delay-1">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"The Blueprint Studio changed how I communicate with clients. I can show them exactly what they're getting before I've touched a single stem."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SR</div>
+          <div>
+            <div class="testi-name">Sarah R.</div>
+            <div class="testi-handle">Studio tier · Seasonal wreath designer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"I've sold three blueprints on the Marketplace this month. It's passive income I never expected from my wreath practice — genuinely life-changing."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">ML</div>
+          <div>
+            <div class="testi-name">Margaret L.</div>
+            <div class="testi-handle">Atelier tier · Marketplace seller</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal reveal-delay-3">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"The Inventory Tracker alone is worth the subscription. I finally know my true cost-per-wreath, and my pricing reflects it. My margins have never been better."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JK</div>
+          <div>
+            <div class="testi-name">Jessica K.</div>
+            <div class="testi-handle">Craft tier · Full-time wreath maker</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Botanical divider -->
+<div class="botanical-divider" style="background:var(--ec-paper);">
+  <svg viewBox="0 0 32 32" fill="none">
+    <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+    <path d="M16 18 C16 18 12 16 10 13" stroke="currentColor" stroke-width="1" fill="none"/>
+    <path d="M16 14 C16 14 20 12 22 9" stroke="currentColor" stroke-width="1" fill="none"/>
+  </svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PRICING
+═══════════════════════════════════════════════════ -->
+<section class="section" id="pricing">
+  <div class="wrap">
+    <div class="reveal" style="text-align:center;max-width:580px;margin:0 auto;">
+      <div class="section-overline" style="justify-content:center;">
+        <span style="width:24px;height:1px;background:var(--ec-green);display:block;flex-shrink:0;"></span>
+        Pricing
+        <span style="width:24px;height:1px;background:var(--ec-green);display:block;flex-shrink:0;"></span>
+      </div>
+      <h2 class="section-h2">Choose the tier that <em>fits your practice</em></h2>
+      <p class="section-lead" style="margin:0 auto;">Start with the tools you need today. Swap apps anytime. Upgrade when your practice grows.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Bloom -->
+      <div class="tier-card reveal reveal-delay-1">
+        <div class="tier-badge tier-bloom">Bloom</div>
+        <div class="tier-name">Bloom</div>
+        <div class="tier-tagline">For makers just beginning their journey</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$19</span>
+          <span class="tier-price-period">/mo</span>
+        </div>
+        <button class="tier-cta tier-cta-outline">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Tutorial guides</li>
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Seasonal lookbook</li>
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Memory Weaver</li>
+          <li class="tier-feature"><div class="tier-feature-lock"><span class="tier-feature-lock-icon">🔒</span>Inventory Tracker<span class="tier-upgrade-hint">Craft+</span></div></li>
+          <li class="tier-feature"><div class="tier-feature-lock"><span class="tier-feature-lock-icon">🔒</span>Blueprint Studio<span class="tier-upgrade-hint">Studio+</span></div></li>
+        </ul>
+      </div>
+
+      <!-- Craft -->
+      <div class="tier-card reveal reveal-delay-2">
+        <div class="tier-badge tier-craft">Craft</div>
+        <div class="tier-name">Craft</div>
+        <div class="tier-tagline">For the maker building a serious practice</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$39</span>
+          <span class="tier-price-period">/mo</span>
+        </div>
+        <button class="tier-cta tier-cta-outline">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Everything in Bloom</li>
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Inventory Tracker</li>
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Pricing Calculator</li>
+          <li class="tier-feature"><div class="tier-feature-lock"><span class="tier-feature-lock-icon">🔒</span>Blueprint Studio<span class="tier-upgrade-hint">Studio+</span></div></li>
+          <li class="tier-feature"><div class="tier-feature-lock"><span class="tier-feature-lock-icon">🔒</span>AI Visualizer<span class="tier-upgrade-hint">Atelier only</span></div></li>
+        </ul>
+      </div>
+
+      <!-- Studio — recommended -->
+      <div class="tier-card recommended reveal reveal-delay-3">
+        <div class="tier-popular-badge">Most Popular</div>
+        <div class="tier-badge tier-studio">Studio</div>
+        <div class="tier-name">Studio</div>
+        <div class="tier-tagline">For the working wreath artist</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$59</span>
+          <span class="tier-price-period">/mo</span>
+        </div>
+        <button class="tier-cta tier-cta-primary">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Everything in Craft</li>
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Blueprint Generator</li>
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Collection Builder</li>
+          <li class="tier-feature"><div class="tier-feature-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>Marketplace access</li>
+          <li class="tier-feature"><div class="tier-feature-lock"><span class="tier-feature-lock-icon">🔒</span>AI Visualizer<span class="tier-upgrade-hint">Atelier only</span></div></li>
+        </ul>
+      </div>
+
+      <!-- Atelier -->
+      <div class="tier-card atelier-card reveal reveal-delay-4">
+        <div class="tier-badge" style="background:rgba(249,247,244,0.1);color:rgba(249,247,244,0.65);">Atelier</div>
+        <div class="tier-name">Atelier</div>
+        <div class="tier-tagline">For the studio that demands everything</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$99</span>
+          <span class="tier-price-period">/mo</span>
+        </div>
+        <button class="tier-cta tier-cta-atelier">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature"><div class="tier-feature-check" style="background:rgba(107,143,103,0.2);"><svg viewBox="0 0 24 24" stroke="var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>Everything in Studio</li>
+          <li class="tier-feature"><div class="tier-feature-check" style="background:rgba(107,143,103,0.2);"><svg viewBox="0 0 24 24" stroke="var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>AI Visualizer</li>
+          <li class="tier-feature"><div class="tier-feature-check" style="background:rgba(107,143,103,0.2);"><svg viewBox="0 0 24 24" stroke="var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>Prompt Creator</li>
+          <li class="tier-feature"><div class="tier-feature-check" style="background:rgba(107,143,103,0.2);"><svg viewBox="0 0 24 24" stroke="var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>All future apps</li>
+          <li class="tier-feature"><div class="tier-feature-check" style="background:rgba(107,143,103,0.2);"><svg viewBox="0 0 24 24" stroke="var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>Priority support</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="reveal" style="text-align:center;margin-top:32px;font-size:13px;color:var(--ec-text-faint);">
+      All plans include a 14-day free trial. No credit card required. À la carte app pricing also available.
+      <a href="evercrafted-pricing.html" style="color:var(--ec-green);text-decoration:none;margin-left:8px;">Compare all plans →</a>
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     WAITLIST / EMAIL CAPTURE
+═══════════════════════════════════════════════════ -->
+<section class="waitlist-section" id="waitlist">
+  <div class="waitlist-inner">
+    <span class="waitlist-script reveal">Join the waitlist</span>
+    <h2 class="waitlist-h2 reveal reveal-delay-1">
+      Your practice deserves<br>
+      <em>better tools.</em>
+    </h2>
+    <p class="waitlist-sub reveal reveal-delay-2">
+      Be among the first to access Evercrafted. Early members receive founding-member pricing, exclusive blueprints, and direct input on the roadmap.
+    </p>
+    <!-- TODO: Connect form to email ESP -->
+    <form class="waitlist-form reveal reveal-delay-3" onsubmit="handleWaitlist(event)">
+      <input type="email" class="waitlist-input" placeholder="your@email.com" required id="waitlistEmail"/>
+      <button type="submit" class="waitlist-submit">Join waitlist</button>
+    </form>
+    <p class="waitlist-note reveal reveal-delay-4">No spam. Unsubscribe anytime. Your email is never shared.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">
+          <svg width="18" height="18" viewBox="0 0 32 32" fill="none" style="color:var(--ec-green-light)">
+            <path d="M16 28 C16 28 8 20 8 12 C8 7.6 11.6 4 16 4 C20.4 4 24 7.6 24 12 C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M16 28 L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+            <path d="M16 18 C16 18 12 16 10 13" stroke="currentColor" stroke-width="1" fill="none"/>
+            <path d="M16 14 C16 14 20 12 22 9" stroke="currentColor" stroke-width="1" fill="none"/>
+          </svg>
+          Evercrafted
+        </div>
+        <p class="footer-brand-desc">The professional design suite for wreath makers. Blueprint generation, inventory tracking, AI visualization, and a marketplace for your finished designs.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="evercrafted-apps.html">All apps</a></li>
+          <li><a href="evercrafted-pricing.html">Pricing</a></li>
+          <li><a href="evercrafted-marketplace.html">Marketplace</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Resources</div>
+        <ul class="footer-links">
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Tutorial guides</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Moodoor</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Evercrafted. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════ -->
+<script>
+/* ── Scroll-triggered nav shadow ── */
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+/* ── IntersectionObserver scroll reveals ── */
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ── Waitlist form handler ── */
+function handleWaitlist(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.waitlist-submit');
+  // TODO: Connect to email ESP API
+  btn.textContent = "You're on the list \u2713";
+  btn.style.background = 'var(--ec-green-light)';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = 'Join waitlist';
+    btn.style.background = '';
+    btn.disabled = false;
+    e.target.reset();
+  }, 4000);
+}
+
+/* ── Smooth anchor scrolling ── */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+</script>
+
+</body>
+</html>
