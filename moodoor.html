@@ -1,0 +1,3013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moodoor — Dress your door with feeling · Evercrafted</title>
+<meta name="description" content="Moodoor translates how you want your home to feel into a curated, shoppable wreath and entryway transformation — instantly. Part of the Evercrafted suite.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@600&family=Inter:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+
+/* ══════════════════════════════════════════════════════════════
+   BRAND TOKENS
+══════════════════════════════════════════════════════════════ */
+:root {
+  --ec-white:        #FFFFFF;
+  --ec-off-white:    #F9F7F4;
+  --ec-paper:        #F2EFE9;
+  --ec-black:        #1A1A1A;
+  --ec-charcoal:     #2E2E2E;
+  --ec-ink:          #4A4A4A;
+
+  --ec-green:        #4A6741;
+  --ec-green-light:  #6B8F67;
+  --ec-green-pale:   #EEF2ED;
+  --ec-green-dim:    rgba(74,103,65,0.12);
+
+  --ec-gray-100:     #F5F5F5;
+  --ec-gray-200:     #E8E8E8;
+  --ec-gray-300:     #D0D0D0;
+  --ec-gray-400:     #A8A8A8;
+  --ec-gray-500:     #787878;
+
+  --ec-warning:      #C4922A;
+  --ec-rust:         #B5451B;
+  --ec-gold:         #C9A84C;
+  --ec-blush:        #E8B4C8;
+  --ec-dust:         #E8E0D0;
+
+  --ec-font-serif:   'Cormorant Garamond', Georgia, serif;
+  --ec-font-sans:    'Inter', system-ui, sans-serif;
+  --ec-font-script:  'Dancing Script', cursive;
+  --ec-font-mono:    'DM Mono', monospace;
+
+  --ec-radius-sm:    4px;
+  --ec-radius-md:    8px;
+  --ec-radius-lg:    14px;
+  --ec-radius-full:  9999px;
+
+  --ec-shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --ec-shadow-md:    0 4px 16px rgba(0,0,0,0.08);
+  --ec-shadow-lg:    0 8px 32px rgba(0,0,0,0.10);
+  --ec-transition:   200ms ease;
+
+  /* Moodoor accent palette */
+  --md-moss:    #3D5A3E;
+  --md-rust:    #B5451B;
+  --md-gold:    #C9A84C;
+  --md-blush:   #D4A96A;
+  --md-cream:   #F5F0E8;
+  --md-ink:     #1A1714;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ec-font-sans);
+  background: var(--ec-off-white);
+  color: var(--ec-black);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.5;
+}
+
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ── SECTION TAG ── */
+.section-tag {
+  font-family: var(--ec-font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-tag::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--ec-green);
+  flex-shrink: 0;
+}
+.section-tag.center { justify-content: center; }
+.section-tag.center::before { display: none; }
+
+/* ── LEAF DIVIDER ── */
+.leaf-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  color: var(--ec-green);
+}
+.leaf-divider::before,
+.leaf-divider::after {
+  content: '';
+  flex: 1;
+  max-width: 120px;
+  height: 1px;
+  background: var(--ec-gray-200);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REVEAL ANIMATIONS
+══════════════════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal-left.visible { opacity: 1; transform: none; }
+.reveal-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal-right.visible { opacity: 1; transform: none; }
+
+.d1 { transition-delay: 0.05s; }
+.d2 { transition-delay: 0.12s; }
+.d3 { transition-delay: 0.19s; }
+.d4 { transition-delay: 0.26s; }
+.d5 { transition-delay: 0.33s; }
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════════ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  transition: background var(--ec-transition), box-shadow var(--ec-transition);
+}
+.nav.scrolled {
+  background: rgba(26,26,26,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ec-off-white);
+  font-family: var(--ec-font-serif);
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+.nav-logo-leaf { color: var(--ec-green-light); }
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.nav-links a {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.55);
+  transition: color var(--ec-transition);
+}
+.nav-links a:hover,
+.nav-links a.active { color: var(--ec-off-white); }
+.nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.nav-signin {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.45);
+  transition: color var(--ec-transition);
+}
+.nav-signin:hover { color: var(--ec-off-white); }
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 20px;
+  background: var(--ec-green);
+  color: var(--ec-off-white);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--ec-radius-full);
+  transition: background var(--ec-transition), transform var(--ec-transition);
+}
+.nav-btn:hover { background: var(--ec-green-light); transform: translateY(-1px); }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO
+══════════════════════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  background: var(--md-ink);
+  color: var(--md-cream);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
+  padding: 120px 80px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Atmospheric gradients */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 110%, rgba(61,90,62,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 15% 20%, rgba(201,168,76,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 35% 25% at 85% 10%, rgba(181,69,27,0.10) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Decorative arc */
+.hero-arc {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 500px;
+  height: 500px;
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.hero-left {
+  position: relative;
+  z-index: 1;
+  animation: heroEnter 0.9s ease both;
+}
+@keyframes heroEnter {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--md-gold);
+  margin-bottom: 28px;
+}
+.hero-eyebrow-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--md-gold);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.4); }
+}
+.hero-tier-pill {
+  padding: 3px 10px;
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.25);
+  border-radius: var(--ec-radius-full);
+  font-size: 0.6rem;
+  color: var(--md-gold);
+  letter-spacing: 0.1em;
+}
+
+.hero-h1 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(3.2rem, 6vw, 5.2rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  margin-bottom: 8px;
+  color: var(--md-cream);
+}
+.hero-h1 em {
+  font-style: italic;
+  color: var(--md-blush);
+}
+
+.hero-h1-script {
+  display: block;
+  font-family: var(--ec-font-script);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  color: rgba(212,169,106,0.65);
+  margin-bottom: 32px;
+  line-height: 1;
+}
+
+.hero-body {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(245,240,232,0.55);
+  max-width: 440px;
+  margin-bottom: 40px;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+.hero-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--md-rust);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--ec-radius-full);
+  transition: background var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.hero-cta-primary:hover {
+  background: #C94E1F;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(181,69,27,0.35);
+}
+.hero-cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border: 1px solid rgba(245,240,232,0.2);
+  color: rgba(245,240,232,0.65);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--ec-radius-full);
+  transition: border-color var(--ec-transition), color var(--ec-transition);
+}
+.hero-cta-ghost:hover {
+  border-color: rgba(245,240,232,0.5);
+  color: var(--md-cream);
+}
+
+.hero-proof {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.hero-proof-item {}
+.hero-proof-num {
+  font-family: var(--ec-font-serif);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--md-cream);
+  margin-bottom: 4px;
+}
+.hero-proof-num em {
+  font-style: normal;
+  font-size: 1.1rem;
+  color: var(--md-gold);
+}
+.hero-proof-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: rgba(245,240,232,0.35);
+  text-transform: uppercase;
+}
+
+/* Hero right: Moodoor quiz mockup */
+.hero-right {
+  position: relative;
+  z-index: 1;
+  animation: heroEnterRight 1s ease 0.2s both;
+}
+@keyframes heroEnterRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.moodoor-mockup {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+}
+.mockup-chrome {
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+.mockup-dot-r { background: #FF5F57; }
+.mockup-dot-y { background: #FEBC2E; }
+.mockup-dot-g { background: #28C840; }
+.mockup-title {
+  flex: 1;
+  text-align: center;
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.2);
+  font-family: var(--ec-font-mono);
+  letter-spacing: 0.04em;
+}
+
+.mockup-body {
+  padding: 28px 24px 24px;
+}
+
+/* Quiz step inside mockup */
+.mock-quiz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.mock-quiz-logo {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  color: var(--md-cream);
+  letter-spacing: 0.02em;
+}
+.mock-quiz-logo span { color: var(--md-gold); }
+.mock-quiz-dots {
+  display: flex;
+  gap: 5px;
+}
+.mock-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+}
+.mock-dot.done { background: var(--md-gold); }
+.mock-dot.active {
+  background: var(--md-rust);
+  width: 14px;
+  border-radius: 3px;
+}
+
+.mock-q-num {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.3);
+  margin-bottom: 8px;
+}
+.mock-q-title {
+  font-family: var(--ec-font-serif);
+  font-size: 1.3rem;
+  color: var(--md-cream);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.mock-q-title em { font-style: italic; color: var(--md-blush); }
+.mock-q-sub {
+  font-size: 0.7rem;
+  color: rgba(245,240,232,0.35);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.mock-mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-bottom: 18px;
+}
+.mock-mood-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 6px;
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mock-mood-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+}
+.mock-mood-card.selected {
+  border-color: var(--md-gold);
+  background: rgba(201,168,76,0.1);
+}
+.mock-mood-icon { font-size: 1.1rem; display: block; margin-bottom: 4px; }
+.mock-mood-name {
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: rgba(245,240,232,0.75);
+  letter-spacing: 0.02em;
+}
+.mock-mood-sub {
+  font-size: 0.55rem;
+  color: rgba(245,240,232,0.3);
+  margin-top: 1px;
+}
+
+.mock-continue-btn {
+  width: 100%;
+  padding: 11px;
+  background: var(--md-rust);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: var(--ec-font-sans);
+}
+.mock-continue-btn:hover { background: #C94E1F; }
+
+/* Hero scroll cue */
+.hero-scroll-cue {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.25);
+  z-index: 2;
+}
+.scroll-cue-line {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(to bottom, transparent, rgba(245,240,232,0.25));
+  animation: scrollCue 2.2s ease-in-out infinite;
+}
+@keyframes scrollCue {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
+  50%       { opacity: 1;   transform: scaleY(1); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE MARQUEE
+══════════════════════════════════════════════════════════════ */
+.marquee-strip {
+  background: var(--md-rust);
+  overflow: hidden;
+  padding: 13px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.marquee-track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: marqueeScroll 28s linear infinite;
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-item {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap;
+  padding: 0 28px;
+}
+.marquee-sep { color: rgba(255,255,255,0.4); margin-left: 28px; }
+
+/* ══════════════════════════════════════════════════════════════
+   INTRO — What is Moodoor
+══════════════════════════════════════════════════════════════ */
+.intro-section {
+  padding: 120px 0;
+  background: var(--ec-off-white);
+}
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.intro-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 24px;
+}
+.intro-h2 em {
+  font-style: italic;
+  color: var(--md-rust);
+}
+.intro-body {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--ec-ink);
+  margin-bottom: 20px;
+}
+.intro-blockquote {
+  border-left: 2px solid var(--md-gold);
+  padding: 16px 20px;
+  margin: 28px 0;
+  background: rgba(201,168,76,0.05);
+  border-radius: 0 var(--ec-radius-sm) var(--ec-radius-sm) 0;
+  font-family: var(--ec-font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ec-charcoal);
+}
+.intro-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-rust);
+  transition: gap var(--ec-transition);
+}
+.intro-link:hover { gap: 12px; }
+
+.intro-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.intro-stat-card {
+  background: var(--ec-black);
+  border-radius: var(--ec-radius-lg);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.intro-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+.intro-stat-card.tall {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  background: var(--md-moss);
+}
+.intro-stat-icon { font-size: 1.4rem; }
+.intro-stat-num {
+  font-family: var(--ec-font-serif);
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--ec-off-white);
+}
+.intro-stat-num em {
+  font-style: normal;
+  font-size: 1.2rem;
+  color: var(--md-gold);
+}
+.intro-stat-label {
+  font-size: 0.7rem;
+  color: rgba(249,247,244,0.4);
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MOOD PROFILES SECTION
+══════════════════════════════════════════════════════════════ */
+.moods-section {
+  padding: 120px 0;
+  background: var(--ec-black);
+  overflow: hidden;
+}
+.moods-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.moods-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-off-white);
+  margin-bottom: 16px;
+}
+.moods-h2 em { font-style: italic; color: var(--md-blush); }
+.moods-sub {
+  font-size: 1rem;
+  color: rgba(249,247,244,0.4);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.moods-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.mood-profile-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--ec-radius-lg);
+  padding: 24px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.mood-profile-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--mood-color, rgba(107,143,103,0.08));
+  opacity: 0;
+  transition: opacity 0.25s;
+  border-radius: inherit;
+}
+.mood-profile-card:hover {
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+.mood-profile-card:hover::before { opacity: 1; }
+.mood-profile-card.active {
+  border-color: var(--mood-border, rgba(201,168,76,0.4));
+}
+.mood-profile-card.active::before { opacity: 1; }
+
+.mood-profile-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+.mood-profile-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  color: var(--ec-off-white);
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+.mood-profile-sub {
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: rgba(249,247,244,0.3);
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.mood-profile-cluster {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--ec-radius-full);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.3);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Mood detail panel ── */
+.mood-detail-panel {
+  margin-top: 40px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--ec-radius-lg);
+  padding: 32px 36px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: center;
+  transition: all 0.35s ease;
+}
+.mood-detail-name {
+  font-family: var(--ec-font-serif);
+  font-size: 2rem;
+  color: var(--ec-off-white);
+  margin-bottom: 8px;
+}
+.mood-detail-name em { font-style: italic; color: var(--md-blush); }
+.mood-detail-desc {
+  font-size: 0.9rem;
+  color: rgba(249,247,244,0.45);
+  line-height: 1.7;
+  max-width: 520px;
+  margin-bottom: 20px;
+}
+.mood-detail-bundle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mood-bundle-pill {
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--ec-radius-full);
+  font-size: 0.65rem;
+  color: rgba(249,247,244,0.5);
+  letter-spacing: 0.04em;
+}
+.mood-bundle-pill.anchor {
+  background: rgba(61,90,62,0.2);
+  border-color: rgba(107,143,103,0.3);
+  color: var(--ec-green-light);
+}
+.mood-detail-colors {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.mood-color-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.1);
+  transition: transform 0.2s;
+}
+.mood-color-swatch:hover { transform: scale(1.15); }
+
+/* ══════════════════════════════════════════════════════════════
+   HOW IT WORKS — 5-step flow
+══════════════════════════════════════════════════════════════ */
+.hiw-section {
+  padding: 120px 0;
+  background: var(--ec-paper);
+}
+.hiw-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.hiw-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 16px;
+}
+.hiw-h2 em { font-style: italic; color: var(--md-rust); }
+.hiw-sub {
+  font-size: 1rem;
+  color: var(--ec-ink);
+  max-width: 460px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.hiw-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  position: relative;
+}
+.hiw-steps::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: calc(10% + 28px);
+  right: calc(10% + 28px);
+  height: 1px;
+  background: linear-gradient(to right, var(--ec-gray-200), var(--ec-gray-300), var(--ec-gray-200));
+}
+
+.hiw-step {
+  text-align: center;
+  padding: 0 16px;
+  position: relative;
+}
+.hiw-step-num-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ec-off-white);
+  border: 1.5px solid var(--ec-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.25s;
+}
+.hiw-step:hover .hiw-step-num-wrap {
+  background: var(--ec-black);
+  border-color: var(--ec-black);
+}
+.hiw-step-num {
+  font-family: var(--ec-font-serif);
+  font-size: 1.4rem;
+  color: var(--ec-gray-400);
+  line-height: 1;
+  transition: color 0.25s;
+}
+.hiw-step:hover .hiw-step-num { color: var(--ec-off-white); }
+.hiw-step-icon {
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 12px;
+}
+.hiw-step-title {
+  font-family: var(--ec-font-serif);
+  font-size: 1.05rem;
+  color: var(--ec-black);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.hiw-step-title em { font-style: italic; color: var(--md-rust); }
+.hiw-step-desc {
+  font-size: 0.78rem;
+  color: var(--ec-gray-500);
+  line-height: 1.65;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE SECTIONS (alternating)
+══════════════════════════════════════════════════════════════ */
+.feature-section {
+  padding: 100px 0;
+  background: var(--ec-off-white);
+}
+.feature-section.alt { background: var(--ec-paper); }
+.feature-section.dark {
+  background: var(--ec-black);
+  color: var(--ec-off-white);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.feature-grid.reverse { direction: rtl; }
+.feature-grid.reverse > * { direction: ltr; }
+
+.feature-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-green);
+  margin-bottom: 16px;
+}
+.feature-tag-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ec-green);
+}
+.feature-tag.rust-tag { color: var(--md-rust); }
+.feature-tag.rust-tag .feature-tag-dot { background: var(--md-rust); }
+.feature-tag.gold-tag { color: var(--md-gold); }
+.feature-tag.gold-tag .feature-tag-dot { background: var(--md-gold); }
+
+.feature-h3 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 20px;
+}
+.feature-section.dark .feature-h3 { color: var(--ec-off-white); }
+.feature-h3 em { font-style: italic; color: var(--md-rust); }
+.feature-section.dark .feature-h3 em { color: var(--md-blush); }
+
+.feature-body {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--ec-ink);
+  margin-bottom: 16px;
+}
+.feature-section.dark .feature-body { color: rgba(249,247,244,0.5); }
+
+.feature-note {
+  padding: 14px 16px;
+  background: rgba(74,103,65,0.06);
+  border-left: 2px solid var(--ec-green);
+  border-radius: 0 var(--ec-radius-sm) var(--ec-radius-sm) 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ec-ink);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.feature-section.dark .feature-note {
+  background: rgba(107,143,103,0.08);
+  color: rgba(249,247,244,0.45);
+}
+
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-rust);
+  transition: gap var(--ec-transition);
+}
+.feature-link:hover { gap: 12px; }
+.feature-section.dark .feature-link { color: var(--ec-green-light); }
+
+/* Feature panels */
+.feature-panel {
+  background: var(--ec-black);
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+}
+.feature-panel.light {
+  background: var(--ec-off-white);
+  border: 1px solid var(--ec-gray-200);
+  box-shadow: var(--ec-shadow-lg);
+}
+.panel-chrome {
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.feature-panel.light .panel-chrome {
+  background: var(--ec-gray-100);
+  border-bottom: 1px solid var(--ec-gray-200);
+}
+.panel-dot { width: 9px; height: 9px; border-radius: 50%; }
+.panel-dot-r { background: #FF5F57; }
+.panel-dot-y { background: #FEBC2E; }
+.panel-dot-g { background: #28C840; }
+.panel-title {
+  flex: 1;
+  text-align: center;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.18);
+  font-family: var(--ec-font-mono);
+  letter-spacing: 0.04em;
+}
+.feature-panel.light .panel-title { color: var(--ec-gray-400); }
+.panel-body { padding: 20px; }
+
+/* ── Bundle result panel ── */
+.bundle-panel {
+  background: var(--ec-black);
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+}
+.bundle-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bundle-panel-title {
+  font-family: var(--ec-font-serif);
+  font-size: 1rem;
+  color: var(--ec-off-white);
+}
+.bundle-panel-mood {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--md-gold);
+  background: rgba(201,168,76,0.1);
+  padding: 3px 8px;
+  border-radius: var(--ec-radius-full);
+}
+.bundle-panel-body { padding: 20px; }
+.bundle-visual {
+  height: 120px;
+  background: linear-gradient(135deg, rgba(61,90,62,0.25) 0%, rgba(181,69,27,0.1) 100%);
+  border-radius: var(--ec-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.bundle-items-list { margin-bottom: 14px; }
+.bundle-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.72rem;
+}
+.bundle-item-row:last-child { border-bottom: none; }
+.bundle-item-name { color: rgba(249,247,244,0.7); }
+.bundle-item-role {
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.25);
+  margin-right: 8px;
+}
+.bundle-item-price { color: var(--ec-off-white); font-weight: 500; }
+.bundle-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+}
+.bundle-total-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.3);
+}
+.bundle-total-val {
+  font-family: var(--ec-font-serif);
+  font-size: 1.6rem;
+  color: var(--ec-off-white);
+}
+.bundle-total-val sup {
+  font-size: 0.8rem;
+  vertical-align: super;
+  font-family: var(--ec-font-sans);
+}
+.bundle-cta-row {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+.bundle-btn-primary {
+  flex: 1;
+  padding: 10px;
+  background: var(--md-rust);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--ec-font-sans);
+  transition: background 0.2s;
+}
+.bundle-btn-primary:hover { background: #C94E1F; }
+.bundle-btn-ghost {
+  padding: 10px 14px;
+  background: transparent;
+  color: rgba(249,247,244,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--ec-font-sans);
+  transition: all 0.2s;
+}
+.bundle-btn-ghost:hover {
+  border-color: rgba(255,255,255,0.25);
+  color: var(--ec-off-white);
+}
+
+/* ── Style selector panel ── */
+.style-panel-body { padding: 20px; }
+.style-panel-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.3);
+  margin-bottom: 12px;
+}
+.style-swatches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.style-swatch-card {
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.style-swatch-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+.style-swatch-card.active {
+  border-color: var(--md-gold);
+  background: rgba(201,168,76,0.08);
+}
+.style-swatch-color {
+  width: 100%;
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+.style-swatch-name {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: rgba(249,247,244,0.6);
+  letter-spacing: 0.04em;
+}
+
+/* ── Confidence bar ── */
+.conf-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.conf-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.25);
+  white-space: nowrap;
+}
+.conf-track {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.conf-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--md-moss);
+  transition: width 1.2s ease 0.3s;
+}
+.conf-pct {
+  font-size: 0.6rem;
+  color: rgba(249,247,244,0.3);
+  font-family: var(--ec-font-mono);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STYLE ARCHETYPES GRID
+══════════════════════════════════════════════════════════════ */
+.archetypes-section {
+  padding: 120px 0;
+  background: var(--ec-off-white);
+}
+.archetypes-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.archetypes-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 16px;
+}
+.archetypes-h2 em { font-style: italic; color: var(--md-rust); }
+.archetypes-sub {
+  font-size: 1rem;
+  color: var(--ec-ink);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.archetypes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.archetype-card {
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--ec-gray-200);
+  background: var(--ec-white);
+  transition: transform 0.25s, box-shadow 0.25s;
+  cursor: pointer;
+}
+.archetype-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+}
+.archetype-visual {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  position: relative;
+}
+.archetype-info { padding: 20px; }
+.archetype-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.3rem;
+  color: var(--ec-black);
+  margin-bottom: 6px;
+}
+.archetype-desc {
+  font-size: 0.8rem;
+  color: var(--ec-gray-500);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.archetype-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.archetype-tag {
+  padding: 3px 9px;
+  background: var(--ec-gray-100);
+  border-radius: var(--ec-radius-full);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ec-gray-500);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════════════════════════════ */
+.testimonials-section {
+  padding: 120px 0;
+  background: var(--ec-paper);
+}
+.testimonials-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.testimonials-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 16px;
+}
+.testimonials-h2 em { font-style: italic; color: var(--md-rust); }
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.testi-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: var(--ec-radius-lg);
+  padding: 28px 24px;
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.testi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ec-shadow-lg);
+}
+.testi-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 16px;
+}
+.testi-star {
+  width: 13px;
+  height: 13px;
+  color: var(--md-gold);
+}
+.testi-quote {
+  font-family: var(--ec-font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ec-charcoal);
+  margin-bottom: 20px;
+}
+.testi-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.testi-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ec-green-pale);
+  color: var(--ec-green);
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.testi-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ec-black);
+}
+.testi-handle {
+  font-size: 0.7rem;
+  color: var(--ec-gray-400);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TIER / PRICING SECTION
+══════════════════════════════════════════════════════════════ */
+.tier-section {
+  padding: 120px 0;
+  background: var(--ec-off-white);
+}
+.tier-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.tier-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ec-black);
+  margin-bottom: 16px;
+}
+.tier-h2 em { font-style: italic; color: var(--md-rust); }
+.tier-sub {
+  font-size: 1rem;
+  color: var(--ec-ink);
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.tier-card {
+  background: var(--ec-white);
+  border: 1px solid var(--ec-gray-200);
+  border-radius: var(--ec-radius-lg);
+  padding: 28px 22px;
+  transition: transform var(--ec-transition), box-shadow var(--ec-transition);
+  position: relative;
+}
+.tier-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--ec-shadow-lg);
+}
+.tier-card.recommended {
+  border-color: var(--ec-green);
+  box-shadow: 0 0 0 1px var(--ec-green);
+}
+.tier-card.atelier-card {
+  background: var(--ec-black);
+  border-color: rgba(255,255,255,0.08);
+}
+.tier-popular-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ec-green);
+  color: var(--ec-off-white);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: var(--ec-radius-full);
+  white-space: nowrap;
+}
+.tier-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--ec-radius-full);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.tier-badge-bloom  { background: #EEF2ED; color: #4A6741; }
+.tier-badge-craft  { background: #EEF4F9; color: #4A6785; }
+.tier-badge-studio { background: #F5EEF4; color: #7A4A85; }
+.tier-badge-atelier{ background: rgba(249,247,244,0.08); color: rgba(249,247,244,0.6); }
+.tier-name {
+  font-family: var(--ec-font-serif);
+  font-size: 1.5rem;
+  color: var(--ec-black);
+  margin-bottom: 6px;
+}
+.atelier-card .tier-name { color: var(--ec-off-white); }
+.tier-tagline {
+  font-size: 0.78rem;
+  color: var(--ec-gray-500);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+.tier-price {
+  margin-bottom: 20px;
+}
+.tier-price-amount {
+  font-family: var(--ec-font-serif);
+  font-size: 2.2rem;
+  color: var(--ec-black);
+  line-height: 1;
+}
+.atelier-card .tier-price-amount { color: var(--ec-off-white); }
+.tier-price-period {
+  font-size: 0.78rem;
+  color: var(--ec-gray-400);
+  margin-left: 4px;
+}
+.tier-cta {
+  display: block;
+  text-align: center;
+  padding: 11px;
+  border-radius: var(--ec-radius-full);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all var(--ec-transition);
+  margin-bottom: 20px;
+}
+.tier-cta-outline {
+  border: 1.5px solid var(--ec-gray-200);
+  color: var(--ec-black);
+}
+.tier-cta-outline:hover {
+  border-color: var(--ec-black);
+  background: var(--ec-black);
+  color: var(--ec-off-white);
+}
+.tier-cta-primary {
+  background: var(--ec-green);
+  color: var(--ec-off-white);
+}
+.tier-cta-primary:hover {
+  background: var(--ec-green-light);
+  transform: translateY(-1px);
+}
+.tier-cta-dark {
+  border: 1.5px solid rgba(249,247,244,0.12);
+  color: rgba(249,247,244,0.6);
+}
+.tier-cta-dark:hover {
+  border-color: rgba(249,247,244,0.35);
+  color: var(--ec-off-white);
+}
+.tier-divider {
+  height: 1px;
+  background: var(--ec-gray-200);
+  margin-bottom: 20px;
+}
+.atelier-card .tier-divider { background: rgba(255,255,255,0.07); }
+.tier-features { list-style: none; }
+.tier-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--ec-ink);
+  padding: 5px 0;
+  line-height: 1.45;
+}
+.atelier-card .tier-feature-item { color: rgba(249,247,244,0.5); }
+.tier-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ec-green-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.tier-check svg {
+  width: 9px;
+  height: 9px;
+  stroke: var(--ec-green);
+  stroke-width: 2.5;
+  fill: none;
+}
+.tier-lock-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ec-gray-400);
+  font-size: 0.75rem;
+}
+.tier-lock-icon { font-size: 0.7rem; }
+.tier-upgrade-hint {
+  margin-left: auto;
+  font-size: 0.58rem;
+  padding: 2px 6px;
+  background: var(--ec-gray-100);
+  border-radius: var(--ec-radius-full);
+  color: var(--ec-gray-500);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tier-highlight-note {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ec-gray-400);
+}
+.tier-highlight-note a {
+  color: var(--ec-green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CTA SECTION
+══════════════════════════════════════════════════════════════ */
+.cta-section {
+  padding: 120px 0;
+  background: var(--ec-black);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(61,90,62,0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+.cta-script {
+  display: block;
+  font-family: var(--ec-font-script);
+  font-size: 2rem;
+  color: rgba(212,169,106,0.6);
+  margin-bottom: 8px;
+}
+.cta-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--ec-off-white);
+  margin-bottom: 20px;
+}
+.cta-h2 em { font-style: italic; color: var(--md-blush); }
+.cta-sub {
+  font-size: 1rem;
+  color: rgba(249,247,244,0.4);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+.cta-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.cta-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 32px;
+  background: var(--md-rust);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--ec-radius-full);
+  transition: background var(--ec-transition), transform var(--ec-transition), box-shadow var(--ec-transition);
+}
+.cta-btn-primary:hover {
+  background: #C94E1F;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(181,69,27,0.4);
+}
+.cta-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border: 1px solid rgba(249,247,244,0.18);
+  color: rgba(249,247,244,0.55);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--ec-radius-full);
+  transition: border-color var(--ec-transition), color var(--ec-transition);
+}
+.cta-btn-ghost:hover {
+  border-color: rgba(249,247,244,0.4);
+  color: var(--ec-off-white);
+}
+.cta-note {
+  font-size: 0.72rem;
+  color: rgba(249,247,244,0.2);
+  letter-spacing: 0.04em;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════════ */
+.footer {
+  background: var(--ec-charcoal);
+  padding: 64px 0 32px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+.footer-brand-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ec-font-serif);
+  font-size: 1.1rem;
+  color: var(--ec-off-white);
+  margin-bottom: 12px;
+}
+.footer-brand-desc {
+  font-size: 0.8rem;
+  color: rgba(249,247,244,0.3);
+  line-height: 1.7;
+  max-width: 280px;
+}
+.footer-col-title {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(249,247,244,0.25);
+  margin-bottom: 16px;
+}
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 10px; }
+.footer-links a {
+  font-size: 0.82rem;
+  color: rgba(249,247,244,0.4);
+  transition: color var(--ec-transition);
+}
+.footer-links a:hover { color: var(--ec-off-white); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-copy {
+  font-size: 0.75rem;
+  color: rgba(249,247,244,0.2);
+}
+.footer-legal {
+  display: flex;
+  gap: 20px;
+}
+.footer-legal a {
+  font-size: 0.75rem;
+  color: rgba(249,247,244,0.2);
+  transition: color var(--ec-transition);
+}
+.footer-legal a:hover { color: rgba(249,247,244,0.5); }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; padding: 100px 40px 80px; gap: 48px; }
+  .hero-right { display: none; }
+  .moods-grid { grid-template-columns: repeat(5, 1fr); }
+  .hiw-steps { grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  .hiw-steps::before { display: none; }
+  .tier-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .wrap { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 24px 64px; }
+  .intro-grid { grid-template-columns: 1fr; gap: 48px; }
+  .intro-right { grid-template-columns: 1fr 1fr; }
+  .moods-grid { grid-template-columns: repeat(2, 1fr); }
+  .mood-detail-panel { grid-template-columns: 1fr; }
+  .hiw-steps { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr; gap: 40px; }
+  .feature-grid.reverse { direction: ltr; }
+  .archetypes-grid { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .tier-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 480px) {
+  .hero-h1 { font-size: 2.8rem; }
+  .intro-right { grid-template-columns: 1fr; }
+  .moods-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg class="nav-logo-leaf" width="18" height="22" viewBox="0 0 32 40" fill="none">
+        <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 38L16 8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <path d="M16 22C16 22 10 18 8 13" stroke="currentColor" stroke-width="1" fill="none"/>
+        <path d="M16 16C16 16 22 12 24 7" stroke="currentColor" stroke-width="1" fill="none"/>
+      </svg>
+      <span class="nav-logo-name">Evercrafted</span>
+    </a>
+    <div class="nav-links">
+      <a href="evercrafted-home-hiw.html#how-it-works">How it works</a>
+      <a href="evercrafted-apps.html" class="active">Apps</a>
+      <a href="evercrafted-marketplace.html">Marketplace</a>
+      <a href="evercrafted-home-hiw.html#pricing">Pricing</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#" class="nav-signin">Sign in</a>
+      <a href="#try-moodoor" class="nav-btn">Try Moodoor</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════════ -->
+<section class="hero">
+
+  <!-- Decorative arc -->
+  <svg class="hero-arc" viewBox="0 0 500 500" fill="none">
+    <circle cx="250" cy="250" r="200" stroke="white" stroke-width="0.5"/>
+    <circle cx="250" cy="250" r="150" stroke="white" stroke-width="0.3"/>
+    <circle cx="250" cy="250" r="100" stroke="white" stroke-width="0.2"/>
+    <path d="M250 50 C250 50 200 100 180 150 C160 200 170 250 190 270 C210 290 250 300 250 300" stroke="white" stroke-width="0.8" fill="none"/>
+    <path d="M250 50 C250 50 300 100 320 150 C340 200 330 250 310 270 C290 290 250 300 250 300" stroke="white" stroke-width="0.8" fill="none"/>
+  </svg>
+
+  <!-- Left: copy -->
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span class="hero-eyebrow-dot"></span>
+      Moodoor
+      <span class="hero-tier-pill">All tiers</span>
+    </div>
+
+    <h1 class="hero-h1">
+      Your door,<br>
+      your <em>feeling.</em>
+    </h1>
+    <span class="hero-h1-script">dressed in the mood you choose.</span>
+
+    <p class="hero-body">
+      Moodoor is the consumer-facing heart of Evercrafted. Describe how you want your home to feel — serene, joyful, romantic, harvest-warm — and Moodoor curates a shoppable wreath and entryway bundle matched to your mood, occasion, style, and budget. No design experience required.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#try-moodoor" class="hero-cta-primary">Begin your mood ↗</a>
+      <a href="#how-it-works" class="hero-cta-ghost">See how it works</a>
+    </div>
+
+    <div class="hero-proof">
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">10<em>+</em></div>
+        <div class="hero-proof-label">Mood profiles</div>
+      </div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">3</div>
+        <div class="hero-proof-label">Minutes to your look</div>
+      </div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">5</div>
+        <div class="hero-proof-label">Bundle clusters</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Moodoor quiz mockup -->
+  <div class="hero-right">
+    <div class="moodoor-mockup">
+      <div class="mockup-chrome">
+        <div class="mockup-dot mockup-dot-r"></div>
+        <div class="mockup-dot mockup-dot-y"></div>
+        <div class="mockup-dot mockup-dot-g"></div>
+        <div class="mockup-title">Moodoor — How do you want your door to feel?</div>
+      </div>
+      <div class="mockup-body">
+        <div class="mock-quiz-header">
+          <div class="mock-quiz-logo">Mood<span>oor</span></div>
+          <div class="mock-quiz-dots">
+            <div class="mock-dot done"></div>
+            <div class="mock-dot active"></div>
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+          </div>
+        </div>
+        <div class="mock-q-num">Step 1 of 5</div>
+        <div class="mock-q-title">How do you want your<br>door to <em>feel?</em></div>
+        <div class="mock-q-sub">Pick the emotion that speaks to you right now.</div>
+        <div class="mock-mood-grid">
+          <div class="mock-mood-card selected">
+            <span class="mock-mood-icon">🌿</span>
+            <div class="mock-mood-name">Serene</div>
+            <div class="mock-mood-sub">Still · peaceful</div>
+          </div>
+          <div class="mock-mood-card">
+            <span class="mock-mood-icon">🌾</span>
+            <div class="mock-mood-name">Grounded</div>
+            <div class="mock-mood-sub">Earthy · rooted</div>
+          </div>
+          <div class="mock-mood-card">
+            <span class="mock-mood-icon">🌻</span>
+            <div class="mock-mood-name">Joyful</div>
+            <div class="mock-mood-sub">Bright · warm</div>
+          </div>
+          <div class="mock-mood-card">
+            <span class="mock-mood-icon">🌹</span>
+            <div class="mock-mood-name">Romantic</div>
+            <div class="mock-mood-sub">Tender · glowing</div>
+          </div>
+          <div class="mock-mood-card">
+            <span class="mock-mood-icon">🍂</span>
+            <div class="mock-mood-name">Harvest</div>
+            <div class="mock-mood-sub">Amber · abundant</div>
+          </div>
+          <div class="mock-mood-card">
+            <span class="mock-mood-icon">🌲</span>
+            <div class="mock-mood-name">Holiday</div>
+            <div class="mock-mood-sub">Rich · layered</div>
+          </div>
+        </div>
+        <button class="mock-continue-btn">Continue →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="hero-scroll-cue">
+    <div class="scroll-cue-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE MARQUEE
+══════════════════════════════════════════════════════════════ -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <div class="marquee-item">Moodoor <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">10 mood profiles <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Shoppable bundles <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">3-minute quiz <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Budget-matched curation <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">6 style archetypes <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Door transformation preview <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Available on all tiers <span class="marquee-sep">◆</span></div>
+    <!-- Duplicate for seamless loop -->
+    <div class="marquee-item">Moodoor <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">10 mood profiles <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Shoppable bundles <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">3-minute quiz <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Budget-matched curation <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">6 style archetypes <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Door transformation preview <span class="marquee-sep">◆</span></div>
+    <div class="marquee-item">Available on all tiers <span class="marquee-sep">◆</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTRO — What is Moodoor
+══════════════════════════════════════════════════════════════ -->
+<section class="intro-section" id="how-it-works">
+  <div class="wrap">
+    <div class="intro-grid">
+      <div class="intro-left">
+        <div class="section-tag reveal">What it is</div>
+        <h2 class="intro-h2 reveal d1">
+          Your door speaks<br>
+          before you <em>open it.</em>
+        </h2>
+        <p class="intro-body reveal d2">
+          Moodoor is the consumer-facing layer of Evercrafted — the place where feeling comes before design. Instead of asking you to choose a wreath from a catalogue, Moodoor asks how you want your home to feel. Serene? Joyful? Harvest-warm? Hosting-ready?
+        </p>
+        <p class="intro-body reveal d3">
+          Your answers flow through a five-step mood quiz that captures your emotional intent, the occasion, your aesthetic direction, your budget, and any practical constraints. Moodoor then generates three curated bundle concepts — a wreath, a door mat, accent stems, botanicals, and ambient lighting — matched to your exact profile.
+        </p>
+        <blockquote class="intro-blockquote reveal d4">
+          "I never knew what I wanted until Moodoor asked me how I wanted to feel. Now my front door is the first thing I look forward to coming home to."
+          <br><strong style="font-style:normal;font-size:0.8rem;color:var(--md-rust);display:block;margin-top:8px;">— Diane M., Bloom tier</strong>
+        </blockquote>
+        <a href="#try-moodoor" class="intro-link reveal d5">
+          Begin your mood quiz
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="intro-right">
+        <div class="intro-stat-card tall reveal-right d1">
+          <div class="intro-stat-icon">🚪</div>
+          <div>
+            <div class="intro-stat-num" style="color:var(--ec-off-white);">3<em style="color:var(--md-gold);">min</em></div>
+            <div class="intro-stat-label" style="color:rgba(249,247,244,0.4);">From first question to a fully curated, shoppable entryway bundle</div>
+          </div>
+        </div>
+        <div class="intro-stat-card reveal-right d2">
+          <div class="intro-stat-icon">🌿</div>
+          <div class="intro-stat-num">10<em>+</em></div>
+          <div class="intro-stat-label">Distinct mood profiles</div>
+        </div>
+        <div class="intro-stat-card reveal-right d3">
+          <div class="intro-stat-icon">🎨</div>
+          <div class="intro-stat-num">6</div>
+          <div class="intro-stat-label">Style archetypes</div>
+        </div>
+        <div class="intro-stat-card reveal-right d4">
+          <div class="intro-stat-icon">💐</div>
+          <div class="intro-stat-num">5</div>
+          <div class="intro-stat-label">Bundle clusters per mood</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MOOD PROFILES
+══════════════════════════════════════════════════════════════ -->
+<section class="moods-section">
+  <div class="wrap">
+    <div class="moods-header">
+      <div class="section-tag center reveal" style="color:var(--ec-green-light);">The mood library</div>
+      <h2 class="moods-h2 reveal d1">Ten ways to feel<br><em>at home.</em></h2>
+      <p class="moods-sub reveal d2">Each mood maps to a curated bundle cluster — wreath, mat, stems, botanicals, and ambient glow — assembled from your maker's live inventory.</p>
+    </div>
+
+    <div class="moods-grid reveal d2">
+      <div class="mood-profile-card" style="--mood-color:rgba(225,245,238,0.06);--mood-border:rgba(107,143,103,0.4);" onclick="selectMoodProfile(this,'serene')" data-mood="serene">
+        <span class="mood-profile-icon">🌿</span>
+        <div class="mood-profile-name">Serene</div>
+        <div class="mood-profile-sub">Still · peaceful</div>
+        <div class="mood-profile-cluster">Calm cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(234,243,222,0.06);--mood-border:rgba(160,200,120,0.4);" onclick="selectMoodProfile(this,'grounded')" data-mood="grounded">
+        <span class="mood-profile-icon">🌾</span>
+        <div class="mood-profile-name">Grounded</div>
+        <div class="mood-profile-sub">Earthy · rooted</div>
+        <div class="mood-profile-cluster">Calm cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(250,238,218,0.06);--mood-border:rgba(250,199,117,0.4);" onclick="selectMoodProfile(this,'joyful')" data-mood="joyful">
+        <span class="mood-profile-icon">🌻</span>
+        <div class="mood-profile-name">Joyful</div>
+        <div class="mood-profile-sub">Bright · warm</div>
+        <div class="mood-profile-cluster">Joyful cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(250,236,231,0.06);--mood-border:rgba(245,196,179,0.4);" onclick="selectMoodProfile(this,'playful')" data-mood="playful">
+        <span class="mood-profile-icon">🍊</span>
+        <div class="mood-profile-name">Playful</div>
+        <div class="mood-profile-sub">Bold · spirited</div>
+        <div class="mood-profile-cluster">Joyful cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(251,234,240,0.06);--mood-border:rgba(244,192,209,0.4);" onclick="selectMoodProfile(this,'romantic')" data-mood="romantic">
+        <span class="mood-profile-icon">🌹</span>
+        <div class="mood-profile-name">Romantic</div>
+        <div class="mood-profile-sub">Tender · glowing</div>
+        <div class="mood-profile-cluster">Romantic cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(250,240,220,0.06);--mood-border:rgba(239,201,122,0.4);" onclick="selectMoodProfile(this,'harvest')" data-mood="harvest">
+        <span class="mood-profile-icon">🍂</span>
+        <div class="mood-profile-name">Harvest</div>
+        <div class="mood-profile-sub">Amber · abundant</div>
+        <div class="mood-profile-cluster">Seasonal cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(228,240,228,0.06);--mood-border:rgba(159,202,159,0.4);" onclick="selectMoodProfile(this,'holiday')" data-mood="holiday">
+        <span class="mood-profile-icon">🌲</span>
+        <div class="mood-profile-name">Holiday</div>
+        <div class="mood-profile-sub">Rich · layered</div>
+        <div class="mood-profile-cluster">Seasonal cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(253,232,245,0.06);--mood-border:rgba(245,184,222,0.4);" onclick="selectMoodProfile(this,'spring')" data-mood="spring">
+        <span class="mood-profile-icon">🌷</span>
+        <div class="mood-profile-name">Spring</div>
+        <div class="mood-profile-sub">Fresh · emerging</div>
+        <div class="mood-profile-cluster">Seasonal cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(234,243,222,0.06);--mood-border:rgba(160,200,120,0.4);" onclick="selectMoodProfile(this,'nested')" data-mood="nested">
+        <span class="mood-profile-icon">🏡</span>
+        <div class="mood-profile-name">New home</div>
+        <div class="mood-profile-sub">Hopeful · fresh</div>
+        <div class="mood-profile-cluster">Moment cluster</div>
+      </div>
+      <div class="mood-profile-card" style="--mood-color:rgba(250,238,218,0.06);--mood-border:rgba(250,199,117,0.4);" onclick="selectMoodProfile(this,'hosting')" data-mood="hosting">
+        <span class="mood-profile-icon">🕯️</span>
+        <div class="mood-profile-name">Hosting</div>
+        <div class="mood-profile-sub">Welcoming · ready</div>
+        <div class="mood-profile-cluster">Moment cluster</div>
+      </div>
+    </div>
+
+    <!-- Mood detail panel -->
+    <div class="mood-detail-panel reveal d3" id="mood-detail">
+      <div>
+        <div class="mood-detail-name" id="detail-name">Serene <em>— calm cluster</em></div>
+        <div class="mood-detail-desc" id="detail-desc">A still, peaceful entryway. Dried eucalyptus, natural jute, white cotton stems, and soft air plants compose a threshold that invites you to exhale before you step inside.</div>
+        <div class="mood-detail-bundle" id="detail-bundle">
+          <span class="mood-bundle-pill anchor">🌿 Dried eucalyptus wreath (L)</span>
+          <span class="mood-bundle-pill">Natural jute door mat</span>
+          <span class="mood-bundle-pill">Cotton stem bundle (white)</span>
+          <span class="mood-bundle-pill">Air plant trio</span>
+          <span class="mood-bundle-pill">Concrete pillar lantern</span>
+        </div>
+      </div>
+      <div class="mood-detail-colors" id="detail-colors">
+        <div class="mood-color-swatch" style="background:#E1F5EE;" title="Pale mint"></div>
+        <div class="mood-color-swatch" style="background:#9FE1CB;" title="Sage green"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HOW IT WORKS — 5-step flow
+══════════════════════════════════════════════════════════════ -->
+<section class="hiw-section" id="how-it-works-steps">
+  <div class="wrap">
+    <div class="hiw-header">
+      <div class="section-tag center reveal">The process</div>
+      <h2 class="hiw-h2 reveal d1">Five questions.<br>One <em>perfect door.</em></h2>
+      <p class="hiw-sub reveal d2">Moodoor's quiz is designed to be completed in under three minutes — no design vocabulary required.</p>
+    </div>
+
+    <div class="hiw-steps">
+      <div class="hiw-step reveal d1">
+        <div class="hiw-step-num-wrap">
+          <span class="hiw-step-num">01</span>
+        </div>
+        <span class="hiw-step-icon">🌿</span>
+        <div class="hiw-step-title">Choose your <em>mood</em></div>
+        <div class="hiw-step-desc">Pick the emotion you want your door to convey — from 10 curated mood profiles across 5 emotional clusters.</div>
+      </div>
+      <div class="hiw-step reveal d2">
+        <div class="hiw-step-num-wrap">
+          <span class="hiw-step-num">02</span>
+        </div>
+        <span class="hiw-step-icon">🎉</span>
+        <div class="hiw-step-title">Set the <em>occasion</em></div>
+        <div class="hiw-step-desc">Everyday refresh, house warming, holiday gathering, or hosting guests — the occasion fine-tunes your bundle's character.</div>
+      </div>
+      <div class="hiw-step reveal d3">
+        <div class="hiw-step-num-wrap">
+          <span class="hiw-step-num">03</span>
+        </div>
+        <span class="hiw-step-icon">🎨</span>
+        <div class="hiw-step-title">Pick your <em>style</em></div>
+        <div class="hiw-step-desc">Natural, Modern, Festive, Romantic, Rustic, or Minimal — your aesthetic direction shapes every material and colour choice.</div>
+      </div>
+      <div class="hiw-step reveal d4">
+        <div class="hiw-step-num-wrap">
+          <span class="hiw-step-num">04</span>
+        </div>
+        <span class="hiw-step-icon">💰</span>
+        <div class="hiw-step-title">Set your <em>budget</em></div>
+        <div class="hiw-step-desc">From under $75 to $250+, Moodoor builds the best possible bundle within your range — no hidden upsells.</div>
+      </div>
+      <div class="hiw-step reveal d5">
+        <div class="hiw-step-num-wrap">
+          <span class="hiw-step-num">05</span>
+        </div>
+        <span class="hiw-step-icon">✨</span>
+        <div class="hiw-step-title">Receive your <em>concepts</em></div>
+        <div class="hiw-step-desc">Three curated bundle variants — Best match, Pared back, and Full look — each with a confidence score and a story.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 1 — The mood quiz
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section alt">
+  <div class="wrap">
+    <div class="feature-grid">
+      <!-- Copy -->
+      <div>
+        <div class="feature-tag reveal">Feature 01</div>
+        <h3 class="feature-h3 reveal d1">Emotion-first<br><em>curation.</em></h3>
+        <p class="feature-body reveal d2">
+          Most home décor tools start with a product catalogue. Moodoor starts with a feeling. The five-step quiz is built around emotional intent — mood, occasion, aesthetic direction, budget, and practical constraints — so the curation engine understands not just what you want, but why.
+        </p>
+        <p class="feature-body reveal d3">
+          Each of the 10 mood profiles maps to a bundle cluster: Calm, Joyful, Romantic, Seasonal, or Moment. The cluster determines the anchor wreath, base layer, accent stems, botanical accent, and ambient glow — five elements that together transform a door from functional to felt.
+        </p>
+        <div class="feature-note reveal d4">
+          Moodoor is available on all Evercrafted tiers. Bloom subscribers can access the full quiz and receive curated bundles. Studio and Atelier subscribers unlock the AI door transformation preview.
+        </div>
+        <a href="#try-moodoor" class="feature-link reveal d5">
+          Start the quiz
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <!-- Panel: quiz step -->
+      <div class="reveal-right d1">
+        <div class="feature-panel">
+          <div class="panel-chrome">
+            <div class="panel-dot panel-dot-r"></div>
+            <div class="panel-dot panel-dot-y"></div>
+            <div class="panel-dot panel-dot-g"></div>
+            <div class="panel-title">Moodoor Quiz · Step 1 of 5</div>
+          </div>
+          <div class="panel-body">
+            <div style="font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(249,247,244,0.25);margin-bottom:8px;">Step 1 of 5</div>
+            <div style="font-family:var(--ec-font-serif);font-size:1.35rem;color:var(--ec-off-white);line-height:1.2;margin-bottom:4px;">How do you want your<br>door to <em style="color:var(--md-blush);">feel?</em></div>
+            <div style="font-size:0.7rem;color:rgba(249,247,244,0.3);margin-bottom:16px;">Pick the emotion that speaks to you right now.</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:16px;">
+              <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.35);border-radius:6px;padding:10px 8px;text-align:center;">
+                <div style="font-size:1.1rem;margin-bottom:4px;">🌿</div>
+                <div style="font-size:0.62rem;font-weight:500;color:rgba(249,247,244,0.85);">Serene</div>
+                <div style="font-size:0.55rem;color:rgba(249,247,244,0.3);">Still · peaceful</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:10px 8px;text-align:center;">
+                <div style="font-size:1.1rem;margin-bottom:4px;">🌾</div>
+                <div style="font-size:0.62rem;font-weight:500;color:rgba(249,247,244,0.65);">Grounded</div>
+                <div style="font-size:0.55rem;color:rgba(249,247,244,0.25);">Earthy · rooted</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:10px 8px;text-align:center;">
+                <div style="font-size:1.1rem;margin-bottom:4px;">🌻</div>
+                <div style="font-size:0.62rem;font-weight:500;color:rgba(249,247,244,0.65);">Joyful</div>
+                <div style="font-size:0.55rem;color:rgba(249,247,244,0.25);">Bright · warm</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:10px 8px;text-align:center;">
+                <div style="font-size:1.1rem;margin-bottom:4px;">🌹</div>
+                <div style="font-size:0.62rem;font-weight:500;color:rgba(249,247,244,0.65);">Romantic</div>
+                <div style="font-size:0.55rem;color:rgba(249,247,244,0.25);">Tender · glowing</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:10px 8px;text-align:center;">
+                <div style="font-size:1.1rem;margin-bottom:4px;">🍂</div>
+                <div style="font-size:0.62rem;font-weight:500;color:rgba(249,247,244,0.65);">Harvest</div>
+                <div style="font-size:0.55rem;color:rgba(249,247,244,0.25);">Amber · abundant</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:10px 8px;text-align:center;">
+                <div style="font-size:1.1rem;margin-bottom:4px;">🌲</div>
+                <div style="font-size:0.62rem;font-weight:500;color:rgba(249,247,244,0.65);">Holiday</div>
+                <div style="font-size:0.55rem;color:rgba(249,247,244,0.25);">Rich · layered</div>
+              </div>
+            </div>
+            <button style="width:100%;padding:11px;background:var(--md-rust);color:#fff;border:none;border-radius:6px;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:var(--ec-font-sans);">Continue →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 2 — Curated bundle results
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section dark">
+  <div class="wrap">
+    <div class="feature-grid reverse">
+      <!-- Copy -->
+      <div>
+        <div class="feature-tag gold-tag reveal">Feature 02</div>
+        <h3 class="feature-h3 reveal d1">Three concepts.<br>One <em>perfect match.</em></h3>
+        <p class="feature-body reveal d2">
+          Every quiz generates three curated bundle variants. The Best match is Moodoor's highest-confidence recommendation — every element sourced from your maker's live inventory, priced to your budget. The Pared back variant strips to the essentials. The Full look adds every optional accent for the most complete transformation.
+        </p>
+        <p class="feature-body reveal d3">
+          Each concept card shows the anchor wreath, base layer, accent stems, botanical, and glow element — with individual prices, roles, and a total. A confidence bar signals how well the bundle matches your stated mood and style. Add to cart in one tap.
+        </p>
+        <div class="feature-note reveal d4" style="border-left-color:var(--md-gold);background:rgba(201,168,76,0.06);">
+          Inventory is live. If a bundle item is out of stock, Moodoor substitutes the nearest available equivalent from the same cluster — automatically.
+        </div>
+        <a href="#try-moodoor" class="feature-link reveal d5">
+          See a sample result
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <!-- Panel: bundle result card -->
+      <div class="reveal-left d1">
+        <div class="bundle-panel">
+          <div class="bundle-panel-header">
+            <div class="bundle-panel-title">Best match — Serene</div>
+            <div class="bundle-panel-mood">🌿 Calm cluster</div>
+          </div>
+          <div class="bundle-panel-body">
+            <div class="bundle-visual">🌿</div>
+            <div class="bundle-items-list">
+              <div class="bundle-item-row">
+                <div>
+                  <span class="bundle-item-role">Anchor</span>
+                  <span class="bundle-item-name">Dried eucalyptus wreath (L)</span>
+                </div>
+                <div class="bundle-item-price">$68</div>
+              </div>
+              <div class="bundle-item-row">
+                <div>
+                  <span class="bundle-item-role">Base</span>
+                  <span class="bundle-item-name">Natural jute door mat</span>
+                </div>
+                <div class="bundle-item-price">$34</div>
+              </div>
+              <div class="bundle-item-row">
+                <div>
+                  <span class="bundle-item-role">Accent</span>
+                  <span class="bundle-item-name">Cotton stem bundle (white)</span>
+                </div>
+                <div class="bundle-item-price">$22</div>
+              </div>
+              <div class="bundle-item-row">
+                <div>
+                  <span class="bundle-item-role">Botanical</span>
+                  <span class="bundle-item-name">Air plant trio</span>
+                </div>
+                <div class="bundle-item-price">$18</div>
+              </div>
+            </div>
+            <div class="bundle-total-row">
+              <div class="bundle-total-label">Bundle total</div>
+              <div class="bundle-total-val"><sup>$</sup>142</div>
+            </div>
+            <div class="conf-row">
+              <div class="conf-label">Match confidence</div>
+              <div class="conf-track"><div class="conf-fill" style="width:91%;"></div></div>
+              <div class="conf-pct">91%</div>
+            </div>
+            <div class="bundle-cta-row">
+              <button class="bundle-btn-primary">Add to cart</button>
+              <button class="bundle-btn-ghost">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE 3 — Style archetypes
+══════════════════════════════════════════════════════════════ -->
+<section class="feature-section">
+  <div class="wrap">
+    <div class="feature-grid">
+      <!-- Copy -->
+      <div>
+        <div class="feature-tag rust-tag reveal">Feature 03</div>
+        <h3 class="feature-h3 reveal d1">Six aesthetic<br><em>directions.</em></h3>
+        <p class="feature-body reveal d2">
+          Mood tells Moodoor how you want to feel. Style tells it how you want to look. The six style archetypes — Natural, Modern, Festive, Romantic, Rustic, and Minimal — each carry a distinct material palette, colour story, and texture language that overlays your mood selection.
+        </p>
+        <p class="feature-body reveal d3">
+          A Serene mood in a Natural style yields dried eucalyptus and raw jute. The same Serene mood in a Minimal style yields a single stem wreath, a stone-grey mat, and a single candle. Same feeling, different form.
+        </p>
+        <div class="feature-note reveal d4">
+          Style selection is optional. If you skip it, Moodoor defaults to the Natural archetype — the most universally flattering direction for wreath-based entryway design.
+        </div>
+        <a href="#archetypes" class="feature-link reveal d5">
+          Explore all six styles
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <!-- Panel: style selector -->
+      <div class="reveal-right d1">
+        <div class="feature-panel">
+          <div class="panel-chrome">
+            <div class="panel-dot panel-dot-r"></div>
+            <div class="panel-dot panel-dot-y"></div>
+            <div class="panel-dot panel-dot-g"></div>
+            <div class="panel-title">Moodoor Quiz · Step 3 — Aesthetic direction</div>
+          </div>
+          <div class="style-panel-body">
+            <div class="style-panel-label">Your aesthetic direction</div>
+            <div class="style-swatches">
+              <div class="style-swatch-card active">
+                <div class="style-swatch-color" style="background:#D4C9B0;">🌿</div>
+                <div class="style-swatch-name">Natural</div>
+              </div>
+              <div class="style-swatch-card">
+                <div class="style-swatch-color" style="background:#C8C8C8;">◼</div>
+                <div class="style-swatch-name">Modern</div>
+              </div>
+              <div class="style-swatch-card">
+                <div class="style-swatch-color" style="background:#D4845A;">🎀</div>
+                <div class="style-swatch-name">Festive</div>
+              </div>
+              <div class="style-swatch-card">
+                <div class="style-swatch-color" style="background:#E8B4C8;">🌸</div>
+                <div class="style-swatch-name">Romantic</div>
+              </div>
+              <div class="style-swatch-card">
+                <div class="style-swatch-color" style="background:#B89068;">🍂</div>
+                <div class="style-swatch-name">Rustic</div>
+              </div>
+              <div class="style-swatch-card">
+                <div class="style-swatch-color" style="background:#E8E4DC;">·</div>
+                <div class="style-swatch-name">Minimal</div>
+              </div>
+            </div>
+            <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:14px;margin-bottom:14px;">
+              <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--md-gold);margin-bottom:6px;">Natural — selected</div>
+              <div style="font-size:0.78rem;color:rgba(249,247,244,0.55);line-height:1.55;">Raw textures, botanical forms, and earthy tones. Dried botanicals, jute, linen, and natural wood.</div>
+            </div>
+            <button style="width:100%;padding:11px;background:var(--md-rust);color:#fff;border:none;border-radius:6px;font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;font-family:var(--ec-font-sans);">Continue →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     STYLE ARCHETYPES GRID
+══════════════════════════════════════════════════════════════ -->
+<section class="archetypes-section" id="archetypes">
+  <div class="wrap">
+    <div class="archetypes-header">
+      <div class="section-tag center reveal">Style archetypes</div>
+      <h2 class="archetypes-h2 reveal d1">Same feeling,<br>six <em>different forms.</em></h2>
+      <p class="archetypes-sub reveal d2">Each archetype carries a distinct material palette, colour story, and texture language that overlays your mood selection.</p>
+    </div>
+    <div class="archetypes-grid">
+      <div class="archetype-card reveal d1">
+        <div class="archetype-visual" style="background:linear-gradient(135deg,#D4C9B0,#B8A880);">🌿</div>
+        <div class="archetype-info">
+          <div class="archetype-name">Natural</div>
+          <div class="archetype-desc">Raw textures, botanical forms, and earthy tones. Dried botanicals, jute, linen, and natural wood compose every bundle.</div>
+          <div class="archetype-tags">
+            <span class="archetype-tag">Jute</span>
+            <span class="archetype-tag">Dried botanicals</span>
+            <span class="archetype-tag">Linen</span>
+          </div>
+        </div>
+      </div>
+      <div class="archetype-card reveal d2">
+        <div class="archetype-visual" style="background:linear-gradient(135deg,#C8C8C8,#A0A0A0);">◼</div>
+        <div class="archetype-info">
+          <div class="archetype-name">Modern</div>
+          <div class="archetype-desc">Architectural forms, monochrome palettes, and restrained botanicals. Clean lines, stone, and structural stems.</div>
+          <div class="archetype-tags">
+            <span class="archetype-tag">Structural</span>
+            <span class="archetype-tag">Monochrome</span>
+            <span class="archetype-tag">Stone</span>
+          </div>
+        </div>
+      </div>
+      <div class="archetype-card reveal d3">
+        <div class="archetype-visual" style="background:linear-gradient(135deg,#D4845A,#B5451B);">🎀</div>
+        <div class="archetype-info">
+          <div class="archetype-name">Festive</div>
+          <div class="archetype-desc">Bold colour, layered texture, and celebratory accents. Ribbons, berries, and statement wreaths for occasions that deserve to be noticed.</div>
+          <div class="archetype-tags">
+            <span class="archetype-tag">Ribbons</span>
+            <span class="archetype-tag">Berries</span>
+            <span class="archetype-tag">Bold colour</span>
+          </div>
+        </div>
+      </div>
+      <div class="archetype-card reveal d1">
+        <div class="archetype-visual" style="background:linear-gradient(135deg,#E8B4C8,#D490B0);">🌸</div>
+        <div class="archetype-info">
+          <div class="archetype-name">Romantic</div>
+          <div class="archetype-desc">Soft blush tones, dried roses, pampas, and velvet. Tender and glowing — for doors that feel like a love letter.</div>
+          <div class="archetype-tags">
+            <span class="archetype-tag">Blush</span>
+            <span class="archetype-tag">Dried roses</span>
+            <span class="archetype-tag">Velvet</span>
+          </div>
+        </div>
+      </div>
+      <div class="archetype-card reveal d2">
+        <div class="archetype-visual" style="background:linear-gradient(135deg,#B89068,#8A6840);">🍂</div>
+        <div class="archetype-info">
+          <div class="archetype-name">Rustic</div>
+          <div class="archetype-desc">Weathered wood, wheat, corn husk, and amber glass. Warm, abundant, and rooted in the land.</div>
+          <div class="archetype-tags">
+            <span class="archetype-tag">Wheat</span>
+            <span class="archetype-tag">Amber glass</span>
+            <span class="archetype-tag">Wood</span>
+          </div>
+        </div>
+      </div>
+      <div class="archetype-card reveal d3">
+        <div class="archetype-visual" style="background:linear-gradient(135deg,#E8E4DC,#D0CCC4);">·</div>
+        <div class="archetype-info">
+          <div class="archetype-name">Minimal</div>
+          <div class="archetype-desc">A single stem. A stone-grey mat. One candle. Restraint as a design statement — for doors that say everything by saying almost nothing.</div>
+          <div class="archetype-tags">
+            <span class="archetype-tag">Single stem</span>
+            <span class="archetype-tag">Stone</span>
+            <span class="archetype-tag">Restraint</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BOTANICAL DIVIDER
+══════════════════════════════════════════════════════════════ -->
+<div style="padding:40px 0;background:var(--ec-paper);">
+  <div class="leaf-divider reveal">
+    <svg width="28" height="36" viewBox="0 0 32 40" fill="none" style="color:var(--ec-green);">
+      <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      <path d="M16 38L16 8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+      <path d="M16 22C16 22 10 18 8 13" stroke="currentColor" stroke-width="1" fill="none"/>
+      <path d="M16 16C16 16 22 12 24 7" stroke="currentColor" stroke-width="1" fill="none"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════════════ -->
+<section class="testimonials-section">
+  <div class="wrap">
+    <div class="testimonials-header">
+      <div class="section-tag center reveal">What makers say</div>
+      <h2 class="testimonials-h2 reveal d1">Doors that tell<br>a <em>story.</em></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal d1">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="testi-quote">"I never knew what I wanted until Moodoor asked me how I wanted to feel. Now my front door is the first thing I look forward to coming home to."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">DM</div>
+          <div>
+            <div class="testi-name">Diane M.</div>
+            <div class="testi-handle">Bloom tier · Serene mood</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d2">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="testi-quote">"My customers used to ask me what to buy. Now I send them to Moodoor and they come back with a full bundle in their cart. It sells my inventory for me."</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#EEF4F9;color:#4A6785;">RK</div>
+          <div>
+            <div class="testi-name">Rachel K.</div>
+            <div class="testi-handle">Craft tier · Maker</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d3">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="testi-quote">"The Harvest mood with a Rustic style is exactly what I'd have spent three hours trying to describe to a florist. Moodoor got it in 90 seconds."</div>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#F5EEF4;color:#7A4A85;">JL</div>
+          <div>
+            <div class="testi-name">James L.</div>
+            <div class="testi-handle">Studio tier · Harvest mood</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PRICING TIERS
+══════════════════════════════════════════════════════════════ -->
+<section class="tier-section" id="pricing">
+  <div class="wrap">
+    <div class="tier-header">
+      <div class="section-tag center reveal">Plans</div>
+      <h2 class="tier-h2 reveal d1">Moodoor on every<br><em>tier.</em></h2>
+      <p class="tier-sub reveal d2">Moodoor's mood quiz and bundle curation are available on all Evercrafted plans. Advanced features unlock as you grow.</p>
+    </div>
+    <div class="tier-grid">
+
+      <!-- Bloom -->
+      <div class="tier-card reveal d1">
+        <span class="tier-badge tier-badge-bloom">Bloom</span>
+        <div class="tier-name">Bloom</div>
+        <div class="tier-tagline">Start with feeling. Perfect for first-time makers and solo artisans.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$19</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#try-moodoor" class="tier-cta tier-cta-outline">Start free trial</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Full Moodoor mood quiz
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            3 bundle concepts per quiz
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            All 10 mood profiles
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Budget-matched curation
+          </li>
+          <li class="tier-lock-item">
+            <span class="tier-lock-icon">🔒</span>
+            AI door transformation preview
+            <span class="tier-upgrade-hint">Studio+</span>
+          </li>
+          <li class="tier-lock-item">
+            <span class="tier-lock-icon">🔒</span>
+            Photo upload &amp; before/after
+            <span class="tier-upgrade-hint">Studio+</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Craft -->
+      <div class="tier-card reveal d2">
+        <span class="tier-badge tier-badge-craft">Craft</span>
+        <div class="tier-name">Craft</div>
+        <div class="tier-tagline">More moods, more control. For growing makers with repeat customers.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$39</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#try-moodoor" class="tier-cta tier-cta-outline">Start free trial</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Everything in Bloom
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Saved quiz profiles per customer
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Regenerate bundles unlimited
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Constraint filters (allergy, outdoor, gift)
+          </li>
+          <li class="tier-lock-item">
+            <span class="tier-lock-icon">🔒</span>
+            AI door transformation preview
+            <span class="tier-upgrade-hint">Studio+</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Studio — recommended -->
+      <div class="tier-card recommended reveal d3">
+        <div class="tier-popular-badge">Most popular</div>
+        <span class="tier-badge tier-badge-studio">Studio</span>
+        <div class="tier-name">Studio</div>
+        <div class="tier-tagline">The full Moodoor experience. AI previews, photo upload, and transformation.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$59</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#try-moodoor" class="tier-cta tier-cta-primary">Start free trial</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Everything in Craft
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            AI door transformation preview
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Photo upload &amp; before/after view
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Shareable mood result links
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Moodoor embed for your shop
+          </li>
+        </ul>
+      </div>
+
+      <!-- Atelier -->
+      <div class="tier-card atelier-card reveal d4">
+        <span class="tier-badge tier-badge-atelier">Atelier</span>
+        <div class="tier-name" style="color:var(--ec-off-white);">Atelier</div>
+        <div class="tier-tagline" style="color:rgba(249,247,244,0.35);">White-label Moodoor for studios and multi-brand operations.</div>
+        <div class="tier-price">
+          <span class="tier-price-amount">$99</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <a href="#try-moodoor" class="tier-cta tier-cta-dark">Contact sales</a>
+        <div class="tier-divider"></div>
+        <ul class="tier-features">
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(107,143,103,0.15);"><svg viewBox="0 0 12 12" style="stroke:var(--ec-green-light);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Everything in Studio
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(107,143,103,0.15);"><svg viewBox="0 0 12 12" style="stroke:var(--ec-green-light);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            White-label Moodoor branding
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(107,143,103,0.15);"><svg viewBox="0 0 12 12" style="stroke:var(--ec-green-light);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Custom mood profiles
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(107,143,103,0.15);"><svg viewBox="0 0 12 12" style="stroke:var(--ec-green-light);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            API access for custom integrations
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(107,143,103,0.15);"><svg viewBox="0 0 12 12" style="stroke:var(--ec-green-light);"><polyline points="2,6 5,9 10,3"/></svg></div>
+            Priority support &amp; onboarding
+          </li>
+        </ul>
+      </div>
+
+    </div>
+    <p class="tier-highlight-note reveal">All plans include a 14-day free trial. No credit card required. <a href="evercrafted-home-hiw.html#pricing">Compare all features →</a></p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CTA SECTION
+══════════════════════════════════════════════════════════════ -->
+<section class="cta-section" id="try-moodoor">
+  <div class="cta-inner">
+    <span class="cta-script reveal">begin your mood</span>
+    <h2 class="cta-h2 reveal d1">Your door is waiting<br>to feel <em>something.</em></h2>
+    <p class="cta-sub reveal d2">Take the three-minute Moodoor quiz and receive three curated, shoppable entryway bundles matched to your mood, style, and budget — instantly.</p>
+    <div class="cta-actions reveal d3">
+      <a href="#" class="cta-btn-primary">Begin your mood ↗</a>
+      <a href="evercrafted-apps.html" class="cta-btn-ghost">Explore all apps</a>
+    </div>
+    <div class="cta-note reveal d4">Free on all Evercrafted tiers · No design experience required</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">
+          <svg width="16" height="20" viewBox="0 0 32 40" fill="none" style="color:var(--ec-green-light);">
+            <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M16 38L16 8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+          </svg>
+          Evercrafted
+        </div>
+        <div class="footer-brand-desc">The professional wreath-making platform. Blueprint Studio, Moodoor, AI Visualizer, and 13 more tools for makers who take their craft seriously.</div>
+      </div>
+      <div>
+        <div class="footer-col-title">Apps</div>
+        <ul class="footer-links">
+          <li><a href="blueprint-studio.html">Blueprint Studio</a></li>
+          <li><a href="moodoor.html">Moodoor</a></li>
+          <li><a href="app-emotionsync.html">EmotionSync</a></li>
+          <li><a href="app-memory-weaver.html">Memory Weaver</a></li>
+          <li><a href="evercrafted-apps.html">All apps →</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <ul class="footer-links">
+          <li><a href="evercrafted-home-hiw.html#how-it-works">How it works</a></li>
+          <li><a href="evercrafted-home-hiw.html#pricing">Pricing</a></li>
+          <li><a href="evercrafted-marketplace.html">Marketplace</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Evercrafted. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script>
+/* ── NAV SCROLL ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+/* ── SCROLL REVEAL ── */
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ── MOOD PROFILE CARDS ── */
+const MOOD_DATA = {
+  serene:   { name:'Serene', cluster:'calm',     desc:'A still, peaceful entryway. Dried eucalyptus, natural jute, white cotton stems, and soft air plants compose a threshold that invites you to exhale before you step inside.', bundle:['🌿 Dried eucalyptus wreath (L)','Natural jute door mat','Cotton stem bundle (white)','Air plant trio','Concrete pillar lantern'], colors:['#E1F5EE','#9FE1CB'] },
+  grounded: { name:'Grounded', cluster:'calm',   desc:'Earthy and rooted. Raw linen, wheat stems, and a stone-grey mat ground the entryway in the quiet confidence of the natural world.', bundle:['🌾 Wheat + foliage wreath (L)','Stone-grey linen mat','Dried wheat bundle','Potted herb trio','Terracotta lantern'], colors:['#EAF3DE','#C0DD97'] },
+  joyful:   { name:'Joyful', cluster:'joyful',   desc:'Bright and warm. Sunflowers, bold stripe cotton, citrus stems, and a yellow glass lantern — a door that greets every arrival with a smile.', bundle:['🌻 Sunflower + greenery wreath','Bold stripe cotton mat','Citrus stem assortment','Herb planter trio','Yellow glass lantern'], colors:['#FAEEDA','#FAC775'] },
+  playful:  { name:'Playful', cluster:'joyful',  desc:'Bold and spirited. Vivid orange tones, textured stems, and a statement mat that announces your personality before the door opens.', bundle:['🍊 Mixed citrus + foliage wreath','Striped cotton mat','Orange stem bundle','Succulent planter','Amber pillar candle'], colors:['#FAECE7','#F5C4B3'] },
+  romantic: { name:'Romantic', cluster:'romantic', desc:'Tender and glowing. Dried roses, pampas, blush velvet, and cream tapers — a door that feels like a love letter written in botanicals.', bundle:['🌹 Dried rose + pampas wreath','Blush velvet mat','Blush satin ribbon (2m)','Dried lavender bundle','Cream taper candle set ×6'], colors:['#FBEAF0','#F4C0D1'] },
+  harvest:  { name:'Harvest', cluster:'seasonal', desc:'Amber and abundant. Wheat, berries, plaid, corn husk, and an amber lantern — a door that celebrates the season\'s generosity.', bundle:['🍂 Wheat + berry wreath (L)','Autumn plaid door mat','Corn husk stem bundle','Mini pumpkin planter set','Amber glass lantern'], colors:['#FAF0DC','#EFC97A'] },
+  holiday:  { name:'Holiday', cluster:'seasonal', desc:'Rich and layered. Deep greens, red berries, velvet ribbon, and warm candlelight — a door dressed for the most celebratory season of the year.', bundle:['🌲 Mixed evergreen wreath (L)','Plaid wool mat','Red velvet ribbon (2m)','Holly + berry bundle','Brass pillar lantern'], colors:['#E4F0E4','#9FCA9F'] },
+  spring:   { name:'Spring', cluster:'seasonal',  desc:'Fresh and emerging. Blush tulips, pale linen, and soft botanicals — a door that announces the world is waking up again.', bundle:['🌷 Mixed bloom welcome wreath','Pale linen mat','Blush tulip stem bundle','Potted primrose','White glass lantern'], colors:['#FDE8F5','#F5B8DE'] },
+  nested:   { name:'New home', cluster:'moment',  desc:'Hopeful and fresh. A welcoming wreath, natural mat, and seasonal stems that say: this place is cared for, and you are welcome here.', bundle:['🏡 Mixed bloom welcome wreath','Hand-woven natural mat','Seasonal stem assortment','Statement potted plant','Cedar + sage pillar candle'], colors:['#EAF3DE','#C0DD97'] },
+  hosting:  { name:'Hosting', cluster:'moment',   desc:'Welcoming and ready. Warm botanicals, a hand-woven mat, and ambient candlelight — a door that tells guests they are expected and cherished.', bundle:['🕯️ Mixed bloom welcome wreath','Hand-woven natural mat','Seasonal stem assortment','Statement potted plant','Cedar + sage pillar candle'], colors:['#FAEEDA','#FAC775'] },
+};
+
+function selectMoodProfile(card, moodId) {
+  document.querySelectorAll('.mood-profile-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+
+  const data = MOOD_DATA[moodId];
+  if (!data) return;
+
+  document.getElementById('detail-name').innerHTML = `${data.name} <em>— ${data.cluster} cluster</em>`;
+  document.getElementById('detail-desc').textContent = data.desc;
+
+  const bundleEl = document.getElementById('detail-bundle');
+  bundleEl.innerHTML = data.bundle.map((item, i) =>
+    `<span class="mood-bundle-pill${i === 0 ? ' anchor' : ''}">${item}</span>`
+  ).join('');
+
+  const colorsEl = document.getElementById('detail-colors');
+  colorsEl.innerHTML = data.colors.map(c =>
+    `<div class="mood-color-swatch" style="background:${c};"></div>`
+  ).join('');
+}
+
+/* ── CONFIDENCE BAR ANIMATION ── */
+const confFills = document.querySelectorAll('.conf-fill');
+const confObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => { el.style.width = target; }, 100);
+      confObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+confFills.forEach(el => confObserver.observe(el));
+
+/* ── STYLE SWATCH CARDS (interactive) ── */
+document.querySelectorAll('.style-swatch-card').forEach(card => {
+  card.addEventListener('click', () => {
+    card.closest('.style-swatches').querySelectorAll('.style-swatch-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+  });
+});
+
+/* ── MOCK MOOD CARDS (hero mockup) ── */
+document.querySelectorAll('.mock-mood-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.mock-mood-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+});
+</script>
+</body>
+</html>
