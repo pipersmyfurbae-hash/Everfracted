@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evercrafted — Design Tools for Wreath Makers</title>
+<meta name="description" content="The professional design suite for wreath makers. Blueprint generation, inventory tracking, AI visualization, and a marketplace — built for the craft you love.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Dancing+Script:wght@500;600;700&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   BRAND TOKENS
+══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ec-white:        #FFFFFF;
+  --ec-off-white:    #F9F7F4;
+  --ec-paper:        #F2EFE9;
+  --ec-cream:        #EDE8DF;
+  --ec-black:        #1A1A1A;
+  --ec-charcoal:     #2E2E2E;
+  --ec-ink:          #4A4A4A;
+
+  --ec-green:        #4A6741;
+  --ec-green-light:  #6B8F67;
+  --ec-green-pale:   #EEF2ED;
+  --ec-green-dim:    rgba(74,103,65,0.10);
+  --ec-green-glow:   rgba(74,103,65,0.22);
+
+  --ec-gold:         #C4922A;
+  --ec-gold-pale:    #F5EDD8;
+
+  --ec-bark:         #8A6E52;
+  --ec-bark-light:   #C2A98E;
+  --ec-bark-pale:    #EDE5D8;
+
+  --ec-gray-100:     #F5F5F5;
+  --ec-gray-200:     #E8E8E8;
+  --ec-gray-300:     #D0D0D0;
+  --ec-gray-400:     #A8A8A8;
+  --ec-gray-500:     #787878;
+
+  --ec-surface:      var(--ec-white);
+  --ec-surface-alt:  var(--ec-off-white);
+  --ec-surface-warm: var(--ec-paper);
+  --ec-border:       var(--ec-gray-200);
+  --ec-text:         var(--ec-black);
+  --ec-text-muted:   var(--ec-ink);
+  --ec-text-faint:   var(--ec-gray-500);
+
+  --ec-font-serif:   'Cormorant Garamond', Georgia, serif;
+  --ec-font-sans:    'Inter', system-ui, sans-serif;
+  --ec-font-script:  'Dancing Script', cursive;
+  --ec-font-mono:    'DM Mono', monospace;
+
+  --ec-radius-sm:   4px;
+  --ec-radius-md:   8px;
+  --ec-radius-lg:   14px;
+  --ec-radius-xl:   20px;
+  --ec-radius-full: 9999px;
+
+  --ec-shadow-sm:   0 1px 3px rgba(0,0,0,0.06);
+  --ec-shadow-md:   0 4px 16px rgba(0,0,0,0.08);
+  --ec-shadow-lg:   0 8px 32px rgba(0,0,0,0.10);
+  --ec-shadow-hero: 0 24px 64px rgba(0,0,0,0.12);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ec-font-sans);
+  background: var(--ec-off-white);
+  color: var(--ec-black);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--ec-green-pale); color: var(--ec-green); }
+
+/* ── Utilities ─────────────────────────────────────────────── */
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+@media (max-width: 768px) { .wrap { padding: 0 24px; } }
+
+.section-tag {
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ec-green);
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.section-tag::before {
+  content: ''; display: block; width: 28px; height: 1px;
+  background: var(--ec-green); flex-shrink: 0;
+}
+.section-tag.center { justify-content: center; }
+.section-tag.center::before, .section-tag.center::after {
+  content: ''; display: block; width: 28px; height: 1px;
+  background: var(--ec-green); flex-shrink: 0;
+}
+.section-tag.light { color: var(--ec-green-light); }
+.section-tag.light::before { background: var(--ec-green-light); }
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.85s var(--ease-out), transform 0.85s var(--ease-out);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.85s var(--ease-out), transform 0.85s var(--ease-out); }
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.85s var(--ease-out), transform 0.85s var(--ease-out); }
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+.d1 { transition-delay: 0.08s; }
+.d2 { transition-delay: 0.16s; }
+.d3 { transition-delay: 0.24s; }
+.d4 { transition-delay: 0.32s; }
+.d5 { transition-delay: 0.40s; }
+.d6 { transition-delay: 0.48s; }
+
+/* Leaf botanical divider */
+.leaf-divider {
+  display: flex; align-items: center; gap: 20px;
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+}
+.leaf-divider::before, .leaf-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--ec-gray-200);
+}
+@media (max-width: 768px) { .leaf-divider { padding: 0 24px; } }
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes slowRotate        { to { transform: rotate(360deg); } }
+@keyframes slowRotateReverse { to { transform: rotate(-360deg); } }
+@keyframes floatY   { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+@keyframes pulseDot { 0%,100%{opacity:0.4;transform:scale(1);} 50%{opacity:1;transform:scale(1.4);} }
+@keyframes scrollDrop { 0%{top:-100%;} 100%{top:200%;} }
+@keyframes marqueeScroll { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+@keyframes connectorGrow { from{stroke-dashoffset:400;} to{stroke-dashoffset:0;} }
+@keyframes stepPulse { 0%,100%{box-shadow:0 0 0 0 var(--ec-green-glow);} 50%{box-shadow:0 0 0 12px transparent;} }
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════════ */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(249,247,244,0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+#nav.scrolled {
+  border-color: var(--ec-gray-200);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+}
+.nav-brand {
+  font-family: var(--ec-font-serif); font-size: 1.15rem; font-weight: 400;
+  letter-spacing: 0.06em; color: var(--ec-black); text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-brand-leaf { color: var(--ec-green); flex-shrink: 0; }
+.nav-links { display: flex; gap: 4px; list-style: none; }
+.nav-links a {
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ec-text-faint); text-decoration: none;
+  padding: 6px 12px; border-radius: var(--ec-radius-sm);
+  transition: color 0.2s, background 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--ec-green); background: var(--ec-green-pale); }
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-signin {
+  font-size: 0.72rem; font-weight: 500; color: var(--ec-text-muted);
+  text-decoration: none; padding: 7px 14px; border-radius: var(--ec-radius-sm);
+  transition: color 0.2s, background 0.2s;
+}
+.nav-signin:hover { color: var(--ec-black); background: var(--ec-gray-100); }
+.nav-cta {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ec-off-white); background: var(--ec-green);
+  padding: 9px 22px; border-radius: var(--ec-radius-sm);
+  text-decoration: none; border: none; cursor: pointer; font-family: var(--ec-font-sans);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.nav-cta:hover { background: var(--ec-green-light); transform: translateY(-1px); box-shadow: 0 4px 14px var(--ec-green-glow); }
+@media (max-width: 1024px) { #nav { padding: 0 32px; } .nav-links { gap: 0; } }
+@media (max-width: 768px) { #nav { padding: 0 24px; } .nav-links { display: none; } }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO — CINEMATIC DARK SPLIT
+══════════════════════════════════════════════════════════════ */
+#hero {
+  min-height: 96vh; padding-top: 60px;
+  background: var(--ec-black);
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; position: relative; overflow: hidden;
+}
+.hero-bg-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.035); pointer-events: none;
+}
+.hero-bg-ring-1 { width: 800px; height: 800px; top: -250px; right: -200px; animation: slowRotate 140s linear infinite; }
+.hero-bg-ring-2 { width: 560px; height: 560px; top: -120px; right: -80px; border-color: rgba(74,103,65,0.09); animation: slowRotateReverse 90s linear infinite; }
+.hero-bg-ring-3 { width: 320px; height: 320px; top: 20px; right: 60px; animation: slowRotate 60s linear infinite; }
+.hero-bg-mesh {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 55% at 70% 40%, rgba(74,103,65,0.14) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 45% at 15% 75%, rgba(138,110,82,0.06) 0%, transparent 55%);
+}
+.hero-bg-noise {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+/* Left: copy */
+.hero-left {
+  padding: 80px 48px 80px 80px;
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.hero-eyebrow {
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(107,143,103,0.9);
+  display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+  opacity: 0; animation: fadeUp 0.8s var(--ease-out) 0.25s forwards;
+}
+.hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: rgba(74,103,65,0.6); }
+.hero-title {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(3.2rem, 5.5vw, 6.5rem);
+  font-weight: 300; line-height: 1.02; letter-spacing: -0.03em;
+  color: var(--ec-white); margin-bottom: 6px;
+  opacity: 0; animation: fadeUp 1s var(--ease-out) 0.4s forwards;
+}
+.hero-title em { font-style: italic; color: rgba(107,143,103,0.9); }
+.hero-title-script {
+  font-family: var(--ec-font-script);
+  font-size: clamp(2.2rem, 4.2vw, 5rem);
+  font-weight: 600; color: var(--ec-bark-light);
+  display: block; line-height: 1.2; margin-bottom: 32px;
+  opacity: 0; animation: fadeUp 1s var(--ease-out) 0.55s forwards;
+}
+.hero-body {
+  font-size: 1.05rem; line-height: 1.85; color: rgba(249,247,244,0.5);
+  font-weight: 300; max-width: 500px; margin-bottom: 40px;
+  opacity: 0; animation: fadeUp 0.9s var(--ease-out) 0.7s forwards;
+}
+.hero-actions {
+  display: flex; gap: 18px; align-items: center; margin-bottom: 52px;
+  opacity: 0; animation: fadeUp 0.8s var(--ease-out) 0.82s forwards;
+}
+.hero-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ec-off-white); background: var(--ec-green);
+  padding: 14px 32px; border-radius: var(--ec-radius-sm);
+  text-decoration: none; border: none; cursor: pointer; font-family: var(--ec-font-sans);
+  transition: all 0.25s var(--ease-out);
+  box-shadow: 0 4px 20px var(--ec-green-glow);
+}
+.hero-btn-primary:hover { background: var(--ec-green-light); transform: translateY(-2px); box-shadow: 0 8px 28px var(--ec-green-glow); }
+.hero-btn-ghost {
+  font-size: 0.72rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(249,247,244,0.45); text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+  transition: color 0.2s, gap 0.2s;
+}
+.hero-btn-ghost::after { content: '→'; }
+.hero-btn-ghost:hover { color: rgba(249,247,244,0.8); gap: 14px; }
+
+/* Hero proof numbers */
+.hero-proof {
+  display: flex; gap: 32px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.7s var(--ease-out) 0.95s forwards;
+}
+.hero-proof-item { display: flex; flex-direction: column; gap: 4px; }
+.hero-proof-num {
+  font-family: var(--ec-font-serif); font-size: 2.2rem; font-weight: 300; line-height: 1;
+  color: rgba(249,247,244,0.85); letter-spacing: -0.02em;
+}
+.hero-proof-num em { font-style: italic; color: rgba(107,143,103,0.85); }
+.hero-proof-label {
+  font-size: 0.62rem; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(249,247,244,0.28);
+}
+.hero-proof-sep { width: 1px; height: 40px; background: rgba(255,255,255,0.08); align-self: center; }
+
+/* Right: pipeline visual */
+.hero-right {
+  padding: 80px 80px 80px 40px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+  opacity: 0; animation: fadeIn 1.2s var(--ease-out) 0.6s forwards;
+}
+@media (max-width: 1024px) { .hero-right { display: none; } }
+
+/* Hero pipeline diagram */
+.hero-pipeline-diagram {
+  width: 100%; max-width: 420px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+}
+.pipeline-diagram-header {
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; gap: 8px;
+}
+.pipeline-diagram-dots { display: flex; gap: 5px; }
+.pipeline-diagram-dot { width: 9px; height: 9px; border-radius: 50%; }
+.pipeline-diagram-dot:nth-child(1) { background: rgba(255,255,255,0.14); }
+.pipeline-diagram-dot:nth-child(2) { background: rgba(255,255,255,0.09); }
+.pipeline-diagram-dot:nth-child(3) { background: rgba(255,255,255,0.06); }
+.pipeline-diagram-title {
+  font-family: var(--ec-font-serif); font-size: 0.78rem; font-style: italic;
+  color: rgba(249,247,244,0.35); margin: 0 auto;
+}
+.pipeline-diagram-body { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.pipeline-step-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: var(--ec-radius-md);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.055);
+  transition: background 0.2s, border-color 0.2s;
+  cursor: default;
+}
+.pipeline-step-row.active {
+  background: rgba(74,103,65,0.18);
+  border-color: rgba(74,103,65,0.35);
+}
+.pipeline-step-row:hover:not(.active) { background: rgba(255,255,255,0.06); }
+.pipeline-step-num {
+  font-family: var(--ec-font-serif); font-size: 1.1rem; font-weight: 300;
+  color: rgba(249,247,244,0.2); line-height: 1; flex-shrink: 0; width: 22px;
+}
+.pipeline-step-row.active .pipeline-step-num { color: var(--ec-green-light); }
+.pipeline-step-info { flex: 1; }
+.pipeline-step-name {
+  font-size: 0.75rem; font-weight: 500; color: rgba(249,247,244,0.5); line-height: 1.2;
+}
+.pipeline-step-row.active .pipeline-step-name { color: rgba(249,247,244,0.85); }
+.pipeline-step-tier {
+  font-size: 0.58rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(249,247,244,0.2); margin-top: 2px;
+}
+.pipeline-step-row.active .pipeline-step-tier { color: rgba(107,143,103,0.7); }
+.pipeline-step-indicator {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); flex-shrink: 0;
+  transition: background 0.2s;
+}
+.pipeline-step-row.active .pipeline-step-indicator {
+  background: var(--ec-green-light);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+.pipeline-connector {
+  display: flex; align-items: center; justify-content: center;
+  height: 8px; padding: 0 14px;
+}
+.pipeline-connector-line {
+  width: 1px; height: 8px; background: rgba(255,255,255,0.08);
+  margin: 0 auto;
+}
+
+/* Scroll cue */
+.hero-scroll-cue {
+  position: absolute; bottom: 32px; left: 80px; z-index: 10;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.22);
+  opacity: 0; animation: fadeIn 1s var(--ease-out) 1.3s forwards;
+}
+.scroll-line {
+  width: 1px; height: 40px; background: rgba(249,247,244,0.12);
+  position: relative; overflow: hidden;
+}
+.scroll-line::after {
+  content: ''; position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+  background: rgba(74,103,65,0.55);
+  animation: scrollDrop 2.2s ease-in-out infinite;
+}
+@media (max-width: 768px) { .hero-scroll-cue { left: 24px; } }
+@media (max-width: 1024px) { #hero { grid-template-columns: 1fr; } .hero-left { padding: 80px 32px 64px; } }
+@media (max-width: 768px) { .hero-left { padding: 64px 24px 56px; } }
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE MARQUEE STRIP
+══════════════════════════════════════════════════════════════ */
+.marquee-strip { background: var(--ec-green); padding: 13px 0; overflow: hidden; }
+.marquee-track { display: flex; gap: 0; animation: marqueeScroll 34s linear infinite; width: max-content; }
+.marquee-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 28px;
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(249,247,244,0.72); white-space: nowrap; flex-shrink: 0;
+}
+.marquee-item::after {
+  content: ''; display: block; width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(249,247,244,0.3); margin-left: 28px;
+}
+.marquee-leaf { width: 13px; height: 13px; opacity: 0.55; flex-shrink: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   HOW IT WORKS — HERO-LEVEL CENTERPIECE
+══════════════════════════════════════════════════════════════ */
+
+/* ── Section intro ───────────────────────────────────────── */
+#how-it-works { background: var(--ec-off-white); }
+
+.hiw-intro {
+  padding: 120px 0 72px;
+  background: var(--ec-off-white);
+}
+.hiw-intro-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: end;
+}
+@media (max-width: 900px) { .hiw-intro-inner { grid-template-columns: 1fr; gap: 32px; } }
+@media (max-width: 768px) { .hiw-intro { padding: 80px 0 48px; } .hiw-intro-inner { padding: 0 24px; } }
+
+.hiw-intro-left {}
+.hiw-intro-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.8rem, 4.5vw, 5.2rem);
+  font-weight: 300; line-height: 1.06; letter-spacing: -0.028em;
+  color: var(--ec-black); margin-bottom: 20px;
+}
+.hiw-intro-h2 em { font-style: italic; color: var(--ec-green); }
+.hiw-intro-h2 .script {
+  font-family: var(--ec-font-script);
+  font-size: 0.85em; color: var(--ec-bark-light);
+  letter-spacing: 0; display: block; line-height: 1.15;
+}
+.hiw-intro-right {}
+.hiw-intro-lead {
+  font-size: 1.05rem; line-height: 1.85; color: var(--ec-text-muted);
+  font-weight: 300; margin-bottom: 28px;
+}
+.hiw-intro-note {
+  font-size: 0.82rem; color: var(--ec-text-faint); line-height: 1.7;
+  padding-left: 16px; border-left: 2px solid var(--ec-green-pale);
+}
+
+/* ── Pipeline overview tabs ──────────────────────────────── */
+.hiw-pipeline-tabs {
+  background: var(--ec-white);
+  border-top: 1px solid var(--ec-gray-200);
+  border-bottom: 1px solid var(--ec-gray-200);
+  overflow-x: auto; scrollbar-width: none;
+  position: sticky; top: 60px; z-index: 50;
+}
+.hiw-pipeline-tabs::-webkit-scrollbar { display: none; }
+.hiw-tabs-track {
+  display: flex; max-width: 1200px; margin: 0 auto; padding: 0 48px;
+}
+@media (max-width: 768px) { .hiw-tabs-track { padding: 0 24px; } }
+.hiw-tab {
+  flex-shrink: 0; padding: 18px 24px;
+  border-right: 1px solid var(--ec-gray-200);
+  cursor: pointer; transition: background 0.2s;
+  position: relative; text-align: left;
+  background: none; border-top: none; border-left: none; border-bottom: none;
+  font-family: var(--ec-font-sans);
+}
+.hiw-tab:first-child { border-left: 1px solid var(--ec-gray-200); }
+.hiw-tab:hover { background: var(--ec-green-pale); }
+.hiw-tab.active { background: var(--ec-green-pale); }
+.hiw-tab.active::after {
+  content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+  height: 2px; background: var(--ec-green);
+}
+.hiw-tab-num {
+  font-family: var(--ec-font-serif); font-size: 1.4rem; font-weight: 300;
+  color: var(--ec-gray-300); line-height: 1; margin-bottom: 5px;
+  transition: color 0.2s;
+}
+.hiw-tab.active .hiw-tab-num { color: var(--ec-green); opacity: 0.6; }
+.hiw-tab-name {
+  font-size: 0.72rem; font-weight: 500; color: var(--ec-ink); line-height: 1.3;
+  white-space: nowrap;
+}
+.hiw-tab.active .hiw-tab-name { color: var(--ec-green); }
+.hiw-tab-tier {
+  font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ec-gray-400); margin-top: 3px;
+}
+
+/* ── Step sections ───────────────────────────────────────── */
+.hiw-step-section {
+  padding: 96px 0;
+  border-bottom: 1px solid var(--ec-gray-200);
+  position: relative;
+}
+.hiw-step-section:nth-child(odd)  { background: var(--ec-white); }
+.hiw-step-section:nth-child(even) { background: var(--ec-paper); }
+.hiw-step-section:last-child { border-bottom: none; }
+
+.hiw-step-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.hiw-step-section:nth-child(even) .hiw-step-inner { direction: rtl; }
+.hiw-step-section:nth-child(even) .hiw-step-inner > * { direction: ltr; }
+@media (max-width: 900px) {
+  .hiw-step-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hiw-step-section:nth-child(even) .hiw-step-inner { direction: ltr; }
+}
+@media (max-width: 768px) { .hiw-step-inner { padding: 0 24px; } .hiw-step-section { padding: 64px 0; } }
+
+/* Step copy */
+.hiw-step-copy {}
+.hiw-step-meta {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.hiw-step-index {
+  font-family: var(--ec-font-serif); font-size: 5rem; font-weight: 300;
+  color: var(--ec-gray-200); line-height: 1; flex-shrink: 0;
+  transition: color 0.3s;
+}
+.hiw-step-section.in-view .hiw-step-index { color: rgba(74,103,65,0.15); }
+.hiw-step-tier-badge {
+  display: inline-flex; align-items: center;
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: var(--ec-radius-full);
+}
+.tier-bloom  { background: #EEF2ED; color: #4A6741; }
+.tier-craft  { background: #EEF4F9; color: #4A6785; }
+.tier-studio { background: #F5EEF4; color: #7A4A85; }
+.tier-atelier { background: var(--ec-black); color: var(--ec-off-white); }
+.tier-all    { background: var(--ec-gray-100); color: var(--ec-ink); }
+
+.hiw-step-title {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(1.9rem, 2.8vw, 3rem);
+  font-weight: 300; line-height: 1.1; letter-spacing: -0.02em;
+  color: var(--ec-black); margin-bottom: 16px;
+}
+.hiw-step-title em { font-style: italic; color: var(--ec-green); }
+.hiw-step-body {
+  font-size: 1rem; line-height: 1.85; color: var(--ec-text-muted);
+  font-weight: 300; margin-bottom: 28px;
+}
+.hiw-step-detail {
+  font-size: 0.88rem; line-height: 1.75; color: var(--ec-text-faint);
+  padding: 16px 20px;
+  background: var(--ec-green-pale);
+  border-left: 3px solid var(--ec-green);
+  border-radius: 0 var(--ec-radius-sm) var(--ec-radius-sm) 0;
+  margin-bottom: 28px;
+}
+.hiw-step-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ec-green); text-decoration: none;
+  transition: gap 0.2s, color 0.2s;
+}
+.hiw-step-cta::after { content: '→'; }
+.hiw-step-cta:hover { gap: 14px; color: var(--ec-green-light); }
+
+/* Step visual panel */
+.hiw-step-visual {
+  position: relative;
+}
+.hiw-step-panel {
+  background: var(--ec-black);
+  border-radius: var(--ec-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--ec-shadow-hero);
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+.hiw-panel-header {
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; gap: 8px;
+}
+.hiw-panel-dots { display: flex; gap: 5px; }
+.hiw-panel-dot { width: 8px; height: 8px; border-radius: 50%; }
+.hiw-panel-dot:nth-child(1) { background: rgba(255,255,255,0.14); }
+.hiw-panel-dot:nth-child(2) { background: rgba(255,255,255,0.09); }
+.hiw-panel-dot:nth-child(3) { background: rgba(255,255,255,0.06); }
+.hiw-panel-label {
+  font-family: var(--ec-font-mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  color: rgba(249,247,244,0.3); margin: 0 auto;
+}
+.hiw-panel-body { padding: 24px; }
+
+/* ── Step 1: Inventory panel ─────────────────────────────── */
+.inventory-panel-body { display: flex; flex-direction: column; gap: 10px; }
+.inventory-search {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--ec-radius-md); padding: 8px 12px;
+}
+.inventory-search-icon { width: 12px; height: 12px; opacity: 0.3; flex-shrink: 0; }
+.inventory-search-text { font-size: 0.72rem; color: rgba(249,247,244,0.3); font-family: var(--ec-font-mono); }
+.inventory-table { display: flex; flex-direction: column; gap: 2px; }
+.inventory-row {
+  display: grid; grid-template-columns: 1fr 60px 60px 70px;
+  gap: 8px; padding: 8px 10px; border-radius: var(--ec-radius-sm);
+  background: rgba(255,255,255,0.03);
+  font-size: 0.7rem; align-items: center;
+  transition: background 0.15s;
+}
+.inventory-row:hover { background: rgba(255,255,255,0.06); }
+.inventory-row.header {
+  font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(249,247,244,0.25); background: none;
+}
+.inventory-row.header:hover { background: none; }
+.inventory-cell { color: rgba(249,247,244,0.55); }
+.inventory-cell.name { color: rgba(249,247,244,0.8); font-weight: 500; }
+.inventory-cell.qty { text-align: center; }
+.inventory-cell.cost { text-align: right; color: rgba(196,146,42,0.8); }
+.inventory-cell.status { text-align: right; }
+.status-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  margin-right: 4px;
+}
+.status-dot.in { background: var(--ec-green-light); }
+.status-dot.low { background: var(--ec-gold); }
+.inventory-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.inventory-footer-stat { font-size: 0.65rem; color: rgba(249,247,244,0.25); }
+.inventory-footer-stat strong { color: rgba(249,247,244,0.6); font-weight: 500; }
+.inventory-add-btn {
+  font-size: 0.62rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ec-green-light); background: rgba(74,103,65,0.15);
+  border: 1px solid rgba(74,103,65,0.25); border-radius: var(--ec-radius-sm);
+  padding: 5px 12px; cursor: pointer; font-family: var(--ec-font-sans);
+  transition: background 0.15s;
+}
+.inventory-add-btn:hover { background: rgba(74,103,65,0.25); }
+
+/* ── Step 2: Blueprint panel ─────────────────────────────── */
+.blueprint-panel-body {
+  display: grid; grid-template-columns: 130px 1fr; gap: 12px; min-height: 260px;
+}
+.blueprint-sidebar {
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding-right: 12px; display: flex; flex-direction: column; gap: 4px;
+}
+.blueprint-sidebar-label {
+  font-family: var(--ec-font-mono); font-size: 0.58rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(249,247,244,0.2);
+  padding: 0 6px; margin: 6px 0 3px;
+}
+.blueprint-nav-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 6px; border-radius: var(--ec-radius-sm);
+  font-size: 0.68rem; color: rgba(249,247,244,0.35); cursor: pointer;
+  transition: all 0.15s;
+}
+.blueprint-nav-item.active { background: rgba(74,103,65,0.2); color: var(--ec-green-light); }
+.blueprint-nav-item:hover:not(.active) { background: rgba(255,255,255,0.05); color: rgba(249,247,244,0.6); }
+.blueprint-nav-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: 0.6; flex-shrink: 0; }
+.blueprint-canvas {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--ec-radius-md);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 16px; gap: 12px; position: relative;
+}
+.blueprint-canvas-label {
+  position: absolute; top: 8px; left: 10px;
+  font-family: var(--ec-font-mono); font-size: 0.58rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(249,247,244,0.18);
+}
+.canvas-wreath-svg {
+  width: 110px; height: 110px; opacity: 0.6;
+  animation: slowRotate 30s linear infinite;
+}
+.blueprint-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; width: 100%; }
+.blueprint-stat {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--ec-radius-sm); padding: 7px 8px; text-align: center;
+}
+.blueprint-stat-num {
+  font-family: var(--ec-font-serif); font-size: 1.3rem; font-weight: 300;
+  color: rgba(249,247,244,0.7); line-height: 1;
+}
+.blueprint-stat-label { font-size: 0.58rem; color: rgba(249,247,244,0.25); margin-top: 2px; }
+
+/* ── Step 3: AI Visualizer panel ─────────────────────────── */
+.ai-panel-body { display: flex; flex-direction: column; gap: 12px; }
+.ai-prompt-area {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--ec-radius-md); padding: 12px 14px;
+}
+.ai-prompt-label {
+  font-family: var(--ec-font-mono); font-size: 0.58rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(249,247,244,0.2); margin-bottom: 6px;
+}
+.ai-prompt-text {
+  font-size: 0.72rem; color: rgba(249,247,244,0.55); line-height: 1.6;
+  font-style: italic;
+}
+.ai-prompt-cursor {
+  display: inline-block; width: 1px; height: 12px; background: var(--ec-green-light);
+  margin-left: 2px; vertical-align: middle;
+  animation: pulseDot 1s ease-in-out infinite;
+}
+.ai-output-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ai-output-card {
+  border-radius: var(--ec-radius-md); overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.07); position: relative;
+  aspect-ratio: 1;
+}
+.ai-output-card-bg {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.ai-output-card:nth-child(1) .ai-output-card-bg { background: radial-gradient(ellipse at 40% 40%, rgba(74,103,65,0.4) 0%, rgba(26,26,26,0.95) 70%); }
+.ai-output-card:nth-child(2) .ai-output-card-bg { background: radial-gradient(ellipse at 60% 60%, rgba(138,110,82,0.3) 0%, rgba(26,26,26,0.95) 70%); }
+.ai-output-card:nth-child(3) .ai-output-card-bg { background: radial-gradient(ellipse at 50% 30%, rgba(196,146,42,0.25) 0%, rgba(26,26,26,0.95) 70%); }
+.ai-output-card:nth-child(4) .ai-output-card-bg { background: radial-gradient(ellipse at 30% 70%, rgba(74,103,65,0.3) 0%, rgba(46,46,46,0.95) 70%); }
+.ai-output-wreath {
+  width: 56px; height: 56px; opacity: 0.5;
+}
+.ai-output-card.selected::after {
+  content: ''; position: absolute; inset: 0;
+  border: 2px solid var(--ec-green-light); border-radius: var(--ec-radius-md);
+  pointer-events: none;
+}
+.ai-output-card.selected .ai-output-card-bg { opacity: 1; }
+.ai-output-card .ai-output-card-bg { opacity: 0.7; transition: opacity 0.2s; }
+.ai-output-card:hover .ai-output-card-bg { opacity: 1; }
+.ai-generate-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.ai-generate-input {
+  flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--ec-radius-sm); padding: 7px 10px;
+  font-size: 0.68rem; color: rgba(249,247,244,0.45); font-family: var(--ec-font-mono);
+}
+.ai-generate-btn {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ec-off-white); background: var(--ec-green);
+  border: none; border-radius: var(--ec-radius-sm); padding: 7px 14px;
+  cursor: pointer; font-family: var(--ec-font-sans); transition: background 0.15s;
+}
+.ai-generate-btn:hover { background: var(--ec-green-light); }
+
+/* ── Step 4: Pricing panel ───────────────────────────────── */
+.pricing-panel-body { display: flex; flex-direction: column; gap: 10px; }
+.pricing-breakdown {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--ec-radius-md); overflow: hidden;
+}
+.pricing-breakdown-header {
+  padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pricing-breakdown-title {
+  font-size: 0.72rem; font-weight: 500; color: rgba(249,247,244,0.6);
+}
+.pricing-breakdown-tag {
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ec-green-light); background: rgba(74,103,65,0.15);
+  padding: 2px 8px; border-radius: var(--ec-radius-full);
+}
+.pricing-line-items { padding: 10px 14px; display: flex; flex-direction: column; gap: 7px; }
+.pricing-line {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.7rem;
+}
+.pricing-line-name { color: rgba(249,247,244,0.45); }
+.pricing-line-val { color: rgba(249,247,244,0.65); font-family: var(--ec-font-mono); font-size: 0.68rem; }
+.pricing-line.total {
+  border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; margin-top: 2px;
+}
+.pricing-line.total .pricing-line-name { color: rgba(249,247,244,0.7); font-weight: 500; }
+.pricing-line.total .pricing-line-val { color: rgba(196,146,42,0.9); font-size: 0.82rem; font-weight: 500; }
+.pricing-margin-bar {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--ec-radius-md); padding: 12px 14px;
+}
+.pricing-margin-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.65rem; color: rgba(249,247,244,0.35); margin-bottom: 8px;
+}
+.pricing-margin-label strong { color: rgba(107,143,103,0.85); }
+.pricing-bar-track {
+  height: 6px; background: rgba(255,255,255,0.08); border-radius: var(--ec-radius-full);
+  overflow: hidden;
+}
+.pricing-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--ec-green), var(--ec-green-light));
+  border-radius: var(--ec-radius-full); width: 68%;
+  transition: width 1.2s var(--ease-out);
+}
+.pricing-suggest-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.pricing-suggest-label { font-size: 0.65rem; color: rgba(249,247,244,0.3); flex-shrink: 0; }
+.pricing-suggest-val {
+  font-family: var(--ec-font-serif); font-size: 1.6rem; font-weight: 300;
+  color: rgba(249,247,244,0.8); letter-spacing: -0.02em;
+}
+.pricing-suggest-sub { font-size: 0.62rem; color: rgba(249,247,244,0.25); margin-left: 4px; }
+
+/* ── Step 5: Marketplace panel ───────────────────────────── */
+.marketplace-panel-body { display: flex; flex-direction: column; gap: 10px; }
+.marketplace-listing {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--ec-radius-md); padding: 14px; display: flex; gap: 14px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.marketplace-listing:hover { background: rgba(255,255,255,0.07); border-color: rgba(74,103,65,0.3); }
+.marketplace-listing-thumb {
+  width: 56px; height: 56px; border-radius: var(--ec-radius-md); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.marketplace-listing:nth-child(1) .marketplace-listing-thumb { background: radial-gradient(ellipse, rgba(74,103,65,0.5) 0%, rgba(26,26,26,0.9) 100%); }
+.marketplace-listing:nth-child(2) .marketplace-listing-thumb { background: radial-gradient(ellipse, rgba(138,110,82,0.4) 0%, rgba(26,26,26,0.9) 100%); }
+.marketplace-listing:nth-child(3) .marketplace-listing-thumb { background: radial-gradient(ellipse, rgba(196,146,42,0.35) 0%, rgba(26,26,26,0.9) 100%); }
+.marketplace-listing-thumb svg { width: 28px; height: 28px; opacity: 0.55; }
+.marketplace-listing-info { flex: 1; }
+.marketplace-listing-name { font-size: 0.78rem; font-weight: 500; color: rgba(249,247,244,0.75); margin-bottom: 3px; }
+.marketplace-listing-meta { font-size: 0.65rem; color: rgba(249,247,244,0.3); }
+.marketplace-listing-price {
+  font-family: var(--ec-font-serif); font-size: 1.3rem; font-weight: 300;
+  color: rgba(196,146,42,0.85); align-self: center; flex-shrink: 0;
+}
+.marketplace-earnings {
+  background: rgba(74,103,65,0.12); border: 1px solid rgba(74,103,65,0.2);
+  border-radius: var(--ec-radius-md); padding: 12px 14px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.marketplace-earnings-label { font-size: 0.65rem; color: rgba(107,143,103,0.7); }
+.marketplace-earnings-val {
+  font-family: var(--ec-font-serif); font-size: 1.8rem; font-weight: 300;
+  color: var(--ec-green-light); letter-spacing: -0.02em;
+}
+
+/* ── Connector between steps ─────────────────────────────── */
+.hiw-step-connector {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0; background: var(--ec-off-white);
+  position: relative;
+}
+.hiw-connector-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  padding: 20px 0;
+}
+.hiw-connector-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--ec-gray-200), var(--ec-green-pale));
+}
+.hiw-connector-node {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--ec-white); border: 1px solid var(--ec-gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.62rem; font-weight: 600; color: var(--ec-green);
+  letter-spacing: 0.04em;
+  box-shadow: var(--ec-shadow-sm);
+}
+.hiw-connector-line-2 {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--ec-green-pale), var(--ec-gray-200));
+}
+
+/* ── Final outcome strip ─────────────────────────────────── */
+.hiw-outcome {
+  background: var(--ec-black); padding: 80px 0;
+  position: relative; overflow: hidden;
+}
+.hiw-outcome::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(74,103,65,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hiw-outcome-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+  text-align: center; position: relative; z-index: 1;
+}
+@media (max-width: 768px) { .hiw-outcome-inner { padding: 0 24px; } }
+.hiw-outcome-overline {
+  font-size: 0.65rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(107,143,103,0.7); margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.hiw-outcome-overline::before, .hiw-outcome-overline::after {
+  content: ''; display: block; width: 28px; height: 1px;
+  background: rgba(74,103,65,0.4);
+}
+.hiw-outcome-h3 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 3.5vw, 4rem);
+  font-weight: 300; line-height: 1.08; letter-spacing: -0.025em;
+  color: var(--ec-off-white); margin-bottom: 16px;
+}
+.hiw-outcome-h3 em { font-style: italic; color: rgba(107,143,103,0.9); }
+.hiw-outcome-script {
+  font-family: var(--ec-font-script); font-size: 1.8rem; font-weight: 600;
+  color: var(--ec-bark-light); display: block; margin-bottom: 20px;
+}
+.hiw-outcome-body {
+  font-size: 1rem; line-height: 1.85; color: rgba(249,247,244,0.45);
+  max-width: 560px; margin: 0 auto 40px;
+}
+.hiw-outcome-cards {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin-top: 48px;
+}
+@media (max-width: 900px) { .hiw-outcome-cards { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .hiw-outcome-cards { grid-template-columns: 1fr; } }
+.hiw-outcome-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--ec-radius-lg); padding: 24px 20px; text-align: left;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.hiw-outcome-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(74,103,65,0.3); transform: translateY(-4px); }
+.hiw-outcome-card-icon {
+  width: 36px; height: 36px; border-radius: var(--ec-radius-md);
+  background: rgba(74,103,65,0.15); display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.hiw-outcome-card-icon svg { width: 16px; height: 16px; stroke: var(--ec-green-light); stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.hiw-outcome-card-title {
+  font-family: var(--ec-font-serif); font-size: 1.1rem; font-weight: 400;
+  color: rgba(249,247,244,0.8); margin-bottom: 6px;
+}
+.hiw-outcome-card-desc { font-size: 0.78rem; color: rgba(249,247,244,0.35); line-height: 1.65; }
+
+/* ══════════════════════════════════════════════════════════════
+   STATS BAR
+══════════════════════════════════════════════════════════════ */
+.stats-bar { background: var(--ec-charcoal); padding: 0; }
+.stats-bar-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+@media (max-width: 900px) { .stats-bar-inner { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .stats-bar-inner { grid-template-columns: 1fr; padding: 0 24px; } }
+.stat-item {
+  padding: 44px 32px; border-right: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.2s;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: rgba(255,255,255,0.025); }
+.stat-num {
+  font-family: var(--ec-font-serif); font-size: 3.2rem; font-weight: 300;
+  line-height: 1; color: var(--ec-off-white); margin-bottom: 8px; letter-spacing: -0.02em;
+}
+.stat-num em { font-style: italic; color: var(--ec-green-light); }
+.stat-label {
+  font-size: 0.68rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(249,247,244,0.28);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TESTIMONIALS
+══════════════════════════════════════════════════════════════ */
+.testimonials-section { background: var(--ec-paper); padding: 100px 0; }
+.testimonials-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px; margin-top: 56px;
+}
+@media (max-width: 900px) { .testimonials-grid { grid-template-columns: 1fr; } }
+.testi-card {
+  background: var(--ec-white); border: 1px solid var(--ec-gray-200);
+  border-radius: var(--ec-radius-lg); padding: 32px;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.testi-card:hover { box-shadow: var(--ec-shadow-lg); transform: translateY(-4px); }
+.testi-stars { display: flex; gap: 3px; margin-bottom: 18px; }
+.testi-star { width: 11px; height: 11px; color: var(--ec-gold); }
+.testi-quote {
+  font-family: var(--ec-font-serif); font-size: 1.18rem; font-weight: 300;
+  font-style: italic; line-height: 1.7; color: var(--ec-black); margin-bottom: 24px;
+}
+.testi-author { display: flex; align-items: center; gap: 12px; }
+.testi-avatar {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--ec-green-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--ec-green); flex-shrink: 0;
+}
+.testi-name { font-size: 0.8rem; font-weight: 600; color: var(--ec-black); }
+.testi-handle { font-size: 0.7rem; color: var(--ec-text-faint); margin-top: 1px; }
+
+/* ══════════════════════════════════════════════════════════════
+   PRICING TIERS
+══════════════════════════════════════════════════════════════ */
+.pricing-section { background: var(--ec-off-white); padding: 100px 0; }
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-top: 56px; align-items: start;
+}
+@media (max-width: 1024px) { .pricing-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .pricing-grid { grid-template-columns: 1fr; } }
+.tier-card {
+  background: var(--ec-white); border: 1px solid var(--ec-border);
+  border-radius: var(--ec-radius-lg); padding: 28px 24px; position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.tier-card:hover { box-shadow: var(--ec-shadow-lg); transform: translateY(-4px); }
+.tier-card.recommended {
+  transform: scale(1.04); box-shadow: var(--ec-shadow-hero);
+  border-color: var(--ec-green); z-index: 2;
+}
+.tier-card.recommended:hover { transform: scale(1.04) translateY(-4px); }
+.tier-card.atelier-card { background: var(--ec-black); border-color: rgba(249,247,244,0.1); }
+.tier-popular-badge {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  background: var(--ec-green); color: var(--ec-off-white);
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 12px; border-radius: var(--ec-radius-full); white-space: nowrap;
+}
+.tier-badge-pill {
+  display: inline-flex; align-items: center;
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: var(--ec-radius-full); margin-bottom: 14px;
+}
+.tier-name-text {
+  font-family: var(--ec-font-serif); font-size: 1.6rem; font-weight: 400;
+  color: var(--ec-black); margin-bottom: 5px; letter-spacing: -0.01em;
+}
+.atelier-card .tier-name-text { color: var(--ec-off-white); }
+.tier-tagline { font-size: 0.8rem; color: var(--ec-text-faint); margin-bottom: 20px; line-height: 1.5; min-height: 36px; }
+.atelier-card .tier-tagline { color: rgba(249,247,244,0.35); }
+.tier-price-row { margin-bottom: 20px; }
+.tier-price-amount {
+  font-family: var(--ec-font-serif); font-size: 2.8rem; font-weight: 300;
+  line-height: 1; color: var(--ec-black); letter-spacing: -0.02em;
+}
+.atelier-card .tier-price-amount { color: var(--ec-off-white); }
+.tier-price-period { font-size: 0.8rem; color: var(--ec-text-faint); margin-left: 3px; }
+.tier-cta-btn {
+  width: 100%; padding: 10px; font-family: var(--ec-font-sans);
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  border-radius: var(--ec-radius-sm); cursor: pointer; margin-bottom: 20px;
+  transition: all 0.2s;
+}
+.tier-cta-outline { background: transparent; color: var(--ec-black); border: 1px solid var(--ec-gray-300); }
+.tier-cta-outline:hover { background: var(--ec-green-pale); border-color: var(--ec-green); color: var(--ec-green); }
+.tier-cta-primary { background: var(--ec-green); color: var(--ec-off-white); border: 1px solid var(--ec-green); }
+.tier-cta-primary:hover { background: var(--ec-green-light); box-shadow: 0 4px 14px var(--ec-green-glow); }
+.tier-cta-dark { background: rgba(249,247,244,0.1); color: var(--ec-off-white); border: 1px solid rgba(249,247,244,0.18); }
+.tier-cta-dark:hover { background: rgba(249,247,244,0.18); }
+.tier-divider { height: 1px; background: var(--ec-gray-200); margin-bottom: 18px; }
+.atelier-card .tier-divider { background: rgba(249,247,244,0.1); }
+.tier-features-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.tier-feature-item {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 0.8rem; color: var(--ec-text-muted); line-height: 1.45;
+}
+.atelier-card .tier-feature-item { color: rgba(249,247,244,0.55); }
+.tier-check {
+  width: 15px; height: 15px; border-radius: 50%; background: var(--ec-green-pale);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.tier-check svg { width: 7px; height: 7px; stroke: var(--ec-green); stroke-width: 2.5; fill: none; }
+.tier-lock { display: flex; align-items: center; gap: 5px; opacity: 0.4; }
+.tier-lock-icon { font-size: 9px; flex-shrink: 0; }
+.tier-upgrade-hint { font-size: 0.65rem; color: var(--ec-text-faint); margin-left: 2px; }
+
+/* ══════════════════════════════════════════════════════════════
+   WAITLIST
+══════════════════════════════════════════════════════════════ */
+.waitlist-section {
+  background: var(--ec-black); padding: 100px 0; position: relative; overflow: hidden;
+}
+.waitlist-section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 55% 55% at 50% 50%, rgba(74,103,65,0.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+.waitlist-inner {
+  max-width: 600px; margin: 0 auto; padding: 0 48px;
+  text-align: center; position: relative; z-index: 1;
+}
+@media (max-width: 768px) { .waitlist-inner { padding: 0 24px; } }
+.waitlist-script {
+  font-family: var(--ec-font-script); font-size: 1.7rem; font-weight: 600;
+  color: rgba(194,169,142,0.75); margin-bottom: 6px; display: block;
+}
+.waitlist-h2 {
+  font-family: var(--ec-font-serif);
+  font-size: clamp(2.2rem, 3.5vw, 3.8rem);
+  font-weight: 300; line-height: 1.08; letter-spacing: -0.025em;
+  color: var(--ec-off-white); margin-bottom: 16px;
+}
+.waitlist-h2 em { font-style: italic; color: rgba(107,143,103,0.9); }
+.waitlist-sub { font-size: 0.95rem; color: rgba(249,247,244,0.42); line-height: 1.8; margin-bottom: 40px; }
+.waitlist-form { display: flex; gap: 10px; max-width: 440px; margin: 0 auto; }
+@media (max-width: 480px) { .waitlist-form { flex-direction: column; } }
+.waitlist-input {
+  flex: 1; padding: 13px 16px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.13);
+  border-radius: var(--ec-radius-sm); color: var(--ec-off-white);
+  font-family: var(--ec-font-sans); font-size: 0.88rem; outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.waitlist-input::placeholder { color: rgba(249,247,244,0.28); }
+.waitlist-input:focus { border-color: var(--ec-green-light); background: rgba(255,255,255,0.1); }
+.waitlist-submit {
+  padding: 13px 24px; background: var(--ec-green); color: var(--ec-off-white);
+  border: none; border-radius: var(--ec-radius-sm); font-family: var(--ec-font-sans);
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.waitlist-submit:hover { background: var(--ec-green-light); transform: translateY(-1px); box-shadow: 0 6px 20px var(--ec-green-glow); }
+.waitlist-note { font-size: 0.72rem; color: rgba(249,247,244,0.22); margin-top: 14px; }
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════════════════ */
+.footer { background: var(--ec-charcoal); padding: 60px 0 36px; border-top: 1px solid rgba(255,255,255,0.05); }
+.footer-inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+@media (max-width: 768px) { .footer-inner { padding: 0 24px; } }
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px; margin-bottom: 48px;
+}
+@media (max-width: 900px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .footer-top { grid-template-columns: 1fr; } }
+.footer-brand-name {
+  font-family: var(--ec-font-serif); font-size: 1.1rem; font-weight: 400;
+  letter-spacing: 0.06em; color: var(--ec-off-white);
+  display: flex; align-items: center; gap: 9px; margin-bottom: 12px;
+}
+.footer-brand-desc { font-size: 0.8rem; color: rgba(249,247,244,0.35); line-height: 1.75; max-width: 240px; }
+.footer-col-title {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(249,247,244,0.28); margin-bottom: 14px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.footer-links a {
+  font-size: 0.8rem; color: rgba(249,247,244,0.42); text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--ec-green-light); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.07); padding-top: 24px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+.footer-copy { font-size: 0.72rem; color: rgba(249,247,244,0.22); }
+.footer-legal { display: flex; gap: 18px; }
+.footer-legal a { font-size: 0.72rem; color: rgba(249,247,244,0.22); text-decoration: none; transition: color 0.2s; }
+.footer-legal a:hover { color: rgba(249,247,244,0.5); }
+</style>
+</head>
+
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════════════════════════ -->
+<nav id="nav">
+  <a href="evercrafted-home-hiw.html" class="nav-brand">
+    <svg class="nav-brand-leaf" width="18" height="18" viewBox="0 0 32 32" fill="none">
+      <path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      <path d="M16 28L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+      <path d="M16 18C16 18 12 16 10 13" stroke="currentColor" stroke-width="1" fill="none"/>
+      <path d="M16 14C16 14 20 12 22 9" stroke="currentColor" stroke-width="1" fill="none"/>
+    </svg>
+    Evercrafted
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works" class="active">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="evercrafted-apps.html">Apps</a></li>
+    <li><a href="evercrafted-marketplace.html">Marketplace</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="evercrafted-auth.html" class="nav-signin">Sign in</a>
+    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <!-- Background atmosphere -->
+  <div class="hero-bg-ring hero-bg-ring-1"></div>
+  <div class="hero-bg-ring hero-bg-ring-2"></div>
+  <div class="hero-bg-ring hero-bg-ring-3"></div>
+  <div class="hero-bg-mesh"></div>
+  <div class="hero-bg-noise"></div>
+
+  <!-- Left: copy -->
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <svg width="13" height="13" viewBox="0 0 32 32" fill="none" style="color:currentColor;flex-shrink:0">
+        <path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M16 28L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+      </svg>
+      Professional tools for wreath makers
+    </div>
+    <h1 class="hero-title">
+      Design every wreath<br>
+      with <em>intention</em>
+    </h1>
+    <span class="hero-title-script">and precision.</span>
+    <p class="hero-body">
+      Evercrafted is the design suite built for professional wreath makers — from inventory management and blueprint generation to AI visualization and a marketplace for your finished designs.
+    </p>
+    <div class="hero-actions">
+      <a href="#waitlist" class="hero-btn-primary">Join the waitlist</a>
+      <a href="#how-it-works" class="hero-btn-ghost">See how it works</a>
+    </div>
+    <div class="hero-proof">
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">16<em>+</em></div>
+        <div class="hero-proof-label">Design apps</div>
+      </div>
+      <div class="hero-proof-sep"></div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">18</div>
+        <div class="hero-proof-label">Free blueprints</div>
+      </div>
+      <div class="hero-proof-sep"></div>
+      <div class="hero-proof-item">
+        <div class="hero-proof-num">14</div>
+        <div class="hero-proof-label">Day free trial</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: pipeline diagram -->
+  <div class="hero-right">
+    <div class="hero-pipeline-diagram">
+      <div class="pipeline-diagram-header">
+        <div class="pipeline-diagram-dots">
+          <div class="pipeline-diagram-dot"></div>
+          <div class="pipeline-diagram-dot"></div>
+          <div class="pipeline-diagram-dot"></div>
+        </div>
+        <div class="pipeline-diagram-title">Your wreath workflow</div>
+      </div>
+      <div class="pipeline-diagram-body">
+        <div class="pipeline-step-row active">
+          <div class="pipeline-step-num">01</div>
+          <div class="pipeline-step-info">
+            <div class="pipeline-step-name">Build your inventory</div>
+            <div class="pipeline-step-tier">Bloom & above</div>
+          </div>
+          <div class="pipeline-step-indicator"></div>
+        </div>
+        <div class="pipeline-connector"><div class="pipeline-connector-line"></div></div>
+        <div class="pipeline-step-row">
+          <div class="pipeline-step-num">02</div>
+          <div class="pipeline-step-info">
+            <div class="pipeline-step-name">Generate a blueprint</div>
+            <div class="pipeline-step-tier">Studio & above</div>
+          </div>
+          <div class="pipeline-step-indicator"></div>
+        </div>
+        <div class="pipeline-connector"><div class="pipeline-connector-line"></div></div>
+        <div class="pipeline-step-row">
+          <div class="pipeline-step-num">03</div>
+          <div class="pipeline-step-info">
+            <div class="pipeline-step-name">Visualize with AI</div>
+            <div class="pipeline-step-tier">Atelier only</div>
+          </div>
+          <div class="pipeline-step-indicator"></div>
+        </div>
+        <div class="pipeline-connector"><div class="pipeline-connector-line"></div></div>
+        <div class="pipeline-step-row">
+          <div class="pipeline-step-num">04</div>
+          <div class="pipeline-step-info">
+            <div class="pipeline-step-name">Price your work</div>
+            <div class="pipeline-step-tier">Craft & above</div>
+          </div>
+          <div class="pipeline-step-indicator"></div>
+        </div>
+        <div class="pipeline-connector"><div class="pipeline-connector-line"></div></div>
+        <div class="pipeline-step-row">
+          <div class="pipeline-step-num">05</div>
+          <div class="pipeline-step-info">
+            <div class="pipeline-step-name">Sell your designs</div>
+            <div class="pipeline-step-tier">All tiers</div>
+          </div>
+          <div class="pipeline-step-indicator"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="hero-scroll-cue">
+    <div class="scroll-line"></div>
+    Scroll to explore
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURE MARQUEE
+══════════════════════════════════════════════════════════════ -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Studio</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Memory Weaver</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Inventory Tracker</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>AI Visualizer</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Layout Studio</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Pricing Calculator</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Design Library</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Marketplace</div>
+    <!-- Duplicate for seamless loop -->
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Studio</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Memory Weaver</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Inventory Tracker</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>AI Visualizer</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Layout Studio</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Pricing Calculator</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Design Library</div>
+    <div class="marquee-item"><svg class="marquee-leaf" viewBox="0 0 32 32" fill="none"><path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Blueprint Marketplace</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HOW IT WORKS — CENTERPIECE
+══════════════════════════════════════════════════════════════ -->
+<section id="how-it-works">
+
+  <!-- ── Intro header ──────────────────────────────────────── -->
+  <div class="hiw-intro">
+    <div class="hiw-intro-inner">
+      <div class="hiw-intro-left reveal">
+        <div class="section-tag">How it works</div>
+        <h2 class="hiw-intro-h2">
+          From your first stem<br>
+          to a <em>finished design</em>
+          <span class="script">in five steps.</span>
+        </h2>
+      </div>
+      <div class="hiw-intro-right reveal d2">
+        <p class="hiw-intro-lead">
+          Evercrafted guides you through a structured design process — from cataloguing your materials to publishing finished blueprints on the marketplace. Every step is supported by a purpose-built app, so nothing falls through the cracks.
+        </p>
+        <p class="hiw-intro-note">
+          Each step in the workflow unlocks as your subscription grows. Start with Bloom and build up — or jump straight to Atelier for the full suite.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Sticky pipeline tabs ──────────────────────────────── -->
+  <div class="hiw-pipeline-tabs" id="hiwTabs">
+    <div class="hiw-tabs-track">
+      <button class="hiw-tab active" data-step="1" onclick="activateTab(1)">
+        <div class="hiw-tab-num">01</div>
+        <div class="hiw-tab-name">Build Inventory</div>
+        <div class="hiw-tab-tier">Bloom+</div>
+      </button>
+      <button class="hiw-tab" data-step="2" onclick="activateTab(2)">
+        <div class="hiw-tab-num">02</div>
+        <div class="hiw-tab-name">Blueprint Studio</div>
+        <div class="hiw-tab-tier">Studio+</div>
+      </button>
+      <button class="hiw-tab" data-step="3" onclick="activateTab(3)">
+        <div class="hiw-tab-num">03</div>
+        <div class="hiw-tab-name">AI Visualizer</div>
+        <div class="hiw-tab-tier">Atelier</div>
+      </button>
+      <button class="hiw-tab" data-step="4" onclick="activateTab(4)">
+        <div class="hiw-tab-num">04</div>
+        <div class="hiw-tab-name">Price Your Work</div>
+        <div class="hiw-tab-tier">Craft+</div>
+      </button>
+      <button class="hiw-tab" data-step="5" onclick="activateTab(5)">
+        <div class="hiw-tab-num">05</div>
+        <div class="hiw-tab-name">Marketplace</div>
+        <div class="hiw-tab-tier">All tiers</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       STEP 01 — BUILD YOUR INVENTORY
+  ══════════════════════════════════════════════════════ -->
+  <div class="hiw-step-section" id="step-1" data-step="1">
+    <div class="hiw-step-inner">
+
+      <!-- Copy -->
+      <div class="hiw-step-copy reveal-left">
+        <div class="hiw-step-meta">
+          <div class="hiw-step-index">01</div>
+          <span class="hiw-step-tier-badge tier-bloom">Bloom &amp; above</span>
+        </div>
+        <h3 class="hiw-step-title">
+          Know exactly what<br>you <em>have</em> — and what it costs.
+        </h3>
+        <p class="hiw-step-body">
+          Before a single blueprint can be generated, Evercrafted needs to know your materials. The Inventory Tracker lets you log every floral, foliage stem, ribbon, embellishment, and frame — with quantities, unit costs, and seasonal availability.
+        </p>
+        <div class="hiw-step-detail">
+          When you build a blueprint later, Evercrafted pulls directly from your inventory to calculate real material costs, flag low-stock items, and suggest substitutions — so your designs are always grounded in what you actually have on hand.
+        </div>
+        <a href="evercrafted-apps.html#inventory" class="hiw-step-cta">Explore Inventory Tracker</a>
+      </div>
+
+      <!-- Visual: Inventory panel -->
+      <div class="hiw-step-visual reveal-right">
+        <div class="hiw-step-panel">
+          <div class="hiw-panel-header">
+            <div class="hiw-panel-dots"><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div></div>
+            <div class="hiw-panel-label">Inventory Tracker</div>
+          </div>
+          <div class="hiw-panel-body">
+            <div class="inventory-panel-body">
+              <div class="inventory-search">
+                <svg class="inventory-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <span class="inventory-search-text">Search materials…</span>
+              </div>
+              <div class="inventory-table">
+                <div class="inventory-row header">
+                  <div class="inventory-cell">Material</div>
+                  <div class="inventory-cell qty">Qty</div>
+                  <div class="inventory-cell cost">Cost</div>
+                  <div class="inventory-cell status">Status</div>
+                </div>
+                <div class="inventory-row">
+                  <div class="inventory-cell name">Eucalyptus, seeded</div>
+                  <div class="inventory-cell qty">24</div>
+                  <div class="inventory-cell cost">$1.20</div>
+                  <div class="inventory-cell status"><span class="status-dot in"></span>In stock</div>
+                </div>
+                <div class="inventory-row">
+                  <div class="inventory-cell name">White ranunculus</div>
+                  <div class="inventory-cell qty">8</div>
+                  <div class="inventory-cell cost">$2.40</div>
+                  <div class="inventory-cell status"><span class="status-dot low"></span>Low</div>
+                </div>
+                <div class="inventory-row">
+                  <div class="inventory-cell name">Dried pampas grass</div>
+                  <div class="inventory-cell qty">36</div>
+                  <div class="inventory-cell cost">$0.85</div>
+                  <div class="inventory-cell status"><span class="status-dot in"></span>In stock</div>
+                </div>
+                <div class="inventory-row">
+                  <div class="inventory-cell name">Wired ribbon, 2.5"</div>
+                  <div class="inventory-cell qty">12</div>
+                  <div class="inventory-cell cost">$3.50</div>
+                  <div class="inventory-cell status"><span class="status-dot in"></span>In stock</div>
+                </div>
+                <div class="inventory-row">
+                  <div class="inventory-cell name">Grapevine base, 18"</div>
+                  <div class="inventory-cell qty">6</div>
+                  <div class="inventory-cell cost">$4.20</div>
+                  <div class="inventory-cell status"><span class="status-dot low"></span>Low</div>
+                </div>
+              </div>
+              <div class="inventory-footer">
+                <div class="inventory-footer-stat"><strong>47</strong> items tracked</div>
+                <div class="inventory-footer-stat">Total value: <strong>$284.60</strong></div>
+                <button class="inventory-add-btn">+ Add item</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="hiw-step-connector">
+    <div class="hiw-connector-inner">
+      <div class="hiw-connector-line"></div>
+      <div class="hiw-connector-node">02</div>
+      <div class="hiw-connector-line-2"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       STEP 02 — BLUEPRINT STUDIO
+  ══════════════════════════════════════════════════════ -->
+  <div class="hiw-step-section" id="step-2" data-step="2">
+    <div class="hiw-step-inner">
+
+      <!-- Copy -->
+      <div class="hiw-step-copy reveal-left">
+        <div class="hiw-step-meta">
+          <div class="hiw-step-index">02</div>
+          <span class="hiw-step-tier-badge tier-studio">Studio &amp; above</span>
+        </div>
+        <h3 class="hiw-step-title">
+          Map your design<br>before a <em>single stem</em> is placed.
+        </h3>
+        <p class="hiw-step-body">
+          The Blueprint Studio is where your wreath takes shape on paper first. Define the structural layers, map element placement around the form, establish your color story, and calculate material quantities — all before you touch a single stem.
+        </p>
+        <div class="hiw-step-detail">
+          Blueprints pull from your inventory in real time, so every element you add to the canvas is costed automatically. Export a shareable layout diagram your clients can review and approve before production begins.
+        </div>
+        <a href="evercrafted-apps.html#blueprint" class="hiw-step-cta">Explore Blueprint Studio</a>
+      </div>
+
+      <!-- Visual: Blueprint canvas panel -->
+      <div class="hiw-step-visual reveal-right">
+        <div class="hiw-step-panel">
+          <div class="hiw-panel-header">
+            <div class="hiw-panel-dots"><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div></div>
+            <div class="hiw-panel-label">Blueprint Studio — Autumn Harvest</div>
+          </div>
+          <div class="hiw-panel-body">
+            <div class="blueprint-panel-body">
+              <div class="blueprint-sidebar">
+                <div class="blueprint-sidebar-label">Workspace</div>
+                <div class="blueprint-nav-item active"><div class="blueprint-nav-dot"></div>Canvas</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Layers</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Color story</div>
+                <div class="blueprint-sidebar-label">Elements</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Base layer</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Focal points</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Accents</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Ribbon</div>
+                <div class="blueprint-sidebar-label">Output</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Export PDF</div>
+                <div class="blueprint-nav-item"><div class="blueprint-nav-dot"></div>Share link</div>
+              </div>
+              <div class="blueprint-canvas">
+                <div class="blueprint-canvas-label">Canvas · Blueprint view</div>
+                <svg class="canvas-wreath-svg" viewBox="0 0 200 200" fill="none">
+                  <circle cx="100" cy="100" r="72" stroke="rgba(107,143,103,0.45)" stroke-width="1.5"/>
+                  <circle cx="100" cy="100" r="58" stroke="rgba(107,143,103,0.25)" stroke-width="1"/>
+                  <circle cx="100" cy="100" r="44" stroke="rgba(107,143,103,0.15)" stroke-width="0.75" stroke-dasharray="3 3"/>
+                  <g transform="translate(100,28)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(30,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(60,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(90,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(120,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(150,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(180,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(210,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(240,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(270,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(300,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <g transform="translate(100,28) rotate(330,0,72)"><path d="M0 0C0 0-7-10 0-17C7-10 0 0 0 0Z" stroke="rgba(107,143,103,0.85)" stroke-width="1.2" fill="rgba(107,143,103,0.18)"/></g>
+                  <!-- Focal point markers -->
+                  <circle cx="100" cy="56" r="5" fill="rgba(196,146,42,0.5)" stroke="rgba(196,146,42,0.8)" stroke-width="1"/>
+                  <circle cx="136" cy="72" r="4" fill="rgba(196,146,42,0.4)" stroke="rgba(196,146,42,0.7)" stroke-width="1"/>
+                  <circle cx="64" cy="72" r="4" fill="rgba(196,146,42,0.4)" stroke="rgba(196,146,42,0.7)" stroke-width="1"/>
+                  <circle cx="100" cy="100" r="3" fill="rgba(107,143,103,0.4)"/>
+                </svg>
+                <div class="blueprint-stats">
+                  <div class="blueprint-stat">
+                    <div class="blueprint-stat-num">24</div>
+                    <div class="blueprint-stat-label">Elements</div>
+                  </div>
+                  <div class="blueprint-stat">
+                    <div class="blueprint-stat-num">$68</div>
+                    <div class="blueprint-stat-label">Mat. cost</div>
+                  </div>
+                  <div class="blueprint-stat">
+                    <div class="blueprint-stat-num">3.2h</div>
+                    <div class="blueprint-stat-label">Build time</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="hiw-step-connector">
+    <div class="hiw-connector-inner">
+      <div class="hiw-connector-line"></div>
+      <div class="hiw-connector-node">03</div>
+      <div class="hiw-connector-line-2"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       STEP 03 — AI VISUALIZER
+  ══════════════════════════════════════════════════════ -->
+  <div class="hiw-step-section" id="step-3" data-step="3">
+    <div class="hiw-step-inner">
+
+      <!-- Copy -->
+      <div class="hiw-step-copy reveal-left">
+        <div class="hiw-step-meta">
+          <div class="hiw-step-index">03</div>
+          <span class="hiw-step-tier-badge tier-atelier">Atelier only</span>
+        </div>
+        <h3 class="hiw-step-title">
+          Show clients the finished<br>wreath <em>before</em> you build it.
+        </h3>
+        <p class="hiw-step-body">
+          Feed your blueprint into the AI Visualizer and generate photorealistic previews of your finished design. Explore colorway variations, swap focal flowers, and adjust the ribbon treatment — all without touching a single stem.
+        </p>
+        <div class="hiw-step-detail">
+          Share a preview link with your client and get sign-off before production begins. The Prompt Creator helps you craft precise generation prompts from your blueprint data, so the AI output actually matches your design intent.
+        </div>
+        <a href="evercrafted-apps.html#ai-visualizer" class="hiw-step-cta">Explore AI Visualizer</a>
+      </div>
+
+      <!-- Visual: AI output panel -->
+      <div class="hiw-step-visual reveal-right">
+        <div class="hiw-step-panel">
+          <div class="hiw-panel-header">
+            <div class="hiw-panel-dots"><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div></div>
+            <div class="hiw-panel-label">AI Visualizer</div>
+          </div>
+          <div class="hiw-panel-body">
+            <div class="ai-panel-body">
+              <div class="ai-prompt-area">
+                <div class="ai-prompt-label">Generation prompt</div>
+                <div class="ai-prompt-text">
+                  Autumn harvest wreath, grapevine base, seeded eucalyptus, white ranunculus focal points, dried pampas grass accents, warm terracotta ribbon, natural light, editorial photography<span class="ai-prompt-cursor"></span>
+                </div>
+              </div>
+              <div class="ai-output-grid">
+                <div class="ai-output-card selected">
+                  <div class="ai-output-card-bg">
+                    <svg class="ai-output-wreath" viewBox="0 0 200 200" fill="none">
+                      <circle cx="100" cy="100" r="68" stroke="rgba(107,143,103,0.6)" stroke-width="2"/>
+                      <circle cx="100" cy="100" r="52" stroke="rgba(107,143,103,0.3)" stroke-width="1"/>
+                      <g transform="translate(100,32)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <g transform="translate(100,32) rotate(45,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <g transform="translate(100,32) rotate(90,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <g transform="translate(100,32) rotate(135,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <g transform="translate(100,32) rotate(180,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <g transform="translate(100,32) rotate(225,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <g transform="translate(100,32) rotate(270,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <g transform="translate(100,32) rotate(315,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="1.5" fill="rgba(107,143,103,0.25)"/></g>
+                      <circle cx="100" cy="100" r="6" fill="rgba(196,146,42,0.5)" stroke="rgba(196,146,42,0.8)" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ai-output-card">
+                  <div class="ai-output-card-bg">
+                    <svg class="ai-output-wreath" viewBox="0 0 200 200" fill="none">
+                      <circle cx="100" cy="100" r="68" stroke="rgba(138,110,82,0.5)" stroke-width="2"/>
+                      <circle cx="100" cy="100" r="52" stroke="rgba(138,110,82,0.25)" stroke-width="1"/>
+                      <g transform="translate(100,32)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.8)" stroke-width="1.5" fill="rgba(138,110,82,0.2)"/></g>
+                      <g transform="translate(100,32) rotate(60,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.8)" stroke-width="1.5" fill="rgba(138,110,82,0.2)"/></g>
+                      <g transform="translate(100,32) rotate(120,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.8)" stroke-width="1.5" fill="rgba(138,110,82,0.2)"/></g>
+                      <g transform="translate(100,32) rotate(180,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.8)" stroke-width="1.5" fill="rgba(138,110,82,0.2)"/></g>
+                      <g transform="translate(100,32) rotate(240,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.8)" stroke-width="1.5" fill="rgba(138,110,82,0.2)"/></g>
+                      <g transform="translate(100,32) rotate(300,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.8)" stroke-width="1.5" fill="rgba(138,110,82,0.2)"/></g>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ai-output-card">
+                  <div class="ai-output-card-bg">
+                    <svg class="ai-output-wreath" viewBox="0 0 200 200" fill="none">
+                      <circle cx="100" cy="100" r="68" stroke="rgba(196,146,42,0.45)" stroke-width="2"/>
+                      <circle cx="100" cy="100" r="52" stroke="rgba(196,146,42,0.2)" stroke-width="1"/>
+                      <g transform="translate(100,32)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.75)" stroke-width="1.5" fill="rgba(196,146,42,0.15)"/></g>
+                      <g transform="translate(100,32) rotate(72,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.75)" stroke-width="1.5" fill="rgba(196,146,42,0.15)"/></g>
+                      <g transform="translate(100,32) rotate(144,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.75)" stroke-width="1.5" fill="rgba(196,146,42,0.15)"/></g>
+                      <g transform="translate(100,32) rotate(216,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.75)" stroke-width="1.5" fill="rgba(196,146,42,0.15)"/></g>
+                      <g transform="translate(100,32) rotate(288,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.75)" stroke-width="1.5" fill="rgba(196,146,42,0.15)"/></g>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ai-output-card">
+                  <div class="ai-output-card-bg">
+                    <svg class="ai-output-wreath" viewBox="0 0 200 200" fill="none">
+                      <circle cx="100" cy="100" r="68" stroke="rgba(107,143,103,0.35)" stroke-width="2"/>
+                      <circle cx="100" cy="100" r="52" stroke="rgba(107,143,103,0.18)" stroke-width="1"/>
+                      <g transform="translate(100,32)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.7)" stroke-width="1.5" fill="rgba(107,143,103,0.12)"/></g>
+                      <g transform="translate(100,32) rotate(40,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.7)" stroke-width="1.5" fill="rgba(107,143,103,0.12)"/></g>
+                      <g transform="translate(100,32) rotate(80,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.7)" stroke-width="1.5" fill="rgba(107,143,103,0.12)"/></g>
+                      <g transform="translate(100,32) rotate(160,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.7)" stroke-width="1.5" fill="rgba(107,143,103,0.12)"/></g>
+                      <g transform="translate(100,32) rotate(200,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.7)" stroke-width="1.5" fill="rgba(107,143,103,0.12)"/></g>
+                      <g transform="translate(100,32) rotate(280,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.7)" stroke-width="1.5" fill="rgba(107,143,103,0.12)"/></g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="ai-generate-row">
+                <input class="ai-generate-input" type="text" value="Vary: swap pampas for dried lavender" readonly/>
+                <button class="ai-generate-btn">Regenerate</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="hiw-step-connector">
+    <div class="hiw-connector-inner">
+      <div class="hiw-connector-line"></div>
+      <div class="hiw-connector-node">04</div>
+      <div class="hiw-connector-line-2"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       STEP 04 — PRICING CALCULATOR
+  ══════════════════════════════════════════════════════ -->
+  <div class="hiw-step-section" id="step-4" data-step="4">
+    <div class="hiw-step-inner">
+
+      <!-- Copy -->
+      <div class="hiw-step-copy reveal-left">
+        <div class="hiw-step-meta">
+          <div class="hiw-step-index">04</div>
+          <span class="hiw-step-tier-badge tier-craft">Craft &amp; above</span>
+        </div>
+        <h3 class="hiw-step-title">
+          Price your work with<br><em>confidence</em> — not guesswork.
+        </h3>
+        <p class="hiw-step-body">
+          The Pricing Calculator takes your blueprint's material costs and adds your labour rate, overhead, and desired margin to produce a suggested retail price. No more under-pricing because you forgot to account for your time.
+        </p>
+        <div class="hiw-step-detail">
+          Because the calculator is connected to your live inventory costs, your pricing updates automatically when material prices change. Set a target margin and let Evercrafted do the arithmetic.
+        </div>
+        <a href="evercrafted-apps.html#pricing" class="hiw-step-cta">Explore Pricing Calculator</a>
+      </div>
+
+      <!-- Visual: Pricing panel -->
+      <div class="hiw-step-visual reveal-right">
+        <div class="hiw-step-panel">
+          <div class="hiw-panel-header">
+            <div class="hiw-panel-dots"><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div></div>
+            <div class="hiw-panel-label">Pricing Calculator — Autumn Harvest</div>
+          </div>
+          <div class="hiw-panel-body">
+            <div class="pricing-panel-body">
+              <div class="pricing-breakdown">
+                <div class="pricing-breakdown-header">
+                  <div class="pricing-breakdown-title">Cost breakdown</div>
+                  <div class="pricing-breakdown-tag">Live from inventory</div>
+                </div>
+                <div class="pricing-line-items">
+                  <div class="pricing-line">
+                    <span class="pricing-line-name">Materials (24 elements)</span>
+                    <span class="pricing-line-val">$68.40</span>
+                  </div>
+                  <div class="pricing-line">
+                    <span class="pricing-line-name">Labour (3.2h × $22/h)</span>
+                    <span class="pricing-line-val">$70.40</span>
+                  </div>
+                  <div class="pricing-line">
+                    <span class="pricing-line-name">Overhead (12%)</span>
+                    <span class="pricing-line-val">$16.66</span>
+                  </div>
+                  <div class="pricing-line">
+                    <span class="pricing-line-name">Packaging &amp; ribbon</span>
+                    <span class="pricing-line-val">$8.50</span>
+                  </div>
+                  <div class="pricing-line total">
+                    <span class="pricing-line-name">Total cost</span>
+                    <span class="pricing-line-val">$163.96</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pricing-margin-bar">
+                <div class="pricing-margin-label">
+                  <span>Margin</span>
+                  <strong>68% → $278</strong>
+                </div>
+                <div class="pricing-bar-track">
+                  <div class="pricing-bar-fill" id="marginBar"></div>
+                </div>
+              </div>
+              <div class="pricing-suggest-row">
+                <span class="pricing-suggest-label">Suggested retail</span>
+                <span class="pricing-suggest-val">$278</span>
+                <span class="pricing-suggest-sub">/ wreath</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connector -->
+  <div class="hiw-step-connector">
+    <div class="hiw-connector-inner">
+      <div class="hiw-connector-line"></div>
+      <div class="hiw-connector-node">05</div>
+      <div class="hiw-connector-line-2"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       STEP 05 — MARKETPLACE
+  ══════════════════════════════════════════════════════ -->
+  <div class="hiw-step-section" id="step-5" data-step="5">
+    <div class="hiw-step-inner">
+
+      <!-- Copy -->
+      <div class="hiw-step-copy reveal-left">
+        <div class="hiw-step-meta">
+          <div class="hiw-step-index">05</div>
+          <span class="hiw-step-tier-badge tier-all">All tiers</span>
+        </div>
+        <h3 class="hiw-step-title">
+          Sell your designs.<br>Earn <em>passive income</em> from your craft.
+        </h3>
+        <p class="hiw-step-body">
+          Once your blueprint is complete, publish it to the Evercrafted Marketplace. Other makers can purchase your design, download the layout diagram, and build it themselves — you earn a royalty on every sale.
+        </p>
+        <div class="hiw-step-detail">
+          Your expertise has real monetary value. A single well-designed blueprint can sell dozens of times, generating income long after the original wreath was built. The Marketplace is open to all tiers — even Bloom members can browse and purchase.
+        </div>
+        <a href="evercrafted-marketplace.html" class="hiw-step-cta">Visit the Marketplace</a>
+      </div>
+
+      <!-- Visual: Marketplace panel -->
+      <div class="hiw-step-visual reveal-right">
+        <div class="hiw-step-panel">
+          <div class="hiw-panel-header">
+            <div class="hiw-panel-dots"><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div><div class="hiw-panel-dot"></div></div>
+            <div class="hiw-panel-label">Blueprint Marketplace</div>
+          </div>
+          <div class="hiw-panel-body">
+            <div class="marketplace-panel-body">
+              <div class="marketplace-listing">
+                <div class="marketplace-listing-thumb">
+                  <svg viewBox="0 0 200 200" fill="none" style="width:28px;height:28px;opacity:0.6">
+                    <circle cx="100" cy="100" r="68" stroke="rgba(107,143,103,0.8)" stroke-width="2.5"/>
+                    <g transform="translate(100,32)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="2" fill="rgba(107,143,103,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(90,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="2" fill="rgba(107,143,103,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(180,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="2" fill="rgba(107,143,103,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(270,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(107,143,103,0.9)" stroke-width="2" fill="rgba(107,143,103,0.3)"/></g>
+                  </svg>
+                </div>
+                <div class="marketplace-listing-info">
+                  <div class="marketplace-listing-name">Autumn Harvest Blueprint</div>
+                  <div class="marketplace-listing-meta">by @margaretl · 47 sales · ★ 4.9</div>
+                </div>
+                <div class="marketplace-listing-price">$18</div>
+              </div>
+              <div class="marketplace-listing">
+                <div class="marketplace-listing-thumb">
+                  <svg viewBox="0 0 200 200" fill="none" style="width:28px;height:28px;opacity:0.6">
+                    <circle cx="100" cy="100" r="68" stroke="rgba(138,110,82,0.8)" stroke-width="2.5"/>
+                    <g transform="translate(100,32)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.9)" stroke-width="2" fill="rgba(138,110,82,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(60,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.9)" stroke-width="2" fill="rgba(138,110,82,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(120,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.9)" stroke-width="2" fill="rgba(138,110,82,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(180,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.9)" stroke-width="2" fill="rgba(138,110,82,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(240,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.9)" stroke-width="2" fill="rgba(138,110,82,0.3)"/></g>
+                    <g transform="translate(100,32) rotate(300,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(138,110,82,0.9)" stroke-width="2" fill="rgba(138,110,82,0.3)"/></g>
+                  </svg>
+                </div>
+                <div class="marketplace-listing-info">
+                  <div class="marketplace-listing-name">Winter Botanicals Blueprint</div>
+                  <div class="marketplace-listing-meta">by @sarahdesigns · 31 sales · ★ 5.0</div>
+                </div>
+                <div class="marketplace-listing-price">$24</div>
+              </div>
+              <div class="marketplace-listing">
+                <div class="marketplace-listing-thumb">
+                  <svg viewBox="0 0 200 200" fill="none" style="width:28px;height:28px;opacity:0.6">
+                    <circle cx="100" cy="100" r="68" stroke="rgba(196,146,42,0.7)" stroke-width="2.5"/>
+                    <g transform="translate(100,32)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.85)" stroke-width="2" fill="rgba(196,146,42,0.2)"/></g>
+                    <g transform="translate(100,32) rotate(72,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.85)" stroke-width="2" fill="rgba(196,146,42,0.2)"/></g>
+                    <g transform="translate(100,32) rotate(144,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.85)" stroke-width="2" fill="rgba(196,146,42,0.2)"/></g>
+                    <g transform="translate(100,32) rotate(216,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.85)" stroke-width="2" fill="rgba(196,146,42,0.2)"/></g>
+                    <g transform="translate(100,32) rotate(288,0,68)"><path d="M0 0C0 0-8-12 0-20C8-12 0 0 0 0Z" stroke="rgba(196,146,42,0.85)" stroke-width="2" fill="rgba(196,146,42,0.2)"/></g>
+                  </svg>
+                </div>
+                <div class="marketplace-listing-info">
+                  <div class="marketplace-listing-name">Spring Meadow Blueprint</div>
+                  <div class="marketplace-listing-meta">by @jessicak · 19 sales · ★ 4.8</div>
+                </div>
+                <div class="marketplace-listing-price">$15</div>
+              </div>
+              <div class="marketplace-earnings">
+                <div>
+                  <div class="marketplace-earnings-label">Your earnings this month</div>
+                  <div style="font-size:0.65rem;color:rgba(249,247,244,0.25);margin-top:2px;">3 blueprints · 47 total sales</div>
+                </div>
+                <div class="marketplace-earnings-val">$846</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Outcome strip ──────────────────────────────────────── -->
+  <div class="hiw-outcome">
+    <div class="hiw-outcome-inner">
+      <div class="hiw-outcome-overline reveal">The result</div>
+      <h2 class="hiw-outcome-h3 reveal d1">
+        A practice built on<br><em>intention, precision,</em>
+      </h2>
+      <span class="hiw-outcome-script reveal d2">and sustainable income.</span>
+      <p class="hiw-outcome-body reveal d3">
+        Evercrafted doesn't just help you make better wreaths — it helps you build a better practice. Every tool in the suite is designed to compound: better inventory data leads to more accurate blueprints, which leads to better AI previews, which leads to more confident pricing, which leads to more marketplace sales.
+      </p>
+      <a href="#waitlist" class="hero-btn-primary reveal d4" style="display:inline-flex;margin-bottom:56px;">Join the waitlist</a>
+      <div class="hiw-outcome-cards">
+        <div class="hiw-outcome-card reveal d1">
+          <div class="hiw-outcome-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div class="hiw-outcome-card-title">Real cost clarity</div>
+          <div class="hiw-outcome-card-desc">Know your true cost-per-wreath down to the stem. Price with confidence, not intuition.</div>
+        </div>
+        <div class="hiw-outcome-card reveal d2">
+          <div class="hiw-outcome-card-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div class="hiw-outcome-card-title">Time saved</div>
+          <div class="hiw-outcome-card-desc">Stop re-designing from scratch. Blueprints are reusable, shareable, and exportable.</div>
+        </div>
+        <div class="hiw-outcome-card reveal d3">
+          <div class="hiw-outcome-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="hiw-outcome-card-title">Client confidence</div>
+          <div class="hiw-outcome-card-desc">Share AI previews and blueprint PDFs. Get sign-off before a single stem is cut.</div>
+        </div>
+        <div class="hiw-outcome-card reveal d4">
+          <div class="hiw-outcome-card-icon">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="hiw-outcome-card-title">Passive income</div>
+          <div class="hiw-outcome-card-desc">Sell your blueprints on the Marketplace. Your expertise earns while you sleep.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section><!-- end #how-it-works -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     STATS BAR
+══════════════════════════════════════════════════════════════ -->
+<section class="stats-bar">
+  <div class="stats-bar-inner">
+    <div class="stat-item reveal">
+      <div class="stat-num">16<em>+</em></div>
+      <div class="stat-label">Design apps in the suite</div>
+    </div>
+    <div class="stat-item reveal d2">
+      <div class="stat-num">18</div>
+      <div class="stat-label">Free blueprints included</div>
+    </div>
+    <div class="stat-item reveal d3">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Steps from idea to income</div>
+    </div>
+    <div class="stat-item reveal d4">
+      <div class="stat-num">14</div>
+      <div class="stat-label">Day free trial, no card needed</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════════════ -->
+<section class="testimonials-section">
+  <div class="wrap">
+    <div class="section-tag center reveal">From the community</div>
+    <h2 style="font-family:var(--ec-font-serif);font-size:clamp(2rem,3.5vw,3.5rem);font-weight:300;line-height:1.1;letter-spacing:-0.025em;text-align:center;margin-bottom:0;" class="reveal d1">
+      What makers are saying
+    </h2>
+    <div class="testimonials-grid">
+      <div class="testi-card reveal d1">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"The Blueprint Studio changed how I quote clients. I used to guess at material costs — now I know exactly what every wreath costs before I commit to a price."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">ML</div>
+          <div>
+            <div class="testi-name">Margaret L.</div>
+            <div class="testi-handle">Studio tier · Wreath designer, Vermont</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d2">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"Selling blueprints on the Marketplace was not something I expected to love. I've earned more from design sales this quarter than from three custom orders combined."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">SK</div>
+          <div>
+            <div class="testi-name">Sarah K.</div>
+            <div class="testi-handle">Atelier tier · Botanical artist, Oregon</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d3">
+        <div class="testi-stars">
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="testi-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="testi-quote">"The AI Visualizer is the feature I didn't know I needed. Showing a client a photorealistic preview before I build the wreath has completely eliminated revision requests."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">JR</div>
+          <div>
+            <div class="testi-name">Jessica R.</div>
+            <div class="testi-handle">Atelier tier · Floral designer, Tennessee</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Botanical divider -->
+<div style="padding:48px 0;background:var(--ec-off-white);">
+  <div class="leaf-divider">
+    <svg width="22" height="28" viewBox="0 0 32 40" fill="none">
+      <path d="M16 38C16 38 4 26 4 14C4 7.4 9.4 2 16 2C22.6 2 28 7.4 28 14C28 26 16 38 16 38Z" stroke="var(--ec-green)" stroke-width="1.2" fill="none"/>
+      <path d="M16 38L16 8" stroke="var(--ec-green)" stroke-width="0.8" stroke-dasharray="2 2"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PRICING
+══════════════════════════════════════════════════════════════ -->
+<section class="pricing-section" id="pricing">
+  <div class="wrap">
+    <div class="section-tag center reveal">Pricing</div>
+    <h2 style="font-family:var(--ec-font-serif);font-size:clamp(2rem,3.5vw,3.5rem);font-weight:300;line-height:1.1;letter-spacing:-0.025em;text-align:center;margin-bottom:10px;" class="reveal d1">
+      Start free. Grow at your pace.
+    </h2>
+    <p style="text-align:center;font-size:0.9rem;color:var(--ec-text-faint);margin-bottom:0;" class="reveal d2">14-day free trial on all paid plans. No credit card required.</p>
+    <div class="pricing-grid">
+
+      <!-- Bloom -->
+      <div class="tier-card reveal d1">
+        <span class="hiw-step-tier-badge tier-bloom" style="margin-bottom:14px;">Bloom</span>
+        <div class="tier-name-text">Bloom</div>
+        <div class="tier-tagline">For makers just getting started with professional tools.</div>
+        <div class="tier-price-row">
+          <span class="tier-price-amount">$19</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <button class="tier-cta-btn tier-cta-outline">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features-list">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Inventory Tracker (up to 100 items)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            18 free blueprint templates
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Marketplace access (browse &amp; buy)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-lock">
+              <span class="tier-lock-icon">🔒</span>
+              <span>Blueprint Studio</span>
+              <span class="tier-upgrade-hint">Studio+</span>
+            </div>
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-lock">
+              <span class="tier-lock-icon">🔒</span>
+              <span>AI Visualizer</span>
+              <span class="tier-upgrade-hint">Atelier</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Craft -->
+      <div class="tier-card reveal d2">
+        <span class="hiw-step-tier-badge tier-craft" style="margin-bottom:14px;">Craft</span>
+        <div class="tier-name-text">Craft</div>
+        <div class="tier-tagline">For makers ready to price their work professionally.</div>
+        <div class="tier-price-row">
+          <span class="tier-price-amount">$39</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <button class="tier-cta-btn tier-cta-outline">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features-list">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Everything in Bloom
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Unlimited inventory items
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Pricing Calculator
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Marketplace selling (list blueprints)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-lock">
+              <span class="tier-lock-icon">🔒</span>
+              <span>Blueprint Studio</span>
+              <span class="tier-upgrade-hint">Studio+</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Studio — recommended -->
+      <div class="tier-card recommended reveal d3">
+        <div class="tier-popular-badge">Most popular</div>
+        <span class="hiw-step-tier-badge tier-studio" style="margin-bottom:14px;">Studio</span>
+        <div class="tier-name-text">Studio</div>
+        <div class="tier-tagline">For professional makers who design and sell regularly.</div>
+        <div class="tier-price-row">
+          <span class="tier-price-amount">$59</span>
+          <span class="tier-price-period">/ month</span>
+        </div>
+        <button class="tier-cta-btn tier-cta-primary">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features-list">
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Everything in Craft
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Blueprint Studio (full access)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Client-shareable blueprint PDFs
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Memory Weaver &amp; Layout Studio
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-lock">
+              <span class="tier-lock-icon">🔒</span>
+              <span>AI Visualizer</span>
+              <span class="tier-upgrade-hint">Atelier only</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Atelier -->
+      <div class="tier-card atelier-card reveal d4">
+        <span class="hiw-step-tier-badge tier-atelier" style="margin-bottom:14px;background:rgba(249,247,244,0.1);color:var(--ec-off-white);">Atelier</span>
+        <div class="tier-name-text">Atelier</div>
+        <div class="tier-tagline" style="color:rgba(249,247,244,0.35);">The complete suite for serious design professionals.</div>
+        <div class="tier-price-row">
+          <span class="tier-price-amount">$99</span>
+          <span class="tier-price-period" style="color:rgba(249,247,244,0.35);">/ month</span>
+        </div>
+        <button class="tier-cta-btn tier-cta-dark">Start free trial</button>
+        <div class="tier-divider"></div>
+        <ul class="tier-features-list">
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Everything in Studio
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            AI Visualizer (unlimited generations)
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Prompt Creator &amp; AI style library
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            Priority marketplace placement
+          </li>
+          <li class="tier-feature-item">
+            <div class="tier-check" style="background:rgba(74,103,65,0.2);"><svg viewBox="0 0 24 24" style="stroke:var(--ec-green-light)"><polyline points="20 6 9 17 4 12"/></svg></div>
+            All 16+ apps, early access to new tools
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     WAITLIST
+══════════════════════════════════════════════════════════════ -->
+<section class="waitlist-section" id="waitlist">
+  <div class="waitlist-inner">
+    <span class="waitlist-script reveal">Join the waitlist</span>
+    <h2 class="waitlist-h2 reveal d1">
+      Be first to design<br>with <em>intention.</em>
+    </h2>
+    <p class="waitlist-sub reveal d2">
+      Evercrafted is currently in private beta. Join the waitlist and we'll notify you the moment your spot opens — along with a free 14-day trial of the Studio tier.
+    </p>
+    <form class="waitlist-form reveal d3" onsubmit="handleWaitlist(event)">
+      <input class="waitlist-input" type="email" placeholder="Your email address" required id="waitlistEmail">
+      <button class="waitlist-submit" type="submit">Join waitlist</button>
+    </form>
+    <p class="waitlist-note reveal d4" id="waitlistNote">No spam. No credit card. Just a notification when you're in.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">
+          <svg width="16" height="16" viewBox="0 0 32 32" fill="none" style="color:var(--ec-green-light)">
+            <path d="M16 28C16 28 8 20 8 12C8 7.6 11.6 4 16 4C20.4 4 24 7.6 24 12C24 20 16 28 16 28Z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <path d="M16 28L16 10" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+          </svg>
+          Evercrafted
+        </div>
+        <p class="footer-brand-desc">The professional design suite for wreath makers. Blueprint generation, inventory tracking, AI visualization, and a marketplace — built for the craft you love.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="evercrafted-apps.html">All apps</a></li>
+          <li><a href="evercrafted-marketplace.html">Marketplace</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Support</div>
+        <ul class="footer-links">
+          <li><a href="#">Documentation</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Status</a></li>
+          <li><a href="#">Changelog</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Evercrafted. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════ -->
+<script>
+/* ── Nav scroll state ──────────────────────────────────────── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+/* ── Scroll reveal ─────────────────────────────────────────── */
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ── Pipeline tab navigation ───────────────────────────────── */
+function activateTab(stepNum) {
+  // Update tabs
+  document.querySelectorAll('.hiw-tab').forEach(tab => {
+    tab.classList.toggle('active', parseInt(tab.dataset.step) === stepNum);
+  });
+  // Scroll to step section
+  const target = document.getElementById('step-' + stepNum);
+  if (target) {
+    const offset = 60 + 56; // nav + tabs
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+}
+
+/* ── Auto-update tabs on scroll ────────────────────────────── */
+const stepSections = document.querySelectorAll('.hiw-step-section[data-step]');
+const tabsEl = document.getElementById('hiwTabs');
+const tabsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const step = parseInt(entry.target.dataset.step);
+      document.querySelectorAll('.hiw-tab').forEach(tab => {
+        tab.classList.toggle('active', parseInt(tab.dataset.step) === step);
+      });
+      // Also update hero pipeline diagram
+      document.querySelectorAll('.pipeline-step-row').forEach((row, i) => {
+        row.classList.toggle('active', i + 1 === step);
+      });
+    }
+  });
+}, { threshold: 0.4, rootMargin: '-120px 0px -40% 0px' });
+stepSections.forEach(s => tabsObserver.observe(s));
+
+/* ── Step in-view class for index number color ─────────────── */
+const stepInViewObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    entry.target.classList.toggle('in-view', entry.isIntersecting);
+  });
+}, { threshold: 0.2 });
+stepSections.forEach(s => stepInViewObserver.observe(s));
+
+/* ── Margin bar animation ──────────────────────────────────── */
+const marginBar = document.getElementById('marginBar');
+if (marginBar) {
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        marginBar.style.width = '68%';
+        barObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  barObserver.observe(marginBar);
+  marginBar.style.width = '0%';
+}
+
+/* ── Waitlist form ─────────────────────────────────────────── */
+function handleWaitlist(e) {
+  e.preventDefault();
+  const email = document.getElementById('waitlistEmail').value;
+  const note  = document.getElementById('waitlistNote');
+  const btn   = e.target.querySelector('.waitlist-submit');
+  btn.textContent = "You're on the list!";
+  btn.style.background = 'var(--ec-green-light)';
+  btn.disabled = true;
+  note.textContent = "We'll be in touch at " + email + " — see you soon.";
+  note.style.color = 'rgba(107,143,103,0.7)';
+}
+
+/* ── Smooth anchor links ───────────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      const offset = 60;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
