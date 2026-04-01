@@ -1503,6 +1503,7 @@ footer {
   </div>
 </footer>
 
+<script src="assets/js/evercrafted-core-engine.js"></script>
 <script>
 // ── Scroll reveal
 const io = new IntersectionObserver(entries => {
@@ -1584,8 +1585,6 @@ function prevStep(from) {
   window.scrollTo({ top: document.getElementById('form-col').offsetTop - 80, behavior: 'smooth' });
 }
 
-const API_BASE = "http://localhost:8787";
-
 async function submitForm() {
   const terms = document.getElementById('terms');
   if (!terms.checked) {
@@ -1613,13 +1612,7 @@ async function submitForm() {
       updates_opt_in: document.getElementById('updates').checked
     };
 
-    const res = await fetch(`${API_BASE}/contact`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    const json = await res.json();
-    if (!res.ok || !json.ok) throw new Error(json.error || 'Submit failed');
+    await window.EvercraftedCoreEngine.submitContact(payload);
 
     document.getElementById('panel-3').classList.remove('active');
     document.getElementById('form-steps').style.display = 'none';

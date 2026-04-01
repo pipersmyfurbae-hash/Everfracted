@@ -731,12 +731,11 @@ a{text-decoration:none;color:inherit}
 <!-- FOOTER -->
 <footer><div class="wrap"><div class="footer-top"><div><div class="footer-logo">Evercrafted</div><div class="footer-tag">Design tools for wreath designers who take their craft seriously.</div></div><div class="footer-col"><h4>Product</h4><a href="evercrafted-how-it-works.html">How it works</a><a href="evercrafted-apps.html">All apps</a><a href="evercrafted-marketplace.html">Marketplace</a><a href="evercrafted-pricing.html">Pricing</a></div><div class="footer-col"><h4>Resources</h4><a>Documentation</a><a>Blog</a></div><div class="footer-col"><h4>Company</h4><a>About</a><a>Privacy</a><a>Terms</a></div></div><div class="footer-bottom"><div class="footer-copy">© 2025 Evercrafted. All rights reserved.</div></div></div></footer>
 
+<script src="assets/js/evercrafted-core-engine.js"></script>
 <script>
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400)}
 function getEngineEndpoint(){
-  const host=window.location.hostname;
-  const isLocal=host==="localhost"||host==="127.0.0.1";
-  return isLocal ? "http://127.0.0.1:8787/engine-proxy" : "https://evercrafted-engine-production.up.railway.app/run-engine";
+  return window.EvercraftedCoreEngine.resolveEndpoint();
 }
 async function generateEngineOutput(){
   const inputEl=document.getElementById('engine-input');
@@ -747,12 +746,7 @@ async function generateEngineOutput(){
   statusEl.textContent='Generating options...';
   resultsEl.innerHTML='';
   try{
-    const response=await fetch(getEngineEndpoint(),{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({input_type:'emotion',input_data:{feeling}})
-    });
-    const data=await response.json();
+    const data=await window.EvercraftedCoreEngine.runEmotion(feeling, getEngineEndpoint());
     const outputs=Array.isArray(data.outputs)?data.outputs:[];
     if(outputs.length===0){statusEl.textContent='No results returned.';return;}
     statusEl.textContent=`${outputs.length} option(s) generated.`;
