@@ -1,0 +1,36 @@
+{
+  "canonical_routes": {
+    "/": "index.html",
+    "home": "index.html",
+    "pricing": "pricing.html",
+    "auth": "signup.html",
+    "apps": "apps.html",
+    "marketplace": "marketplace.html",
+    "waitlist": "waitlist.html",
+    "contact": "contact.html",
+    "how_it_works": "how-it-works.html"
+  },
+  "artifact_redirects": {
+    "Apps/evercrafted-dashboard FINAL.html": "Apps/evercrafted-dashboard.html",
+    "Apps/evercrafted-marketing FINAL.html": "Apps/evercrafted-marketing.html",
+    "Apps/evercrafted-marketing (1).html": "Apps/evercrafted-marketing.html",
+    "Apps/evercrafted-marketing (2).html": "Apps/evercrafted-marketing.html",
+    "Apps/blueprint_fusion_engine_card (1).html": "Apps/blueprint_fusion_engine_card.html",
+    "market-seasonal-lookbook (1).html": "market-seasonal-lookbook.html",
+    "moodoor/moodoor (1).html": "moodoor/moodoor.html",
+    "blueprint-grounded_joy (1).html": "blueprint-grounded_joy.html",
+    "blueprint-ivory_garden .html": "blueprint-ivory_garden.html",
+    "Wreath Blueprint Visualizer.html": "wreath-blueprint-visualizer.html",
+    "evercrafted-home.html": "index.html",
+    "home-v2.html": "index.html",
+    "evercrafted-final.html": "index.html",
+    "evercrafted-website.html": "index.html",
+    "evercrafted-pricing.html": "pricing.html",
+    "evercrafted-auth.html": "signup.html",
+    "evercrafted-apps.html": "apps.html",
+    "evercrafted-marketplace.html": "marketplace.html",
+    "evercrafted-waitlist.html": "waitlist.html",
+    "evercrafted-how-it-works.html": "how-it-works.html",
+    "evercrafted-home-hiw.html": "how-it-works.html"
+  }
+}
