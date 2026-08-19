@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 60px;
+        }
+        .lane {
+            display: flex;
+            align-items: stretch;
+            margin-bottom: 40px;
+            border-left: 4px solid;
+            padding-left: 30px;
+        }
+        .lane.public { border-color: #C9A84C; }
+        .lane.maker { border-color: #4A6741; }
+        
+        .lane-title {
+            width: 200px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 600;
+            padding-top: 10px;
+        }
+        .lane.public .lane-title { color: #C9A84C; }
+        .lane.maker .lane-title { color: #4A6741; }
+        
+        .route-nodes {
+            display: flex;
+            gap: 40px;
+            flex: 1;
+        }
+        .node {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 24px;
+            flex: 1;
+        }
+        .route-path {
+            font-family: 'DM Mono', monospace;
+            font-size: 16px;
+            color: #A8A8A8;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .node-desc {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #D0D0D0;
+            font-weight: 300;
+        }
+        .foundation {
+            margin-top: auto;
+            margin-bottom: 45px; /* reduced from 60px to bring total < 720px */
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 18px;
+            color: #787878;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>The merger adds two routes, not a second platform.</h1>
+        
+        <div class="lane public">
+            <div class="lane-title">Consumer</div>
+            <div class="route-nodes">
+                <div class="node">
+                    <span class="route-path">/moodoor</span>
+                    <p class="node-desc">Remains the public editorial landing page; calls to action now lead directly into the finder.</p>
+                </div>
+                <div class="node">
+                    <span class="route-path">/moodoor/find</span>
+                    <p class="node-desc">A public three-step flow: Feeling → Season → Door → Curated edit.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="lane maker">
+            <div class="lane-title">Maker</div>
+            <div class="route-nodes">
+                <div class="node">
+                    <span class="route-path">/app/moodoor-studio</span>
+                    <p class="node-desc">A Studio-tier maker workspace to review, release, or remove eligible marketplace designs.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="foundation">
+            BUILT ON EVERFRACTED'S EXISTING REACT ROUTER, FIREBASE, AUTHENTICATION, AND TIER GUARD
+        </div>
+    </div>
+</body>
+</html>

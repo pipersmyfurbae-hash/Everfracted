@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { auth, db } from '../lib/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import type { Tier } from '../services/tierService';
 
 interface UserData {
   uid: string;
@@ -9,7 +10,7 @@ interface UserData {
   displayName: string;
   photoURL: string;
   role: 'admin' | 'client' | 'free';
-  tier?: 'free' | 'pro' | 'studio' | 'enterprise';
+  tier?: Tier;
   allowedApps?: string[];
 }
 

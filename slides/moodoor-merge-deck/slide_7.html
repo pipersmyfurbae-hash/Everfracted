@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;600&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 40px;
+        }
+        .content-wrapper {
+            display: flex;
+            gap: 60px;
+            flex: 1;
+        }
+        .table-section {
+            flex: 2;
+        }
+        .rules-section {
+            flex: 1;
+            background-color: rgba(201, 168, 76, 0.05);
+            border-left: 2px solid #C9A84C;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 16px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        th {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #A8A8A8;
+            font-weight: 400;
+        }
+        td {
+            font-size: 18px;
+            color: #E8E8E8;
+            font-weight: 300;
+        }
+        td:nth-child(3), td:nth-child(4), th:nth-child(3), th:nth-child(4) {
+            text-align: right;
+        }
+        td:nth-child(1) {
+            font-weight: 600;
+            color: #C9A84C;
+        }
+        td:nth-child(4) {
+            font-family: 'DM Mono', monospace;
+            font-weight: 600;
+            color: #F9F7F4;
+        }
+        tr:last-child td {
+            border-bottom: 2px solid #C9A84C;
+        }
+        tr:last-child td:nth-child(4) {
+            color: #C9A84C;
+            font-size: 22px;
+        }
+        .rules-section h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: #C9A84C;
+            margin-bottom: 20px;
+        }
+        .rules-section ul {
+            list-style-type: none;
+        }
+        .rules-section li {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #D0D0D0;
+            font-weight: 300;
+            margin-bottom: 16px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .rules-section li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #C9A84C;
+        }
+        .rules-section li strong {
+            color: #F9F7F4;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>A warm winter wreath on dark wood scores 1.00.</h1>
+        
+        <div class="content-wrapper">
+            <div class="table-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Step</th>
+                            <th>Evidence</th>
+                            <th>Score Change</th>
+                            <th>Running Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Baseline</td>
+                            <td>Eligible candidate</td>
+                            <td>+0.22</td>
+                            <td>0.22</td>
+                        </tr>
+                        <tr>
+                            <td>Mood</td>
+                            <td>“warm” / “hearth” appears in title, summary, tags, palette, or formula</td>
+                            <td>+0.34</td>
+                            <td>0.56</td>
+                        </tr>
+                        <tr>
+                            <td>Season</td>
+                            <td>“winter” appears in season tags or public listing text</td>
+                            <td>+0.22</td>
+                            <td>0.78</td>
+                        </tr>
+                        <tr>
+                            <td>Door</td>
+                            <td>“warm”, “golden”, “ivory”, “contrast”, or “evergreen” appears</td>
+                            <td>+0.16</td>
+                            <td>0.94</td>
+                        </tr>
+                        <tr>
+                            <td>Availability</td>
+                            <td>In stock</td>
+                            <td>+0.06</td>
+                            <td>1.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="rules-section">
+                <h3>Ranking Rules</h3>
+                <ul>
+                    <li>Examples are ranked by score descending; <strong>title breaks exact-score ties</strong>.</li>
+                    <li><strong>Formula duplicates are removed</strong>; title is the fallback identity when no formula exists.</li>
+                    <li>Moodoor returns no more than <strong>three distinct results</strong>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

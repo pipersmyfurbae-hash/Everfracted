@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        .divider {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: rgba(201, 168, 76, 0.3);
+            transform: translateX(-50%);
+        }
+        .column h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #F9F7F4;
+        }
+        .column.maker h2 { color: #4A6741; }
+        .column p {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #D0D0D0;
+            font-weight: 300;
+        }
+        .summary-box {
+            background-color: rgba(201, 168, 76, 0.05);
+            border-left: 4px solid #C9A84C;
+            padding-top: 24px;
+            padding-left: 32px;
+            padding-right: 32px;
+            min-height: 100px;
+        }
+        .summary-box p {
+            font-size: 22px;
+            line-height: 1.5;
+            color: #F9F7F4;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>One source of truth. Two purposeful experiences.</h1>
+        
+        <div class="content-grid">
+            <div class="divider"></div>
+            <div class="column maker">
+                <h2>Evercrafted</h2>
+                <p>Remains the definitive maker-facing system for design, inventory management, marketplace publishing, and quality review.</p>
+            </div>
+            <div class="column">
+                <h2>Moodoor</h2>
+                <p>Becomes the customer-facing editorial finder: a gentle, curated three-step route to the right available wreath.</p>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <p>The merger brings Moodoor’s public-publishing and explainable-matching principles into Everfracted, rather than operating a parallel, disconnected application.</p>
+        </div>
+    </div>
+</body>
+</html>

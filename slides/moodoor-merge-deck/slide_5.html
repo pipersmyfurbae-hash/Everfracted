@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 40px;
+        }
+        .boundary-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            flex-grow: 1;
+        }
+        .panel {
+            padding-top: 32px;
+            padding-left: 40px;
+            padding-right: 40px;
+            border-top: 4px solid;
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .panel.public {
+            border-top-color: #4A6741;
+            background-color: rgba(74, 103, 65, 0.05);
+        }
+        .panel.protected {
+            border-top-color: #2E2E2E;
+        }
+        .panel h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+        .panel.public h2 { color: #6B8F67; }
+        .panel.protected h2 { color: #A8A8A8; }
+        
+        .data-list {
+            list-style: none;
+        }
+        .data-list li {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #E8E8E8;
+            font-weight: 300;
+            margin-bottom: 24px;
+            padding-left: 24px;
+            position: relative;
+        }
+        .panel.public .data-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4A6741;
+            font-weight: 600;
+        }
+        .panel.protected .data-list li::before {
+            content: "✕";
+            position: absolute;
+            left: 0;
+            color: #787878;
+            font-weight: 600;
+        }
+        .takeaway {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 22px;
+            font-weight: 300;
+            color: #D0D0D0;
+            text-align: center;
+            font-style: italic;
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .takeaway strong {
+            color: #C9A84C;
+            font-weight: 600;
+            font-style: normal;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-right: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>The public projection stays intentionally small.</h1>
+        
+        <div class="boundary-container">
+            <div class="panel public">
+                <h2>Moodoor can use</h2>
+                <ul class="data-list">
+                    <li>Title, summary, approved image, and price</li>
+                    <li>Availability label (e.g., "In stock", "Limited")</li>
+                    <li>Public mood, season, palette, and formula tags</li>
+                    <li>Short, customer-safe match explanation</li>
+                </ul>
+            </div>
+            
+            <div class="panel protected">
+                <h2>Moodoor never receives</h2>
+                <ul class="data-list">
+                    <li>Internal notes, supplier data, costs, and margins</li>
+                    <li>Raw inventory quantities</li>
+                    <li>Placement coordinates, collision data, and production detail</li>
+                    <li>Internal score components and confidence values</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="takeaway">
+            <strong>Takeaway</strong> Customer-facing matching is useful without exposing maker operations.
+        </div>
+    </div>
+</body>
+</html>

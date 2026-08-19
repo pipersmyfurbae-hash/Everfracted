@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;600&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 40px; /* reduced from 60 to remove overflow */
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+        }
+        .text-content ul {
+            list-style: none;
+        }
+        .text-content li {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #D0D0D0;
+            font-weight: 300;
+            margin-bottom: 28px;
+            padding-left: 24px;
+            position: relative;
+        }
+        .text-content li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #C9A84C;
+        }
+        .text-content strong {
+            color: #F9F7F4;
+            font-weight: 600;
+        }
+        
+        /* Visual Flow */
+        .visual-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+        }
+        .flow-box {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 24px;
+            padding-left: 30px;
+            padding-right: 30px;
+            min-height: 120px;
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .flow-box.input {
+            border-top: 4px solid #4A6741;
+        }
+        .flow-box.output {
+            border-top: 4px solid #C9A84C;
+            background-color: rgba(201, 168, 76, 0.05);
+        }
+        .box-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #A8A8A8;
+            margin-bottom: 20px;
+        }
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .tag {
+            border: 1px solid #4A6741;
+            color: #6B8F67;
+            padding-top: 6px;
+            padding-left: 12px;
+            padding-right: 12px;
+            font-size: 14px;
+            font-family: 'DM Mono', monospace;
+            text-transform: uppercase;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+        }
+        .arrow {
+            font-size: 24px;
+            color: #4A4A4A;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .output-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-style: italic;
+            color: #F9F7F4;
+            line-height: 1.4;
+        }
+        .threshold-box {
+            margin-top: 30px;
+            width: 100%;
+            border: 1px solid #B94040;
+            padding-top: 12px;
+            padding-left: 20px;
+            padding-right: 20px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(185, 64, 64, 0.05);
+        }
+        .threshold-text {
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: #B94040;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>The customer receives a clear reason — not a black box.</h1>
+        
+        <div class="content-grid">
+            <div class="text-content">
+                <ul>
+                    <li>The matcher searches normalized text across <strong>title, summary, formula, season tags, mood tags, and palette tags</strong>.</li>
+                    <li>A category match is binary: multiple matching words do not multiply the same category weight.</li>
+                    <li>The explanation surfaces up to the first three positive signals: for example, <em>“warm mood, winter fit, dark wood compatibility.”</em></li>
+                    <li>If no result clears <strong>0.42</strong>, Moodoor intentionally shows a no-match state rather than force a weak recommendation.</li>
+                </ul>
+            </div>
+            
+            <div class="visual-flow">
+                <div class="flow-box input">
+                    <div class="box-title">Searchable Public Fields</div>
+                    <div class="tag-grid">
+                        <div class="tag">Title</div>
+                        <div class="tag">Summary</div>
+                        <div class="tag">Formula</div>
+                        <div class="tag">Season Tags</div>
+                        <div class="tag">Mood Tags</div>
+                        <div class="tag">Palette Tags</div>
+                    </div>
+                </div>
+                
+                <div class="arrow">↓</div>
+                
+                <div class="flow-box output">
+                    <div class="box-title">Customer Output</div>
+                    <div class="output-text">“Winter Hearth was selected for its warm mood, winter fit, and dark wood compatibility.”</div>
+                </div>
+                
+                <div class="threshold-box">
+                    <div class="threshold-text">Minimum Score Threshold: 0.42</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

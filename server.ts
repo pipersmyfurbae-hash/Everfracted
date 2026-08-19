@@ -3,12 +3,14 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import multer from 'multer';
-import { analyzeWreathImage } from './src/services/vision-flower-engine.ts';
-import { generateMotion } from './src/services/motionEngine.ts';
+import { analyzeWreathImage } from './services/vision-flower-engine.ts';
+import { generateMotion } from './services/motionEngine.ts';
 import { GoogleGenAI, Type } from '@google/genai';
 import admin from 'firebase-admin';
 import { getStorage } from 'firebase-admin/storage';
 import { getFirestore } from 'firebase-admin/firestore';
+import { registerMoodoorApi } from './server/moodoorApi.ts';
+import { registerMakerApi } from './server/makerApi.ts';
 
 // Initialize Firebase Admin
 admin.initializeApp({
@@ -26,6 +28,8 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json());
+  registerMakerApi(app, db);
+  registerMoodoorApi(app, db);
 
   // Blueprint Routes
   app.post('/blueprint/create', async (req, res) => {

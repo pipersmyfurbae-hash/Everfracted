@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 52px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 60px;
+            line-height: 1.1;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 80px;
+        }
+        .text-section ul {
+            list-style: none;
+        }
+        .text-section li {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #D0D0D0;
+            font-weight: 300;
+            margin-bottom: 32px;
+            position: relative;
+            padding-left: 28px;
+        }
+        .text-section li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #C9A84C;
+        }
+        .file-name {
+            font-family: 'DM Mono', monospace;
+            color: #C9A84C;
+            background-color: rgba(201, 168, 76, 0.05);
+            padding: 2px 8px;
+            font-size: 18px;
+        }
+        .stack-container {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-top: 10px;
+        }
+        .stack-layer {
+            border: 1px solid;
+            padding: 24px;
+            background-color: rgba(255, 255, 255, 0.02);
+            text-align: center;
+        }
+        .layer-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .layer-desc {
+            font-size: 14px;
+            color: #A8A8A8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'DM Mono', monospace;
+        }
+        .layer-ui { border-color: #C9A84C; background-color: rgba(201, 168, 76, 0.05); }
+        .layer-ui .layer-title { color: #C9A84C; }
+        
+        .layer-service { border-color: #4A6741; background-color: rgba(74, 103, 65, 0.05); }
+        .layer-service .layer-title { color: #6B8F67; }
+        
+        .layer-data { border-color: #4A4A4A; }
+        .layer-data .layer-title { color: #D0D0D0; }
+        
+        .layer-ai {
+            border: 1px dashed #787878;
+            margin-top: 3px; /* reduced from 32px to pull the stack up and avoid overflow */
+            padding: 20px;
+        }
+        .layer-ai .layer-title { color: #A8A8A8; font-size: 22px; }
+        
+        .connector {
+            width: 1px;
+            height: 24px;
+            background-color: #4A4A4A;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Implementation connects product, operations, and reliability.</h1>
+        
+        <div class="content-grid">
+            <div class="text-section">
+                <ul>
+                    <li><code class="file-name">pages/Moodoor.tsx</code> provides the public finder and maker publishing Studio.</li>
+                    <li><code class="file-name">services/moodoorMatching.ts</code> provides the public projection, eligibility gates, ranker, vocabulary, and publication toggle.</li>
+                    <li><code class="file-name">services/geminiClient.ts</code> makes optional AI initialization lazy so missing browser keys cannot block Moodoor.</li>
+                    <li>Existing source-path, Firebase import, and app alias defects were corrected so the front end builds reliably.</li>
+                </ul>
+            </div>
+            
+            <div class="stack-container">
+                <div class="stack-layer layer-ui">
+                    <div class="layer-title">Route / UI</div>
+                    <div class="layer-desc">pages/Moodoor.tsx</div>
+                </div>
+                <div class="connector"></div>
+                <div class="stack-layer layer-service">
+                    <div class="layer-title">Matching Service</div>
+                    <div class="layer-desc">services/moodoorMatching.ts</div>
+                </div>
+                <div class="connector"></div>
+                <div class="stack-layer layer-data">
+                    <div class="layer-title">Firestore Marketplace</div>
+                    <div class="layer-desc">Shared Data Source</div>
+                </div>
+                
+                <div class="stack-layer layer-ai">
+                    <div class="layer-title">Optional AI Services</div>
+                    <div class="layer-desc">Isolated at the edge</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

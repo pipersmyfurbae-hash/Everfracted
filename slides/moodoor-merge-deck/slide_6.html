@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 52px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 40px;
+            line-height: 1.1;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 60px;
+        }
+        h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: #F9F7F4;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        ul {
+            list-style-type: none;
+            margin-bottom: 32px;
+        }
+        li {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #D0D0D0;
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 20px;
+            font-weight: 300;
+        }
+        li::before {
+            content: "—";
+            position: absolute;
+            left: 0;
+            color: #C9A84C;
+        }
+        .formula-box {
+            background-color: rgba(201, 168, 76, 0.05);
+            border-left: 4px solid #C9A84C;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            padding-left: 24px;
+            padding-right: 24px;
+            margin-bottom: 24px;
+        }
+        .formula {
+            font-family: 'DM Mono', monospace;
+            font-size: 20px;
+            color: #C9A84C;
+            letter-spacing: 0.05em;
+        }
+        .threshold-text {
+            font-size: 16px;
+            color: #A8A8A8;
+            font-weight: 400;
+        }
+        .threshold-text strong {
+            color: #F9F7F4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        th, td {
+            text-align: left;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            padding-right: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 16px;
+            color: #D0D0D0;
+        }
+        th {
+            font-weight: 600;
+            color: #F9F7F4;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 12px;
+        }
+        td:last-child, th:last-child {
+            text-align: right;
+            padding-right: 0;
+        }
+        .sym {
+            font-family: 'DM Mono', monospace;
+            color: #C9A84C;
+        }
+        .stacked-bar-container {
+            margin-top: 20px;
+        }
+        .stacked-bar-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #A8A8A8;
+            margin-bottom: 12px;
+        }
+        .stacked-bar {
+            display: flex;
+            width: 100%;
+            height: 32px;
+            background-color: rgba(255,255,255,0.05);
+        }
+        .segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: #1A1714;
+            font-weight: 600;
+        }
+        .seg-base { width: 22%; background-color: #4A6741; }
+        .seg-m { width: 34%; background-color: #C9A84C; }
+        .seg-s { width: 22%; background-color: #6B8F67; }
+        .seg-d { width: 16%; background-color: #A8A8A8; }
+        .seg-a { width: 6%; background-color: #F9F7F4; }
+        .legend {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #787878;
+            font-family: 'DM Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Matching is deterministic, explainable, and binary by signal family.</h1>
+        
+        <div class="content-grid">
+            <div class="left-col">
+                <h3>Hard eligibility</h3>
+                <ul>
+                    <li>Consumer catalog query begins with <code>status = published</code>.</li>
+                    <li>Reject unless Moodoor release is explicit.</li>
+                    <li>Reject unavailable, sold-out, discontinued, or below-quality records.</li>
+                </ul>
+                
+                <h3>Scoring formula</h3>
+                <div class="formula-box">
+                    <div class="formula">score = 0.22 + 0.34·M + 0.22·S + 0.16·D + A</div>
+                </div>
+                <p class="threshold-text">Start score: <strong>0.22</strong>; retain only matches at <strong>≥ 0.42</strong>; cap at <strong>1.00</strong>.</p>
+                <p class="threshold-text" style="margin-top: 8px;">Each signal is a one-time binary increment.</p>
+            </div>
+            
+            <div class="right-col">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Condition</th>
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sym">M</td>
+                            <td>Any selected-mood token appears in public listing text</td>
+                            <td class="sym">0.34</td>
+                        </tr>
+                        <tr>
+                            <td class="sym">S</td>
+                            <td>Selected season appears in season tags or public text</td>
+                            <td class="sym">0.22</td>
+                        </tr>
+                        <tr>
+                            <td class="sym">D</td>
+                            <td>Any door-context token appears in public listing text</td>
+                            <td class="sym">0.16</td>
+                        </tr>
+                        <tr>
+                            <td class="sym">A</td>
+                            <td>In stock / limited availability</td>
+                            <td class="sym">+0.06 / +0.03</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="stacked-bar-container">
+                    <div class="stacked-bar-title">Maximum 1.00 Composition</div>
+                    <div class="stacked-bar">
+                        <div class="segment seg-base">0.22</div>
+                        <div class="segment seg-m">0.34</div>
+                        <div class="segment seg-s">0.22</div>
+                        <div class="segment seg-d">0.16</div>
+                        <div class="segment seg-a">.06</div>
+                    </div>
+                    <div class="legend">
+                        <span>Base</span>
+                        <span>Mood (M)</span>
+                        <span>Season (S)</span>
+                        <span>Door (D)</span>
+                        <span>Avail (A)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

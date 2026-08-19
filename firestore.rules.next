@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function owns(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == 'thebadencompany@gmail.com' && request.auth.token.email_verified == true));
+    }
+
+    function ownsExisting() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function preservesOwner() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    function hasText(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    // Identity: a user can create the initial profile, but cannot self-escalate
+    // its role or tier. Subscription changes are server/admin controlled.
+    match /users/{userId} {
+      allow read: if owns(userId) || isAdmin();
+      allow create: if owns(userId)
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.role == 'free'
+        && (!('tier' in request.resource.data) || request.resource.data.tier == 'free');
+      allow update: if owns(userId)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.tier == resource.data.tier;
+      allow update, delete: if isAdmin();
+    }
+
+    match /inventory/{itemId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && hasText(request.resource.data.name, 100);
+      allow update: if ownsExisting() && preservesOwner();
+      allow delete: if ownsExisting() || isAdmin();
+    }
+
+    match /blueprints/{blueprintId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && hasText(request.resource.data.title, 200);
+      allow update: if ownsExisting() && preservesOwner();
+      allow delete: if ownsExisting() || isAdmin();
+    }
+
+    match /blueprint_revisions/{revisionId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /wreathDNA/{dnaId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if ownsExisting() && preservesOwner();
+      allow delete: if ownsExisting() || isAdmin();
+    }
+
+    match /tasks/{taskId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if ownsExisting() && preservesOwner();
+      allow delete: if ownsExisting() || isAdmin();
+    }
+
+    match /projects/{projectId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if ownsExisting() && preservesOwner();
+      allow delete: if ownsExisting() || isAdmin();
+    }
+
+    // The canonical marketplace listing holds private production data.
+    // Public discovery and maker publication are served through verified APIs.
+    match /marketplace_listings/{listingId} {
+      allow read: if signedIn() && (resource.data.creatorId == request.auth.uid || isAdmin());
+      allow write: if false;
+    }
+
+    // Projection documents contain only public-safe fields, but the API remains
+    // the single public reader so it can rate-limit and evolve ranking safely.
+    match /moodoor_public_listings/{listingId} {
+      allow read, write: if false;
+    }
+
+    match /moodoor_publication_events/{eventId} {
+      allow read: if signedIn() && (resource.data.actorId == request.auth.uid || isAdmin());
+      allow write: if false;
+    }
+
+    match /collections/{collectionId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if ownsExisting() && preservesOwner();
+      allow delete: if ownsExisting() || isAdmin();
+    }
+  }
+}

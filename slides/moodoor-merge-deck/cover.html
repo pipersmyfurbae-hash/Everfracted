@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .accent-line {
+            width: 80px;
+            height: 2px;
+            background-color: #C9A84C;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 84px;
+            font-weight: 300;
+            line-height: 1.1;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        h1 span {
+            color: #C9A84C;
+            font-style: italic;
+        }
+        h2 {
+            font-size: 24px;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #A8A8A8;
+            text-align: center;
+        }
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(201, 168, 76, 0.15);
+        }
+        .circle-1 { width: 600px; height: 600px; top: -150px; right: -150px; }
+        .circle-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        
+        <div class="accent-line"></div>
+        <h1>Moodoor Studio <br><span>×</span> Everfracted</h1>
+        <h2>A shared-data, separate-experience merger</h2>
+    </div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 56px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 24px;
+        }
+        .intro-text {
+            font-size: 22px;
+            color: #D0D0D0;
+            font-weight: 300;
+            margin-bottom: 60px;
+            max-width: 900px;
+            line-height: 1.5;
+        }
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        .matrix-col {
+            border-top: 2px solid #333;
+            padding-top: 24px;
+        }
+        .matrix-col.adopted { border-top-color: #4A6741; }
+        .matrix-col.excluded { border-top-color: #B94040; }
+        .matrix-col.deferred { border-top-color: #C4922A; }
+        
+        .col-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .matrix-col.adopted .col-title { color: #4A6741; }
+        .matrix-col.excluded .col-title { color: #B94040; }
+        .matrix-col.deferred .col-title { color: #C4922A; }
+        
+        .col-content {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #E8E8E8;
+            font-weight: 300;
+        }
+        .col-content ul {
+            list-style-type: none;
+        }
+        .col-content li {
+            margin-bottom: 16px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .col-content li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: inherit;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>Adapt the durable logic — not the duplicate runtime.</h1>
+        <p class="intro-text">The uploaded archive contained a full React/Vite/Express workspace with a Wouter router and browser-local repositories. We extracted principles, not platforms.</p>
+        
+        <div class="matrix-grid">
+            <div class="matrix-col adopted">
+                <h2 class="col-title">Adapted</h2>
+                <div class="col-content">
+                    <ul>
+                        <li>Public customer flow and presentation principles.</li>
+                        <li>Explicit publishing boundary for makers.</li>
+                        <li>Deterministic, explainable memory matching.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="matrix-col excluded">
+                <h2 class="col-title">Excluded</h2>
+                <div class="col-content">
+                    <ul>
+                        <li>Standalone Wouter shell (Everfracted already handles routing).</li>
+                        <li>Local state repositories (divergent from Firestore).</li>
+                        <li>Unreviewed third-party dependencies.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="matrix-col deferred">
+                <h2 class="col-title">Deferred</h2>
+                <div class="col-content">
+                    <ul>
+                        <li>Collection, campaign, launch, and lookbook modules.</li>
+                        <li>To be integrated once authoritative Everfracted schemas and maker workflows mature.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

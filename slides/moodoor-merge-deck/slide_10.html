@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            background-color: #1A1714;
+            color: #F9F7F4;
+            font-family: 'Inter', sans-serif;
+            padding-top: 80px;
+            padding-left: 100px;
+            padding-right: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 52px;
+            font-weight: 400;
+            color: #C9A84C;
+            margin-bottom: 60px;
+            line-height: 1.1;
+        }
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            flex: 1;
+        }
+        .column {
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+        }
+        .column.completed {
+            border-top-color: #4A6741;
+        }
+        .column.next {
+            border-top-color: #C9A84C;
+        }
+        h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+        .column.completed h2 { color: #6B8F67; }
+        .column.next h2 { color: #C9A84C; }
+        
+        ul {
+            list-style: none;
+        }
+        li {
+            font-size: 20px;
+            line-height: 1.6;
+            color: #D0D0D0;
+            font-weight: 300;
+            margin-bottom: 24px;
+            padding-left: 32px;
+            position: relative;
+        }
+        .column.completed li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4A6741;
+            font-weight: 600;
+            font-size: 22px;
+        }
+        .column.next li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #C9A84C;
+            font-weight: 600;
+            font-size: 24px;
+            line-height: 1.2;
+        }
+        li strong {
+            color: #F9F7F4;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <h1>The merge is validated; the launch boundary is explicit.</h1>
+        
+        <div class="columns">
+            <div class="column completed">
+                <h2>Completed validation</h2>
+                <ul>
+                    <li>Archive catalogued without executing archive code.</li>
+                    <li>Deterministic matcher fixtures passed.</li>
+                    <li>Vite production build passed.</li>
+                    <li>Browser verification confirmed finder rendering, mood selection, and progression to Season.</li>
+                </ul>
+            </div>
+            
+            <div class="column next">
+                <h2>Next production hardening</h2>
+                <ul>
+                    <li>Serve a dedicated public Moodoor projection through Firestore rules or a server-side/callable function.</li>
+                    <li>Require public mood, season, palette, availability, and quality-approval fields at marketplace publication.</li>
+                    <li>Add public detail pages, approved story drops, publishing history, and route-level code splitting.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
