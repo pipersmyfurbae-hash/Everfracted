@@ -76,14 +76,20 @@ export async function updateMarketplacePublication(listingId: string, action: 'p
   }, true);
 }
 
-export async function getMoodoorMatches(profile: MoodProfile): Promise<{ matches: Array<Omit<MoodoorMatch, 'score'> & { listing: MoodoorListing & { slug?: string } }>; noMatch: boolean }> {
+export async function getMoodoorMatches(profile: MoodProfile): Promise<{ matches: Array<Omit<MoodoorMatch, 'score'> & { listing: PublicMoodoorListing }>; noMatch: boolean }> {
   return apiRequest('/api/v1/moodoor/matches', {
     method: 'POST',
     body: JSON.stringify(profile),
   });
 }
 
-export async function getMoodoorPublicListing(slug: string): Promise<{ listing: MoodoorListing & { slug: string } }> {
+export type PublicMoodoorListing = MoodoorListing & { slug: string };
+
+export async function getMoodoorPublicListings(): Promise<{ listings: PublicMoodoorListing[] }> {
+  return apiRequest('/api/v1/moodoor/listings');
+}
+
+export async function getMoodoorPublicListing(slug: string): Promise<{ listing: PublicMoodoorListing }> {
   return apiRequest(`/api/v1/moodoor/listings/${encodeURIComponent(slug)}`);
 }
 

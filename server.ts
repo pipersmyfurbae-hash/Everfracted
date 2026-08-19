@@ -3,8 +3,6 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import multer from 'multer';
-import { analyzeWreathImage } from './services/vision-flower-engine.ts';
-import { generateMotion } from './services/motionEngine.ts';
 import { GoogleGenAI, Type } from '@google/genai';
 import admin from 'firebase-admin';
 import { getStorage } from 'firebase-admin/storage';
@@ -92,6 +90,7 @@ async function startServer() {
       if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
       const base64Image = req.file.buffer.toString('base64');
       const imageUrl = `data:${req.file.mimetype};base64,${base64Image}`;
+      const { analyzeWreathImage } = await import('./services/vision-flower-engine.ts');
       const result = await analyzeWreathImage(imageUrl);
       res.json(result.blueprint);
     } catch (error) {
@@ -163,6 +162,7 @@ async function startServer() {
           if (!renderUrl) throw new Error('No render image found in project');
 
           // Generate motion
+          const { generateMotion } = await import('./services/motionEngine.ts');
           const videoPath = await generateMotion(
             renderUrl,
             motion_type,

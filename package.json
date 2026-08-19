@@ -10,9 +10,10 @@
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
     "test:moodoor-matching": "tsx scripts/test-moodoor-matching.integration.ts",
+    "test:moodoor-public-api": "tsx scripts/test-moodoor-public-api.ts",
     "test:placement-engine": "tsx scripts/test-placement-engine.ts",
     "test:maker-workflow": "tsx scripts/test-maker-workflow.ts",
-    "test:ecosystem": "npm run test:moodoor-matching && npm run test:placement-engine && npm run test:maker-workflow"
+    "test:ecosystem": "npm run test:moodoor-matching && npm run test:moodoor-public-api && npm run test:placement-engine && npm run test:maker-workflow"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

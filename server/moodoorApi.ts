@@ -161,6 +161,29 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
     }
   });
 
+  app.get('/api/v1/moodoor/listings', async (_req, res) => {
+    try {
+      const projection = await db.collection('moodoor_public_listings').get();
+      const listings = projection.docs
+        .map((entry) => {
+          const listing = fromPublicProjection(entry.id, entry.data());
+          if (!listing) return null;
+          const slug = typeof entry.data().slug === 'string' ? entry.data().slug : slugify(listing.title);
+          return toPublicResponse(listing, slug);
+        })
+        .filter((entry): entry is PublicListingResponse => entry !== null)
+        .sort((left, right) => {
+          const leftPublished = left.publishedAt ? Date.parse(left.publishedAt) : 0;
+          const rightPublished = right.publishedAt ? Date.parse(right.publishedAt) : 0;
+          return rightPublished - leftPublished || left.title.localeCompare(right.title);
+        });
+      res.json({ listings });
+    } catch (error) {
+      console.error('Moodoor public browse error:', error);
+      sendApiError(res, 500, 'CATALOGUE_UNAVAILABLE', 'Moodoor could not read the current wreath edit. Please try again.');
+    }
+  });
+
   app.get('/api/v1/moodoor/listings/:slug', async (req, res) => {
     try {
       const snapshot = await db.collection('moodoor_public_listings').where('slug', '==', req.params.slug).limit(1).get();

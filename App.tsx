@@ -64,6 +64,8 @@ export default function App() {
           <Route path="/inventory-marketing" element={<InventoryMarketing />} />
           <Route path="/moodoor" element={<MoodoorLanding />} />
           <Route path="/moodoor/find" element={<MoodoorFinder />} />
+          <Route path="/moodoor/catalogue" element={<Marketplace />} />
+          <Route path="/moodoor/listing/:slug" element={<ListingDetail />} />
           <Route path="/emotion-lens" element={<EmotionLensLanding />} />
           <Route path="/blueprint-studio" element={<BlueprintStudioLanding />} />
           <Route path="/login" element={<Login />} />
@@ -106,7 +108,7 @@ export default function App() {
             } />
             
             <Route path="marketplace" element={<Marketplace />} />
-            <Route path="marketplace/:id" element={<ListingDetail />} />
+            <Route path="marketplace/:id" element={<Navigate to="/moodoor/catalogue" replace />} />
             <Route path="order-studio" element={<OrderStudio />} />
             <Route path="productivity-dashboard" element={<ProductivityDashboard />} />
             

@@ -145,7 +145,7 @@ export default function MoodoorLanding() {
             <Link to="/blueprint-studio" className="text-[11px] font-medium tracking-widest uppercase text-[#F9F7F4]/60 hover:text-[#F9F7F4] transition-colors">Blueprint Studio</Link>
             <Link to="/emotion-lens" className="text-[11px] font-medium tracking-widest uppercase text-[#F9F7F4]/60 hover:text-[#F9F7F4] transition-colors">EmotionLens</Link>
             <Link to="/app" className="text-[11px] font-medium tracking-widest uppercase text-[#F9F7F4]/60 hover:text-[#F9F7F4] transition-colors">Apps</Link>
-            <Link to="/app/market" className="text-[11px] font-medium tracking-widest uppercase text-[#F9F7F4]/60 hover:text-[#F9F7F4] transition-colors">Marketplace</Link>
+            <Link to="/moodoor/catalogue" className="text-[11px] font-medium tracking-widest uppercase text-[#F9F7F4]/60 hover:text-[#F9F7F4] transition-colors">Current edit</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-[11px] font-medium tracking-widest uppercase text-[#F9F7F4]/40 hover:text-[#F9F7F4] transition-colors">Sign in</Link>
@@ -587,7 +587,7 @@ export default function MoodoorLanding() {
             <ul className="space-y-3 text-sm text-white/40">
               <li><Link to="/blueprint-studio" className="hover:text-white transition-colors">Blueprint Studio</Link></li>
               <li><Link to="/moodoor" className="hover:text-white transition-colors">Moodoor</Link></li>
-              <li><Link to="/app/market" className="hover:text-white transition-colors">Marketplace</Link></li>
+              <li><Link to="/moodoor/catalogue" className="hover:text-white transition-colors">Current edit</Link></li>
             </ul>
           </div>
           <div>

@@ -4,21 +4,22 @@ import { ArrowRight, Check, Leaf, LockKeyhole, RefreshCw, Sparkles, UploadCloud 
 import { useAuth } from '../contexts/AuthContext';
 import {
   doorChoices,
-  getCreatorMoodoorListings,
-  getMoodoorCatalog,
   moodChoices,
-  rankMoodoorMatches,
   seasonChoices,
-  setMoodoorPublication,
   type DoorId,
   type MoodId,
   type MoodoorListing,
-  type MoodoorMatch,
   type MoodProfile,
   type SeasonId,
 } from '../services/moodoorMatching';
+import {
+  getMoodoorMatches,
+  getMoodoorStudioListings,
+  updateMoodoorPublication,
+} from '../services/ecosystemApiClient';
 
 type FinderStep = 1 | 2 | 3 | 4;
+type MoodoorApiMatch = Awaited<ReturnType<typeof getMoodoorMatches>>['matches'][number];
 
 const stepLabels = ['Feeling', 'Season', 'Door', 'Your edit'];
 
@@ -82,7 +83,7 @@ function ListingImage({ listing }: { listing: MoodoorListing }) {
   );
 }
 
-function MatchCard({ match, primary }: { match: MoodoorMatch; primary: boolean }) {
+function MatchCard({ match, primary }: { match: MoodoorApiMatch; primary: boolean }) {
   const { listing } = match;
   return (
     <article className={`overflow-hidden border ${primary ? 'border-[#C9A84C] bg-[#F7F2E8]' : 'border-[#1A1714]/10 bg-white'}`}>
@@ -100,7 +101,7 @@ function MatchCard({ match, primary }: { match: MoodoorMatch; primary: boolean }
           </div>
           <div className="mt-7 flex flex-wrap items-center justify-between gap-4">
             <span className="font-serif text-2xl text-[#1A1714]">{listing.price !== null ? `$${listing.price.toFixed(0)}` : 'Price on request'}</span>
-            <Link to={`/app/marketplace/${listing.id}`} className="inline-flex items-center gap-2 bg-[#1A1714] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#4A6741]">
+            <Link to={`/moodoor/listing/${listing.slug}`} className="inline-flex items-center gap-2 bg-[#1A1714] px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#4A6741]">
               Explore this wreath <ArrowRight size={14} />
             </Link>
           </div>
@@ -113,8 +114,7 @@ function MatchCard({ match, primary }: { match: MoodoorMatch; primary: boolean }
 export function MoodoorFinder() {
   const [step, setStep] = useState<FinderStep>(1);
   const [profile, setProfile] = useState<Partial<MoodProfile>>({});
-  const [catalog, setCatalog] = useState<MoodoorListing[]>([]);
-  const [matches, setMatches] = useState<MoodoorMatch[]>([]);
+  const [matches, setMatches] = useState<MoodoorApiMatch[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -130,9 +130,8 @@ export function MoodoorFinder() {
     setLoading(true);
     setError(null);
     try {
-      const nextCatalog = await getMoodoorCatalog();
-      setCatalog(nextCatalog);
-      setMatches(rankMoodoorMatches(profile as MoodProfile, nextCatalog));
+      const response = await getMoodoorMatches(profile as MoodProfile);
+      setMatches(response.matches);
       setStep(4);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Moodoor could not read the current wreath edit. Please try again.');
@@ -152,7 +151,6 @@ export function MoodoorFinder() {
 
   function restart() {
     setProfile({});
-    setCatalog([]);
     setMatches([]);
     setError(null);
     setStep(1);
@@ -206,7 +204,7 @@ export function MoodoorFinder() {
               <div className="mt-12 border border-white/10 bg-white/[0.03] p-10 text-center sm:p-16">
                 <Leaf className="mx-auto text-[#C9A84C]" size={34} strokeWidth={1.2} />
                 <p className="mt-6 font-serif text-4xl font-light">Nothing in the current edit<br /><em className="text-[#D4A96A]">belongs closely enough.</em></p>
-                <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/55">There are {catalog.length} approved, available wreaths in the live catalogue right now. Moodoor will not suggest a design simply to fill the space.</p>
+                <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/55">Moodoor will not suggest a design simply to fill the space. Try another mood, season, or door to see whether a different part of the current edit feels more natural.</p>
               </div>
             )}
             <div className="mt-12 flex flex-wrap justify-center gap-5">
@@ -232,7 +230,8 @@ export function MoodoorStudio() {
     setLoading(true);
     setError(null);
     try {
-      setListings(await getCreatorMoodoorListings(user.uid));
+      const response = await getMoodoorStudioListings();
+      setListings(response.listings);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Moodoor Studio could not load your publishable marketplace designs.');
     } finally {
@@ -249,7 +248,7 @@ export function MoodoorStudio() {
     setBusyId(listing.id);
     setError(null);
     try {
-      await setMoodoorPublication(listing.id, !listing.isMoodoorPublished);
+      await updateMoodoorPublication(listing.id, listing.isMoodoorPublished ? 'unpublish' : 'publish');
       await loadListings();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'The publication state could not be updated. Please try again.');

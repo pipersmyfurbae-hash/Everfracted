@@ -1,142 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { ShoppingCart, Download, Clock, Star, Loader2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, ArrowUpRight, Leaf, Loader2, Mail, Sparkles } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { EcosystemApiError, getMoodoorPublicListing, type PublicMoodoorListing } from '../services/ecosystemApiClient';
+
+function DetailImage({ listing }: { listing: PublicMoodoorListing }) {
+  if (listing.imageUrl) {
+    return <img src={listing.imageUrl} alt={listing.title} className="h-full w-full object-cover" />;
+  }
+  return (
+    <div className="relative flex h-full min-h-[28rem] items-center justify-center overflow-hidden bg-[#1E3024] text-[#D4A96A]">
+      <div className="absolute h-[27rem] w-[27rem] rounded-full border border-[#D4A96A]/25" />
+      <div className="absolute h-[18rem] w-[18rem] rounded-full border border-[#D4A96A]/25" />
+      <div className="relative text-center"><Leaf className="mx-auto" size={48} strokeWidth={1.1} /><p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-white/55">Evercrafted release</p></div>
+    </div>
+  );
+}
 
 export default function ListingDetail() {
-  const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
-  const [isPurchasing, setIsPurchasing] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [hasAccess, setHasAccess] = useState(false);
-
-  // Simulated listing data
-  const listing = {
-    id,
-    title: 'Soft Summer Crescent',
-    price: 18,
-    difficulty: 'Intermediate',
-    time: '2 hours',
-    description: 'A delicate, asymmetrical crescent wreath featuring soft summer blooms and airy foliage. Perfect for entryways.',
-    materials: ['Blue Hydrangea (4)', 'White Rose (6)', 'Eucalyptus (2)'],
-    image: 'https://picsum.photos/seed/wreath1/800/600',
-    // Mock blueprint data for the engine
-    blueprint: {
-      id,
-      elements: [
-        { id: '1', element: 'Hydrangea', category: 'focal', angle_deg: 0, radius: 'inner', stem_count: 4 },
-        { id: '2', element: 'Rose', category: 'secondary', angle_deg: 45, radius: 'mid', stem_count: 6 }
-      ]
-    }
-  };
+  const { slug } = useParams<{ slug: string }>();
+  const [listing, setListing] = useState<PublicMoodoorListing | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user already has access (mock check)
-    // In a real app, you'd fetch this from the backend
-  }, [id, user]);
-
-  const handlePurchase = async () => {
-    if (!user) {
-      toast.error("Please login to purchase");
-      return;
-    }
-    setIsPurchasing(true);
-    try {
-      const response = await fetch("/api/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: listing.id,
-          title: listing.title,
-          price: listing.price,
-          // Pass blueprint data so it's stored on the server for download
-          elements: listing.blueprint.elements
-        }),
-      });
-
-      const { url, error } = await response.json();
-      if (error) throw new Error(error);
-      
-      // Redirect to Stripe Checkout
-      window.location.href = url;
-    } catch (error) {
-      console.error("Purchase error:", error);
-      toast.error("Failed to start checkout");
-    } finally {
-      setIsPurchasing(false);
-    }
-  };
-
-  const handleDownload = async () => {
-    if (!user) return;
-    setIsDownloading(true);
-    try {
-      const response = await fetch("/api/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId: id, userId: user.uid }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Download failed");
+    async function loadListing(): Promise<void> {
+      if (!slug) {
+        setError('This Moodoor wreath could not be found.');
+        setLoading(false);
+        return;
       }
-
-      const { url } = await response.json();
-      
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `blueprint-${id}.svg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast.success("Download started!");
-    } catch (error) {
-      console.error("Download error:", error);
-      toast.error(error instanceof Error ? error.message : "Download failed");
-    } finally {
-      setIsDownloading(false);
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await getMoodoorPublicListing(slug);
+        setListing(response.listing);
+      } catch (caught) {
+        setError(caught instanceof EcosystemApiError ? caught.message : 'This Moodoor wreath could not be loaded. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
-  };
+    void loadListing();
+  }, [slug]);
+
+  if (loading) {
+    return <main className="flex min-h-screen items-center justify-center bg-[#F9F7F4] text-sm text-[#787878]"><Loader2 className="mr-3 animate-spin text-[#4A6741]" size={18} /> Opening this Moodoor wreath…</main>;
+  }
+
+  if (error || !listing) {
+    return <main className="flex min-h-screen items-center justify-center bg-[#F9F7F4] px-6 text-[#1A1A1A]"><div className="max-w-xl border border-[#1A1A1A]/10 bg-white p-10 text-center"><Leaf className="mx-auto text-[#4A6741]" size={36} strokeWidth={1.1} /><h1 className="mt-6 font-serif text-5xl font-light">This edit has moved on.</h1><p className="mt-5 text-sm leading-7 text-[#5A5A5A]">{error || 'This Moodoor wreath is no longer part of the customer collection.'}</p><Link to="/moodoor/catalogue" className="mt-8 inline-flex items-center gap-2 bg-[#1A1A1A] px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-white">Browse the current edit <ArrowUpRight size={14} /></Link></div></main>;
+  }
+
+  const price = listing.price === null ? 'Price on request' : `$${listing.price.toFixed(0)}`;
+  const enquiryHref = `mailto:?subject=${encodeURIComponent(`Moodoor enquiry — ${listing.title}`)}&body=${encodeURIComponent(`Hello Evercrafted,\n\nI would like to enquire about ${listing.title}.\n\nThank you.`)}`;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-      <img src={listing.image} alt={listing.title} className="w-full h-auto rounded-lg shadow-lg" />
-      
-      <div className="space-y-6">
-        <h1 className="text-4xl font-serif">{listing.title}</h1>
-        <div className="flex items-center gap-4 text-muted-foreground">
-          <span className="flex items-center gap-1"><Star className="w-4 h-4" /> {listing.difficulty}</span>
-          <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {listing.time}</span>
-        </div>
-        <p className="text-xl font-bold text-primary">${listing.price}</p>
-        <p className="text-muted-foreground">{listing.description}</p>
-        
-        <Card>
-          <CardHeader><CardTitle>Materials List</CardTitle></CardHeader>
-          <CardContent>
-            <ul className="list-disc list-inside space-y-1">
-              {listing.materials.map((m, i) => <li key={i}>{m}</li>)}
-            </ul>
-          </CardContent>
-        </Card>
+    <main className="min-h-screen bg-[#F9F7F4] text-[#1A1A1A]">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-7 sm:px-10 lg:px-16"><Link to="/moodoor/catalogue" className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#4A6741] transition hover:text-[#1A1A1A]"><ArrowLeft size={14} /> Current edit</Link><Link to="/moodoor" className="font-serif text-3xl leading-none tracking-tight">Mood<span className="italic text-[#4A6741]">oor</span></Link></nav>
 
-        {hasAccess ? (
-          <Button className="w-full" size="lg" onClick={handleDownload} disabled={isDownloading}>
-            {isDownloading ? <Loader2 className="mr-2 animate-spin" /> : <Download className="mr-2" />}
-            Download Blueprint
-          </Button>
-        ) : (
-          <Button className="w-full" size="lg" onClick={handlePurchase} disabled={isPurchasing}>
-            {isPurchasing ? <Loader2 className="mr-2 animate-spin" /> : <ShoppingCart className="mr-2" />}
-            {isPurchasing ? "Processing..." : "Buy & Download"}
-          </Button>
-        )}
-      </div>
-    </div>
+      <section className="mx-auto grid max-w-7xl border-t border-[#1A1A1A]/10 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="min-h-[34rem] bg-[#1E3024]"><DetailImage listing={listing} /></div>
+        <article className="flex flex-col justify-between border-b border-[#1A1A1A]/10 bg-white p-8 sm:p-12 lg:border-b-0">
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-4"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#4A6741]">From the current Moodoor edit</p><span className={`border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.12em] ${listing.availability === 'limited' ? 'border-[#C4922A]/45 text-[#8A681D]' : 'border-[#4A6741]/35 text-[#4A6741]'}`}>{listing.availability === 'limited' ? 'Limited availability' : 'Available now'}</span></div>
+            <h1 className="mt-10 font-serif text-[clamp(3.5rem,6vw,6rem)] font-light leading-[0.84] tracking-[-0.04em]">{listing.title}</h1>
+            <p className="mt-8 max-w-xl text-lg leading-8 text-[#4A4A4A]">{listing.summary}</p>
+            <div className="mt-10 flex flex-wrap gap-2">{listing.moodTags.map((tag) => <span key={`mood-${tag}`} className="bg-[#EEF2ED] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#4A6741]">{tag}</span>)}{listing.seasonTags.map((tag) => <span key={`season-${tag}`} className="bg-[#F2EFE9] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#5A5A5A]">{tag}</span>)}</div>
+          </div>
+          <div className="mt-12 border-t border-[#1A1A1A]/10 pt-7"><div className="flex items-end justify-between gap-6"><div><p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#787878]">{listing.price === null ? 'A made-to-order conversation' : 'Starting at'}</p><p className="mt-2 font-serif text-4xl font-light">{price}</p></div><a href={enquiryHref} className="inline-flex items-center gap-2 bg-[#1A1A1A] px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#4A6741]"><Mail size={14} /> Request availability</a></div><p className="mt-5 text-xs leading-6 text-[#787878]">Requesting availability opens your email client. Moodoor is currently a catalogue and enquiry experience; checkout is not yet available.</p></div>
+        </article>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-px bg-[#1A1A1A]/10 md:grid-cols-3"><div className="bg-[#F9F7F4] p-8"><Sparkles className="text-[#4A6741]" size={19} /><h2 className="mt-5 font-serif text-3xl font-light">A considered composition</h2><p className="mt-3 text-sm leading-7 text-[#5A5A5A]">Every released wreath begins as a deliberate composition before becoming part of the Moodoor collection.</p></div><div className="bg-[#F9F7F4] p-8"><Leaf className="text-[#4A6741]" size={19} /><h2 className="mt-5 font-serif text-3xl font-light">Made for the threshold</h2><p className="mt-3 text-sm leading-7 text-[#5A5A5A]">Seasonal colour, visual balance, and a distinct silhouette help the wreath belong to the door that holds it.</p></div><div className="bg-[#F9F7F4] p-8"><Mail className="text-[#4A6741]" size={19} /><h2 className="mt-5 font-serif text-3xl font-light">Ask before deciding</h2><p className="mt-3 text-sm leading-7 text-[#5A5A5A]">The enquiry step leaves room to discuss timing, availability, and the best fit for your home.</p></div></section>
+    </main>
   );
 }
