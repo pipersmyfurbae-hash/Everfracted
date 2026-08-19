@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { GoogleGenAI, Type } from '@google/genai';
 import { Button } from '../components/ui/button';
 import { Textarea } from '../components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -11,7 +10,6 @@ import { QualityGate } from '../components/QualityGate';
 import { runOrchestrator } from '../services/BlueprintOrchestrator';
 import { translateEmotion } from '../services/emotionTranslator';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 enum OperationType {
   CREATE = 'create',

@@ -5,11 +5,9 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { PackageSearch, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
-import { GoogleGenAI, Type } from '@google/genai';
 import { createProject } from '../services/projectService';
 import { toast } from 'sonner';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export default function InventoryWeaver() {
   const { user } = useAuth();

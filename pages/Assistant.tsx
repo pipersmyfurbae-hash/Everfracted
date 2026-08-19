@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { createGeminiClient } from '../services/geminiClient';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { MessageSquare, Send, User, Bot, Globe, MapPin, ExternalLink } from 'lucide-react';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 interface Message {
   role: 'user' | 'model';
@@ -23,6 +22,8 @@ export default function Assistant() {
   const chatRef = useRef<any>(null);
 
   useEffect(() => {
+    const ai = createGeminiClient();
+    if (!ai) return;
     chatRef.current = ai.chats.create({
       model: 'gemini-3-flash-preview',
       config: {
@@ -45,7 +46,11 @@ export default function Assistant() {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || !chatRef.current) return;
+    if (!input.trim()) return;
+    if (!chatRef.current) {
+      setMessages(prev => [...prev, { role: 'model', text: 'This AI feature is not configured for the current environment.' }]);
+      return;
+    }
 
     const userMsg = input;
     setInput('');

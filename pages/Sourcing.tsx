@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
+import { requireGeminiClient } from '../services/geminiClient';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Button } from '../components/ui/button';
@@ -7,7 +7,6 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { MapPin, Search, Loader2, Store, Globe, ExternalLink } from 'lucide-react';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export default function Sourcing() {
   const [queryText, setQuery] = useState('');
@@ -31,7 +30,7 @@ export default function Sourcing() {
       } else {
         const tools = searchType === 'maps' ? [{ googleMaps: {} }] : [{ googleSearch: {} }];
         
-        const response = await ai.models.generateContent({
+        const response = await requireGeminiClient().models.generateContent({
           model: 'gemini-3-flash-preview',
           contents: queryText,
           config: {

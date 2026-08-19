@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { GoogleGenAI, Type } from '@google/genai';
+import { Type } from '@google/genai';
+import { requireGeminiClient } from '../services/geminiClient';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -13,7 +14,6 @@ import { db, auth } from '../lib/firebase';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { createProject } from '../services/projectService';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 enum OperationType {
   CREATE = 'create',
@@ -76,6 +76,7 @@ export default function ImageAnalyzer() {
     if (!genPrompt || !user) return;
     setGenerating(true);
     try {
+      const ai = requireGeminiClient();
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash-image',
         contents: {

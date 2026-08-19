@@ -34,6 +34,7 @@ export default function Layout() {
     { name: 'QACS Placement', path: '/app/apps/placement', icon: PenTool, feature: 'hasDesignStudio' },
     { name: 'Motion Engine', path: '/app/apps/motion', icon: Sparkles, feature: 'hasDesignStudio' },
     { name: 'Creator Studio', path: '/app/apps/upload', icon: Sparkles, feature: 'hasCreatorUpload' },
+    { name: 'Moodoor Studio', path: '/app/moodoor-studio', icon: Sparkles, feature: 'hasDesignStudio' },
     { name: 'Marketplace', path: '/app/marketplace', icon: ShoppingBag },
   ];
 

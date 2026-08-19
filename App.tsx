@@ -39,6 +39,7 @@ import BlueprintStudioMarketing from './pages/BlueprintStudioMarketing';
 import ReverseEngineer from './pages/ReverseEngineer/page';
 import Validator from './pages/Validator/page';
 import MoodoorLanding from './pages/MoodoorLanding';
+import { MoodoorFinder, MoodoorStudio } from './pages/Moodoor';
 import EmotionLensLanding from './pages/EmotionLensLanding';
 import MotionEngine from './pages/MotionEngine';
 import PlacementEditor from './pages/PlacementEditor';
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/inventory-marketing" element={<InventoryMarketing />} />
           <Route path="/moodoor" element={<MoodoorLanding />} />
+          <Route path="/moodoor/find" element={<MoodoorFinder />} />
           <Route path="/emotion-lens" element={<EmotionLensLanding />} />
           <Route path="/blueprint-studio" element={<BlueprintStudioLanding />} />
           <Route path="/login" element={<Login />} />
@@ -95,6 +97,11 @@ export default function App() {
             <Route path="apps/placement" element={
               <TierGuard feature="hasDesignStudio">
                 <PlacementEditor />
+              </TierGuard>
+            } />
+            <Route path="moodoor-studio" element={
+              <TierGuard feature="hasDesignStudio">
+                <MoodoorStudio />
               </TierGuard>
             } />
             

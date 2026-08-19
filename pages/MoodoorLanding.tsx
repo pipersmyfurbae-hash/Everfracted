@@ -149,7 +149,7 @@ export default function MoodoorLanding() {
           </div>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-[11px] font-medium tracking-widest uppercase text-[#F9F7F4]/40 hover:text-[#F9F7F4] transition-colors">Sign in</Link>
-            <Link to="/app" className="px-5 py-2 bg-[#4A6741] text-[#F9F7F4] text-[11px] font-bold tracking-widest uppercase rounded-full hover:bg-[#6B8F67] transition-all">Try Moodoor</Link>
+            <Link to="/moodoor/find" className="px-5 py-2 bg-[#4A6741] text-[#F9F7F4] text-[11px] font-bold tracking-widest uppercase rounded-full hover:bg-[#6B8F67] transition-all">Find your wreath</Link>
           </div>
         </div>
       </nav>
@@ -181,7 +181,7 @@ export default function MoodoorLanding() {
           </p>
 
           <div className="flex flex-wrap gap-4 mb-12">
-            <Link to="/app" className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#B5451B] text-white text-[11px] font-bold tracking-widest uppercase rounded-full hover:bg-[#C94E1F] transition-all shadow-xl hover:shadow-[#B5451B]/20">
+            <Link to="/moodoor/find" className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#B5451B] text-white text-[11px] font-bold tracking-widest uppercase rounded-full hover:bg-[#C94E1F] transition-all shadow-xl hover:shadow-[#B5451B]/20">
               Begin your mood ↗
             </Link>
             <a href="#how-it-works" className="inline-flex items-center gap-2 px-6 py-3.5 border border-[#F5F0E8]/20 text-[#F5F0E8]/60 text-[11px] font-medium tracking-widest uppercase rounded-full hover:border-[#F5F0E8]/50 hover:text-[#F5F0E8] transition-all">

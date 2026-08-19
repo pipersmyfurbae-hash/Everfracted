@@ -1,10 +1,17 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import { EmotionProfile } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+function getAI(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error('Emotion translation is not configured for this environment.');
+  }
+  return new GoogleGenAI({ apiKey });
+}
 
 export const translateEmotion = async (emotionText: string): Promise<EmotionProfile> => {
   const model = "gemini-3-flash-preview";
+  const ai = getAI();
   
   const response = await ai.models.generateContent({
     model,
