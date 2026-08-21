@@ -85,6 +85,8 @@ const fakeDb = {
   },
 };
 
+process.env.MOODOOR_CATALOGUE_PER_MINUTE = '4';
+
 const app = express();
 app.use(express.json());
 registerMoodoorApi(app, fakeDb as never);
@@ -105,6 +107,7 @@ try {
   assert.equal(browseBody.listings[0].title, 'Quiet Winter Welcome', 'Newest published projection must appear first.');
   assert.deepEqual(Object.keys(browseBody.listings[0]).sort(), ['availability', 'commerce', 'currency', 'formula', 'id', 'imageUrl', 'moodTags', 'paletteTags', 'price', 'publishedAt', 'seasonTags', 'slug', 'summary', 'title']);
   assert.deepEqual(browseBody.listings[0].commerce, { mode: 'direct_checkout' });
+  assert.equal(browseResponse.headers.get('X-RateLimit-Limit'), '4', 'The public API must publish its active rate-limit boundary.');
   assert.equal('privateInventoryQuantity' in browseBody.listings[0], false, 'Raw inventory must never leave the public projection API.');
   assert.equal('supplierName' in browseBody.listings[0], false, 'Supplier data must never leave the public projection API.');
   assert.equal('variantId' in (browseBody.listings[0].commerce as Record<string, unknown>), false, 'Provider variant references must never leave the public projection API.');
@@ -136,6 +139,14 @@ try {
   const unconfiguredCheckout = await fetch(`${origin}/api/v1/moodoor/listings/quiet-winter-welcome-listing-calm/checkout`, { method: 'POST' });
   assert.equal(unconfiguredCheckout.status, 503, 'Direct checkout must fail closed until private Shopify configuration is present.');
 
+  const rateLimitSecond = await fetch(`${origin}/api/v1/moodoor/listings`);
+  assert.equal(rateLimitSecond.status, 200);
+  const rateLimitThird = await fetch(`${origin}/api/v1/moodoor/listings`);
+  assert.equal(rateLimitThird.status, 200);
+  const rateLimitFourth = await fetch(`${origin}/api/v1/moodoor/listings`);
+  assert.equal(rateLimitFourth.status, 429, 'Anonymous catalogue reads must be throttled before they can become an unbounded scraping surface.');
+  assert.equal(rateLimitFourth.headers.get('Retry-After') !== null, true);
+
   const badProfile = await fetch(`${origin}/api/v1/moodoor/matches`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -143,7 +154,7 @@ try {
   });
   assert.equal(badProfile.status, 400);
 
-  console.log('Moodoor public API tests passed: browse, detail, matching, hybrid commerce privacy, safe checkout failure, validation, chronology, and private-field exclusion verified.');
+  console.log('Moodoor public API tests passed: browse, detail, matching, hybrid commerce privacy, safe checkout failure, rate limiting, validation, chronology, and private-field exclusion verified.');
 } finally {
   await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
 }

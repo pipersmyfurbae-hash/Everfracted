@@ -2,6 +2,7 @@ import type { Express } from 'express';
 import type { Firestore } from 'firebase-admin/firestore';
 import { isShopifyCheckoutCommerce } from '../services/commerceMode.ts';
 import { sendApiError } from './apiAuth.ts';
+import { createPublicRateLimit, perMinuteLimit } from './publicRateLimit.ts';
 
 type ShopifyCartResponse = {
   data?: {
@@ -57,7 +58,8 @@ async function createShopifyCheckout(variantId: string): Promise<string | null> 
  * returns only a short-lived hosted checkout URL to the browser.
  */
 export function registerCommerceApi(app: Express, db: Firestore): void {
-  app.post('/api/v1/moodoor/listings/:slug/checkout', async (req, res) => {
+  const checkoutLimit = createPublicRateLimit(db, perMinuteLimit('moodoor_checkout', 20, 'MOODOOR_CHECKOUTS_PER_MINUTE'));
+  app.post('/api/v1/moodoor/listings/:slug/checkout', checkoutLimit, async (req, res) => {
     try {
       const projectionSnapshot = await db.collection('moodoor_public_listings').where('slug', '==', req.params.slug).limit(1).get();
       if (projectionSnapshot.empty) {

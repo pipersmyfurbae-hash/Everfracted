@@ -14,6 +14,7 @@ import {
 } from '../services/moodoorProjection.ts';
 import { toPublicCommerce, type PublicCommerce } from '../services/commerceMode.ts';
 import { ECOSYSTEM_SCHEMA } from '../services/ecosystemContracts.ts';
+import { createPublicRateLimit, perMinuteLimit } from './publicRateLimit.ts';
 import {
   ownsOrAdmins,
   requireStudioMaker,
@@ -137,7 +138,10 @@ function parsePublicationAction(value: unknown): 'publish' | 'unpublish' | null 
  * or revoke the public projection atomically.
  */
 export function registerMoodoorApi(app: Express, db: Firestore): void {
-  app.post('/api/v1/moodoor/matches', async (req, res) => {
+  const matchLimit = createPublicRateLimit(db, perMinuteLimit('moodoor_matches', 60, 'MOODOOR_MATCHES_PER_MINUTE'));
+  const catalogueLimit = createPublicRateLimit(db, perMinuteLimit('moodoor_catalogue', 120, 'MOODOOR_CATALOGUE_PER_MINUTE'));
+
+  app.post('/api/v1/moodoor/matches', matchLimit, async (req, res) => {
     const profile = parseProfile(req.body);
     if (!profile) {
       sendApiError(res, 400, 'INVALID_PROFILE', 'Provide one supported mood, season, and door value.');
@@ -169,7 +173,7 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
     }
   });
 
-  app.get('/api/v1/moodoor/listings', async (_req, res) => {
+  app.get('/api/v1/moodoor/listings', catalogueLimit, async (_req, res) => {
     try {
       const projection = await db.collection('moodoor_public_listings').get();
       const listings = projection.docs
@@ -192,7 +196,7 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
     }
   });
 
-  app.get('/api/v1/moodoor/listings/:slug', async (req, res) => {
+  app.get('/api/v1/moodoor/listings/:slug', catalogueLimit, async (req, res) => {
     try {
       const snapshot = await db.collection('moodoor_public_listings').where('slug', '==', req.params.slug).limit(1).get();
       if (snapshot.empty) {

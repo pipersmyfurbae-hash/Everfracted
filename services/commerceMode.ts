@@ -29,7 +29,9 @@ export function normalizeMarketplaceCommerce(value: unknown): MarketplaceCommerc
 
   if (mode === 'direct_checkout' && candidate.provider === 'shopify') {
     const variantId = asTrimmedString(candidate.variantId, 256);
-    if (variantId) return { mode: 'direct_checkout', provider: 'shopify', variantId };
+    if (variantId && /^gid:\/\/shopify\/ProductVariant\/\d+$/.test(variantId)) {
+      return { mode: 'direct_checkout', provider: 'shopify', variantId };
+    }
   }
 
   return null;
