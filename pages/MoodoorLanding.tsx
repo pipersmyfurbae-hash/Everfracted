@@ -177,7 +177,7 @@ export default function MoodoorLanding() {
           <span className="block font-script text-2xl text-[#D4A96A]/60 mb-8">dressed in the mood you choose.</span>
 
           <p className="text-lg font-light leading-relaxed text-[#F5F0E8]/50 max-w-md mb-10">
-            Moodoor is the consumer-facing heart of Evercrafted. Describe how you want your home to feel — serene, joyful, romantic, harvest-warm — and Moodoor curates a shoppable wreath and entryway bundle matched to your mood, occasion, style, and budget.
+            Moodoor is the consumer-facing heart of Evercrafted. Describe how you want your home to feel — serene, joyful, romantic, harvest-warm — and Moodoor curates an available wreath edit matched to your mood, occasion, and door. Ready-to-ship pieces offer secure checkout; more bespoke pieces begin with a personal availability conversation.
           </p>
 
           <div className="flex flex-wrap gap-4 mb-12">
@@ -263,7 +263,7 @@ export default function MoodoorLanding() {
         <div className="marquee-track">
           {[...Array(2)].map((_, i) => (
             <React.Fragment key={i}>
-              {['Moodoor', '10 mood profiles', 'Shoppable bundles', '3-minute quiz', 'Budget-matched curation', '6 style archetypes'].map((item) => (
+              {['Moodoor', '10 mood profiles', 'Secure checkout when ready', '3-minute quiz', 'Personal enquiry when needed', '6 style archetypes'].map((item) => (
                 <div key={item} className="flex items-center gap-7 px-7">
                   <span className="text-[11px] font-bold tracking-widest uppercase text-white">{item}</span>
                   <span className="text-white/40">◆</span>
@@ -293,7 +293,7 @@ export default function MoodoorLanding() {
               "I never knew what I wanted until Moodoor asked me how I wanted to feel. Now my front door is the first thing I look forward to coming home to."
               <span className="block not-italic text-xs font-bold text-[#B5451B] uppercase tracking-widest mt-3">— Diane M., Bloom tier</span>
             </div>
-            <Link to="/app" className="inline-flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase text-[#B5451B] hover:gap-4 transition-all">
+            <Link to="/moodoor/find" className="inline-flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase text-[#B5451B] hover:gap-4 transition-all">
               Begin your mood quiz <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -303,7 +303,7 @@ export default function MoodoorLanding() {
               <div className="text-3xl">🚪</div>
               <div>
                 <div className="font-serif text-4xl text-white">3<em className="italic text-[#C9A84C] text-xl ml-1">min</em></div>
-                <div className="text-[10px] tracking-widest uppercase text-white/40 mt-1">From first question to a fully curated, shoppable entryway bundle</div>
+                <div className="text-[10px] tracking-widest uppercase text-white/40 mt-1">From first question to a tailored current edit</div>
               </div>
             </div>
             <div className="bg-[#1A1A1A] rounded-2xl p-8 space-y-4">
@@ -325,7 +325,7 @@ export default function MoodoorLanding() {
         <div className="max-w-[1200px] mx-auto text-center mb-16 space-y-6">
           <div className="text-[#6B8F67] text-[10px] font-bold tracking-widest uppercase">The mood library</div>
           <h2 className="font-serif text-[clamp(32px,5vw,52px)] font-light leading-tight tracking-tighter">Ten ways to feel<br /><em className="italic text-[#D4A96A]">at home.</em></h2>
-          <p className="text-lg font-light text-white/40 max-w-lg mx-auto">Each mood maps to a curated bundle cluster — wreath, mat, stems, botanicals, and ambient glow — assembled from your maker's live inventory.</p>
+          <p className="text-lg font-light text-white/40 max-w-lg mx-auto">Each mood maps to a considered design direction — allowing you to discover a wreath with the right atmosphere, then either purchase a ready piece securely or begin a more personal conversation.</p>
         </div>
 
         <div className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-5 gap-3 mb-12">

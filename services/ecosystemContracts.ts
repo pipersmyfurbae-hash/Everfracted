@@ -1,7 +1,11 @@
+import type { MarketplaceCommerce, PublicCommerce } from './commerceMode';
+
 export const ECOSYSTEM_SCHEMA = {
   user: 'everfracted_user.v2',
-  marketplaceListing: 'marketplace_listing.v2',
-  moodoorPublicListing: 'moodoor_public_listing.v1',
+  marketplaceListing: 'marketplace_listing.v3',
+  marketplaceListingLegacy: 'marketplace_listing.v2',
+  moodoorPublicListing: 'moodoor_public_listing.v2',
+  moodoorPublicListingLegacy: 'moodoor_public_listing.v1',
   moodoorPublicationEvent: 'moodoor_publication_event.v1',
 } as const;
 
@@ -48,7 +52,7 @@ export interface MarketplacePublicMetadataV2 {
   formula: string | null;
 }
 
-export interface MarketplaceListingV2 {
+export interface MarketplaceListingV3 {
   schemaVersion: typeof ECOSYSTEM_SCHEMA.marketplaceListing;
   listingId: string;
   creatorId: string;
@@ -67,6 +71,8 @@ export interface MarketplaceListingV2 {
     publishedBy: string | null;
   };
   public: MarketplacePublicMetadataV2;
+  /** Private provider identifiers are never copied to Moodoor projections. */
+  commerce: MarketplaceCommerce;
   blueprintRef: {
     blueprintId: string;
     revision: number;
@@ -75,7 +81,7 @@ export interface MarketplaceListingV2 {
   updatedAt: string;
 }
 
-export interface MoodoorPublicListingV1 {
+export interface MoodoorPublicListingV2 {
   schemaVersion: typeof ECOSYSTEM_SCHEMA.moodoorPublicListing;
   listingId: string;
   slug: string;
@@ -84,6 +90,8 @@ export interface MoodoorPublicListingV1 {
   heroImageUrl: string | null;
   price: { amount: number | null; currency: 'USD' };
   availability: Extract<AvailabilityStatus, 'in_stock' | 'limited'>;
+  /** Only the customer-facing purchase mode is projected. */
+  commerce: PublicCommerce;
   formula: string | null;
   moodTags: string[];
   seasonTags: string[];
@@ -109,7 +117,7 @@ export function isStudioTierOrHigher(tier: EcosystemTier): boolean {
   return tier === 'studio' || tier === 'atelier';
 }
 
-export function canPublishToMoodoor(listing: Pick<MarketplaceListingV2, 'marketplace' | 'quality' | 'availability'>): boolean {
+export function canPublishToMoodoor(listing: Pick<MarketplaceListingV3, 'marketplace' | 'quality' | 'availability'>): boolean {
   return listing.marketplace.status === 'published'
     && listing.availability.status !== 'unavailable'
     && (listing.quality.status === 'pass' || (listing.quality.score !== null && listing.quality.score >= 0.78));

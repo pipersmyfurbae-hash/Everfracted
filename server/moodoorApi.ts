@@ -12,6 +12,8 @@ import {
   toMoodoorCandidate,
   type MarketplaceDocument,
 } from '../services/moodoorProjection.ts';
+import { toPublicCommerce, type PublicCommerce } from '../services/commerceMode.ts';
+import { ECOSYSTEM_SCHEMA } from '../services/ecosystemContracts.ts';
 import {
   ownsOrAdmins,
   requireStudioMaker,
@@ -28,6 +30,7 @@ type PublicListingResponse = {
   price: number | null;
   currency: string;
   availability: 'in_stock' | 'limited';
+  commerce: PublicCommerce;
   formula: string | null;
   seasonTags: string[];
   moodTags: string[];
@@ -60,7 +63,7 @@ function slugify(value: string): string {
   return base || 'evercrafted-wreath';
 }
 
-function toPublicResponse(listing: MoodoorListing, slug: string): PublicListingResponse {
+function toPublicResponse(listing: MoodoorListing, slug: string, commerce: PublicCommerce = { mode: 'enquiry' }): PublicListingResponse {
   return {
     id: listing.id,
     slug,
@@ -70,6 +73,7 @@ function toPublicResponse(listing: MoodoorListing, slug: string): PublicListingR
     price: listing.price,
     currency: listing.currency,
     availability: listing.availability === 'limited' ? 'limited' : 'in_stock',
+    commerce,
     formula: listing.formula,
     seasonTags: listing.seasonTags,
     moodTags: listing.moodTags,
@@ -149,7 +153,11 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
 
       res.json({
         matches: matches.map((match) => ({
-          listing: toPublicResponse(match.listing, String(projection.docs.find((entry) => entry.id === match.listing.id)?.data().slug || slugify(match.listing.title))),
+          listing: toPublicResponse(
+            match.listing,
+            String(projection.docs.find((entry) => entry.id === match.listing.id)?.data().slug || slugify(match.listing.title)),
+            toPublicCommerce(projection.docs.find((entry) => entry.id === match.listing.id)?.data().commerce),
+          ),
           explanation: match.explanation,
           matchedSignals: match.matchedSignals,
         })),
@@ -169,7 +177,7 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
           const listing = fromPublicProjection(entry.id, entry.data());
           if (!listing) return null;
           const slug = typeof entry.data().slug === 'string' ? entry.data().slug : slugify(listing.title);
-          return toPublicResponse(listing, slug);
+          return toPublicResponse(listing, slug, toPublicCommerce(entry.data().commerce));
         })
         .filter((entry): entry is PublicListingResponse => entry !== null)
         .sort((left, right) => {
@@ -197,7 +205,7 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
         sendApiError(res, 404, 'LISTING_NOT_FOUND', 'This Moodoor wreath is no longer in the current edit.');
         return;
       }
-      res.json({ listing: toPublicResponse(listing, req.params.slug) });
+      res.json({ listing: toPublicResponse(listing, req.params.slug, toPublicCommerce(entry.data().commerce)) });
     } catch (error) {
       console.error('Moodoor public detail error:', error);
       sendApiError(res, 500, 'CATALOGUE_UNAVAILABLE', 'Moodoor could not read this wreath. Please try again.');
@@ -258,7 +266,7 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
             moodoorUpdatedAt: FieldValue.serverTimestamp(),
           });
           transaction.set(projectionRef, {
-            schemaVersion: 'moodoor_public_listing.v1',
+            schemaVersion: ECOSYSTEM_SCHEMA.moodoorPublicListing,
             listingId: candidate.id,
             slug,
             title: candidate.title,
@@ -266,12 +274,16 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
             heroImageUrl: candidate.imageUrl,
             price: { amount: candidate.price, currency: candidate.currency },
             availability: candidate.availability,
+            commerce: toPublicCommerce(raw.commerce),
             formula: candidate.formula,
             seasonTags: candidate.seasonTags,
             moodTags: candidate.moodTags,
             paletteTags: candidate.paletteTags,
             publishedAt: FieldValue.serverTimestamp(),
-            sourceVersion: { listingSchema: 'marketplace_listing.v1_compat', listingUpdatedAt: FieldValue.serverTimestamp() },
+            sourceVersion: {
+              listingSchema: typeof raw.schemaVersion === 'string' ? raw.schemaVersion : 'marketplace_listing.v1_compat',
+              listingUpdatedAt: FieldValue.serverTimestamp(),
+            },
           });
           transaction.set(eventRef, {
             listingId: candidate.id,
@@ -280,7 +292,7 @@ export function registerMoodoorApi(app: Express, db: Firestore): void {
             occurredAt: FieldValue.serverTimestamp(),
             sourceStatus: String(raw.status || ''),
           });
-          return { listing: toPublicResponse({ ...candidate, isMoodoorPublished: true }, slug), action };
+          return { listing: toPublicResponse({ ...candidate, isMoodoorPublished: true }, slug, toPublicCommerce(raw.commerce)), action };
         }
 
         transaction.update(listingRef, {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowUpRight, Leaf, Loader2, Mail, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Leaf, Loader2, Mail, ShoppingBag, Sparkles } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { EcosystemApiError, getMoodoorPublicListing, type PublicMoodoorListing } from '../services/ecosystemApiClient';
+import { createMoodoorCheckout, EcosystemApiError, getMoodoorPublicListing, type PublicMoodoorListing } from '../services/ecosystemApiClient';
 
 function DetailImage({ listing }: { listing: PublicMoodoorListing }) {
   if (listing.imageUrl) {
@@ -21,6 +21,8 @@ export default function ListingDetail() {
   const [listing, setListing] = useState<PublicMoodoorListing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [checkingOut, setCheckingOut] = useState(false);
 
   useEffect(() => {
     async function loadListing(): Promise<void> {
@@ -54,6 +56,20 @@ export default function ListingDetail() {
   const price = listing.price === null ? 'Price on request' : `$${listing.price.toFixed(0)}`;
   const enquiryHref = `mailto:?subject=${encodeURIComponent(`Moodoor enquiry — ${listing.title}`)}&body=${encodeURIComponent(`Hello Evercrafted,\n\nI would like to enquire about ${listing.title}.\n\nThank you.`)}`;
 
+  async function beginCheckout(): Promise<void> {
+    if (!slug || listing.commerce.mode !== 'direct_checkout') return;
+    setCheckingOut(true);
+    setCheckoutError(null);
+    try {
+      const { checkoutUrl } = await createMoodoorCheckout(slug);
+      window.location.assign(checkoutUrl);
+    } catch (caught) {
+      setCheckoutError(caught instanceof EcosystemApiError ? caught.message : 'Checkout could not be prepared. Please request availability and we will be glad to assist.');
+    } finally {
+      setCheckingOut(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#F9F7F4] text-[#1A1A1A]">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-7 sm:px-10 lg:px-16"><Link to="/moodoor/catalogue" className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#4A6741] transition hover:text-[#1A1A1A]"><ArrowLeft size={14} /> Current edit</Link><Link to="/moodoor" className="font-serif text-3xl leading-none tracking-tight">Mood<span className="italic text-[#4A6741]">oor</span></Link></nav>
@@ -67,7 +83,7 @@ export default function ListingDetail() {
             <p className="mt-8 max-w-xl text-lg leading-8 text-[#4A4A4A]">{listing.summary}</p>
             <div className="mt-10 flex flex-wrap gap-2">{listing.moodTags.map((tag) => <span key={`mood-${tag}`} className="bg-[#EEF2ED] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#4A6741]">{tag}</span>)}{listing.seasonTags.map((tag) => <span key={`season-${tag}`} className="bg-[#F2EFE9] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#5A5A5A]">{tag}</span>)}</div>
           </div>
-          <div className="mt-12 border-t border-[#1A1A1A]/10 pt-7"><div className="flex items-end justify-between gap-6"><div><p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#787878]">{listing.price === null ? 'A made-to-order conversation' : 'Starting at'}</p><p className="mt-2 font-serif text-4xl font-light">{price}</p></div><a href={enquiryHref} className="inline-flex items-center gap-2 bg-[#1A1A1A] px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#4A6741]"><Mail size={14} /> Request availability</a></div><p className="mt-5 text-xs leading-6 text-[#787878]">Requesting availability opens your email client. Moodoor is currently a catalogue and enquiry experience; checkout is not yet available.</p></div>
+          <div className="mt-12 border-t border-[#1A1A1A]/10 pt-7"><div className="flex items-end justify-between gap-6"><div><p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#787878]">{listing.price === null ? 'A made-to-order conversation' : 'Starting at'}</p><p className="mt-2 font-serif text-4xl font-light">{price}</p></div>{listing.commerce.mode === 'direct_checkout' ? <button type="button" onClick={() => void beginCheckout()} disabled={checkingOut} className="inline-flex items-center gap-2 bg-[#4A6741] px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#1A1A1A] disabled:cursor-not-allowed disabled:opacity-60"><ShoppingBag size={14} /> {checkingOut ? 'Preparing checkout…' : 'Purchase securely'}</button> : <a href={enquiryHref} className="inline-flex items-center gap-2 bg-[#1A1A1A] px-5 py-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-[#4A6741]"><Mail size={14} /> Request availability</a>}</div>{checkoutError && <p role="alert" className="mt-5 border-l-2 border-[#B94040] bg-[#FFF5F4] px-4 py-3 text-xs leading-6 text-[#8A2F2F]">{checkoutError}</p>}<p className="mt-5 text-xs leading-6 text-[#787878]">{listing.commerce.mode === 'direct_checkout' ? 'Secure payment, shipping, and order confirmation are completed in the managed checkout.' : 'Requesting availability opens your email client. This made-to-order piece begins with a considered conversation.'}</p></div>
         </article>
       </section>
 

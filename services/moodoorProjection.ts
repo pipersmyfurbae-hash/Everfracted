@@ -10,6 +10,7 @@ import {
  * adapter; callers never expose a raw marketplace record directly.
  */
 export interface MarketplaceDocument extends Record<string, unknown> {
+  schemaVersion?: string;
   name?: string;
   title?: string;
   description?: string;
@@ -35,6 +36,8 @@ export interface MarketplaceDocument extends Record<string, unknown> {
   qualityApproved?: boolean;
   moodoorPublished?: boolean;
   moodoorStatus?: string;
+  /** Private canonical commerce metadata; projections must reduce it before public use. */
+  commerce?: unknown;
   createdAt?: { toDate?: () => Date };
 }
 

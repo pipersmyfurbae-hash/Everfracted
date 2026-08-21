@@ -1,6 +1,7 @@
 import { auth } from '../lib/firebase';
 import type { Blueprint } from '../types';
 import type { MoodProfile, MoodoorListing, MoodoorMatch } from './moodoorMatchingCore';
+import type { MarketplaceCommerce, PublicCommerce } from './commerceMode';
 
 export class EcosystemApiError extends Error {
   constructor(
@@ -46,6 +47,7 @@ export type MakerListingInput = {
   };
   availability: 'in_stock' | 'limited' | 'unavailable';
   marketplaceStatus: 'draft' | 'published';
+  commerce: MarketplaceCommerce;
 };
 
 export type MakerListingResult = {
@@ -83,7 +85,7 @@ export async function getMoodoorMatches(profile: MoodProfile): Promise<{ matches
   });
 }
 
-export type PublicMoodoorListing = MoodoorListing & { slug: string };
+export type PublicMoodoorListing = MoodoorListing & { slug: string; commerce: PublicCommerce };
 
 export async function getMoodoorPublicListings(): Promise<{ listings: PublicMoodoorListing[] }> {
   return apiRequest('/api/v1/moodoor/listings');
@@ -91,6 +93,10 @@ export async function getMoodoorPublicListings(): Promise<{ listings: PublicMood
 
 export async function getMoodoorPublicListing(slug: string): Promise<{ listing: PublicMoodoorListing }> {
   return apiRequest(`/api/v1/moodoor/listings/${encodeURIComponent(slug)}`);
+}
+
+export async function createMoodoorCheckout(slug: string): Promise<{ checkoutUrl: string }> {
+  return apiRequest(`/api/v1/moodoor/listings/${encodeURIComponent(slug)}/checkout`, { method: 'POST', body: '{}' });
 }
 
 export async function getMoodoorStudioListings(): Promise<{ listings: MoodoorListing[] }> {

@@ -2,6 +2,7 @@ import type { Express } from 'express';
 import { FieldValue, type Firestore } from 'firebase-admin/firestore';
 import { scoreBlueprint } from '../services/blueprintScoringEngine.ts';
 import { ECOSYSTEM_SCHEMA } from '../services/ecosystemContracts.ts';
+import { normalizeMarketplaceCommerce, type MarketplaceCommerce } from '../services/commerceMode.ts';
 import type { Blueprint } from '../types.ts';
 import { ownsOrAdmins, requireStudioMaker, sendApiError, type ApiUser } from './apiAuth.ts';
 
@@ -24,6 +25,7 @@ type CreateListingInput = {
   public: PublicMetadataInput;
   availability: Availability;
   marketplaceStatus: MarketplaceStatus;
+  commerce: MarketplaceCommerce;
 };
 
 function asTrimmedString(value: unknown, maxLength: number): string | null {
@@ -63,8 +65,11 @@ function parseInput(value: unknown): CreateListingInput | null {
   const formula = data.formula === null || data.formula === undefined || data.formula === '' ? null : asTrimmedString(data.formula, 80);
   const availability = body.availability;
   const marketplaceStatus = body.marketplaceStatus;
+  const commerce = body.commerce === undefined
+    ? { mode: 'enquiry', provider: null, variantId: null } as const
+    : normalizeMarketplaceCommerce(body.commerce);
 
-  if (!title || !summary || !moodTags || !seasonTags || !paletteTags || !['in_stock', 'limited', 'unavailable'].includes(String(availability)) || !['draft', 'published'].includes(String(marketplaceStatus))) {
+  if (!title || !summary || !moodTags || !seasonTags || !paletteTags || !commerce || !['in_stock', 'limited', 'unavailable'].includes(String(availability)) || !['draft', 'published'].includes(String(marketplaceStatus))) {
     return null;
   }
 
@@ -73,6 +78,7 @@ function parseInput(value: unknown): CreateListingInput | null {
     public: { title, summary, heroImageUrl, price, moodTags, seasonTags, paletteTags, formula },
     availability: availability as Availability,
     marketplaceStatus: marketplaceStatus as MarketplaceStatus,
+    commerce,
   };
 }
 
@@ -87,7 +93,8 @@ function normalizedQuality(blueprint: Blueprint): { score: number; status: 'pass
 }
 
 function canMarketplacePublish(input: CreateListingInput, quality: ReturnType<typeof normalizedQuality>): boolean {
-  return input.marketplaceStatus === 'published' && input.availability !== 'unavailable' && quality.status === 'pass' && quality.score >= 0.78;
+  const checkoutHasPrice = input.commerce.mode !== 'direct_checkout' || input.public.price !== null;
+  return input.marketplaceStatus === 'published' && input.availability !== 'unavailable' && checkoutHasPrice && quality.status === 'pass' && quality.score >= 0.78;
 }
 
 export function registerMakerApi(app: Express, db: Firestore): void {
@@ -153,6 +160,7 @@ export function registerMakerApi(app: Express, db: Firestore): void {
           publishedAt: actualStatus === 'published' ? now : null,
           moodoorPublished: false,
           moodoorStatus: 'private',
+          commerce: input.commerce,
           createdAt: now,
           updatedAt: now,
         });

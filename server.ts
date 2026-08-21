@@ -9,6 +9,7 @@ import { getStorage } from 'firebase-admin/storage';
 import { getFirestore } from 'firebase-admin/firestore';
 import { registerMoodoorApi } from './server/moodoorApi.ts';
 import { registerMakerApi } from './server/makerApi.ts';
+import { registerCommerceApi } from './server/commerceApi.ts';
 
 // Initialize Firebase Admin
 admin.initializeApp({
@@ -28,6 +29,7 @@ async function startServer() {
   app.use(express.json());
   registerMakerApi(app, db);
   registerMoodoorApi(app, db);
+  registerCommerceApi(app, db);
 
   // Blueprint Routes
   app.post('/blueprint/create', async (req, res) => {
