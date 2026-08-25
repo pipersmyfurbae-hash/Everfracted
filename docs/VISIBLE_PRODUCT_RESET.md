@@ -29,3 +29,9 @@ The production-mode preview at `/experience` was exposed successfully and render
 ## Permanent hosting activation
 
 The GitHub Pages settings page is open at `https://github.com/pipersmyfurbae-hash/Everfracted/settings/pages`. Pages is presently disabled. The committed workflow `deploy-pages.yml` is ready, and the owner confirmed activation. The visible source selector offers **GitHub Actions**, which is the required option for the committed Vite build-and-deploy workflow.
+
+The initial GitHub Actions deployment failed because `configure-pages` could not find a Pages site immediately after the source change. The workflow now uses `enablement: true`, which allows the first deployment to create or enable the Pages site instead of depending on the repository setting to propagate first. Commit `e6c0682` triggered the corrected deployment run `32870782162`.
+
+The corrected Pages deployment is active in GitHub Actions and has produced the upload artifact; at the latest review it was executing the final `Deploying to github-pages` stage. The permanent URL must be checked once that stage reports completion.
+
+The GitHub Pages hostname is now serving the application document at the permanent `/Everfracted/experience` address, confirming that Pages activation and deployment succeeded. The external browser preview initially displayed a blank app shell without a runtime console exception, so the next correction will focus on static-SPA route handling and deployment artifact behavior rather than hosting enablement.

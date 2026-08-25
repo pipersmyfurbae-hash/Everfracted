@@ -49,6 +49,10 @@ import { Toaster } from './components/ui/sonner';
 import { TierGuard } from './components/TierGuard';
 import Projects from './pages/Projects';
 
+// GitHub Pages hosts this repository beneath /Everfracted while local and custom-domain
+// deployments use the domain root. BrowserRouter needs that path stripped before matching routes.
+const routerBasename = window.location.pathname.startsWith('/Everfracted') ? '/Everfracted' : '/';
+
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
@@ -59,7 +63,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router basename={routerBasename}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/experience" element={<VisibleProductDemo />} />
