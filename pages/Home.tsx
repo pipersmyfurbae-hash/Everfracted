@@ -106,10 +106,10 @@ export default function Home() {
               Sign in
             </Link>
             <Link 
-              to="/app" 
+              to="/experience" 
               className="px-5 py-2 bg-ink text-white-studio text-[11px] font-medium tracking-wider hover:bg-ink-2 transition-colors"
             >
-              Start designing
+              Explore Evercrafted
             </Link>
           </div>
         </div>
@@ -178,16 +178,16 @@ export default function Home() {
             className="flex flex-wrap gap-8 justify-center"
           >
             <Link 
-              to="/app/blueprint-studio" 
+              to="/experience" 
               className="px-16 py-6 bg-white-studio text-ink text-[11px] font-bold tracking-[0.25em] uppercase hover:bg-cream transition-all shadow-2xl"
             >
-              Start designing
+              Explore the experience
             </Link>
             <Link 
-              to="/blueprint-studio" 
+              to="/moodoor" 
               className="px-16 py-6 border border-white-studio/20 text-white-studio text-[11px] font-bold tracking-[0.25em] uppercase hover:bg-white-studio/10 backdrop-blur-sm transition-all"
             >
-              View Sample
+              Discover Moodoor
             </Link>
           </motion.div>
         </div>

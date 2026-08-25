@@ -43,6 +43,7 @@ import { MoodoorFinder, MoodoorStudio } from './pages/Moodoor';
 import EmotionLensLanding from './pages/EmotionLensLanding';
 import MotionEngine from './pages/MotionEngine';
 import PlacementEditor from './pages/PlacementEditor';
+import VisibleProductDemo from './pages/VisibleProductDemo';
 import { Toaster } from './components/ui/sonner';
 
 import { TierGuard } from './components/TierGuard';
@@ -61,6 +62,7 @@ export default function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/experience" element={<VisibleProductDemo />} />
           <Route path="/inventory-marketing" element={<InventoryMarketing />} />
           <Route path="/moodoor" element={<MoodoorLanding />} />
           <Route path="/moodoor/find" element={<MoodoorFinder />} />
