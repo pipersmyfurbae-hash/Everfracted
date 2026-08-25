@@ -35,3 +35,5 @@ The initial GitHub Actions deployment failed because `configure-pages` could not
 The corrected Pages deployment is active in GitHub Actions and has produced the upload artifact; at the latest review it was executing the final `Deploying to github-pages` stage. The permanent URL must be checked once that stage reports completion.
 
 The GitHub Pages hostname is now serving the application document at the permanent `/Everfracted/experience` address, confirming that Pages activation and deployment succeeded. The external browser preview initially displayed a blank app shell without a runtime console exception, so the next correction will focus on static-SPA route handling and deployment artifact behavior rather than hosting enablement.
+
+The final GitHub Pages deployment completed successfully at 16:18 for commit `4c49f88`. GitHub Actions reports the permanent site URL as `https://pipersmyfurbae-hash.github.io/Everfracted/`.
