@@ -37,3 +37,13 @@ The corrected Pages deployment is active in GitHub Actions and has produced the 
 The GitHub Pages hostname is now serving the application document at the permanent `/Everfracted/experience` address, confirming that Pages activation and deployment succeeded. The external browser preview initially displayed a blank app shell without a runtime console exception, so the next correction will focus on static-SPA route handling and deployment artifact behavior rather than hosting enablement.
 
 The final GitHub Pages deployment completed successfully at 16:18 for commit `4c49f88`. GitHub Actions reports the permanent site URL as `https://pipersmyfurbae-hash.github.io/Everfracted/`.
+
+## Production visual review
+
+The permanent production URL was reviewed in-browser. Moodoor renders as a dark botanical editorial discovery experience with a strong hero, simple three-part preference selector, curated product cards, and a clear purchase or enquiry state. The Maker Studio renders as a light, structured workspace with a dark side rail, visible brief input, formula choices, a polar wreath preview, stem and size indicators, and a deliberate create/publish progression. Both views load and switch successfully at the permanent URL.
+
+The local Vite preview did not include the deployment workflow’s `404.html` fallback, so a direct deep-link request to the new collection route showed the static-host shell rather than a rendered route. This does not represent the GitHub Pages artifact, where the workflow copies `index.html` to `404.html`; collection QA will continue through a normal client-side route entry and the production workflow will be rechecked after publish.
+
+The Vite preview server does not emulate GitHub Pages’ repository subpath, so it cannot load build assets from `/Everfracted/` during local deep-link testing even when `404.html` is present. The source will be visually checked through Vite’s normal development route, then rechecked at the real Pages hostname after the automated deployment runs.
+
+The new catalogue renders as intended through the normal application route: an editorial dark-green collection hero, product stories, pricing, and three clear product entries. The production-only `/Everfracted` image path means collection photos do not load in the local root-hosted development route; the asset helper will be made base-aware so the same source renders locally and at the permanent GitHub Pages URL.
