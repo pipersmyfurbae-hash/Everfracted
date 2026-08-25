@@ -17,3 +17,11 @@ This demo will be connected to the existing application through a public route o
 ## Visible review evidence
 
 The public `/experience` route now renders a complete customer-facing Moodoor journey with a readable editorial hero, interactive feeling/season/door choices, dynamic product recommendations, product capability states, and a clear purchase or enquiry action. The same page successfully switches to an authentication-free Maker Studio workspace, where the visitor can enter a design brief, select a composition formula, generate a visual blueprint, and publish the preview to the demo Moodoor collection.
+
+## Exposed-link review
+
+The first external review attempt was blocked by Vite host protection. The review-server configuration has been updated to permit temporary proxied hosts and the server restarted. The exposed route then reached the application shell, but the remote browser preview showed a blank rendering state despite the route working in the local browser review. The next visual verification step should therefore use the externally exposed page’s runtime state rather than rely on the earlier blocked-host response.
+
+## Production preview verification
+
+The production-mode preview at `/experience` was exposed successfully and rendered the full visible product demo through the temporary review URL. The customer journey, option controls, product cards, and maker-studio navigation were available in the external review page. This path is the correct review surface; the development-server proxy remains useful for implementation but is not the delivery link.

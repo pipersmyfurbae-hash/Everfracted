@@ -15,10 +15,15 @@ export default defineConfig(({mode}) => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    preview: {
+      allowedHosts: true,
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
+      // Temporary review URLs are served through a dynamic proxy host.
+      allowedHosts: true,
       proxy: {
         '/api': {
           target: env.VITE_API_ORIGIN || 'http://localhost:3000',
