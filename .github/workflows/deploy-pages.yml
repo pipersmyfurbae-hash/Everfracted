@@ -41,6 +41,9 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Creates the Pages site on the first deployment if activation has not yet propagated.
+          enablement: true
 
       - name: Upload website artifact
         uses: actions/upload-pages-artifact@v3

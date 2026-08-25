@@ -25,3 +25,7 @@ The first external review attempt was blocked by Vite host protection. The revie
 ## Production preview verification
 
 The production-mode preview at `/experience` was exposed successfully and rendered the full visible product demo through the temporary review URL. The customer journey, option controls, product cards, and maker-studio navigation were available in the external review page. This path is the correct review surface; the development-server proxy remains useful for implementation but is not the delivery link.
+
+## Permanent hosting activation
+
+The GitHub Pages settings page is open at `https://github.com/pipersmyfurbae-hash/Everfracted/settings/pages`. Pages is presently disabled. The committed workflow `deploy-pages.yml` is ready, and the owner confirmed activation. The visible source selector offers **GitHub Actions**, which is the required option for the committed Vite build-and-deploy workflow.
