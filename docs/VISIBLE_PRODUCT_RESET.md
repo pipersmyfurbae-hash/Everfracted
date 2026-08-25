@@ -47,3 +47,9 @@ The local Vite preview did not include the deployment workflow’s `404.html` fa
 The Vite preview server does not emulate GitHub Pages’ repository subpath, so it cannot load build assets from `/Everfracted/` during local deep-link testing even when `404.html` is present. The source will be visually checked through Vite’s normal development route, then rechecked at the real Pages hostname after the automated deployment runs.
 
 The new catalogue renders as intended through the normal application route: an editorial dark-green collection hero, product stories, pricing, and three clear product entries. The production-only `/Everfracted` image path means collection photos do not load in the local root-hosted development route; the asset helper will be made base-aware so the same source renders locally and at the permanent GitHub Pages URL.
+
+Immediately after the first collection release was pushed, the permanent catalogue URL still showed the prior API-backed catalogue and its expected static-host request error. This indicates the GitHub Pages deployment or CDN had not yet propagated; the workflow status and live URL will be rechecked before handoff.
+
+The GitHub Pages deployment for the first Moodoor collection completed successfully in 48 seconds at commit `3b16f8c`. The deployed artifact includes the original collection photography; the public catalogue URL will be reloaded after propagation to confirm the new editorial collection has replaced the prior API-backed view.
+
+The permanent production catalogue now renders the First Threshold Edit with all three original product images, live links, collection story, pricing, and availability labels. The lead product detail route for Quiet Winter Welcome also renders correctly with the product image, material and care sections, related pieces, and a prefilled customer enquiry action.
