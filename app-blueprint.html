@@ -744,6 +744,7 @@ html, body { height: 100%; overflow: hidden; font-family: var(--sans); color: va
   <span id="toast-msg">Blueprint saved!</span>
 </div>
 
+<script src="assets/js/evercrafted-core-engine.js"></script>
 <script>
 // ══════════════════════════════════════════
 //  STATE
@@ -757,8 +758,6 @@ const state = {
   placement: 'golden',
   isCustom: false
 };
-
-const API_BASE = "http://localhost:8787";
 
 // Admin unlock
 (() => {
@@ -980,9 +979,7 @@ function updateMeta() {
 // ══════════════════════════════════════════
 
 function getEngineEndpoint(){
-  const host=window.location.hostname;
-  const isLocal=host==="localhost"||host==="127.0.0.1";
-  return isLocal ? "http://127.0.0.1:8787/engine-proxy" : "https://evercrafted-engine-production.up.railway.app/run-engine";
+  return window.EvercraftedCoreEngine.resolveEndpoint();
 }
 
 async function generateBlueprint() {
@@ -996,15 +993,7 @@ async function generateBlueprint() {
   const feeling = (feelingInput?.value || '').trim() || 'calm and peaceful';
 
   try {
-    const response = await fetch(getEngineEndpoint(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        input_type: "emotion",
-        input_data: { feeling }
-      })
-    });
-    const data = await response.json();
+    const data = await window.EvercraftedCoreEngine.runEmotion(feeling, getEngineEndpoint());
     console.log(data);
     renderEngineOutputs(data);
     if (resultsEl) resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1112,13 +1101,7 @@ async function saveBlueprintToCloud() {
   };
 
   try {
-    const res = await fetch(`${API_BASE}/blueprints`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const json = await res.json();
-    if (!res.ok || !json.ok) throw new Error(json.error || "Save failed");
+    await window.EvercraftedCoreEngine.saveBlueprint(payload);
     showToast(`"${name}" saved to cloud`);
   } catch (err) {
     showToast("Cloud save failed");
@@ -1175,9 +1158,7 @@ if (uploadInput) {
     const fd = new FormData();
     fd.append('file', file);
     try {
-      const res = await fetch(`${API_BASE}/uploads`, { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error || "Upload failed");
+      await window.EvercraftedCoreEngine.uploadFile(fd);
       showToast("Image uploaded");
     } catch (err) {
       showToast("Upload failed");
